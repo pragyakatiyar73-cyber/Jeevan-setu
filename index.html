@@ -1371,41 +1371,551 @@
       </div>
 
       <!-- ===================================================================== -->
-      <!-- VIEW 6: WEATHER & CLOUDBURST INTELLIGENCE                             -->
+      <!-- VIEW 6: WEATHER & CLOUDBURST INTELLIGENCE (UPGRADED HIGH-CLASS SUITE)    -->
       <!-- ===================================================================== -->
       <div id="view-weather-view" class="space-y-6 hidden">
-        <div class="rounded-2xl border border-[#112240] bg-[#070d1e] p-5 shadow-2xl space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div>
-              <h3 class="text-base font-bold text-white flex items-center gap-2"><span>🌧️</span> 8-State Meteorological Grid & Cloudburst Intelligence</h3>
-              <p class="text-xs text-slate-400">Live satellite feeds from Open-Meteo & IMD Doppler radar nodes across North East India</p>
+        
+        <!-- 1. LIVE USER LOCATION WEATHER & DISASTER TRANSIT STATUS HERO -->
+        <div class="rounded-3xl border border-sky-500/40 bg-gradient-to-br from-[#07132c] via-[#040b1a] to-[#020612] p-5 sm:p-6 shadow-2xl shadow-sky-950/40 space-y-4 relative overflow-hidden">
+          <!-- Background Glow Elements -->
+          <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl pointer-events-none"></div>
+          <div class="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
+
+          <!-- Hero Header Bar -->
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/80 pb-4 relative z-10">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/40 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
+                  <span class="h-2 w-2 rounded-full bg-sky-400 animate-ping"></span>
+                  <span>🛰️ LIVE METEOROLOGICAL TELEMETRY NODE</span>
+                </span>
+                <span id="weather-last-updated" class="text-[10px] text-slate-400 font-mono">Sync: Live IMD / NASA GPM Radar</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                <span class="text-2xl sm:text-3xl">🌧️</span>
+                <span>8-State Meteorological Grid & Cloudburst Intelligence</span>
+              </h2>
+              <p class="text-xs text-slate-300 max-w-3xl">
+                Real-time satellite precipitation tracking, IMD Doppler radar reflectivity matrix, and geotechnical soil saturation correlation for all 8 North Eastern States (MoDoNER / NEC).
+              </p>
             </div>
-            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">● Live Radar Feed Active</span>
+
+            <!-- Geolocation Selector & Action Controls -->
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="detectLiveGpsLocation()" id="btn-detect-gps" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-xs shadow-lg shadow-sky-600/30 flex items-center gap-1.5 transition">
+                <span>📍</span>
+                <span>Fetch My Live GPS</span>
+              </button>
+              <select onchange="changeUserWeatherSector(this.value)" id="weather-sector-select" class="bg-slate-900/90 border border-slate-700 hover:border-sky-400 rounded-xl px-3 py-2 text-xs text-white focus:outline-none cursor-pointer">
+                <option value="shillong">📍 Sector: Shillong (Meghalaya)</option>
+                <option value="cherrapunji">📍 Sector: Cherrapunji / Sohra (Meghalaya)</option>
+                <option value="tawang">📍 Sector: Tawang / Sela Pass (Arunachal)</option>
+                <option value="guwahati">📍 Sector: Guwahati Hub (Assam)</option>
+                <option value="silchar">📍 Sector: Silchar / Barak Valley (Assam)</option>
+                <option value="haflong">📍 Sector: Haflong / Dima Hasao (Assam)</option>
+                <option value="gangtok">📍 Sector: Gangtok / Teesta Basin (Sikkim)</option>
+                <option value="kohima">📍 Sector: Kohima / Zubza (Nagaland)</option>
+                <option value="aizawl">📍 Sector: Aizawl Civil Depot (Mizoram)</option>
+                <option value="imphal">📍 Sector: Imphal Valley (Manipur)</option>
+                <option value="agartala">📍 Sector: Agartala Transit (Tripura)</option>
+              </select>
+            </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <div class="flex justify-between font-bold text-white"><span>Shillong (Meghalaya)</span><span class="text-rose-400">16.4 mm/hr</span></div>
-              <div class="text-slate-400">Temp: 21.8°C • Humidity: 94%</div>
-              <div class="text-[10px] text-rose-300 font-bold">⚠️ High Saturation Alert</div>
+          <!-- Active Location Status Banner & Live Dials -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 relative z-10">
+            <!-- Left: Location & Transit Advisory Box (5 Cols) -->
+            <div class="lg:col-span-5 rounded-2xl bg-slate-950/80 border border-slate-800 p-4 space-y-3 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between text-[11px] text-slate-400">
+                  <span class="uppercase tracking-wider font-semibold">Current Monitored Sector:</span>
+                  <span id="weather-loc-coords" class="font-mono text-sky-400 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-800/60 text-[10px]">25.5788° N, 91.8933° E</span>
+                </div>
+                <div class="mt-1 flex items-baseline justify-between">
+                  <h3 id="weather-loc-title" class="text-lg font-black text-white">Shillong (East Khasi Hills, Meghalaya)</h3>
+                  <span id="weather-loc-elevation" class="text-xs text-slate-400 font-mono">1,496m MSL</span>
+                </div>
+                <p id="weather-loc-desc" class="text-xs text-slate-300 mt-1 leading-relaxed">
+                  Heavy cloudburst precipitation active along Southern Khasi Escarpment. Geotechnical slope moisture exceeds safety thresholds.
+                </p>
+              </div>
+
+              <!-- Transit Safety Badge -->
+              <div id="weather-transit-badge" class="p-3 rounded-xl border border-rose-500/50 bg-rose-950/30 flex items-center justify-between">
+                <div>
+                  <div class="text-[10px] text-rose-300 font-bold uppercase tracking-wider">Logistics Transit Clearance:</div>
+                  <div id="weather-transit-status" class="text-sm font-black text-rose-400">🔴 RESTRICTED: CLOUDBURST ALERT</div>
+                  <div id="weather-transit-hint" class="text-[11px] text-slate-300 mt-0.5">Heavy 6-wheel convoys must divert via Sector 9 Jowai Bypass.</div>
+                </div>
+                <span class="text-2xl animate-pulse">⚠️</span>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="grid grid-cols-3 gap-2 pt-1">
+                <button onclick="focusMapOnCurrentWeatherSector()" class="py-1.5 px-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold text-center transition flex items-center justify-center gap-1">
+                  <span>🗺️</span> View Map
+                </button>
+                <button onclick="switchView('dynamic-rerouting-view')" class="py-1.5 px-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold text-center shadow transition flex items-center justify-center gap-1">
+                  <span>🧭</span> Reroute 3D
+                </button>
+                <button onclick="openSosModal()" class="py-1.5 px-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold text-center shadow transition flex items-center justify-center gap-1">
+                  <span>🚨</span> SOS Distress
+                </button>
+              </div>
             </div>
-            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <div class="flex justify-between font-bold text-white"><span>Tawang (Arunachal)</span><span class="text-amber-400">8.2 mm/hr</span></div>
-              <div class="text-slate-400">Temp: 4.2°C • Altitude: 3,500m</div>
-              <div class="text-[10px] text-amber-300 font-bold">❄️ Freezing Snow Slurry</div>
-            </div>
-            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <div class="flex justify-between font-bold text-white"><span>Guwahati (Assam)</span><span class="text-emerald-400">2.1 mm/hr</span></div>
-              <div class="text-slate-400">Temp: 28.5°C • Wind: 14 km/h</div>
-              <div class="text-[10px] text-emerald-300 font-bold">🟢 Clear Flight Corridor</div>
-            </div>
-            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <div class="flex justify-between font-bold text-white"><span>Gangtok (Sikkim)</span><span class="text-rose-400">14.1 mm/hr</span></div>
-              <div class="text-slate-400">Temp: 18.0°C • Teesta Velocity: 4.2m/s</div>
-              <div class="text-[10px] text-rose-300 font-bold">🌊 River Basin Surge Alert</div>
+
+            <!-- Right: 4 Live Weather Telemetry Tiles (7 Cols) -->
+            <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <!-- Tile 1: Precipitation Intensity -->
+              <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-3.5 space-y-2 flex flex-col justify-between">
+                <div class="flex items-center justify-between text-slate-400">
+                  <span class="text-[10px] font-bold uppercase tracking-wider">Rain Rate</span>
+                  <span class="text-sm">🌧️</span>
+                </div>
+                <div>
+                  <div id="weather-metric-rain" class="text-2xl font-black text-rose-400 font-mono">16.4</div>
+                  <div class="text-[10px] text-slate-400 font-mono">mm / hour (Torrential)</div>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="weather-bar-rain" class="bg-rose-500 h-full transition-all duration-500" style="width: 82%;"></div>
+                </div>
+              </div>
+
+              <!-- Tile 2: Soil Moisture Saturation (SMI) -->
+              <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-3.5 space-y-2 flex flex-col justify-between">
+                <div class="flex items-center justify-between text-slate-400">
+                  <span class="text-[10px] font-bold uppercase tracking-wider">Soil Saturation</span>
+                  <span class="text-sm">💧</span>
+                </div>
+                <div>
+                  <div id="weather-metric-smi" class="text-2xl font-black text-rose-400 font-mono">94.2%</div>
+                  <div class="text-[10px] text-slate-400">Pore Water Peak</div>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="weather-bar-smi" class="bg-rose-500 h-full transition-all duration-500" style="width: 94%;"></div>
+                </div>
+              </div>
+
+              <!-- Tile 3: Temperature & Altitude -->
+              <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-3.5 space-y-2 flex flex-col justify-between">
+                <div class="flex items-center justify-between text-slate-400">
+                  <span class="text-[10px] font-bold uppercase tracking-wider">Temperature</span>
+                  <span class="text-sm">🌡️</span>
+                </div>
+                <div>
+                  <div id="weather-metric-temp" class="text-2xl font-black text-sky-400 font-mono">21.8°C</div>
+                  <div id="weather-metric-humidity" class="text-[10px] text-slate-400">Humidity: 94%</div>
+                </div>
+                <div class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
+                  <span>●</span> <span>Dew Pt: 20.8°C</span>
+                </div>
+              </div>
+
+              <!-- Tile 4: Doppler Radar Reflectivity -->
+              <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-3.5 space-y-2 flex flex-col justify-between">
+                <div class="flex items-center justify-between text-slate-400">
+                  <span class="text-[10px] font-bold uppercase tracking-wider">Doppler dBZ</span>
+                  <span class="text-sm">📡</span>
+                </div>
+                <div>
+                  <div id="weather-metric-dbz" class="text-2xl font-black text-rose-400 font-mono">54.2</div>
+                  <div class="text-[10px] text-slate-400">Cherrapunji Node</div>
+                </div>
+                <div class="text-[10px] text-rose-400 font-bold flex items-center gap-1">
+                  <span>⚡</span> <span>Cloudburst Echo</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- 2. INTERACTIVE DOPPLER CLOUDBURST RADAR TWIN & SATELLITE DISCHARGE -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Radar Canvas & Controls (7 Cols) -->
+          <div class="lg:col-span-7 rounded-2xl border border-[#112240] bg-[#070d1e] p-5 shadow-2xl space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                  <span>📡</span> Interactive IMD Doppler Cloudburst Radar Simulation
+                </h3>
+                <p class="text-xs text-slate-400">High-resolution S-band Doppler sweep displaying extreme convective storm cores</p>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs">
+                <button onclick="toggleRadarSweepAnimation()" id="radar-sweep-toggle-btn" class="px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-400/40 text-xs font-bold hover:bg-sky-500/30 transition">
+                  ❚❚ Freeze Scan
+                </button>
+                <span class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[10px] text-emerald-400 font-mono">120 RPM</span>
+              </div>
+            </div>
+
+            <!-- Doppler Radar Canvas Screen -->
+            <div class="relative w-full h-64 sm:h-72 rounded-xl bg-[#02050f] border border-slate-800 overflow-hidden flex items-center justify-center">
+              <canvas id="doppler-radar-canvas" width="600" height="300" class="w-full h-full"></canvas>
+              
+              <!-- Radar Overlay HUD Elements -->
+              <div class="absolute top-2 left-3 text-[10px] font-mono text-sky-400 space-y-0.5 pointer-events-none bg-slate-950/60 p-1.5 rounded border border-sky-900/40 backdrop-blur-sm">
+                <div>RADAR: <span id="radar-hud-station" class="text-white font-bold">Cherrapunji IMD Doppler Node</span></div>
+                <div>FREQ: 2.85 GHz (S-Band) | RANGE: 250 km</div>
+                <div>SCAN ANGLE: 0.5° Elevation Tilt</div>
+              </div>
+
+              <div class="absolute bottom-2 right-3 text-[10px] font-mono text-slate-400 pointer-events-none bg-slate-950/70 p-1.5 rounded border border-slate-800 backdrop-blur-sm">
+                <div class="text-right">PEAK ECHO: <span id="radar-hud-peak" class="text-rose-400 font-bold">58 dBZ</span></div>
+                <div class="text-right text-sky-300">ECHO TOP: 14.2 km MSL</div>
+              </div>
+
+              <!-- dBZ Legend Bar Overlay -->
+              <div class="absolute bottom-2 left-3 flex items-center gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-800 text-[9px] font-mono">
+                <span class="text-slate-400">dBZ:</span>
+                <span class="px-1 bg-cyan-600 text-black font-bold">15</span>
+                <span class="px-1 bg-emerald-500 text-black font-bold">30</span>
+                <span class="px-1 bg-amber-400 text-black font-bold">45</span>
+                <span class="px-1 bg-rose-600 text-white font-bold">55+</span>
+              </div>
+            </div>
+
+            <!-- Radar Node Switcher -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <button onclick="switchDopplerRadarStation('cherrapunji')" id="radar-btn-cherrapunji" class="p-2 rounded-xl bg-sky-600/30 border border-sky-500 text-white font-bold text-left transition">
+                <div class="text-[10px] text-sky-300">Meghalaya</div>
+                <div class="truncate text-xs">Cherrapunji IMD</div>
+                <div class="text-[9px] text-rose-400 font-mono mt-0.5">58 dBZ (Storm)</div>
+              </button>
+              <button onclick="switchDopplerRadarStation('gangtok')" id="radar-btn-gangtok" class="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-left transition">
+                <div class="text-[10px] text-slate-400">Sikkim</div>
+                <div class="truncate text-xs">Gangtok Teesta</div>
+                <div class="text-[9px] text-amber-400 font-mono mt-0.5">48 dBZ (Surge)</div>
+              </button>
+              <button onclick="switchDopplerRadarStation('mohanbari')" id="radar-btn-mohanbari" class="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-left transition">
+                <div class="text-[10px] text-slate-400">Upper Assam</div>
+                <div class="truncate text-xs">Mohanbari Radar</div>
+                <div class="text-[9px] text-emerald-400 font-mono mt-0.5">28 dBZ (Moderate)</div>
+              </button>
+              <button onclick="switchDopplerRadarStation('agartala')" id="radar-btn-agartala" class="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-left transition">
+                <div class="text-[10px] text-slate-400">Tripura</div>
+                <div class="truncate text-xs">Agartala Doppler</div>
+                <div class="text-[9px] text-emerald-400 font-mono mt-0.5">20 dBZ (Light)</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hydrological River Basin & Cloudburst Early Warning Stream (5 Cols) -->
+          <div class="lg:col-span-5 rounded-2xl border border-[#112240] bg-[#070d1e] p-5 shadow-2xl space-y-4 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                  <span>🌊</span> River Basin & Hydrological Surge
+                </h3>
+                <span class="text-[10px] text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/30">CWC Telemetry Active</span>
+              </div>
+
+              <!-- River 1: Teesta River (Sikkim) -->
+              <div class="p-3 rounded-xl bg-slate-950 border border-rose-500/40 space-y-1.5">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold text-white">Teesta River (Melli Gauge Station)</span>
+                  <span class="font-bold text-rose-400 text-xs">Velocity: 4.2 m/s</span>
+                </div>
+                <div class="flex justify-between text-[11px] text-slate-400">
+                  <span>Discharge: 3,420 cumec</span>
+                  <span class="text-rose-300 font-bold">+1.8m Above Danger Mark</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-rose-500 h-full" style="width: 88%;"></div>
+                </div>
+              </div>
+
+              <!-- River 2: Barak River (Assam / Cachar) -->
+              <div class="p-3 rounded-xl bg-slate-950 border border-amber-500/40 space-y-1.5">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold text-white">Barak River (Badarpur Junction)</span>
+                  <span class="font-bold text-amber-400 text-xs">Rising (+0.14 m/hr)</span>
+                </div>
+                <div class="flex justify-between text-[11px] text-slate-400">
+                  <span>Water Level: 20.85m MSL</span>
+                  <span class="text-amber-300 font-bold">+0.9m Above Danger Mark</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-amber-400 h-full" style="width: 74%;"></div>
+                </div>
+              </div>
+
+              <!-- River 3: Brahmaputra River (Guwahati Hub) -->
+              <div class="p-3 rounded-xl bg-slate-950 border border-emerald-500/40 space-y-1.5">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold text-white">Brahmaputra (Pandu Port Base)</span>
+                  <span class="font-bold text-emerald-400 text-xs">Steady</span>
+                </div>
+                <div class="flex justify-between text-[11px] text-slate-400">
+                  <span>Discharge: 18,200 cumec</span>
+                  <span class="text-emerald-300 font-bold">1.4m Below Danger Mark</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-emerald-500 h-full" style="width: 48%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cloudburst Alert Summary Box -->
+            <div class="p-3 rounded-xl bg-gradient-to-r from-rose-950/40 to-amber-950/40 border border-rose-500/30 text-xs space-y-1">
+              <div class="font-bold text-rose-300 flex items-center gap-1.5">
+                <span>⚠️</span> <span>IMD Cloudburst Watch: Khasi Hills & Teesta Basin</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                Convective cell updrafts exceeding 35 m/s. High flash flood potential along hill streams for the next 180 minutes.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. COMPLETE 8-STATE NORTH-EASTERN METEOROLOGICAL MATRIX -->
+        <div class="rounded-2xl border border-[#112240] bg-[#070d1e] p-5 shadow-2xl space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>🗺️</span> 8-State North Eastern Meteorological Matrix (All States)
+              </h3>
+              <p class="text-xs text-slate-400">Click on any state card to inspect radar telemetry, view live highway clearance, or trigger 3D bypass reroute</p>
+            </div>
+            <div class="text-xs text-slate-400 flex items-center gap-2 font-mono">
+              <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>8 / 8 States Telemetry Synchronized</span>
+            </div>
+          </div>
+
+          <!-- 8 State Grid Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            
+            <!-- State 1: Meghalaya -->
+            <div onclick="changeUserWeatherSector('shillong')" class="cursor-pointer p-4 rounded-2xl bg-slate-950 border border-rose-500/40 hover:border-rose-400 hover:-translate-y-1 transition duration-200 space-y-2 shadow-lg shadow-rose-950/30">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Meghalaya</span>
+                  <h4 class="font-bold text-white text-sm">Shillong & Sohra</h4>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold border border-rose-500/40">16.4 mm/h</span>
+              </div>
+              <div class="text-slate-300 text-[11px] space-y-0.5">
+                <div>Temp: <b>21.8°C</b> • Humidity: <b>94%</b></div>
+                <div>Soil Saturation: <b class="text-rose-400">94.2% (Critical)</b></div>
+              </div>
+              <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                <span class="text-rose-400 font-bold">⚠️ Cloudburst Alert</span>
+                <span class="text-slate-400 hover:text-sky-300 font-semibold">Inspect ➔</span>
+              </div>
+            </div>
+
+            <!-- State 2: Arunachal Pradesh -->
+            <div onclick="changeUserWeatherSector('tawang')" class="cursor-pointer p-4 rounded-2xl bg-slate-950 border border-amber-500/40 hover:border-amber-400 hover:-translate-y-1 transition duration-200 space-y-2 shadow-lg shadow-amber-950/30">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Arunachal Pradesh</span>
+                  <h4 class="font-bold text-white text-sm">Tawang / Sela Pass</h4>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/40">8.2 mm/h</span>
+              </div>
+              <div class="text-slate-300 text-[11px] space-y-0.5">
+                <div>Temp: <b class="text-cyan-300">-1.2°C</b> • Elev: <b>3,500m</b></div>
+                <div>Road Condition: <b class="text-amber-400">Snow Slurry / Ice</b></div>
+              </div>
+              <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                <span class="text-amber-400 font-bold">❄️ Sub-Zero Blizzard</span>
+                <span class="text-slate-400 hover:text-sky-300 font-semibold">Inspect ➔</span>
+              </div>
+            </div>
+
+            <!-- State 3: Assam -->
+            <div onclick="changeUserWeatherSector('guwahati')" class="cursor-pointer p-4 rounded-2xl bg-slate-950 border border-emerald-500/40 hover:border-emerald-400 hover:-translate-y-1 transition duration-200 space-y-2 shadow-lg shadow-emerald-950/30">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Assam</span>
+                  <h4 class="font-bold text-white text-sm">Guwahati Hub</h4>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/40">2.1 mm/h</span>
+              </div>
+              <div class="text-slate-300 text-[11px] space-y-0.5">
+                <div>Temp: <b>28.5°C</b> • Wind: <b>14 km/h</b></div>
+                <div>Flight Corridor: <b class="text-emerald-400">100% Clear</b></div>
+              </div>
+              <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                <span class="text-emerald-400 font-bold">🟢 Clear Corridor</span>
+                <span class="text-slate-400 hover:text-sky-300 font-semibold">Inspect ➔</span>
+              </div>
+            </div>
+
+            <!-- State 4: Sikkim -->
+            <div onclick="changeUserWeatherSector('gangtok')" class="cursor-pointer p-4 rounded-2xl bg-slate-950 border border-rose-500/40 hover:border-rose-400 hover:-translate-y-1 transition duration-200 space-y-2 shadow-lg shadow-rose-950/30">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Sikkim</span>
+                  <h4 class="font-bold text-white text-sm">Gangtok / Teesta</h4>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold border border-rose-500/40">14.1 mm/h</span>
+              </div>
+              <div class="text-slate-300 text-[11px] space-y-0.5">
+                <div>Temp: <b>18.0°C</b> • Teesta Vel: <b>4.2 m/s</b></div>
+                <div>Embankment: <b class="text-rose-400">Overtopping Risk</b></div>
+              </div>
+              <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                <span class="text-rose-400 font-bold">🌊 River Surge Alert</span>
+                <span class="text-slate-400 hover:text-sky-300 font-semibold">Inspect ➔</span>
+              </div>
+            </div>
+
+            <!-- State 5: Nagaland -->
+            <div onclick="changeUserWeatherSector('kohima')" class="cursor-pointer p-4 rounded-2xl bg-slate-950 border border-amber-500/40 hover:border-amber-400 hover:-translate-y-1 transition duration-200 space-y-2 shadow-lg shadow-amber-950/30">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Nagaland</span>
+                  <h4 class="font-bold text-white text-sm">Kohima / Zubza</h4>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/40">6.8 mm/h</span>
+              </div>
+              <div class="text-slate-300 text-[11px] space-y-0.5">
+                <div>Temp: <b>20.1°C</b> • Soil Shear: <b>Degraded</b></div>
+                <div>Slope Stability: <b class="text-amber-400">LHI 75.9%</b></div>
+              </div>
+              <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                <span class="text-amber-400 font-bold">🟠 Subsidence Watch</span>
+                <span class="text-slate-400 hover:text-sky-300 font-semibold">Inspect ➔</span>
+              </div>
+            </div>
+
+            <!-- State 6: Mizoram -->
+            <div onclick="changeUserWeatherSector('aizawl')" class="cursor-pointer p-4 rounded-2xl bg-slate-950 border border-amber-500/40 hover:border-amber-400 hover:-translate-y-1 transition duration-200 space-y-2 shadow-lg shadow-amber-950/30">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Mizoram</span>
+                  <h4 class="font-bold text-white text-sm">Aizawl & Lunglei</h4>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/40">11.2 mm/h</span>
+              </div>
+              <div class="text-slate-300 text-[11px] space-y-0.5">
+                <div>Temp: <b>22.4°C</b> • Clay Sat: <b>82%</b></div>
+                <div>Ridge Roadway: <b class="text-amber-400">Clay Slump</b></div>
+              </div>
+              <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                <span class="text-amber-400 font-bold">🟠 Hillside Settling</span>
+                <span class="text-slate-400 hover:text-sky-300 font-semibold">Inspect ➔</span>
+              </div>
+            </div>
+
+            <!-- State 7: Manipur -->
+            <div onclick="changeUserWeatherSector('imphal')" class="cursor-pointer p-4 rounded-2xl bg-slate-950 border border-sky-500/40 hover:border-sky-400 hover:-translate-y-1 transition duration-200 space-y-2 shadow-lg shadow-sky-950/30">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Manipur</span>
+                  <h4 class="font-bold text-white text-sm">Imphal / Noney</h4>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[10px] font-bold border border-sky-500/40">5.4 mm/h</span>
+              </div>
+              <div class="text-slate-300 text-[11px] space-y-0.5">
+                <div>Temp: <b>24.1°C</b> • Ijei Silt: <b>66%</b></div>
+                <div>Valley Transit: <b class="text-emerald-400">4-Lane Operable</b></div>
+              </div>
+              <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                <span class="text-sky-400 font-bold">🔵 Silt Basin Watch</span>
+                <span class="text-slate-400 hover:text-sky-300 font-semibold">Inspect ➔</span>
+              </div>
+            </div>
+
+            <!-- State 8: Tripura -->
+            <div onclick="changeUserWeatherSector('agartala')" class="cursor-pointer p-4 rounded-2xl bg-slate-950 border border-emerald-500/40 hover:border-emerald-400 hover:-translate-y-1 transition duration-200 space-y-2 shadow-lg shadow-emerald-950/30">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tripura</span>
+                  <h4 class="font-bold text-white text-sm">Agartala Transit</h4>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/40">2.4 mm/h</span>
+              </div>
+              <div class="text-slate-300 text-[11px] space-y-0.5">
+                <div>Temp: <b>29.2°C</b> • Humidity: <b>76%</b></div>
+                <div>Inter-State Gate: <b class="text-emerald-400">100% Nominal</b></div>
+              </div>
+              <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                <span class="text-emerald-400 font-bold">🟢 Logistics Clear</span>
+                <span class="text-slate-400 hover:text-sky-300 font-semibold">Inspect ➔</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 4. ALL-WEATHER HIGHWAY CONVOY WEATHER CLEARANCE ADVISORY TABLE -->
+        <div class="rounded-2xl border border-[#112240] bg-[#070d1e] p-5 shadow-2xl space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>🚚</span> All-Weather Highway Weather Clearance Advisory (Logistics Corridors)
+              </h3>
+              <p class="text-xs text-slate-400">Automated vehicle convoy clearance derived from real-time precipitation & geotechnical slope stability</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-400 font-mono text-[10px] border border-sky-500/20">MoDoNER / BRO Coordinated</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-950/40">
+                  <th class="p-3">Highway Corridor</th>
+                  <th class="p-3">State / Route</th>
+                  <th class="p-3">Current Weather Hazard</th>
+                  <th class="p-3">Convoy Clearance</th>
+                  <th class="p-3">Recommended Green Bypass</th>
+                  <th class="p-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                <!-- NH-6 -->
+                <tr class="hover:bg-slate-900/40 transition">
+                  <td class="p-3 font-bold text-white flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-rose-500"></span> NH-6 Arterial Pass</td>
+                  <td class="p-3">Meghalaya ➔ Assam (Km 142)</td>
+                  <td class="p-3 text-rose-400 font-semibold">16.4 mm/h Cloudburst Saturation</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold text-[10px] border border-rose-500/30">🔴 IMPASSABLE AT KM 142</span></td>
+                  <td class="p-3 text-emerald-400 font-semibold">Sector 9 Jowai Ridge Bypass</td>
+                  <td class="p-3 text-right"><button onclick="triggerRerouteForHighway('NH-6', 'Guwahati Central Hub', 'Aizawl Civil Hospital')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px] shadow">Reroute 3D</button></td>
+                </tr>
+                <!-- NH-13 -->
+                <tr class="hover:bg-slate-900/40 transition">
+                  <td class="p-3 font-bold text-white flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-rose-500"></span> NH-13 Trans-Arunachal</td>
+                  <td class="p-3">Tezpur ➔ Tawang (Sela Pass)</td>
+                  <td class="p-3 text-cyan-300 font-semibold">-1.2°C Freezing Snow Slurry</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/30">❄️ 4x4 CHAINS ONLY</span></td>
+                  <td class="p-3 text-emerald-400 font-semibold">Kalaktang Low-Altitude Bypass</td>
+                  <td class="p-3 text-right"><button onclick="triggerRerouteForHighway('NH-13', 'Tezpur Base Staging', 'Tawang Civil Hospital')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px] shadow">Reroute 3D</button></td>
+                </tr>
+                <!-- NH-10 -->
+                <tr class="hover:bg-slate-900/40 transition">
+                  <td class="p-3 font-bold text-white flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-rose-500"></span> NH-10 Sikkim Artery</td>
+                  <td class="p-3">Siliguri ➔ Gangtok (Melli)</td>
+                  <td class="p-3 text-rose-400 font-semibold">Teesta River Swell (4.2 m/s)</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold text-[10px] border border-rose-500/30">🔴 LOW EMBANKMENT SEVERED</span></td>
+                  <td class="p-3 text-emerald-400 font-semibold">Lava - Reshi Ridge Viaduct Link</td>
+                  <td class="p-3 text-right"><button onclick="triggerRerouteForHighway('NH-10', 'Siliguri Transit Depot', 'Gangtok Base Hospital')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px] shadow">Reroute 3D</button></td>
+                </tr>
+                <!-- NH-29 -->
+                <tr class="hover:bg-slate-900/40 transition">
+                  <td class="p-3 font-bold text-white flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-amber-400"></span> NH-29 Highland Pass</td>
+                  <td class="p-3">Dimapur ➔ Kohima (Zubza)</td>
+                  <td class="p-3 text-amber-400 font-semibold">Soil Shear Subsidence</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/30">🟠 REGULATED 15 KM/H</span></td>
+                  <td class="p-3 text-emerald-400 font-semibold">Pfutsero Highland Bedrock Link</td>
+                  <td class="p-3 text-right"><button onclick="triggerRerouteForHighway('NH-29', 'Dimapur Depot', 'Kohima Center')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px] shadow">Reroute 3D</button></td>
+                </tr>
+                <!-- NH-37 -->
+                <tr class="hover:bg-slate-900/40 transition">
+                  <td class="p-3 font-bold text-white flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-emerald-400"></span> NH-37 Imphal Link</td>
+                  <td class="p-3">Silchar ➔ Imphal Valley</td>
+                  <td class="p-3 text-emerald-400 font-semibold">5.4 mm/h Light Valley Rain</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px] border border-emerald-500/30">🟢 100% ALL CLEAR</span></td>
+                  <td class="p-3 text-emerald-400 font-semibold">Standard 4-Lane Valley Highway</td>
+                  <td class="p-3 text-right"><button onclick="triggerRerouteForHighway('NH-37', 'Silchar Cachar Depot', 'Imphal Regional Hospital')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] shadow">Track 3D</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
 
       <!-- ===================================================================== -->
@@ -2324,6 +2834,11 @@
 
       if (viewId === 'dashboard') {
         initAccurate3DSimulation();
+      } else if (viewId === 'weather-view') {
+        setTimeout(() => {
+          initDopplerRadarCanvas();
+          updateWeatherIntelView();
+        }, 50);
       }
     }
 
@@ -4026,6 +4541,625 @@
       recognition.start();
     }
 
+    // =========================================================================
+    // WEATHER INTEL & LIVE DOPPLER CLOUDBURST RADAR ENGINE
+    // =========================================================================
+    const WEATHER_SECTORS = {
+      shillong: {
+        name: 'Shillong (East Khasi Hills, Meghalaya)',
+        coords: '25.5788° N, 91.8933° E',
+        lat: 25.5788,
+        lon: 91.8933,
+        elevation: '1,496m MSL',
+        rainRate: '16.4',
+        rainBar: 82,
+        smi: '94.2%',
+        smiBar: 94,
+        temp: '21.8°C',
+        humidity: 'Humidity: 94%',
+        dewPt: '20.8°C',
+        dbz: '54.2',
+        radarNode: 'Cherrapunji Node',
+        desc: 'Heavy cloudburst precipitation active along Southern Khasi Escarpment. Geotechnical slope moisture exceeds safety thresholds.',
+        transitStatus: '🔴 RESTRICTED: CLOUDBURST ALERT',
+        transitHint: 'Heavy 6-wheel convoys must divert via Sector 9 Jowai Bypass.',
+        badgeBg: 'bg-rose-950/30',
+        badgeBorder: 'border-rose-500/50',
+        statusColor: 'text-rose-400'
+      },
+      cherrapunji: {
+        name: 'Cherrapunji / Sohra (Meghalaya)',
+        coords: '25.2702° N, 91.7323° E',
+        lat: 25.2702,
+        lon: 91.7323,
+        elevation: '1,430m MSL',
+        rainRate: '28.6',
+        rainBar: 96,
+        smi: '98.5%',
+        smiBar: 98,
+        temp: '19.4°C',
+        humidity: 'Humidity: 99%',
+        dewPt: '19.2°C',
+        dbz: '58.0',
+        radarNode: 'Cherrapunji IMD Node',
+        desc: 'Severe convective cloudburst active. Southern escarpment experiencing high surface runoff and cascading mudflows.',
+        transitStatus: '🔴 SEVERE CLOUDBURST - CONVOY HALT',
+        transitHint: 'All vehicular movement suspended on Southern Ghats. Staging at Umtyngar.',
+        badgeBg: 'bg-rose-950/40',
+        badgeBorder: 'border-rose-500/60',
+        statusColor: 'text-rose-400'
+      },
+      tawang: {
+        name: 'Tawang / Sela Pass (Arunachal Pradesh)',
+        coords: '27.5861° N, 91.8594° E',
+        lat: 27.5861,
+        lon: 91.8594,
+        elevation: '3,500m MSL',
+        rainRate: '8.2',
+        rainBar: 42,
+        smi: '68.0%',
+        smiBar: 68,
+        temp: '-1.2°C',
+        humidity: 'Humidity: 88%',
+        dewPt: '-2.4°C',
+        dbz: '38.5',
+        radarNode: 'Mohanbari Radar',
+        desc: 'Sub-zero freezing blizzard and snow slurry deposition along Sela Pass. Surface adhesion reduced by 64%.',
+        transitStatus: '❄️ 4x4 CHAINS ONLY - REGULATED',
+        transitHint: 'Heavy trucks restricted unless equipped with snow chains. Kalaktang bypass advised.',
+        badgeBg: 'bg-amber-950/30',
+        badgeBorder: 'border-amber-500/50',
+        statusColor: 'text-amber-400'
+      },
+      guwahati: {
+        name: 'Guwahati Hub (Kamrup Metropolitan, Assam)',
+        coords: '26.1445° N, 91.7362° E',
+        lat: 26.1445,
+        lon: 91.7362,
+        elevation: '55m MSL',
+        rainRate: '2.1',
+        rainBar: 15,
+        smi: '42.0%',
+        smiBar: 42,
+        temp: '28.5°C',
+        humidity: 'Humidity: 68%',
+        dewPt: '21.5°C',
+        dbz: '18.4',
+        radarNode: 'Guwahati IMD Node',
+        desc: 'Nominal meteorological conditions across Brahmaputra valley. Logistics flight and road corridors 100% operational.',
+        transitStatus: '🟢 100% CLEAR TRANSIT CORRIDOR',
+        transitHint: 'Unrestricted high-speed transit for all relief convoys.',
+        badgeBg: 'bg-emerald-950/30',
+        badgeBorder: 'border-emerald-500/50',
+        statusColor: 'text-emerald-400'
+      },
+      silchar: {
+        name: 'Silchar (Barak Valley, Assam)',
+        coords: '24.8333° N, 92.7789° E',
+        lat: 24.8333,
+        lon: 92.7789,
+        elevation: '25m MSL',
+        rainRate: '4.8',
+        rainBar: 30,
+        smi: '78.5%',
+        smiBar: 78,
+        temp: '27.2°C',
+        humidity: 'Humidity: 84%',
+        dewPt: '24.0°C',
+        dbz: '28.0',
+        radarNode: 'Agartala Doppler',
+        desc: 'Barak River water level rising at Badarpur. Silt accumulation under active hydrologic observation.',
+        transitStatus: '🟡 REGULATED 40 KM/H SPEED LIMIT',
+        transitHint: 'Bridge approaches monitored for high water surge.',
+        badgeBg: 'bg-amber-950/30',
+        badgeBorder: 'border-amber-500/50',
+        statusColor: 'text-amber-400'
+      },
+      haflong: {
+        name: 'Haflong (Dima Hasao Hill Alignment, Assam)',
+        coords: '25.1740° N, 93.0180° E',
+        lat: 25.1740,
+        lon: 93.0180,
+        elevation: '680m MSL',
+        rainRate: '12.6',
+        rainBar: 65,
+        smi: '88.4%',
+        smiBar: 88,
+        temp: '23.5°C',
+        humidity: 'Humidity: 92%',
+        dewPt: '22.0°C',
+        dbz: '44.0',
+        radarNode: 'Guwahati IMD Node',
+        desc: 'Severe mudslide vulnerability along Haflong hill alignment. Hill cutting pore water pressure elevated.',
+        transitStatus: '🟠 HIGH RISK: CAUTION TRANSIT',
+        transitHint: 'Heavy vehicles spaced 200m apart to minimize slope dynamic load.',
+        badgeBg: 'bg-amber-950/30',
+        badgeBorder: 'border-amber-500/50',
+        statusColor: 'text-amber-400'
+      },
+      gangtok: {
+        name: 'Gangtok / Melli Teesta Basin (Sikkim)',
+        coords: '27.3389° N, 88.6065° E',
+        lat: 27.3389,
+        lon: 88.6065,
+        elevation: '1,650m MSL',
+        rainRate: '14.1',
+        rainBar: 72,
+        smi: '89.6%',
+        smiBar: 89,
+        temp: '18.0°C',
+        humidity: 'Humidity: 95%',
+        dewPt: '17.2°C',
+        dbz: '48.2',
+        radarNode: 'Gangtok Teesta Radar',
+        desc: 'Teesta River surge velocity at 4.2 m/s. NH-10 low-level embankments overtopped near 29th Mile.',
+        transitStatus: '🔴 NH-10 SEVERED - USE LAVA VIADUCT',
+        transitHint: 'All supply lines diverted via high-elevation Lava-Reshi ridge link.',
+        badgeBg: 'bg-rose-950/30',
+        badgeBorder: 'border-rose-500/50',
+        statusColor: 'text-rose-400'
+      },
+      kohima: {
+        name: 'Kohima / Zubza (Nagaland)',
+        coords: '25.6751° N, 94.1086° E',
+        lat: 25.6751,
+        lon: 94.1086,
+        elevation: '1,444m MSL',
+        rainRate: '6.8',
+        rainBar: 38,
+        smi: '75.9%',
+        smiBar: 75,
+        temp: '20.1°C',
+        humidity: 'Humidity: 86%',
+        dewPt: '18.0°C',
+        dbz: '34.0',
+        radarNode: 'Mohanbari Radar',
+        desc: 'Active soil subsidence and mudflow risks along Zubza pass. BRO earthmovers deployed on standby.',
+        transitStatus: '🟠 REGULATED 15 KM/H',
+        transitHint: 'Pfutsero highland bypass open for emergency convoys.',
+        badgeBg: 'bg-amber-950/30',
+        badgeBorder: 'border-amber-500/50',
+        statusColor: 'text-amber-400'
+      },
+      aizawl: {
+        name: 'Aizawl Civil Depot & Lunglei (Mizoram)',
+        coords: '23.7271° N, 92.7176° E',
+        lat: 23.7271,
+        lon: 92.7176,
+        elevation: '1,132m MSL',
+        rainRate: '11.2',
+        rainBar: 58,
+        smi: '82.0%',
+        smiBar: 82,
+        temp: '22.4°C',
+        humidity: 'Humidity: 90%',
+        dewPt: '20.5°C',
+        dbz: '41.0',
+        radarNode: 'Agartala Doppler',
+        desc: 'Continuous ridge drizzle causing high sub-surface moisture retention. Clay soil sliding warning.',
+        transitStatus: '🟠 REGULATED HIGHWAY CONVOY',
+        transitHint: 'Escorted convoy movement in effect across NH-54.',
+        badgeBg: 'bg-amber-950/30',
+        badgeBorder: 'border-amber-500/50',
+        statusColor: 'text-amber-400'
+      },
+      imphal: {
+        name: 'Imphal Valley & Noney (Manipur)',
+        coords: '24.8170° N, 93.9368° E',
+        lat: 24.8170,
+        lon: 93.9368,
+        elevation: '786m MSL',
+        rainRate: '5.4',
+        rainBar: 28,
+        smi: '66.4%',
+        smiBar: 66,
+        temp: '24.1°C',
+        humidity: 'Humidity: 80%',
+        dewPt: '20.2°C',
+        dbz: '26.0',
+        radarNode: 'Agartala Doppler',
+        desc: 'Ijei river catchment silt watch active. 4-lane valley highway clear with light intermittent showers.',
+        transitStatus: '🟢 100% ALL-WEATHER OPEN',
+        transitHint: 'Grain and petroleum supply lines operating at full capacity.',
+        badgeBg: 'bg-emerald-950/30',
+        badgeBorder: 'border-emerald-500/50',
+        statusColor: 'text-emerald-400'
+      },
+      agartala: {
+        name: 'Agartala Strategic Gateway (Tripura)',
+        coords: '23.8315° N, 91.2868° E',
+        lat: 23.8315,
+        lon: 91.2868,
+        elevation: '16m MSL',
+        rainRate: '2.4',
+        rainBar: 18,
+        smi: '32.0%',
+        smiBar: 32,
+        temp: '29.2°C',
+        humidity: 'Humidity: 76%',
+        dewPt: '24.5°C',
+        dbz: '20.0',
+        radarNode: 'Agartala Doppler',
+        desc: 'Stable atmospheric conditions. Inter-state supply depot gate operating with zero weather delays.',
+        transitStatus: '🟢 100% CLEAR TRANSIT GATE',
+        transitHint: 'All logistics movements approved.',
+        badgeBg: 'bg-emerald-950/30',
+        badgeBorder: 'border-emerald-500/50',
+        statusColor: 'text-emerald-400'
+      }
+    };
+
+    let currentWeatherSectorKey = 'shillong';
+    let currentRadarStation = 'cherrapunji';
+    let isRadarSweepPlaying = true;
+    let radarSweepAngle = 0;
+    let radarAnimFrame = null;
+
+    function changeUserWeatherSector(key) {
+      if (!WEATHER_SECTORS[key]) return;
+      currentWeatherSectorKey = key;
+      const sec = WEATHER_SECTORS[key];
+
+      const selectEl = document.getElementById('weather-sector-select');
+      if (selectEl) selectEl.value = key;
+
+      const titleEl = document.getElementById('weather-loc-title');
+      if (titleEl) titleEl.innerText = sec.name;
+
+      const coordsEl = document.getElementById('weather-loc-coords');
+      if (coordsEl) coordsEl.innerText = sec.coords;
+
+      const elevEl = document.getElementById('weather-loc-elevation');
+      if (elevEl) elevEl.innerText = sec.elevation;
+
+      const descEl = document.getElementById('weather-loc-desc');
+      if (descEl) descEl.innerText = sec.desc;
+
+      const rainEl = document.getElementById('weather-metric-rain');
+      if (rainEl) rainEl.innerText = sec.rainRate;
+
+      const rainBar = document.getElementById('weather-bar-rain');
+      if (rainBar) rainBar.style.width = sec.rainBar + '%';
+
+      const smiEl = document.getElementById('weather-metric-smi');
+      if (smiEl) smiEl.innerText = sec.smi;
+
+      const smiBar = document.getElementById('weather-bar-smi');
+      if (smiBar) smiBar.style.width = sec.smiBar + '%';
+
+      const tempEl = document.getElementById('weather-metric-temp');
+      if (tempEl) tempEl.innerText = sec.temp;
+
+      const humEl = document.getElementById('weather-metric-humidity');
+      if (humEl) humEl.innerText = sec.humidity;
+
+      const dbzEl = document.getElementById('weather-metric-dbz');
+      if (dbzEl) dbzEl.innerText = sec.dbz;
+
+      const badge = document.getElementById('weather-transit-badge');
+      const statusEl = document.getElementById('weather-transit-status');
+      const hintEl = document.getElementById('weather-transit-hint');
+
+      if (badge && statusEl && hintEl) {
+        badge.className = `p-3 rounded-xl border ${sec.badgeBorder} ${sec.badgeBg} flex items-center justify-between transition-all`;
+        statusEl.className = `text-sm font-black ${sec.statusColor}`;
+        statusEl.innerText = sec.transitStatus;
+        hintEl.innerText = sec.transitHint;
+      }
+
+      // Automatically sync active radar station if relevant
+      if (key === 'gangtok') switchDopplerRadarStation('gangtok');
+      else if (key === 'tawang' || key === 'kohima') switchDopplerRadarStation('mohanbari');
+      else if (key === 'agartala' || key === 'aizawl') switchDopplerRadarStation('agartala');
+      else switchDopplerRadarStation('cherrapunji');
+    }
+
+    function updateWeatherIntelView() {
+      changeUserWeatherSector(currentWeatherSectorKey);
+    }
+
+    // HTML5 Live Geolocation Detection
+    function detectLiveGpsLocation() {
+      const btn = document.getElementById('btn-detect-gps');
+      if (btn) {
+        btn.innerHTML = '<span>⏳</span> <span>Acquiring Satellites...</span>';
+        btn.classList.add('animate-pulse');
+      }
+
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser. Defaulting to Shillong Meghalaya node.');
+        if (btn) {
+          btn.innerHTML = '<span>📍</span> <span>Fetch My Live GPS</span>';
+          btn.classList.remove('animate-pulse');
+        }
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const accuracy = Math.round(position.coords.accuracy || 15);
+
+          // Find closest NER sector via Haversine distance
+          let closestKey = 'shillong';
+          let minDistance = Infinity;
+
+          Object.keys(WEATHER_SECTORS).forEach(k => {
+            const s = WEATHER_SECTORS[k];
+            const dLat = (s.lat - lat) * (Math.PI / 180);
+            const dLon = (s.lon - lon) * (Math.PI / 180);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat * (Math.PI / 180)) * Math.cos(s.lat * (Math.PI / 180)) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const dist = 6371 * c; // in km
+
+            if (dist < minDistance) {
+              minDistance = dist;
+              closestKey = k;
+            }
+          });
+
+          // Update sector and coords badge
+          changeUserWeatherSector(closestKey);
+
+          const coordsEl = document.getElementById('weather-loc-coords');
+          if (coordsEl) coordsEl.innerText = `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E (±${accuracy}m)`;
+
+          const updatedEl = document.getElementById('weather-last-updated');
+          if (updatedEl) updatedEl.innerText = `GPS Fix: ${lat.toFixed(4)}N, ${lon.toFixed(4)}E (Nearest Sector: ${WEATHER_SECTORS[closestKey].name})`;
+
+          if (btn) {
+            btn.innerHTML = '<span>✅</span> <span>GPS Synced</span>';
+            btn.classList.remove('animate-pulse');
+            btn.classList.replace('from-sky-600', 'from-emerald-600');
+            btn.classList.replace('to-blue-600', 'to-teal-600');
+            setTimeout(() => {
+              btn.innerHTML = '<span>📍</span> <span>Fetch My Live GPS</span>';
+            }, 4000);
+          }
+        },
+        (error) => {
+          console.warn('Geolocation failed or denied:', error.message);
+          alert('GPS permission not granted or location timed out. Displaying Shillong Command Sector telemetry.');
+          if (btn) {
+            btn.innerHTML = '<span>📍</span> <span>Fetch My Live GPS</span>';
+            btn.classList.remove('animate-pulse');
+          }
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+      );
+    }
+
+    function focusMapOnCurrentWeatherSector() {
+      const sec = WEATHER_SECTORS[currentWeatherSectorKey] || WEATHER_SECTORS.shillong;
+      switchView('dashboard');
+      if (map) {
+        setTimeout(() => {
+          map.setView([sec.lat, sec.lon], 11, { animate: true });
+          L.popup()
+            .setLatLng([sec.lat, sec.lon])
+            .setContent(`
+              <div class="font-sans text-xs space-y-1 text-slate-900">
+                <div class="font-bold text-sky-800">🌧️ ${sec.name}</div>
+                <div>Precipitation: <b>${sec.rainRate} mm/hr</b></div>
+                <div>Soil Saturation: <b>${sec.smi}</b></div>
+                <div class="text-rose-700 font-bold">${sec.transitStatus}</div>
+              </div>
+            `)
+            .openOn(map);
+        }, 300);
+      }
+    }
+
+    // Interactive Doppler Radar Canvas Animation
+    function initDopplerRadarCanvas() {
+      const canvas = document.getElementById('doppler-radar-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Handle retina canvas sizing
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width || 600;
+      const height = rect.height || 300;
+      canvas.width = width * (window.devicePixelRatio || 1);
+      canvas.height = height * (window.devicePixelRatio || 1);
+      ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+      if (radarAnimFrame) cancelAnimationFrame(radarAnimFrame);
+
+      function renderRadar() {
+        const w = width;
+        const h = height;
+        const cx = w / 2;
+        const cy = h / 2;
+        const maxRadius = Math.min(cx, cy) - 12;
+
+        // Clear canvas with subtle radar dark background
+        ctx.fillStyle = '#02050f';
+        ctx.fillRect(0, 0, w, h);
+
+        // Concentric Radar Distance Rings (50km, 100km, 150km, 200km)
+        ctx.strokeStyle = '#0284c7';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([]);
+
+        const rings = [0.25, 0.5, 0.75, 1.0];
+        rings.forEach((pct, idx) => {
+          ctx.beginPath();
+          ctx.arc(cx, cy, maxRadius * pct, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Distance labels
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = '9px monospace';
+          ctx.fillText(`${(idx + 1) * 50}km`, cx + 4, cy - maxRadius * pct + 10);
+        });
+
+        // Azimuth Crosshairs
+        ctx.strokeStyle = 'rgba(2, 132, 199, 0.4)';
+        ctx.beginPath();
+        ctx.moveTo(cx - maxRadius, cy); ctx.lineTo(cx + maxRadius, cy);
+        ctx.moveTo(cx, cy - maxRadius); ctx.lineTo(cx, cy + maxRadius);
+        ctx.stroke();
+
+        // Direction labels
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px monospace';
+        ctx.fillText('N', cx - 3, cy - maxRadius - 2);
+        ctx.fillText('S', cx - 3, cy + maxRadius + 11);
+        ctx.fillText('W', cx - maxRadius - 14, cy + 3);
+        ctx.fillText('E', cx + maxRadius + 4, cy + 3);
+
+        // Render Doppler Reflectivity Echo Clouds based on active station
+        const stormCores = getRadarStormCores(currentRadarStation, cx, cy, maxRadius);
+        stormCores.forEach(core => {
+          const grad = ctx.createRadialGradient(core.x, core.y, 2, core.x, core.y, core.radius);
+          grad.addColorStop(0, core.colorCenter);
+          grad.addColorStop(0.5, core.colorMid);
+          grad.addColorStop(1, 'transparent');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(core.x, core.y, core.radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Rotating Sweep Line with Phosphor Glow Trail
+        if (isRadarSweepPlaying) {
+          radarSweepAngle += 0.035;
+          if (radarSweepAngle >= Math.PI * 2) radarSweepAngle = 0;
+        }
+
+        // Draw Sweep Beam Trail (Semi-transparent fan sector)
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, maxRadius, radarSweepAngle - 0.45, radarSweepAngle);
+        ctx.closePath();
+        const sweepGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius);
+        sweepGrad.addColorStop(0, 'rgba(56, 189, 248, 0.25)');
+        sweepGrad.addColorStop(1, 'rgba(56, 189, 248, 0.03)');
+        ctx.fillStyle = sweepGrad;
+        ctx.fill();
+        ctx.restore();
+
+        // Main Sweep Line (Crisp Cyan)
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(radarSweepAngle) * maxRadius, cy + Math.sin(radarSweepAngle) * maxRadius);
+        ctx.stroke();
+
+        // Center Node Dot
+        ctx.fillStyle = '#f43f5e';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        radarAnimFrame = requestAnimationFrame(renderRadar);
+      }
+
+      renderRadar();
+    }
+
+    function getRadarStormCores(station, cx, cy, maxRadius) {
+      if (station === 'gangtok') {
+        return [
+          { x: cx - maxRadius * 0.35, y: cy - maxRadius * 0.2, radius: 45, colorCenter: 'rgba(239, 68, 68, 0.85)', colorMid: 'rgba(245, 158, 11, 0.45)' },
+          { x: cx - maxRadius * 0.15, y: cy + maxRadius * 0.3, radius: 35, colorCenter: 'rgba(245, 158, 11, 0.8)', colorMid: 'rgba(16, 185, 129, 0.4)' }
+        ];
+      } else if (station === 'mohanbari') {
+        return [
+          { x: cx + maxRadius * 0.4, y: cy - maxRadius * 0.3, radius: 38, colorCenter: 'rgba(245, 158, 11, 0.75)', colorMid: 'rgba(16, 185, 129, 0.35)' },
+          { x: cx + maxRadius * 0.1, y: cy + maxRadius * 0.45, radius: 28, colorCenter: 'rgba(56, 189, 248, 0.7)', colorMid: 'rgba(2, 132, 199, 0.3)' }
+        ];
+      } else if (station === 'agartala') {
+        return [
+          { x: cx + maxRadius * 0.3, y: cy + maxRadius * 0.2, radius: 30, colorCenter: 'rgba(16, 185, 129, 0.75)', colorMid: 'rgba(56, 189, 248, 0.3)' }
+        ];
+      } else {
+        // Cherrapunji (Heavy Convective Storm Echo)
+        return [
+          { x: cx - maxRadius * 0.25, y: cy + maxRadius * 0.15, radius: 55, colorCenter: 'rgba(225, 29, 72, 0.9)', colorMid: 'rgba(239, 68, 68, 0.55)' },
+          { x: cx + maxRadius * 0.2, y: cy - maxRadius * 0.1, radius: 42, colorCenter: 'rgba(245, 158, 11, 0.85)', colorMid: 'rgba(16, 185, 129, 0.45)' },
+          { x: cx - maxRadius * 0.4, y: cy - maxRadius * 0.35, radius: 32, colorCenter: 'rgba(56, 189, 248, 0.75)', colorMid: 'rgba(2, 132, 199, 0.35)' }
+        ];
+      }
+    }
+
+    function switchDopplerRadarStation(stationKey) {
+      currentRadarStation = stationKey;
+      ['cherrapunji', 'gangtok', 'mohanbari', 'agartala'].forEach(k => {
+        const btn = document.getElementById('radar-btn-' + k);
+        if (btn) {
+          if (k === stationKey) {
+            btn.className = 'p-2 rounded-xl bg-sky-600/30 border border-sky-500 text-white font-bold text-left transition';
+          } else {
+            btn.className = 'p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-left transition';
+          }
+        }
+      });
+
+      const hudStation = document.getElementById('radar-hud-station');
+      const hudPeak = document.getElementById('radar-hud-peak');
+      if (stationKey === 'gangtok') {
+        if (hudStation) hudStation.innerText = 'Gangtok Teesta Radar Node';
+        if (hudPeak) hudPeak.innerText = '48 dBZ (Surge)';
+      } else if (stationKey === 'mohanbari') {
+        if (hudStation) hudStation.innerText = 'Mohanbari Upper Assam Node';
+        if (hudPeak) hudPeak.innerText = '28 dBZ (Moderate)';
+      } else if (stationKey === 'agartala') {
+        if (hudStation) hudStation.innerText = 'Agartala Strategic Node';
+        if (hudPeak) hudPeak.innerText = '20 dBZ (Light)';
+      } else {
+        if (hudStation) hudStation.innerText = 'Cherrapunji IMD Doppler Node';
+        if (hudPeak) hudPeak.innerText = '58 dBZ (Storm)';
+      }
+    }
+
+    function toggleRadarSweepAnimation() {
+      isRadarSweepPlaying = !isRadarSweepPlaying;
+      const btn = document.getElementById('radar-sweep-toggle-btn');
+      if (btn) {
+        btn.innerText = isRadarSweepPlaying ? '❚❚ Freeze Scan' : '▶ Resume Scan';
+      }
+    }
+
+    function changeWeatherLocation(val) {
+      if (!val) return;
+      const parts = val.split(',');
+      const cityName = parts[2] || 'Shillong';
+      const cityEl = document.getElementById('w-city');
+      const tempEl = document.getElementById('w-temp');
+      const rainEl = document.getElementById('w-rain');
+      const windEl = document.getElementById('w-wind');
+
+      if (cityName.includes('Guwahati')) {
+        if (cityEl) cityEl.innerText = 'Guwahati, Assam';
+        if (tempEl) tempEl.innerText = '28.5°C';
+        if (rainEl) rainEl.innerText = '2.1 mm/hr Rain';
+        if (windEl) windEl.innerText = 'Wind: 14 km/h';
+      } else if (cityName.includes('Tawang')) {
+        if (cityEl) cityEl.innerText = 'Tawang, Arunachal Pradesh';
+        if (tempEl) tempEl.innerText = '-1.2°C';
+        if (rainEl) rainEl.innerText = '8.2 mm/hr Snow';
+        if (windEl) windEl.innerText = 'Wind: 34 km/h';
+      } else if (cityName.includes('Gangtok')) {
+        if (cityEl) cityEl.innerText = 'Gangtok, Sikkim';
+        if (tempEl) tempEl.innerText = '18.0°C';
+        if (rainEl) rainEl.innerText = '14.1 mm/hr Rain';
+        if (windEl) windEl.innerText = 'Wind: 22 km/h';
+      } else {
+        if (cityEl) cityEl.innerText = 'Shillong, Meghalaya';
+        if (tempEl) tempEl.innerText = '21.8°C';
+        if (rainEl) rainEl.innerText = '16.4 mm/hr Rain';
+        if (windEl) windEl.innerText = 'Wind: 28 km/h';
+      }
+    }
+
     function escapeHtml(str) {
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
@@ -4036,6 +5170,7 @@
       renderAiSlide();
       startAiSlideshow();
       recalculateRerouteEngine();
+      initDopplerRadarCanvas();
     };
   </script>
 </body>
