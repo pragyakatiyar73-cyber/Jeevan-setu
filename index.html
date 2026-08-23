@@ -768,74 +768,285 @@
       </div>
 
       <!-- ===================================================================== -->
-      <!-- VIEW 3: VEHICLE & FLEET LOGISTICS TELEMETRY                           -->
+      <!-- VIEW 3: VEHICLE & FLEET LOGISTICS TELEMETRY (COMPLETE NER FLEET)       -->
       <!-- ===================================================================== -->
       <div id="view-vehicles-view" class="space-y-6 hidden">
+        <!-- Top 4 Telematics Summary Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div class="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 shadow-xl">
             <span class="text-[11px] text-slate-400 font-bold uppercase">Active Relief Convoys</span>
             <div class="text-2xl font-black text-white mt-1">48 Fleet Units</div>
-            <div class="text-[10px] text-emerald-400 mt-0.5">100% GPS / NavIC Synced</div>
+            <div class="text-[10px] text-emerald-400 mt-0.5">🛰️ 100% ISRO NavIC / GPS Dual-Lock</div>
           </div>
           <div class="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 shadow-xl">
             <span class="text-[11px] text-sky-300 font-bold uppercase">Cargo in Transit</span>
             <div class="text-2xl font-black text-sky-400 mt-1">745 MT</div>
-            <div class="text-[10px] text-sky-300 mt-0.5">Oxygen, Food, Fuel, Meds</div>
+            <div class="text-[10px] text-sky-300 mt-0.5">Oxygen, Food Rations, Fuel, Trauma Kits</div>
           </div>
           <div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 shadow-xl">
             <span class="text-[11px] text-emerald-300 font-bold uppercase">Avg Corridor Speed</span>
-            <div class="text-2xl font-black text-emerald-400 mt-1">46.4 km/h</div>
-            <div class="text-[10px] text-emerald-300 mt-0.5">Adaptive terrain speed limits</div>
+            <div class="text-2xl font-black text-emerald-400 mt-1">44.8 km/h</div>
+            <div class="text-[10px] text-emerald-300 mt-0.5">Adaptive terrain speed regulation</div>
           </div>
           <div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 shadow-xl">
-            <span class="text-[11px] text-rose-300 font-bold uppercase">Stranded / Panic Pings</span>
-            <div class="text-2xl font-black text-rose-400 mt-1">0 Critical</div>
-            <div class="text-[10px] text-emerald-400 mt-0.5">All convoys verified safe</div>
+            <span class="text-[11px] text-rose-300 font-bold uppercase">Stranded / Panic Beacons</span>
+            <div class="text-2xl font-black text-emerald-400 mt-1">0 Critical</div>
+            <div class="text-[10px] text-emerald-400 mt-0.5">✓ All 48 convoys verified safe</div>
           </div>
         </div>
 
+        <!-- Main Live GPS Telemetry Roster Card -->
         <div class="rounded-2xl border border-[#112240] bg-[#070d1e] p-5 shadow-2xl space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 class="text-base font-bold text-white flex items-center gap-2"><span>🚚</span> Live GPS Convoy Telemetry Roster</h3>
-            <span class="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">● OBD-II Telematics Active</span>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>🚚</span>
+                <span>Inter-State Relief Convoy Telemetry Roster (8 Active Sector Units)</span>
+              </h3>
+              <p class="text-xs text-slate-400">Live CAN-Bus OBD-II diagnostics & ISRO NavIC satellite tracking across all 8 North Eastern States</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-xl border border-emerald-500/20 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>NavIC 14 Sats Active</span>
+              </span>
+            </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Convoy 1 -->
-            <div class="rounded-xl border border-emerald-500/40 bg-slate-950 p-4 space-y-2">
+          <!-- 8 Complete Convoy Telemetry Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 text-xs">
+            
+            <!-- Convoy 1: Guwahati to Aizawl (Oxygen) -->
+            <div class="rounded-xl border border-emerald-500/40 bg-slate-950 p-4 space-y-2.5 hover:border-emerald-400 transition shadow-lg">
               <div class="flex justify-between items-center">
-                <span class="font-bold text-white text-xs">AS-01-AB-1234 (Convoy #01)</span>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-black text-[10px] border border-emerald-400/40">🟢 PRIORITY 1</span>
+                  <span class="font-bold text-white text-xs">AS-01-AB-1234 (Convoy #01)</span>
+                </div>
                 <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold">45 km/h</span>
               </div>
-              <div class="text-[11px] text-slate-300"><b>Route:</b> Guwahati Hub ➔ Aizawl Depot</div>
-              <div class="text-[11px] text-sky-400"><b>Consignment:</b> 12T Medical Oxygen Cylinders</div>
-              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800"><div class="bg-emerald-500 h-full" style="width: 43%;"></div></div>
-              <div class="flex justify-between text-[10px] text-slate-400"><span>Progress: 43%</span><span>ETA: 3h 15m (NH-27)</span></div>
+              <div class="text-[11px] text-slate-300"><b>Route:</b> Guwahati Central Hub (Assam) ➔ Aizawl Civil Hospital (Mizoram)</div>
+              <div class="text-[11px] text-rose-400 font-semibold">📦 Consignment: 12T Medical Oxygen Cylinders (Class 1 Urgent)</div>
+              <div class="p-2 bg-[#040814] rounded-lg border border-slate-800/80 flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Fuel: 78%</span>
+                <span>NavIC: 12 Satellites</span>
+                <span>Temp: 21.4°C</span>
+                <span class="text-emerald-400">Traction: Optimal</span>
+              </div>
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-emerald-500 h-full" style="width: 43%;"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Progress: 43% • Diverted via Sector 9 Jowai Bypass</span>
+                <div class="flex gap-1.5">
+                  <button onclick="triggerRerouteForHighway('NH-6', 'Guwahati Central Hub', 'Aizawl Civil Hospital')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px]">Track 3D 🎮</button>
+                  <button onclick="focusMapOnHighway(26.1445, 91.7362, 'Convoy #01 (AS-01-AB-1234)', '🟢 EN ROUTE (45 km/h)', '12T Medical Oxygen en route Aizawl')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px]">Map 🗺️</button>
+                </div>
+              </div>
             </div>
 
-            <!-- Convoy 2 -->
-            <div class="rounded-xl border border-sky-500/40 bg-slate-950 p-4 space-y-2">
+            <!-- Convoy 2: Nagaon to Dibrugarh (Baby Food & Grains) -->
+            <div class="rounded-xl border border-sky-500/40 bg-slate-950 p-4 space-y-2.5 hover:border-sky-400 transition shadow-lg">
               <div class="flex justify-between items-center">
-                <span class="font-bold text-white text-xs">AS-02-CD-5678 (Convoy #02)</span>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-black text-[10px] border border-sky-400/40">🔵 PRIORITY 2</span>
+                  <span class="font-bold text-white text-xs">AS-02-CD-5678 (Convoy #02)</span>
+                </div>
                 <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-400 font-mono text-[10px] font-bold">52 km/h</span>
               </div>
-              <div class="text-[11px] text-slate-300"><b>Route:</b> Nagaon Depot ➔ Dibrugarh</div>
-              <div class="text-[11px] text-amber-400"><b>Consignment:</b> 20T Baby Food & Grain Bags</div>
-              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800"><div class="bg-sky-500 h-full" style="width: 68%;"></div></div>
-              <div class="flex justify-between text-[10px] text-slate-400"><span>Progress: 68%</span><span>ETA: 1h 45m</span></div>
+              <div class="text-[11px] text-slate-300"><b>Route:</b> Nagaon Central Silos ➔ Dibrugarh Forward Depot (Upper Assam)</div>
+              <div class="text-[11px] text-amber-400 font-semibold">📦 Consignment: 20T Baby Food & Fortified Grain Bags</div>
+              <div class="p-2 bg-[#040814] rounded-lg border border-slate-800/80 flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Fuel: 84%</span>
+                <span>NavIC: 14 Satellites</span>
+                <span>Temp: 26.2°C</span>
+                <span class="text-emerald-400">Clear Green 4-Lane</span>
+              </div>
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-sky-500 h-full" style="width: 68%;"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Progress: 68% • ETA: 1h 45m (NH-27 Green Corridor)</span>
+                <div class="flex gap-1.5">
+                  <button onclick="triggerRerouteForHighway('NH-37', 'Nagaon Depot', 'Dibrugarh Base')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px]">Track 3D 🎮</button>
+                  <button onclick="focusMapOnHighway(26.3452, 92.6841, 'Convoy #02 (AS-02-CD-5678)', '🟢 ON SCHEDULE (52 km/h)', '20T Baby Food on NH-27')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px]">Map 🗺️</button>
+                </div>
+              </div>
             </div>
 
-            <!-- Convoy 3 -->
-            <div class="rounded-xl border border-amber-500/40 bg-slate-950 p-4 space-y-2">
+            <!-- Convoy 3: Tezpur to Tawang (Mountain Survival Caches) -->
+            <div class="rounded-xl border border-amber-500/40 bg-slate-950 p-4 space-y-2.5 hover:border-amber-400 transition shadow-lg">
               <div class="flex justify-between items-center">
-                <span class="font-bold text-white text-xs">AR-01-EF-9012 (Convoy #03)</span>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-black text-[10px] border border-amber-400/40">🟠 ESCORT ACTIVE</span>
+                  <span class="font-bold text-white text-xs">AR-01-EF-9012 (Convoy #03)</span>
+                </div>
                 <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold">38 km/h</span>
               </div>
-              <div class="text-[11px] text-slate-300"><b>Route:</b> Tezpur ➔ Bomdila Foothills</div>
-              <div class="text-[11px] text-emerald-400"><b>Consignment:</b> Water Purification Kits</div>
-              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800"><div class="bg-amber-500 h-full" style="width: 25%;"></div></div>
-              <div class="flex justify-between text-[10px] text-slate-400"><span>Progress: 25%</span><span>ETA: 4h 10m (Rain slow)</span></div>
+              <div class="text-[11px] text-slate-300"><b>Route:</b> Tezpur Military Base ➔ Bomdila & Tawang Sector (Arunachal)</div>
+              <div class="text-[11px] text-emerald-400 font-semibold">📦 Consignment: 20T Grains, Antivenom & Hypothermia Blankets</div>
+              <div class="p-2 bg-[#040814] rounded-lg border border-slate-800/80 flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Fuel: 92%</span>
+                <span>Chains: Mounted</span>
+                <span>Alt: 2,450m</span>
+                <span class="text-amber-400">ITBP Fog Beacon</span>
+              </div>
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-amber-500 h-full" style="width: 25%;"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Progress: 25% • Kalaktang Ridge Bypass • ETA: 4h 10m</span>
+                <div class="flex gap-1.5">
+                  <button onclick="triggerRerouteForHighway('NH-13', 'Tezpur Base', 'Tawang Base')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px]">Track 3D 🎮</button>
+                  <button onclick="triggerAirDropSosForHighway('NH-13 Sela Pass (Arunachal)', 27.5861, 91.8594)" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-[10px]">Air-Drop SOS 🚨</button>
+                </div>
+              </div>
             </div>
+
+            <!-- Convoy 4: Dimapur to Kohima (Hospital Fuel) -->
+            <div class="rounded-xl border border-amber-500/40 bg-slate-950 p-4 space-y-2.5 hover:border-amber-400 transition shadow-lg">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-black text-[10px] border border-amber-400/40">🟡 REGULATED</span>
+                  <span class="font-bold text-white text-xs">NL-01-GH-3456 (Convoy #04)</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold">42 km/h</span>
+              </div>
+              <div class="text-[11px] text-slate-300"><b>Route:</b> Dimapur Commercial Hub ➔ Kohima Medical Center (Nagaland)</div>
+              <div class="text-[11px] text-emerald-400 font-semibold">📦 Consignment: 15 KL Emergency Diesel for Hospital Generators</div>
+              <div class="p-2 bg-[#040814] rounded-lg border border-slate-800/80 flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Fuel: 88%</span>
+                <span>NavIC: 13 Satellites</span>
+                <span>Zubza Sector</span>
+                <span class="text-amber-400">15 km/h Escort</span>
+              </div>
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-amber-500 h-full" style="width: 58%;"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Progress: 58% • Single-Lane Traffic Escort • ETA: 2h 05m</span>
+                <div class="flex gap-1.5">
+                  <button onclick="triggerRerouteForHighway('NH-29', 'Dimapur Depot', 'Kohima Center')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px]">Track 3D 🎮</button>
+                  <button onclick="focusMapOnHighway(25.6751, 94.1086, 'Convoy #04 (NL-01-GH-3456)', '🟡 REGULATED (42 km/h)', '15 KL Diesel on NH-29')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px]">Map 🗺️</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Convoy 5: Siliguri to Gangtok (Trauma & Plasma) -->
+            <div class="rounded-xl border border-rose-500/40 bg-slate-950 p-4 space-y-2.5 hover:border-rose-400 transition shadow-lg">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-black text-[10px] border border-rose-400/40">🔴 CLASS 1 TRAUMA</span>
+                  <span class="font-bold text-white text-xs">ML-01-IJ-7890 (Convoy #05)</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 font-mono text-[10px] font-bold">40 km/h</span>
+              </div>
+              <div class="text-[11px] text-slate-300"><b>Route:</b> Siliguri Staging Depot ➔ Gangtok Civil Base (Sikkim)</div>
+              <div class="text-[11px] text-rose-400 font-semibold">📦 Consignment: 8T Blood Plasma, Trauma Kits & Antivenom Vials</div>
+              <div class="p-2 bg-[#040814] rounded-lg border border-slate-800/80 flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Cold Chain: -20°C</span>
+                <span>Fuel: 70%</span>
+                <span>Lava-Reshi Pass</span>
+                <span class="text-emerald-400">Teesta Bypass</span>
+              </div>
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-rose-500 h-full" style="width: 35%;"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Progress: 35% • Elevated Ridge Link • ETA: 3h 40m</span>
+                <div class="flex gap-1.5">
+                  <button onclick="triggerRerouteForHighway('NH-10', 'Siliguri Depot', 'Gangtok Base')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px]">Track 3D 🎮</button>
+                  <button onclick="focusMapOnHighway(27.0900, 88.4500, 'Convoy #05 (ML-01-IJ-7890)', '🔴 EN ROUTE GANGTOK', '8T Trauma Kits on Lava Ridge')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px]">Map 🗺️</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Convoy 6: Silchar to Imphal (Infant Food & Water Purification) -->
+            <div class="rounded-xl border border-emerald-500/40 bg-slate-950 p-4 space-y-2.5 hover:border-emerald-400 transition shadow-lg">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-black text-[10px] border border-emerald-400/40">🟢 PRIORITY 2</span>
+                  <span class="font-bold text-white text-xs">MN-01-KL-2345 (Convoy #06)</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold">48 km/h</span>
+              </div>
+              <div class="text-[11px] text-slate-300"><b>Route:</b> Silchar Logistics Base ➔ Imphal Valley Hospital (Manipur)</div>
+              <div class="text-[11px] text-sky-400 font-semibold">📦 Consignment: 14T Infant Formula & Water Purification Chem</div>
+              <div class="p-2 bg-[#040814] rounded-lg border border-slate-800/80 flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Fuel: 65%</span>
+                <span>NavIC: 13 Satellites</span>
+                <span>NH-37 Jiribam</span>
+                <span class="text-emerald-400">All Clear</span>
+              </div>
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-emerald-500 h-full" style="width: 72%;"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Progress: 72% • Nominal Transit • ETA: 1h 20m</span>
+                <div class="flex gap-1.5">
+                  <button onclick="triggerRerouteForHighway('NH-37', 'Silchar Depot', 'Imphal Valley')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px]">Track 3D 🎮</button>
+                  <button onclick="focusMapOnHighway(24.8170, 93.9368, 'Convoy #06 (MN-01-KL-2345)', '🟢 ON SCHEDULE (48 km/h)', '14T Infant Supplies on NH-37')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px]">Map 🗺️</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Convoy 7: Guwahati to Agartala (Tents & Tarps) -->
+            <div class="rounded-xl border border-indigo-500/40 bg-slate-950 p-4 space-y-2.5 hover:border-indigo-400 transition shadow-lg">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-black text-[10px] border border-indigo-400/40">🟣 SHELTER CACHE</span>
+                  <span class="font-bold text-white text-xs">TR-01-MN-6789 (Convoy #07)</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 font-mono text-[10px] font-bold">50 km/h</span>
+              </div>
+              <div class="text-[11px] text-slate-300"><b>Route:</b> Guwahati Central Hub ➔ Agartala Relief Depot (Tripura)</div>
+              <div class="text-[11px] text-indigo-400 font-semibold">📦 Consignment: 18T Emergency Tarpaulins & Medical Tents</div>
+              <div class="p-2 bg-[#040814] rounded-lg border border-slate-800/80 flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Fuel: 74%</span>
+                <span>NavIC: 14 Satellites</span>
+                <span>NH-8 South</span>
+                <span class="text-emerald-400">Clear Transit</span>
+              </div>
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-indigo-500 h-full" style="width: 81%;"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Progress: 81% • Southern Artery Operational • ETA: 1h 05m</span>
+                <div class="flex gap-1.5">
+                  <button onclick="focusMapOnHighway(23.8315, 91.2868, 'Convoy #07 (TR-01-MN-6789)', '🟢 TRANSIT NOMINAL (50 km/h)', '18T Shelter Tarps en route Agartala')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px]">Map 🗺️</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Convoy 8: Silchar to Lunglei (South Mizoram Caches) -->
+            <div class="rounded-xl border border-amber-500/40 bg-slate-950 p-4 space-y-2.5 hover:border-amber-400 transition shadow-lg">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-black text-[10px] border border-amber-400/40">🟠 HILL CACHE</span>
+                  <span class="font-bold text-white text-xs">MZ-01-OP-4567 (Convoy #08)</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold">36 km/h</span>
+              </div>
+              <div class="text-[11px] text-slate-300"><b>Route:</b> Silchar Staging Depot ➔ Lunglei Hill Post (Mizoram)</div>
+              <div class="text-[11px] text-amber-400 font-semibold">📦 Consignment: 10T Survival Rations & Anti-Rabies Vaccine Caches</div>
+              <div class="p-2 bg-[#040814] rounded-lg border border-slate-800/80 flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>Fuel: 80%</span>
+                <span>NavIC: 10 Satellites</span>
+                <span>NH-54 Ridge</span>
+                <span class="text-amber-400">Rain Reduced</span>
+              </div>
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-amber-500 h-full" style="width: 44%;"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Progress: 44% • Clay Settlement Precaution • ETA: 3h 50m</span>
+                <div class="flex gap-1.5">
+                  <button onclick="triggerRerouteForHighway('NH-6', 'Silchar Depot', 'Aizawl Civil Hospital')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px]">Track 3D 🎮</button>
+                  <button onclick="focusMapOnHighway(22.8800, 92.7400, 'Convoy #08 (MZ-01-OP-4567)', '🟠 REGULATED (36 km/h)', '10T Survival Supplies on NH-54')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px]">Map 🗺️</button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
