@@ -1,0 +1,16 @@
+{
+  "name": "Jeevan Setu - NER Logistics & Accessibility Intelligence Platform",
+  "short_name": "Jeevan Setu",
+  "description": "Smart Logistics & Accessibility Intelligence Platform for North Eastern Region (MoDoNER / NEC / SIH ID 26002)",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
