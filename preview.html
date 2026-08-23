@@ -2434,6 +2434,163 @@
       animate();
     }
 
+    // Realistic 3D Convoy Vehicle Procedural Builder (Cabin, Windows, 6 Wheels, Headlights, Cargo Tank/Tarp)
+    function createDetailedConvoyVehicle(type) {
+      const truck = new THREE.Group();
+
+      // 1. Lower Chassis Frame (Dark Graphite Metallic)
+      const chassisGeo = new THREE.BoxGeometry(3.6, 0.45, 8.2);
+      const chassisMat = new THREE.MeshPhongMaterial({ color: 0x0f172a });
+      const chassis = new THREE.Mesh(chassisGeo, chassisMat);
+      chassis.position.y = 0.9;
+      truck.add(chassis);
+
+      // 2. 6 Heavy-Duty 4x4 Wheels (Rubber with Silver Rims)
+      const wheelGeo = new THREE.CylinderGeometry(0.7, 0.7, 0.55, 16);
+      const wheelMat = new THREE.MeshPhongMaterial({ color: 0x1e293b });
+      const rimGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.58, 12);
+      const rimMat = new THREE.MeshPhongMaterial({ color: 0x94a3b8 });
+
+      const wheelPositions = [
+        [-1.75, 0.7, 2.3],  [1.75, 0.7, 2.3],
+        [-1.75, 0.7, -1.2], [1.75, 0.7, -1.2],
+        [-1.75, 0.7, -2.8], [1.75, 0.7, -2.8]
+      ];
+
+      wheelPositions.forEach(([wx, wy, wz]) => {
+        const w = new THREE.Mesh(wheelGeo, wheelMat);
+        w.rotation.z = Math.PI / 2;
+        w.position.set(wx, wy, wz);
+        const r = new THREE.Mesh(rimGeo, rimMat);
+        r.rotation.z = Math.PI / 2;
+        r.position.set(wx, wy, wz);
+        truck.add(w);
+        truck.add(r);
+      });
+
+      // 3. Driver Cab (Front)
+      let cabColor = 0x0284c7;
+      if (type === 'army_snow') cabColor = 0xb45309; // Military Desert/Ochre
+      else if (type === 'cold_chain') cabColor = 0xffffff; // Pure Medical White
+      else if (type === 'fuel') cabColor = 0x0284c7; // Deep Blue
+      else if (type === 'grain') cabColor = 0x10b981; // Agriculture Green
+
+      const cabGeo = new THREE.BoxGeometry(3.3, 2.3, 2.6);
+      const cabMat = new THREE.MeshPhongMaterial({ color: cabColor });
+      const cab = new THREE.Mesh(cabGeo, cabMat);
+      cab.position.set(0, 2.2, 2.4);
+      truck.add(cab);
+
+      // Windshield (Cyan Gloss Reflective Glass)
+      const winGeo = new THREE.BoxGeometry(3.0, 1.1, 0.15);
+      const winMat = new THREE.MeshPhongMaterial({ color: 0x38bdf8, emissive: 0x075985, transparent: true, opacity: 0.85 });
+      const windshield = new THREE.Mesh(winGeo, winMat);
+      windshield.position.set(0, 2.5, 3.65);
+      truck.add(windshield);
+
+      // Front Radiator Grille & Bumper
+      const grilleGeo = new THREE.BoxGeometry(2.6, 0.85, 0.2);
+      const grilleMat = new THREE.MeshLambertMaterial({ color: 0x020617 });
+      const grille = new THREE.Mesh(grilleGeo, grilleMat);
+      grille.position.set(0, 1.45, 3.65);
+      truck.add(grille);
+
+      // Twin Glowing Headlights
+      const hLightGeo = new THREE.BoxGeometry(0.55, 0.35, 0.15);
+      const hLightMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
+      const hl1 = new THREE.Mesh(hLightGeo, hLightMat);
+      hl1.position.set(-1.15, 1.45, 3.75);
+      const hl2 = new THREE.Mesh(hLightGeo, hLightMat);
+      hl2.position.set(1.15, 1.45, 3.75);
+      truck.add(hl1);
+      truck.add(hl2);
+
+      // Roof Emergency Lightbar Beacon
+      const beaconGeo = new THREE.BoxGeometry(1.6, 0.35, 0.45);
+      const beaconMat = new THREE.MeshPhongMaterial({
+        color: type === 'cold_chain' ? 0xef4444 : 0x38bdf8,
+        emissive: type === 'cold_chain' ? 0xdc2626 : 0x0284c7
+      });
+      const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+      beacon.position.set(0, 3.5, 2.3);
+      truck.add(beacon);
+
+      // 4. Cargo Specific Rear Bodies
+      if (type === 'oxygen') {
+        // High-Pressure Cryogenic Medical Oxygen Cylinder Tank with Red Hazard Stripe
+        const tankGeo = new THREE.CylinderGeometry(1.5, 1.5, 5.2, 20);
+        const tankMat = new THREE.MeshPhongMaterial({ color: 0xf0f9ff, emissive: 0x0369a1 });
+        const tank = new THREE.Mesh(tankGeo, tankMat);
+        tank.rotation.x = Math.PI / 2;
+        tank.position.set(0, 2.3, -1.6);
+        truck.add(tank);
+
+        const bandGeo = new THREE.CylinderGeometry(1.52, 1.52, 0.9, 20);
+        const bandMat = new THREE.MeshPhongMaterial({ color: 0xef4444, emissive: 0xb91c1c });
+        const band = new THREE.Mesh(bandGeo, bandMat);
+        band.rotation.x = Math.PI / 2;
+        band.position.set(0, 2.3, -1.6);
+        truck.add(band);
+      } else if (type === 'army_snow') {
+        // Heavy 4x4 Army Canopy Truck with Camo Tarp Bed
+        const bedGeo = new THREE.BoxGeometry(3.5, 2.4, 5.2);
+        const bedMat = new THREE.MeshPhongMaterial({ color: 0x166534, emissive: 0x14532d });
+        const bed = new THREE.Mesh(bedGeo, bedMat);
+        bed.position.set(0, 2.3, -1.6);
+        truck.add(bed);
+
+        const tarpRidgeGeo = new THREE.CylinderGeometry(1.8, 1.8, 5.2, 8);
+        const tarpRidgeMat = new THREE.MeshPhongMaterial({ color: 0x15803d });
+        const ridge = new THREE.Mesh(tarpRidgeGeo, tarpRidgeMat);
+        ridge.rotation.x = Math.PI / 2;
+        ridge.position.set(0, 3.4, -1.6);
+        truck.add(ridge);
+      } else if (type === 'fuel') {
+        // Metallic Silver Cylindrical Hospital Diesel Tanker
+        const fTankGeo = new THREE.CylinderGeometry(1.5, 1.5, 5.2, 18);
+        const fTankMat = new THREE.MeshPhongMaterial({ color: 0xe2e8f0, emissive: 0x475569 });
+        const fTank = new THREE.Mesh(fTankGeo, fTankMat);
+        fTank.rotation.x = Math.PI / 2;
+        fTank.position.set(0, 2.3, -1.6);
+        truck.add(fTank);
+      } else if (type === 'cold_chain') {
+        // Pure Medical Plasma Box Van with Red Cross Emblems
+        const medGeo = new THREE.BoxGeometry(3.4, 2.4, 5.2);
+        const medMat = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xe2e8f0 });
+        const med = new THREE.Mesh(medGeo, medMat);
+        med.position.set(0, 2.3, -1.6);
+        truck.add(med);
+
+        const cross1 = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.2, 5.25), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+        cross1.position.set(0, 2.3, -1.6);
+        const cross2 = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.35, 5.25), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+        cross2.position.set(0, 2.3, -1.6);
+        truck.add(cross1);
+        truck.add(cross2);
+      } else {
+        // High-Capacity Fortified Container Box
+        const cGeo = new THREE.BoxGeometry(3.4, 2.4, 5.2);
+        const cMat = new THREE.MeshPhongMaterial({ color: 0x059669, emissive: 0x065f46 });
+        const cMesh = new THREE.Mesh(cGeo, cMat);
+        cMesh.position.set(0, 2.3, -1.6);
+        truck.add(cMesh);
+      }
+
+      // 5. Glowing Red Tail Lights
+      const tlGeo = new THREE.BoxGeometry(0.45, 0.3, 0.15);
+      const tlMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+      const tl1 = new THREE.Mesh(tlGeo, tlMat);
+      tl1.position.set(-1.3, 1.2, -4.2);
+      const tl2 = new THREE.Mesh(tlGeo, tlMat);
+      tl2.position.set(1.3, 1.2, -4.2);
+      truck.add(tl1);
+      truck.add(tl2);
+
+      // Scaled down to ride seamlessly on the highway corridor spline
+      truck.scale.set(0.72, 0.72, 0.72);
+      return truck;
+    }
+
     // Build unique, realistic 3D World for each specific highway corridor
     function build3DCorridorWorld(key) {
       if (!worldGroup) return;
@@ -2536,11 +2693,8 @@
         );
         worldGroup.add(greenTube);
 
-        // 4x4 Heavy Relief Truck (AR-01-EF-9012 with yellow fog lights)
-        truckMesh = new THREE.Group();
-        const body = new THREE.Mesh(new THREE.BoxGeometry(4.4, 2.6, 7.5), new THREE.MeshPhongMaterial({ color: 0xf59e0b, emissive: 0x78350f }));
-        body.position.y = 1.6;
-        truckMesh.add(body);
+        // 4x4 Heavy Relief Truck (AR-01-EF-9012 with 6 wheels & headlights)
+        truckMesh = createDetailedConvoyVehicle('army_snow');
         worldGroup.add(truckMesh);
       }
 
@@ -2607,11 +2761,8 @@
         );
         worldGroup.add(greenTube);
 
-        // Cold-Chain Medical Van (ML-01-IJ-7890)
-        truckMesh = new THREE.Group();
-        const body = new THREE.Mesh(new THREE.BoxGeometry(4.2, 2.4, 7), new THREE.MeshPhongMaterial({ color: 0xef4444, emissive: 0x991b1b }));
-        body.position.y = 1.6;
-        truckMesh.add(body);
+        // Cold-Chain Medical Trauma Van (ML-01-IJ-7890)
+        truckMesh = createDetailedConvoyVehicle('cold_chain');
         worldGroup.add(truckMesh);
       }
 
@@ -2668,15 +2819,8 @@
         );
         worldGroup.add(greenTube);
 
-        // Fuel Tanker (NL-01-GH-3456)
-        truckMesh = new THREE.Group();
-        const cab = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.2, 3), new THREE.MeshPhongMaterial({ color: 0x38bdf8, emissive: 0x0369a1 }));
-        cab.position.set(0, 1.4, 2);
-        const tank = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 5, 16), new THREE.MeshPhongMaterial({ color: 0xe2e8f0, emissive: 0x334155 }));
-        tank.rotation.x = Math.PI / 2;
-        tank.position.set(0, 1.6, -1.8);
-        truckMesh.add(cab);
-        truckMesh.add(tank);
+        // Hospital Fuel Tanker (NL-01-GH-3456)
+        truckMesh = createDetailedConvoyVehicle('fuel');
         worldGroup.add(truckMesh);
       }
 
@@ -2709,10 +2853,7 @@
         worldGroup.add(greenTube);
 
         // 20T Grain Convoy (MN-01-KL-2345)
-        truckMesh = new THREE.Group();
-        const body = new THREE.Mesh(new THREE.BoxGeometry(4.2, 2.4, 7), new THREE.MeshPhongMaterial({ color: 0x10b981, emissive: 0x047857 }));
-        body.position.y = 1.6;
-        truckMesh.add(body);
+        truckMesh = createDetailedConvoyVehicle('grain');
         worldGroup.add(truckMesh);
       }
 
@@ -2792,11 +2933,8 @@
         redBlock.rotation.y = 0.5;
         worldGroup.add(redBlock);
 
-        // 12T Medical Oxygen Tanker (AS-01-AB-1234)
-        truckMesh = new THREE.Group();
-        const truckBody = new THREE.Mesh(new THREE.BoxGeometry(4.2, 2.4, 7), new THREE.MeshPhongMaterial({ color: 0x93c5fd, emissive: 0x1d4ed8 }));
-        truckBody.position.y = 1.6;
-        truckMesh.add(truckBody);
+        // 12T Medical Oxygen Tanker (AS-01-AB-1234 with 6 wheels & cryogenic tank)
+        truckMesh = createDetailedConvoyVehicle('oxygen');
         worldGroup.add(truckMesh);
       }
     }
