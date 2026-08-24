@@ -30,7 +30,11 @@ import {
   Clock,
   Gauge,
   Sparkles,
-  Mountain
+  Mountain,
+  Camera,
+  Upload,
+  Eye,
+  CheckSquare
 } from 'lucide-react';
 import L from 'leaflet';
 import {
@@ -41,7 +45,15 @@ import {
   calculateEmergencyRoute,
   getAPIEcosystemRegistry,
   WeatherData,
-  HazardAssessment
+  HazardAssessment,
+  NER_DRONE_FLEET,
+  NER_EMERGENCY_LZS,
+  calculateDroneFlightPlan,
+  DroneFlightPlan,
+  DroneSpec,
+  EmergencyLZ,
+  analyzeCitizenDisasterPhoto,
+  AIDamageAnalysisResult
 } from './services/api';
 
 // NER State Data
@@ -57,7 +69,7 @@ const NER_HUBS = [
 ];
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<'hub' | 'map' | 'road' | 'vehicles' | 'delivery' | 'rerouting' | 'supplies' | 'alerts' | 'weather' | 'vehicleselect' | 'analytics' | 'gov' | 'apis'>('hub');
+  const [activeModule, setActiveModule] = useState<'hub' | 'map' | 'road' | 'vehicles' | 'delivery' | 'rerouting' | 'supplies' | 'alerts' | 'weather' | 'vehicleselect' | 'analytics' | 'gov' | 'apis' | 'drone' | 'citizentriage'>('hub');
   const [selectedLayer, setSelectedLayer] = useState<string>('osm');
 
   // Map state
@@ -85,6 +97,105 @@ export default function App() {
     { id: 'SUP-1095', item: 'Disaster Emergency Diesel Generator Fuel', priority: 'HIGH', dest: 'East Khasi Hills Sub-Depot', status: 'READY', eta: '5h 30m' },
     { id: 'SUP-1096', item: 'Water Purification Tablets (10,000 units)', priority: 'MEDIUM', dest: 'Kaziranga Perimeter Hub', status: 'IN_TRANSIT', eta: '2h 10m' }
   ]);
+
+  // UAV Drone Dispatcher state
+  const [droneOrigin, setDroneOrigin] = useState(NER_HUBS[0]); // Guwahati
+  const [selectedLZ, setSelectedLZ] = useState(NER_EMERGENCY_LZS[0]); // Sela Pass
+  const [selectedDroneId, setSelectedDroneId] = useState('GARUDA-X15');
+  const [dronePayloadKg, setDronePayloadKg] = useState(12);
+  const [dronePayloadItem, setDronePayloadItem] = useState('High-Altitude Emergency Blood Plasma & Dialysis Fluid');
+  const [droneFlightPlan, setDroneFlightPlan] = useState<DroneFlightPlan | null>(null);
+  const [droneMissionModalOpen, setDroneMissionModalOpen] = useState(false);
+  const [droneMissionStatus, setDroneMissionStatus] = useState<'IDLE' | 'LAUNCHING' | 'IN_FLIGHT'>('IDLE');
+
+  const droneMapContainerRef = useRef<HTMLDivElement>(null);
+  const droneMapInstanceRef = useRef<L.Map | null>(null);
+
+  // Citizen AI Damage Triage state
+  const [triageDesc, setTriageDesc] = useState('Severe landslide breach along NH-6 East Khasi Hills near Km 142. Road completely severed by mud and rockfall.');
+  const [triagePhotoBase64, setTriagePhotoBase64] = useState<string | null>(null);
+  const [triagePhotoPreview, setTriagePhotoPreview] = useState<string | null>(null);
+  const [triageLocation, setTriageLocation] = useState('NH-6 Km 142 (East Khasi Hills, Meghalaya)');
+  const [triageLat, setTriageLat] = useState(25.4200);
+  const [triageLon, setTriageLon] = useState(92.1500);
+  const [triageAnalyzing, setTriageAnalyzing] = useState(false);
+  const [triageResult, setTriageResult] = useState<AIDamageAnalysisResult | null>(null);
+  const [triageBroadcasted, setTriageBroadcasted] = useState(false);
+
+  const handleRunTriage = async () => {
+    setTriageAnalyzing(true);
+    const res = await analyzeCitizenDisasterPhoto({
+      description: triageDesc,
+      imageBase64: triagePhotoBase64 || undefined,
+      lat: triageLat,
+      lon: triageLon,
+      locationName: triageLocation
+    });
+    setTriageResult(res);
+    setTriageAnalyzing(false);
+  };
+
+  // Calculate drone flight plan dynamically
+  useEffect(() => {
+    const windSpeed = weatherData ? weatherData.windSpeed : 35;
+    const plan = calculateDroneFlightPlan(
+      droneOrigin.lat,
+      droneOrigin.lon,
+      selectedLZ,
+      dronePayloadKg,
+      windSpeed,
+      selectedDroneId
+    );
+    setDroneFlightPlan(plan);
+  }, [droneOrigin, selectedLZ, dronePayloadKg, selectedDroneId, weatherData]);
+
+  // Drone Map Render
+  useEffect(() => {
+    if (activeModule === 'drone' && droneMapContainerRef.current) {
+      if (droneMapInstanceRef.current) {
+        droneMapInstanceRef.current.remove();
+        droneMapInstanceRef.current = null;
+      }
+
+      const dmap = L.map(droneMapContainerRef.current).setView(
+        [(droneOrigin.lat + selectedLZ.lat) / 2, (droneOrigin.lon + selectedLZ.lon) / 2],
+        7
+      );
+
+      L.tileLayer(MAP_LAYERS.osm.url, { attribution: MAP_LAYERS.osm.attribution }).addTo(dmap);
+
+      // Origin Hub Marker
+      L.circleMarker([droneOrigin.lat, droneOrigin.lon], {
+        radius: 9,
+        fillColor: '#6366f1',
+        color: '#ffffff',
+        weight: 2,
+        fillOpacity: 0.95
+      }).addTo(dmap).bindPopup(`<b>🛫 Dispatch Hub: ${droneOrigin.name}</b><br>State: ${droneOrigin.state}`);
+
+      // Destination LZ Marker
+      L.circleMarker([selectedLZ.lat, selectedLZ.lon], {
+        radius: 11,
+        fillColor: '#ef4444',
+        color: '#ffffff',
+        weight: 2.5,
+        fillOpacity: 0.95
+      }).addTo(dmap).bindPopup(`<b>🚁 Isolated Emergency LZ: ${selectedLZ.name}</b><br>Altitude: ${selectedLZ.elevationMsl}m MSL &bull; State: ${selectedLZ.state}`);
+
+      // Aerial Vector Polyline
+      L.polyline([
+        [droneOrigin.lat, droneOrigin.lon],
+        [selectedLZ.lat, selectedLZ.lon]
+      ], {
+        color: '#38bdf8',
+        weight: 4,
+        dashArray: '8, 8',
+        opacity: 0.9
+      }).addTo(dmap).bindPopup(`<b>🚁 High-Altitude Aerial Supply Vector</b><br>Direct Distance: ${calculateDroneFlightPlan(droneOrigin.lat, droneOrigin.lon, selectedLZ, dronePayloadKg, 30, selectedDroneId).distanceKm} km &bull; Zero Road Dependency`);
+
+      droneMapInstanceRef.current = dmap;
+    }
+  }, [activeModule, droneOrigin, selectedLZ, selectedDroneId, dronePayloadKg]);
 
   // Load weather for NER
   useEffect(() => {
@@ -238,6 +349,8 @@ export default function App() {
           {[
             { id: 'hub', label: 'Operations Hub', icon: Sparkles },
             { id: 'map', label: 'NER Live Map', icon: MapPin },
+            { id: 'citizentriage', label: 'Citizen AI Photo Triage', icon: Camera },
+            { id: 'drone', label: 'UAV Drone Dispatcher', icon: Radio },
             { id: 'road', label: 'Road Monitoring', icon: Activity },
             { id: 'vehicles', label: 'Vehicle Logistics', icon: Truck },
             { id: 'delivery', label: 'Delivery Mgmt', icon: Package },
@@ -381,6 +494,8 @@ export default function App() {
 
               <div className="grid grid-cols-5 gap-4">
                 {[
+                  { id: 'citizentriage', title: 'Citizen AI Damage Reporter', desc: 'Upload disaster photos for Gemini AI vision severity assessment & NDRF triage.', icon: Camera, color: 'from-pink-500/20 to-slate-900', border: 'hover:border-pink-500/50' },
+                  { id: 'drone', title: 'UAV Drone Dispatcher', desc: 'Zero-road high-altitude aerial supply corridor dispatch.', icon: Radio, color: 'from-sky-500/20 to-slate-900', border: 'hover:border-sky-500/50' },
                   { id: 'road', title: 'Road & Accessibility', desc: 'Monitor road status, landslides & blockages in real-time.', icon: Activity, color: 'from-rose-500/20 to-slate-900', border: 'hover:border-rose-500/50' },
                   { id: 'vehicles', title: 'Vehicle & Logistics', desc: 'Track all-terrain fleets, check speeds & fuel capacity.', icon: Truck, color: 'from-indigo-500/20 to-slate-900', border: 'hover:border-indigo-500/50' },
                   { id: 'delivery', title: 'Delivery Management', desc: 'Manage deliveries of essential goods & emergency supplies.', icon: Package, color: 'from-emerald-500/20 to-slate-900', border: 'hover:border-emerald-500/50' },
@@ -711,6 +826,441 @@ export default function App() {
                     <div className="mt-1 text-[11px] text-slate-500">Active Trucks: {hub.activeVehicles}</div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* UAV DRONE DISPATCHER MODULE VIEW */}
+        {activeModule === 'drone' && (
+          <div className="grid h-full grid-cols-12 gap-6 p-6 overflow-y-auto">
+            {/* Left Control Panel */}
+            <div className="col-span-4 space-y-4">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <Radio className="h-5 w-5 text-sky-400 animate-pulse" />
+                  UAV Drone Flight Control
+                </h2>
+                <p className="text-xs text-slate-400 mt-1">High-altitude aerial supply dispatch for zero-road emergency zones.</p>
+
+                <div className="mt-4 space-y-3">
+                  <div>
+                    <label className="text-xs text-slate-400">Origin Logistics Hub</label>
+                    <select
+                      value={droneOrigin.id}
+                      onChange={e => {
+                        const found = NER_HUBS.find(h => h.id === e.target.value);
+                        if (found) setDroneOrigin(found);
+                      }}
+                      className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
+                    >
+                      {NER_HUBS.map(h => (
+                        <option key={h.id} value={h.id}>{h.name} ({h.state})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-slate-400">Destination Helipad / Emergency LZ</label>
+                    <select
+                      value={selectedLZ.id}
+                      onChange={e => {
+                        const found = NER_EMERGENCY_LZS.find(lz => lz.id === e.target.value);
+                        if (found) setSelectedLZ(found);
+                      }}
+                      className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
+                    >
+                      {NER_EMERGENCY_LZS.map(lz => (
+                        <option key={lz.id} value={lz.id}>{lz.name} [{lz.elevationMsl}m MSL]</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-slate-400">Assigned Lifeline UAV Drone</label>
+                    <select
+                      value={selectedDroneId}
+                      onChange={e => setSelectedDroneId(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
+                    >
+                      {NER_DRONE_FLEET.map(d => (
+                        <option key={d.id} value={d.id}>{d.name} (Max Payload: {d.maxPayloadKg}kg)</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-slate-400">Emergency Payload Cargo</label>
+                    <input
+                      type="text"
+                      value={dronePayloadItem}
+                      onChange={e => setDronePayloadItem(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs text-slate-400 mb-1">
+                      <span>Payload Mass (kg)</span>
+                      <span className="font-bold text-sky-400">{dronePayloadKg} kg</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="20"
+                      value={dronePayloadKg}
+                      onChange={e => setDronePayloadKg(Number(e.target.value))}
+                      className="w-full accent-sky-500"
+                    />
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setDroneMissionStatus('LAUNCHING');
+                      setTimeout(() => setDroneMissionStatus('IN_FLIGHT'), 2000);
+                    }}
+                    disabled={!droneFlightPlan?.feasible || droneMissionStatus !== 'IDLE'}
+                    className={`w-full rounded-xl py-3 text-xs font-bold text-white shadow-lg transition ${
+                      droneMissionStatus === 'IN_FLIGHT' ? 'bg-emerald-600 hover:bg-emerald-500' :
+                      droneMissionStatus === 'LAUNCHING' ? 'bg-amber-600 animate-pulse' :
+                      droneFlightPlan?.feasible ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-600/30' : 'bg-slate-800 cursor-not-allowed text-slate-500'
+                    }`}
+                  >
+                    {droneMissionStatus === 'IN_FLIGHT' ? '⚡ Autonomous UAV Mission Active' :
+                     droneMissionStatus === 'LAUNCHING' ? '⏳ Initiating Pre-Flight & IAF Corridor Handshake...' :
+                     '🚀 Launch Autonomous Drone Lifeline Mission'}
+                  </button>
+                </div>
+              </div>
+
+              {droneFlightPlan && (
+                <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase text-slate-400">Flight Telemetry Math</span>
+                    <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${
+                      droneFlightPlan.feasibilityStatus === 'FEASIBLE' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                      droneFlightPlan.feasibilityStatus === 'HIGH_WIND_WARNING' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                      'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                    }`}>
+                      {droneFlightPlan.feasibilityStatus}
+                    </span>
+                  </div>
+
+                  <p className="text-xs font-medium text-slate-200">{droneFlightPlan.statusMessage}</p>
+
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                      <span className="text-[10px] text-slate-500">Direct Aerial Range</span>
+                      <div className="text-base font-bold text-white">{droneFlightPlan.distanceKm} km</div>
+                    </div>
+                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                      <span className="text-[10px] text-slate-500">Estimated Duration</span>
+                      <div className="text-base font-bold text-sky-400">{droneFlightPlan.flightDurationMins} mins</div>
+                    </div>
+                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                      <span className="text-[10px] text-slate-500">Est. Battery Cons.</span>
+                      <div className="text-base font-bold text-emerald-400">{droneFlightPlan.batteryConsumptionPercent}%</div>
+                    </div>
+                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                      <span className="text-[10px] text-slate-500">Cruise Altitude</span>
+                      <div className="text-base font-bold text-indigo-400">{droneFlightPlan.maxAltitudeMsl}m MSL</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Map & Aerial Corridor Display */}
+            <div className="col-span-8 space-y-4">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl flex flex-col h-[420px]">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Radio className="h-4 w-4 text-sky-400" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">High-Altitude Aerial Lifeline Corridor (Zero Road Dependency)</h3>
+                  </div>
+                  <span className="text-[10px] font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
+                    Live Altitude Telemetry
+                  </span>
+                </div>
+                <div ref={droneMapContainerRef} className="flex-1 rounded-xl overflow-hidden" />
+              </div>
+
+              {/* Pre-Flight Protocol Checklist */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Sovereign Aerial Pre-Flight Protocol & Safety Readiness</h4>
+                <div className="grid grid-cols-4 gap-3 text-xs">
+                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                    <div className="flex items-center gap-2 font-semibold text-white">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      IAF Air Corridor
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-1">Geofenced Military Flight Clearance Active</div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                    <div className="flex items-center gap-2 font-semibold text-white">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      Mountain Wind Check
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-1">Wind Vector Within Safe Threshold</div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                    <div className="flex items-center gap-2 font-semibold text-white">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      Helipad Receiver
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-1">Ground Beacon Active at {selectedLZ.name.split(' ')[0]}</div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                    <div className="flex items-center gap-2 font-semibold text-white">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      Cold-Chain Pod
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-1">Medical Thermal Storage Sealed at 3.8°C</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CITIZEN AI DAMAGE TRIAGE VIEW */}
+        {activeModule === 'citizentriage' && (
+          <div className="h-full overflow-y-auto p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Camera className="h-5 w-5 text-pink-400" />
+                  Citizen Photo Disaster Reporter & AI Damage Triage
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Multimodal <b>Google Gemini AI Vision</b> damage assessment with geolocation anti-spoofing verification.
+                </p>
+              </div>
+
+              <span className="rounded-full bg-pink-500/20 px-3 py-1 text-xs font-semibold text-pink-300 border border-pink-500/30 self-start sm:self-auto flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-pink-400 animate-pulse" />
+                Crowdsourced NDRF Intelligence
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Photo & Incident Form */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                  <span>📸 1. Disaster Site Photo & Details</span>
+                  <span className="text-[10px] text-pink-400 font-mono">EXIF & GPS Sync</span>
+                </h3>
+
+                {/* Photo Dropzone / Upload */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Incident Photo Upload:</label>
+                  <div className="relative border-2 border-dashed border-slate-700 rounded-xl p-4 bg-slate-950 text-center hover:border-pink-500/60 transition cursor-pointer">
+                    {triagePhotoPreview ? (
+                      <div className="space-y-2">
+                        <img src={triagePhotoPreview} alt="Uploaded disaster" className="max-h-48 rounded-lg mx-auto object-cover shadow-md" />
+                        <button
+                          onClick={() => { setTriagePhotoPreview(null); setTriagePhotoBase64(null); }}
+                          className="text-[11px] text-rose-400 font-semibold hover:underline"
+                        >
+                          ✕ Remove & Upload Different Photo
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="cursor-pointer space-y-2 block">
+                        <Upload className="h-8 w-8 text-slate-400 mx-auto" />
+                        <div className="text-xs text-slate-300 font-medium">Click to select or drop disaster photo</div>
+                        <div className="text-[10px] text-slate-500">Supports JPG, PNG, WEBP from Mobile / Camera</div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                setTriagePhotoPreview(reader.result as string);
+                                setTriagePhotoBase64(reader.result as string);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                {/* Location Name & GPS */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">Location Name / Landmark:</label>
+                  <input
+                    type="text"
+                    value={triageLocation}
+                    onChange={e => setTriageLocation(e.target.value)}
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:border-pink-500 focus:outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] text-slate-400 mb-1">Latitude:</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      value={triageLat}
+                      onChange={e => setTriageLat(parseFloat(e.target.value))}
+                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-slate-400 mb-1">Longitude:</label>
+                    <input
+                      type="number"
+                      step="0.0001"
+                      value={triageLon}
+                      onChange={e => setTriageLon(parseFloat(e.target.value))}
+                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white font-mono"
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">Citizen Notes & Damage Description:</label>
+                  <textarea
+                    rows={3}
+                    value={triageDesc}
+                    onChange={e => setTriageDesc(e.target.value)}
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs text-white focus:border-pink-500 focus:outline-none"
+                  />
+                </div>
+
+                <button
+                  onClick={handleRunTriage}
+                  disabled={triageAnalyzing}
+                  className="w-full rounded-xl bg-gradient-to-r from-pink-600 via-rose-600 to-indigo-600 py-3 text-xs font-bold text-white shadow-lg shadow-pink-600/30 hover:scale-[1.02] active:scale-95 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {triageAnalyzing ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      <span>Gemini Vision AI Extracting Damage Metrics...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4" />
+                      <span>Analyze Photo & Damage with Gemini AI Vision</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* AI Damage Assessment Results HUD */}
+              <div className="lg:col-span-2 space-y-4">
+                {triageResult ? (
+                  <>
+                    {/* Severity Score Banner */}
+                    <div className={`rounded-2xl border p-5 shadow-xl flex items-center justify-between ${
+                      triageResult.riskLevel === 'CRITICAL' ? 'border-rose-500/50 bg-rose-950/30' : 'border-amber-500/50 bg-amber-950/30'
+                    }`}>
+                      <div className="flex items-center gap-4">
+                        <div className="h-16 w-16 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center">
+                          <span className="text-2xl font-black text-rose-400 font-mono">{triageResult.severityScore.toFixed(1)}</span>
+                          <span className="text-[9px] text-slate-400">/ 10 SCORE</span>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-white uppercase">{triageResult.disasterCategory} BREACH</span>
+                            <span className="rounded bg-rose-500/30 text-rose-300 font-bold text-[10px] px-2 py-0.5 border border-rose-400/40">
+                              {triageResult.riskLevel} SEVERITY
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-300 mt-1 max-w-lg">{triageResult.aiSummary}</p>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="text-[10px] text-emerald-400 font-bold block">✓ Anti-Spoofing Validated</span>
+                        <span className="text-xs font-mono text-slate-300">{triageResult.antiSpoofing.confidencePercent}% Confidence</span>
+                      </div>
+                    </div>
+
+                    {/* Infrastructure Metrics Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+                        <span className="text-[10px] text-slate-400 block">Road Breach Cutoff</span>
+                        <b className="text-base text-rose-400">{triageResult.roadBreachLengthMeters} meters</b>
+                      </div>
+
+                      <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+                        <span className="text-[10px] text-slate-400 block">Debris Volume</span>
+                        <b className="text-base text-amber-400">{triageResult.estimatedDebrisM3} m³</b>
+                      </div>
+
+                      <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+                        <span className="text-[10px] text-slate-400 block">Required Earthmovers</span>
+                        <b className="text-base text-sky-400">{triageResult.requiredRescueForces.jcbEarthmovers} JCB Units</b>
+                      </div>
+
+                      <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+                        <span className="text-[10px] text-slate-400 block">NDRF Battalions</span>
+                        <b className="text-base text-emerald-400">{triageResult.requiredRescueForces.ndrfBattalions} Unit(s)</b>
+                      </div>
+                    </div>
+
+                    {/* Anti-Spoofing & Geotag Authentication Card */}
+                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-4 shadow-xl space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-emerald-300 flex items-center gap-1.5">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                          Geotag & EXIF Anti-Spoofing Authentication
+                        </span>
+                        <span className="text-[10px] text-emerald-400 font-mono">Original Capture Verified</span>
+                      </div>
+                      <p className="text-slate-300 text-[11px]">{triageResult.antiSpoofing.verificationNotes}</p>
+                    </div>
+
+                    {/* Recommended Action Items */}
+                    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl space-y-3">
+                      <div className="text-xs font-bold text-white uppercase tracking-wider">AI Recommended Triage Dispatch Steps</div>
+                      <div className="space-y-1.5 text-xs text-slate-300">
+                        {triageResult.recommendedActions.map((act, i) => (
+                          <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-slate-950 border border-slate-800/80">
+                            <span className="text-pink-400 font-bold">#{i + 1}</span>
+                            <span>{act}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Broadcast Button */}
+                    <button
+                      onClick={() => {
+                        setTriageBroadcasted(true);
+                        setTimeout(() => setTriageBroadcasted(false), 4000);
+                      }}
+                      className={`w-full rounded-2xl py-3.5 text-xs font-bold text-white shadow-xl transition flex items-center justify-center gap-2 ${
+                        triageBroadcasted
+                          ? 'bg-emerald-600 shadow-emerald-600/30'
+                          : 'bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 hover:scale-[1.01]'
+                      }`}
+                    >
+                      <Zap className="h-4 w-4" />
+                      <span>{triageBroadcasted ? '✓ INCIDENT BROADCASTED TO NDRF 1078 & MAP UPDATED!' : 'BROADCAST VERIFIED INCIDENT TO NDRF COMMAND & UPDATE HAZARD MAP ➔'}</span>
+                    </button>
+                  </>
+                ) : (
+                  <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-400 space-y-3">
+                    <Camera className="h-12 w-12 text-pink-500/50 mx-auto" />
+                    <h3 className="text-sm font-bold text-white">No Damage Analysis Selected</h3>
+                    <p className="text-xs text-slate-500 max-w-md mx-auto">
+                      Upload a photo or fill in the citizen report details on the left, then click <b>"Analyze Photo & Damage with Gemini AI Vision"</b> to generate the real-time severity assessment.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

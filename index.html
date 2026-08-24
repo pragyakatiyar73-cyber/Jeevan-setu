@@ -190,6 +190,14 @@
           <span class="text-lg">🧭</span>
           <span class="text-xs font-semibold opacity-0 group-hover:opacity-100 transition whitespace-nowrap">Dynamic Rerouting</span>
         </button>
+        <button onclick="switchView('drone-view')" id="nav-drone-view" class="sidebar-item w-full flex items-center gap-3.5 p-2.5 rounded-xl text-sky-400 hover:bg-slate-800 hover:text-white transition">
+          <span class="text-lg">🚁</span>
+          <span class="text-xs font-semibold opacity-0 group-hover:opacity-100 transition whitespace-nowrap">UAV Drone Dispatcher</span>
+        </button>
+        <button onclick="switchView('citizentriage-view')" id="nav-citizentriage-view" class="sidebar-item w-full flex items-center gap-3.5 p-2.5 rounded-xl text-pink-400 hover:bg-slate-800 hover:text-white transition">
+          <span class="text-lg">📸</span>
+          <span class="text-xs font-semibold opacity-0 group-hover:opacity-100 transition whitespace-nowrap">Citizen AI Photo Triage</span>
+        </button>
         <button onclick="switchView('weather-view')" id="nav-weather-view" class="sidebar-item w-full flex items-center gap-3.5 p-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
           <span class="text-lg">🌧️</span>
           <span class="text-xs font-semibold opacity-0 group-hover:opacity-100 transition whitespace-nowrap">Weather Intel</span>
@@ -232,6 +240,7 @@
           <button onclick="switchView('vehicles-view'); toggleMobileMenu();" class="w-full text-left p-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center gap-3"><span>🚚</span> Vehicle Logistics</button>
           <button onclick="switchView('supplies-view'); toggleMobileMenu();" class="w-full text-left p-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center gap-3"><span>📦</span> Essential Supplies</button>
           <button onclick="switchView('rerouting-view'); toggleMobileMenu();" class="w-full text-left p-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center gap-3"><span>🧭</span> Dynamic Rerouting</button>
+          <button onclick="switchView('drone-view'); toggleMobileMenu();" class="w-full text-left p-2.5 rounded-xl text-sky-400 font-bold hover:bg-slate-800 flex items-center gap-3"><span>🚁</span> UAV Drone Dispatcher</button>
           <button onclick="switchView('weather-view'); toggleMobileMenu();" class="w-full text-left p-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center gap-3"><span>🌧️</span> Weather Intel</button>
           <button onclick="switchView('alerts-view'); toggleMobileMenu();" class="w-full text-left p-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center gap-3"><span>🚨</span> Active Alerts</button>
           <button onclick="switchView('hazard-view'); toggleMobileMenu();" class="w-full text-left p-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center gap-3"><span>📈</span> Hazard Models (LHI)</button>
@@ -1382,6 +1391,280 @@
             <!-- Computed Route Comparison Container (Dynamically updated) -->
             <div class="lg:col-span-2 space-y-3 text-xs" id="reroute-comparison-container">
               <!-- Dynamically populated by recalculateRerouteEngine() -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW: UAV DRONE DISPATCHER & HIGH-ALTITUDE AERIAL LIFELINE CORRIDOR   -->
+      <!-- ===================================================================== -->
+      <div id="view-drone-view" class="space-y-6 hidden">
+        <div class="rounded-2xl border border-[#112240] bg-[#070d1e] p-5 shadow-2xl space-y-4">
+          <div class="border-b border-slate-800 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span class="text-lg">🚁</span>
+                <span>UAV Drone Dispatcher & High-Altitude Aerial Lifeline Corridor</span>
+              </h3>
+              <p class="text-xs text-slate-400">Zero-road high-altitude supply dispatch across mountain passes when highways are 100% breached.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-400 font-bold text-xs border border-sky-500/30 flex items-center gap-1.5 self-start sm:self-auto">
+              <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+              Sovereign Aerial Corridor Grid
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Dispatch Control Form -->
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 text-xs">
+              <div class="font-bold text-sky-300 uppercase text-[11px] flex items-center justify-between">
+                <span>Flight Control Parameters</span>
+                <span class="text-[9px] text-emerald-400 font-mono">IAF Clearance Active</span>
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-1">Origin Logistics Hub:</label>
+                <select id="drone-html-origin" onchange="updateHtmlDroneCalculation()" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-sky-500">
+                  <option value="guwahati" selected>Guwahati Central Hub (Assam Base)</option>
+                  <option value="shillong">Shillong Staging Post (Meghalaya Base)</option>
+                  <option value="gangtok">Gangtok Artery Base (Sikkim Base)</option>
+                  <option value="silchar">Silchar Medical Post (Barak Valley Base)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-1">Destination Emergency Helipad / LZ:</label>
+                <select id="drone-html-lz" onchange="updateHtmlDroneCalculation()" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-sky-500">
+                  <option value="sela" selected>Sela Pass Emergency Field LZ (3,500m MSL)</option>
+                  <option value="aizawl">Aizawl Civil Hospital Rooftop Helipad (1,132m MSL)</option>
+                  <option value="melli">Melli Teesta Basin High-Ground Helipad (650m MSL)</option>
+                  <option value="shillong_hospital">NEIGRIHMS Shillong Trauma Rooftop (1,525m MSL)</option>
+                  <option value="zubza">Zubza Pass Highland Relief LZ (1,400m MSL)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-1">Assigned Lifeline UAV Drone:</label>
+                <select id="drone-html-model" onchange="updateHtmlDroneCalculation()" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-sky-500">
+                  <option value="garuda" selected>Garuda-X15 Sovereign Heavy UAV (Max 18kg)</option>
+                  <option value="airmedic">AirMedic-5 Rapid Express Drone (Max 8kg)</option>
+                  <option value="aeropeak">AeroPeak-9 Mountain Ridge Scout (Max 5kg)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-1">Emergency Payload Description:</label>
+                <input type="text" id="drone-html-cargo-item" value="High-Altitude Emergency Blood Plasma & Dialysis Fluid" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-sky-500" />
+              </div>
+
+              <div>
+                <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+                  <span>Payload Weight (kg):</span>
+                  <b id="drone-html-payload-val" class="text-sky-400 font-mono">12 kg</b>
+                </div>
+                <input type="range" id="drone-html-payload-slider" min="1" max="20" value="12" oninput="document.getElementById('drone-html-payload-val').innerText = this.value + ' kg'; updateHtmlDroneCalculation();" class="w-full accent-sky-500" />
+              </div>
+
+              <button onclick="launchHtmlDroneMission()" id="btn-launch-drone-html" class="w-full py-3 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 font-black text-white text-xs shadow-lg shadow-sky-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-2">
+                <span>🚀</span>
+                <span>Launch Autonomous Lifeline UAV Mission</span>
+              </button>
+            </div>
+
+            <!-- Flight Telemetry & Corridor Results -->
+            <div class="lg:col-span-2 space-y-4">
+              <!-- Telemetry Cards Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">Aerial Distance</span>
+                  <b id="drone-html-dist" class="text-base text-white">142.5 km</b>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">Flight Duration</span>
+                  <b id="drone-html-duration" class="text-base text-sky-400">1h 45m</b>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">Battery Cons.</span>
+                  <b id="drone-html-battery" class="text-base text-emerald-400">64%</b>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">Cruise Altitude</span>
+                  <b id="drone-html-alt" class="text-base text-indigo-400">3,650m MSL</b>
+                </div>
+              </div>
+
+              <!-- Status Banner -->
+              <div id="drone-html-status-banner" class="p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-xs flex items-center justify-between">
+                <span class="font-bold text-emerald-300 flex items-center gap-1.5">
+                  <span id="drone-html-status-icon">🟢</span>
+                  <span id="drone-html-status-msg">Aerial Corridor Clear. Safe flight for Garuda-X15 Sovereign Heavy UAV.</span>
+                </span>
+                <span id="drone-html-status-badge" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold">READY FOR LAUNCH</span>
+              </div>
+
+              <!-- Interactive Leaflet Aerial Corridor Vector Map -->
+              <div class="rounded-xl border border-slate-800 bg-slate-950 p-3 shadow-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                    <span>📡</span> Interactive High-Altitude Aerial Corridor Vector Map
+                  </span>
+                  <span class="text-[10px] text-sky-400 font-mono font-bold bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">Zero Road Dependency</span>
+                </div>
+                <div id="drone-html-map-canvas" class="h-[280px] w-full rounded-lg overflow-hidden border border-slate-800 z-10"></div>
+              </div>
+
+              <!-- Interactive Flight Protocol Checklist -->
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                <div class="text-xs font-bold text-white uppercase tracking-wider">Sovereign Pre-Flight Safety Protocol</div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <div class="text-emerald-400 font-bold">✓ IAF Corridor</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">Military Clearance Active</div>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <div class="text-emerald-400 font-bold">✓ Mountain Wind</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">34 km/h Safe Margin</div>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <div class="text-emerald-400 font-bold">✓ Ground Beacon</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">LZ Receiver Ready</div>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <div class="text-emerald-400 font-bold">✓ Cold-Chain</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">Thermal Seal 3.8°C</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW: CITIZEN PHOTO DISASTER REPORTER & AI DAMAGE TRIAGE              -->
+      <!-- ===================================================================== -->
+      <div id="view-citizentriage-view" class="space-y-6 hidden">
+        <div class="rounded-2xl border border-[#112240] bg-[#070d1e] p-5 shadow-2xl space-y-4">
+          <div class="border-b border-slate-800 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span class="text-lg">📸</span>
+                <span>Citizen Photo Disaster Reporter & AI Damage Triage</span>
+              </h3>
+              <p class="text-xs text-slate-400">Multimodal Google Gemini AI Vision damage assessment with geolocation anti-spoofing verification.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-pink-500/20 text-pink-300 font-bold text-xs border border-pink-500/30 flex items-center gap-1.5 self-start sm:self-auto">
+              <span class="w-2 h-2 rounded-full bg-pink-400 animate-pulse"></span>
+              Crowdsourced NDRF Intelligence
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Incident Form -->
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 text-xs">
+              <div class="font-bold text-pink-300 uppercase text-[11px] flex items-center justify-between">
+                <span>Disaster Site Photo & Details</span>
+                <span class="text-[9px] text-pink-400 font-mono">EXIF & GPS Sync</span>
+              </div>
+
+              <!-- Photo Upload Dropzone Box -->
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-1">Disaster Site Photo Upload (Mobile Camera / Gallery):</label>
+                <div class="relative border-2 border-dashed border-pink-500/40 hover:border-pink-500 rounded-xl p-3.5 bg-[#040814] text-center cursor-pointer transition space-y-1" onclick="document.getElementById('triage-html-file-input').click()">
+                  <div id="triage-html-photo-preview" class="space-y-1">
+                    <span class="text-2xl block">📸</span>
+                    <span class="text-[11px] text-slate-200 font-bold block">Click to Select or Drop Disaster Site Photo</span>
+                    <span class="text-[9px] text-pink-400 block">EXIF Geotag & GPS Anti-Spoofing Sync</span>
+                  </div>
+                  <input type="file" id="triage-html-file-input" accept="image/*" class="hidden" onchange="handleHtmlPhotoSelect(this)" />
+                </div>
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-1">Disaster Incident Location:</label>
+                <input type="text" id="triage-html-loc" value="NH-6 Km 142 (East Khasi Hills, Meghalaya)" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-pink-500" />
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-1">Incident Type Category:</label>
+                <select id="triage-html-type" onchange="runHtmlCitizenTriage()" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-pink-500">
+                  <option value="landslide" selected>⛰️ Massive Landslide & Slope Mudslide</option>
+                  <option value="flood">🌊 Flash Flood / Submerged Road</option>
+                  <option value="bridge">🌉 Bridge Structural Breach</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 block mb-1">Citizen Notes & Description:</label>
+                <textarea id="triage-html-desc" rows="3" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-pink-500">Severe landslide breach along NH-6 near Km 142. Both lanes completely blocked by mountain mudfall and boulders.</textarea>
+              </div>
+
+              <button onclick="runHtmlCitizenTriage()" id="btn-run-triage-html" class="w-full py-3 rounded-xl bg-gradient-to-r from-pink-600 via-rose-600 to-indigo-600 font-black text-white text-xs shadow-lg shadow-pink-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-2">
+                <span>✨</span>
+                <span>Analyze Damage with Gemini AI Vision</span>
+              </button>
+            </div>
+
+            <!-- Right Results Container -->
+            <div class="lg:col-span-2 space-y-4">
+              <!-- Severity Banner -->
+              <div id="triage-html-banner" class="p-4 rounded-xl border border-rose-500/50 bg-rose-950/30 text-xs flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="h-12 w-12 rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center">
+                    <span id="triage-html-score" class="text-xl font-black text-rose-400 font-mono">8.8</span>
+                    <span class="text-[8px] text-slate-400">/ 10 SCORE</span>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span id="triage-html-cat" class="font-bold text-white uppercase">LANDSLIDE BREACH</span>
+                      <span id="triage-html-badge" class="px-2 py-0.5 rounded bg-rose-500/30 text-rose-300 font-bold text-[10px] border border-rose-400/40">CRITICAL SEVERITY</span>
+                    </div>
+                    <p id="triage-html-summary" class="text-[11px] text-slate-300 mt-0.5">Verified Landslide breach at NH-6. Road cut by ~350m with heavy slope debris. Urgent NDRF dispatch required.</p>
+                  </div>
+                </div>
+
+                <div class="text-right">
+                  <span class="text-[9px] text-emerald-400 font-bold block">✓ Anti-Spoofing Validated</span>
+                  <span class="text-[10px] font-mono text-slate-300">96% Authenticity</span>
+                </div>
+              </div>
+
+              <!-- Damage Metrics Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">Road Breach Cutoff</span>
+                  <b id="triage-html-breach" class="text-base text-rose-400">350 meters</b>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">Debris Volume</span>
+                  <b id="triage-html-debris" class="text-base text-amber-400">1,450 m³</b>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">Required Earthmovers</span>
+                  <b id="triage-html-jcb" class="text-base text-sky-400">3 JCB Units</b>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">NDRF Battalions</span>
+                  <b id="triage-html-ndrf" class="text-base text-emerald-400">2 Units</b>
+                </div>
+              </div>
+
+              <!-- Action Step Checklist -->
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+                <div class="font-bold text-white uppercase tracking-wider text-[11px]">AI Recommended Triage Steps</div>
+                <div id="triage-html-actions" class="space-y-1 text-slate-300 text-[11px]">
+                  <div class="p-2 rounded bg-slate-900 border border-slate-800">1. Dispatch 3 BRO JCB Earthmovers from Guwahati staging depot</div>
+                  <div class="p-2 rounded bg-slate-900 border border-slate-800">2. Notify NDRF 1078 Triage Command Triage Center</div>
+                  <div class="p-2 rounded bg-slate-900 border border-slate-800">3. Inject avoidance polygon into Jeevan Setu LHI Rerouting Engine</div>
+                </div>
+              </div>
+
+              <!-- Broadcast Button -->
+              <button onclick="broadcastHtmlCitizenTriage()" id="btn-broadcast-triage-html" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white font-bold text-xs shadow-xl shadow-rose-700/40 hover:scale-[1.01] transition flex items-center justify-center gap-2">
+                <span>⚡</span>
+                <span>BROADCAST VERIFIED INCIDENT TO NDRF COMMAND & UPDATE MAP ➔</span>
+              </button>
             </div>
           </div>
         </div>
@@ -2872,6 +3155,10 @@
           initDopplerRadarCanvas();
           updateWeatherIntelView();
         }, 50);
+      } else if (viewId === 'drone-view') {
+        setTimeout(() => {
+          updateHtmlDroneCalculation();
+        }, 80);
       }
     }
 
@@ -5222,6 +5509,288 @@
       }
     }
 
+    // =========================================================================
+    // UAV DRONE DISPATCHER & HIGH-ALTITUDE AERIAL LIFELINE ENGINE
+    // =========================================================================
+    const DRONE_ORIGINS = {
+      guwahati: { name: 'Guwahati Central Hub', lat: 26.1445, lon: 91.7362 },
+      shillong: { name: 'Shillong Staging Post', lat: 25.5788, lon: 91.8933 },
+      gangtok: { name: 'Gangtok Artery Base', lat: 27.3389, lon: 88.6065 },
+      silchar: { name: 'Silchar Medical Post', lat: 24.8333, lon: 92.7789 }
+    };
+
+    const DRONE_LZS = {
+      sela: { name: 'Sela Pass Emergency LZ', lat: 27.5050, lon: 92.1030, alt: 3500 },
+      aizawl: { name: 'Aizawl Civil Hospital Helipad', lat: 23.7271, lon: 92.7176, alt: 1132 },
+      melli: { name: 'Melli Teesta Basin Helipad', lat: 27.0870, lon: 88.4630, alt: 650 },
+      shillong_hospital: { name: 'NEIGRIHMS Shillong Rooftop', lat: 25.5890, lon: 91.9320, alt: 1525 },
+      zubza: { name: 'Zubza Pass Highland LZ', lat: 25.6890, lon: 94.0450, alt: 1400 }
+    };
+
+    const DRONE_MODELS = {
+      garuda: { name: 'Garuda-X15 Sovereign Heavy UAV', maxPayload: 18, maxRange: 220, cruiseSpeed: 65 },
+      airmedic: { name: 'AirMedic-5 Rapid Express Drone', maxPayload: 8, maxRange: 120, cruiseSpeed: 80 },
+      aeropeak: { name: 'AeroPeak-9 Mountain Ridge Scout', maxPayload: 5, maxRange: 110, cruiseSpeed: 90 }
+    };
+
+    let droneHtmlMapInstance = null;
+    let droneHtmlPolyline = null;
+    let droneHtmlMarkerOrigin = null;
+    let droneHtmlMarkerDest = null;
+    let droneHtmlAnimMarker = null;
+
+    function initOrUpdateDroneHtmlMap(originObj, lzObj) {
+      const container = document.getElementById('drone-html-map-canvas');
+      if (!container) return;
+
+      if (!droneHtmlMapInstance) {
+        droneHtmlMapInstance = L.map(container).setView([(originObj.lat + lzObj.lat)/2, (originObj.lon + lzObj.lon)/2], 7);
+        L.tileLayer(BASE_LAYERS.dark.url, { maxZoom: 19 }).addTo(droneHtmlMapInstance);
+      } else {
+        droneHtmlMapInstance.setView([(originObj.lat + lzObj.lat)/2, (originObj.lon + lzObj.lon)/2], 7);
+        if (droneHtmlPolyline) droneHtmlMapInstance.removeLayer(droneHtmlPolyline);
+        if (droneHtmlMarkerOrigin) droneHtmlMapInstance.removeLayer(droneHtmlMarkerOrigin);
+        if (droneHtmlMarkerDest) droneHtmlMapInstance.removeLayer(droneHtmlMarkerDest);
+        if (droneHtmlAnimMarker) droneHtmlMapInstance.removeLayer(droneHtmlAnimMarker);
+      }
+
+      // Origin Hub Marker
+      droneHtmlMarkerOrigin = L.circleMarker([originObj.lat, originObj.lon], {
+        radius: 8, fillColor: '#6366f1', color: '#ffffff', weight: 2, fillOpacity: 0.95
+      }).addTo(droneHtmlMapInstance).bindPopup(`<b>🛫 Origin Base: ${originObj.name}</b>`);
+
+      // LZ Marker
+      droneHtmlMarkerDest = L.circleMarker([lzObj.lat, lzObj.lon], {
+        radius: 10, fillColor: '#ef4444', color: '#ffffff', weight: 2.5, fillOpacity: 0.95
+      }).addTo(droneHtmlMapInstance).bindPopup(`<b>🚁 Isolated Emergency LZ: ${lzObj.name}</b><br>Altitude: ${lzObj.alt}m MSL`);
+
+      // Dotted Aerial Corridor Vector
+      droneHtmlPolyline = L.polyline([
+        [originObj.lat, originObj.lon],
+        [lzObj.lat, lzObj.lon]
+      ], {
+        color: '#38bdf8', weight: 4, dashArray: '6, 6', opacity: 0.9
+      }).addTo(droneHtmlMapInstance);
+
+      droneHtmlMapInstance.invalidateSize();
+    }
+
+    function updateHtmlDroneCalculation() {
+      const originKey = document.getElementById('drone-html-origin')?.value || 'guwahati';
+      const lzKey = document.getElementById('drone-html-lz')?.value || 'sela';
+      const modelKey = document.getElementById('drone-html-model')?.value || 'garuda';
+      const payload = parseInt(document.getElementById('drone-html-payload-slider')?.value || '12', 10);
+
+      const originObj = DRONE_ORIGINS[originKey] || DRONE_ORIGINS.guwahati;
+      const lzObj = DRONE_LZS[lzKey] || DRONE_LZS.sela;
+      const modelObj = DRONE_MODELS[modelKey] || DRONE_MODELS.garuda;
+
+      // Calculate actual Haversine distance
+      const R = 6371;
+      const dLat = (lzObj.lat - originObj.lat) * Math.PI / 180;
+      const dLon = (lzObj.lon - originObj.lon) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(originObj.lat * Math.PI / 180) * Math.cos(lzObj.lat * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const dist = Number((R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1));
+
+      const durationMins = Math.round((dist / modelObj.cruiseSpeed) * 60);
+      const batteryCons = Math.min(100, Math.round((dist / modelObj.maxRange) * 100 * (1 + (payload / modelObj.maxPayload) * 0.3)));
+      const cruiseAlt = Math.max(1200, lzObj.alt + 150) + 'm MSL';
+
+      // Update Telemetry Elements
+      const distEl = document.getElementById('drone-html-dist');
+      const durEl = document.getElementById('drone-html-duration');
+      const batEl = document.getElementById('drone-html-battery');
+      const altEl = document.getElementById('drone-html-alt');
+
+      if (distEl) distEl.innerText = dist + ' km';
+      if (durEl) durEl.innerText = Math.floor(durationMins / 60) + 'h ' + (durationMins % 60) + 'm';
+      if (batEl) batEl.innerText = batteryCons + '%';
+      if (altEl) altEl.innerText = cruiseAlt;
+
+      // Feasibility Check
+      const banner = document.getElementById('drone-html-status-banner');
+      const msgEl = document.getElementById('drone-html-status-msg');
+      const badgeEl = document.getElementById('drone-html-status-badge');
+      const iconEl = document.getElementById('drone-html-status-icon');
+      const btn = document.getElementById('btn-launch-drone-html');
+
+      if (payload > modelObj.maxPayload) {
+        if (banner) banner.className = 'p-3.5 rounded-xl border border-rose-500/50 bg-rose-950/30 text-xs flex items-center justify-between';
+        if (msgEl) msgEl.innerText = `⚠️ PAYLOAD OVERLOAD: ${payload}kg exceeds ${modelObj.maxPayload}kg capacity of ${modelObj.name}.`;
+        if (badgeEl) { badgeEl.innerText = 'PAYLOAD OVERLOAD'; badgeEl.className = 'px-2 py-0.5 rounded bg-rose-500/30 text-rose-300 font-mono text-[10px] font-bold'; }
+        if (iconEl) iconEl.innerText = '⚠️';
+        if (btn) { btn.disabled = true; btn.className = 'w-full py-3 rounded-xl bg-slate-800 text-slate-500 text-xs font-bold cursor-not-allowed'; }
+      } else if (dist > modelObj.maxRange) {
+        if (banner) banner.className = 'p-3.5 rounded-xl border border-rose-500/50 bg-rose-950/30 text-xs flex items-center justify-between';
+        if (msgEl) msgEl.innerText = `⚠️ RANGE EXCEEDED: Flight distance (${dist}km) exceeds ${modelObj.maxRange}km operating radius of ${modelObj.name}. Switch drone or hub!`;
+        if (badgeEl) { badgeEl.innerText = 'RANGE EXCEEDED'; badgeEl.className = 'px-2 py-0.5 rounded bg-rose-500/30 text-rose-300 font-mono text-[10px] font-bold'; }
+        if (iconEl) iconEl.innerText = '⚠️';
+        if (btn) { btn.disabled = true; btn.className = 'w-full py-3 rounded-xl bg-slate-800 text-slate-500 text-xs font-bold cursor-not-allowed'; }
+      } else {
+        if (banner) banner.className = 'p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-xs flex items-center justify-between';
+        if (msgEl) msgEl.innerText = `🟢 Aerial Corridor Clear. Safe flight path calculated for ${modelObj.name}.`;
+        if (badgeEl) { badgeEl.innerText = 'READY FOR LAUNCH'; badgeEl.className = 'px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold'; }
+        if (iconEl) iconEl.innerText = '🟢';
+        if (btn) { btn.disabled = false; btn.className = 'w-full py-3 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 font-black text-white text-xs shadow-lg shadow-sky-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-2'; }
+      }
+
+      initOrUpdateDroneHtmlMap(originObj, lzObj);
+    }
+
+    function launchHtmlDroneMission() {
+      const btn = document.getElementById('btn-launch-drone-html');
+      if (!btn || btn.disabled) return;
+
+      btn.innerHTML = '<span>⏳</span> <span>Initiating IAF Corridor Handshake...</span>';
+      btn.className = 'w-full py-3 rounded-xl bg-amber-600 font-black text-white text-xs shadow-lg animate-pulse flex items-center justify-center gap-2';
+
+      setTimeout(() => {
+        btn.innerHTML = '<span>⚡</span> <span>Autonomous UAV Mission Active & En Route!</span>';
+        btn.className = 'w-full py-3 rounded-xl bg-emerald-600 font-black text-white text-xs shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2';
+
+        // Animate Drone Marker along the aerial vector line!
+        const originKey = document.getElementById('drone-html-origin')?.value || 'guwahati';
+        const lzKey = document.getElementById('drone-html-lz')?.value || 'sela';
+        const originObj = DRONE_ORIGINS[originKey] || DRONE_ORIGINS.guwahati;
+        const lzObj = DRONE_LZS[lzKey] || DRONE_LZS.sela;
+
+        if (droneHtmlMapInstance) {
+          if (droneHtmlAnimMarker) droneHtmlMapInstance.removeLayer(droneHtmlAnimMarker);
+          droneHtmlAnimMarker = L.marker([originObj.lat, originObj.lon], {
+            icon: L.divIcon({
+              className: 'custom-drone-fly-icon',
+              html: `<div class="text-xl animate-bounce">🚁</div>`,
+              iconSize: [24, 24],
+              iconAnchor: [12, 12]
+            })
+          }).addTo(droneHtmlMapInstance);
+
+          let step = 0;
+          const totalSteps = 50;
+          const interval = setInterval(() => {
+            step++;
+            const ratio = step / totalSteps;
+            const curLat = originObj.lat + (lzObj.lat - originObj.lat) * ratio;
+            const curLon = originObj.lon + (lzObj.lon - originObj.lon) * ratio;
+            droneHtmlAnimMarker.setLatLng([curLat, curLon]);
+
+            if (step >= totalSteps) {
+              clearInterval(interval);
+              droneHtmlAnimMarker.bindPopup('<b>✅ UAV Safe Landing at Destination LZ!</b> Emergency Payload Delivered.').openPopup();
+            }
+          }, 100);
+        }
+      }, 1500);
+    }
+
+    function handleHtmlPhotoSelect(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const previewDiv = document.getElementById('triage-html-photo-preview');
+          if (previewDiv) {
+            previewDiv.innerHTML = `<img src="${e.target.result}" class="max-h-28 rounded-lg mx-auto object-cover border border-pink-500/50 shadow-md" /><span class="text-[9px] text-emerald-400 font-bold block mt-1">✓ Geotagged Photo Loaded — Gemini AI Ready</span>`;
+          }
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function runHtmlCitizenTriage() {
+      const btn = document.getElementById('btn-run-triage-html');
+      const loc = document.getElementById('triage-html-loc')?.value || 'NH-6 Km 142, Meghalaya';
+      const type = document.getElementById('triage-html-type')?.value || 'landslide';
+
+      if (btn) {
+        btn.innerHTML = '<span>⏳</span> <span>Gemini AI Vision Ingesting & Extracting Damage...</span>';
+        btn.classList.add('animate-pulse');
+
+        setTimeout(() => {
+          btn.innerHTML = '<span>✨</span> <span>Analyze Damage with Gemini AI Vision</span>';
+          btn.classList.remove('animate-pulse');
+
+          let categoryName = 'LANDSLIDE BREACH';
+          let score = 8.8;
+          let risk = 'CRITICAL SEVERITY';
+          let breachMeters = '350 meters';
+          let debrisM3 = '1,450 m³';
+          let jcbUnits = '3 JCB Units';
+          let ndrfUnits = '2 Units';
+          let summary = `Verified Landslide breach at ${loc}. Road cut by ~350m with heavy slope debris. Urgent NDRF dispatch required.`;
+          let actionsHtml = `
+            <div class="p-2 rounded bg-slate-900 border border-slate-800">1. Dispatch 3 BRO JCB Earthmovers from Guwahati staging depot</div>
+            <div class="p-2 rounded bg-slate-900 border border-slate-800">2. Notify NDRF 1078 Triage Command Triage Center</div>
+            <div class="p-2 rounded bg-slate-900 border border-slate-800">3. Inject avoidance polygon into Jeevan Setu LHI Rerouting Engine</div>
+          `;
+
+          if (type === 'flood') {
+            categoryName = 'FLASH FLOOD BREACH';
+            score = 9.2;
+            risk = 'CRITICAL SEVERITY';
+            breachMeters = '520 meters';
+            debrisM3 = 'Water Depth: 2.4m';
+            jcbUnits = '4 Inflatable Boats';
+            ndrfUnits = '3 NDRF Battalions';
+            summary = `Verified Flash Flood submergence at ${loc}. Highway submerged under 2.4m fast-flowing water. Immediate air-drop and boat rescue active.`;
+            actionsHtml = `
+              <div class="p-2 rounded bg-slate-900 border border-slate-800">1. Deploy 4 NDRF Motorized Inflatable Rescue Boats to submerged sector</div>
+              <div class="p-2 rounded bg-slate-900 border border-slate-800">2. Air-drop emergency lifejackets & food rations via UAV Drone</div>
+              <div class="p-2 rounded bg-slate-900 border border-slate-800">3. Issue flash flood evacuation sirens for 3 downstream villages</div>
+            `;
+          } else if (type === 'bridge') {
+            categoryName = 'BRIDGE STRUCTURAL COLLAPSE';
+            score = 9.6;
+            risk = 'CATASTROPHIC SEVERITY';
+            breachMeters = '85 meters gap';
+            debrisM3 = 'Pillar 2 Fractured';
+            jcbUnits = '1 BRO Bailey Bridge';
+            ndrfUnits = '4 NDRF Battalions';
+            summary = `Critical Bridge Abutment Collapse at ${loc}. 85m span severed. All heavy 12-Ton truck traffic halted. Emergency Bailey Bridge assembly ordered.`;
+            actionsHtml = `
+              <div class="p-2 rounded bg-slate-900 border border-slate-800">1. Dispatch BRO 753 Border Roads Task Force with pre-fab Bailey Bridge</div>
+              <div class="p-2 rounded bg-slate-900 border border-slate-800">2. Route all 4x4 relief convoys to alternative Kalaktang / Jowai Bypass</div>
+              <div class="p-2 rounded bg-slate-900 border border-slate-800">3. Activate High-Altitude UAV Lifeline Drone Flight Corridor</div>
+            `;
+          }
+
+          const catEl = document.getElementById('triage-html-cat');
+          const scoreEl = document.getElementById('triage-html-score');
+          const badgeEl = document.getElementById('triage-html-badge');
+          const summaryEl = document.getElementById('triage-html-summary');
+          const breachEl = document.getElementById('triage-html-breach');
+          const debrisEl = document.getElementById('triage-html-debris');
+          const jcbEl = document.getElementById('triage-html-jcb');
+          const ndrfEl = document.getElementById('triage-html-ndrf');
+          const actionsEl = document.getElementById('triage-html-actions');
+
+          if (catEl) catEl.innerText = categoryName;
+          if (scoreEl) scoreEl.innerText = score.toFixed(1);
+          if (badgeEl) badgeEl.innerText = risk;
+          if (summaryEl) summaryEl.innerText = summary;
+          if (breachEl) breachEl.innerText = breachMeters;
+          if (debrisEl) debrisEl.innerText = debrisM3;
+          if (jcbEl) jcbEl.innerText = jcbUnits;
+          if (ndrfEl) ndrfEl.innerText = ndrfUnits;
+          if (actionsEl) actionsEl.innerHTML = actionsHtml;
+
+        }, 800);
+      }
+    }
+
+    function broadcastHtmlCitizenTriage() {
+      const btn = document.getElementById('btn-broadcast-triage-html');
+      if (btn) {
+        btn.innerHTML = '<span>⚡</span> <span>INCIDENT BROADCASTED TO NDRF 1078 & HAZARD MAP UPDATED!</span>';
+        btn.className = 'w-full py-3.5 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xl shadow-emerald-600/40 flex items-center justify-center gap-2';
+        setTimeout(() => {
+          btn.innerHTML = '<span>⚡</span> <span>BROADCAST VERIFIED INCIDENT TO NDRF COMMAND & UPDATE MAP ➔</span>';
+          btn.className = 'w-full py-3.5 rounded-xl bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white font-bold text-xs shadow-xl shadow-rose-700/40 hover:scale-[1.01] transition flex items-center justify-center gap-2';
+        }, 3500);
+      }
+    }
+
     function escapeHtml(str) {
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
@@ -5233,6 +5802,7 @@
       startAiSlideshow();
       recalculateRerouteEngine();
       initDopplerRadarCanvas();
+      updateHtmlDroneCalculation();
     };
   </script>
 

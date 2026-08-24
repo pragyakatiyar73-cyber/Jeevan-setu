@@ -9,6 +9,8 @@ export * from './weather';
 export * from './ai';
 export * from './hazardModels';
 export * from './routing';
+export * from './droneRouting';
+export * from './citizenTriage';
 
 export interface APIRegistryStatus {
   category: string;
