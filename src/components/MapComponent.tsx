@@ -5,13 +5,11 @@ import "leaflet/dist/leaflet.css";
 interface MapComponentProps {
   center?: [number, number];
   zoom?: number;
-  breachDistanceMeters?: number;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
   center = [25.51, 91.50],
-  zoom = 14,
-  breachDistanceMeters = 350
+  zoom = 14
 }) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -24,47 +22,85 @@ const MapComponent: React.FC<MapComponentProps> = ({
       mapInstanceRef.current = null;
     }
 
-    const map = L.map(mapRef.current).setView(center, zoom);
+    const map = L.map(mapRef.current, { zoomControl: false }).setView(center, zoom);
     mapInstanceRef.current = map;
 
-    // OpenStreetMap dark/standard tiles
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors"
+    // Satellite Tile Layer (Esri World Imagery) to match uploaded mock screenshot exactly
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      attribution: "Esri Satellite Imagery"
     }).addTo(map);
 
-    // 350m Danger Zone Polygon / Circle
-    const circle = L.circle(center, {
-      radius: breachDistanceMeters,
-      color: "#ef4444",
-      weight: 2,
-      fillColor: "#dc2626",
-      fillOpacity: 0.35
+    // Yellow Highway Polyline (NH-6 Corridor)
+    const nh6Road = L.polyline([
+      [25.500, 91.480],
+      [25.508, 91.492],
+      [25.512, 91.500],
+      [25.515, 91.508],
+      [25.522, 91.520]
+    ], {
+      color: "#eab308",
+      weight: 5,
+      opacity: 0.95
     }).addTo(map);
 
-    circle.bindTooltip(`⚠️ 350m Breach Danger Zone`, { permanent: true, direction: "top", className: "bg-slate-900 text-rose-400 font-bold border border-rose-500 rounded px-2 py-0.5 text-xs shadow-lg" });
+    // Red Hazard Polygon (350m Breach Zone)
+    const breachPolygon = L.polygon([
+      [25.515, 91.494],
+      [25.518, 91.506],
+      [25.510, 91.512],
+      [25.505, 91.498]
+    ], {
+      color: "#dc2626",
+      fillColor: "#ef4444",
+      fillOpacity: 0.45,
+      weight: 2
+    }).addTo(map);
 
-    // Incident breach polygon outline
-    L.polygon([
-      [25.513, 91.496],
-      [25.515, 91.504],
-      [25.507, 91.508],
-      [25.506, 91.498]
-    ], { color: "#f59e0b", weight: 2, dashArray: "5, 5", fillColor: "#b45309", fillOpacity: 0.25 }).addTo(map);
-
-    // ROAD CLOSED Marker
-    const marker = L.marker(center).addTo(map);
-
-    marker.bindPopup(`
-      <div style="font-family: sans-serif; font-size: 13px; color: #0f172a; padding: 4px;">
-        <div style="background: #ef4444; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; display: inline-block; margin-bottom: 6px;">
-          ⛔ ROAD CLOSED
+    // ROAD CLOSED Marker Badge
+    const roadClosedIcon = L.divIcon({
+      className: "custom-road-closed-badge",
+      html: `
+        <div style="
+          background: #dc2626;
+          color: #ffffff;
+          padding: 4px 12px;
+          border-radius: 8px;
+          font-weight: 800;
+          font-size: 12px;
+          box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6);
+          border: 1px solid #f87171;
+          white-space: nowrap;
+          text-align: center;
+        ">
+          ROAD CLOSED
         </div>
-        <br/>
-        <b>Location:</b> NH-6 Km 142 (East Khasi Hills)<br/>
-        <b>Breach Cutoff:</b> ${breachDistanceMeters} meters danger perimeter<br/>
-        <b>Status:</b> Immediate Avoidance Advised
-      </div>
-    `).openPopup();
+      `,
+      iconSize: [110, 30],
+      iconAnchor: [55, 15]
+    });
+
+    L.marker([25.514, 91.502], { icon: roadClosedIcon }).addTo(map);
+
+    // Breach 350m label overlay inside polygon
+    const breachTextIcon = L.divIcon({
+      className: "custom-breach-label",
+      html: `
+        <div style="
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 11px;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+          transform: rotate(-15deg);
+          white-space: nowrap;
+        ">
+          Breach 350m ➔
+        </div>
+      `,
+      iconSize: [100, 20],
+      iconAnchor: [30, 10]
+    });
+
+    L.marker([25.509, 91.504], { icon: breachTextIcon }).addTo(map);
 
     return () => {
       if (mapInstanceRef.current) {
@@ -72,13 +108,13 @@ const MapComponent: React.FC<MapComponentProps> = ({
         mapInstanceRef.current = null;
       }
     };
-  }, [center, zoom, breachDistanceMeters]);
+  }, [center, zoom]);
 
   return (
     <div
       ref={mapRef}
-      style={{ height: "350px", width: "100%", borderRadius: "12px", border: "1px solid #374151" }}
-      className="shadow-2xl overflow-hidden"
+      style={{ height: "260px", width: "100%", borderRadius: "12px" }}
+      className="shadow-xl overflow-hidden border border-slate-800"
     />
   );
 };
