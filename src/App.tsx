@@ -51,11 +51,20 @@ import {
   calculateDroneFlightPlan,
   DroneFlightPlan,
   DroneSpec,
-  EmergencyLZ,
-  analyzeCitizenDisasterPhoto,
-  AIDamageAnalysisResult
+  EmergencyLZ
 } from './services/api';
 import Dashboard from './components/Dashboard';
+import SmartDisasterMonitoring from './components/SmartDisasterMonitoring';
+import AIDisasterImpactAssessment from './components/AIDisasterImpactAssessment';
+import ThreeDigitalTwin from './components/ThreeDigitalTwin';
+import WeatherIntelligence from './components/WeatherIntelligence';
+import UAVDroneModule from './components/UAVDroneModule';
+import EmergencySOSModal from './components/EmergencySOSModal';
+import MDoNERCommandModule from './components/MDoNERCommandModule';
+import NERLiveMapModule from './components/NERLiveMapModule';
+import ActionAlertsModule from './components/ActionAlertsModule';
+import LanguageSelector from './components/LanguageSelector';
+import { useTranslation } from './i18n';
 
 // NER State Data
 const NER_HUBS = [
@@ -70,7 +79,23 @@ const NER_HUBS = [
 ];
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<'hub' | 'map' | 'road' | 'vehicles' | 'delivery' | 'rerouting' | 'supplies' | 'alerts' | 'weather' | 'vehicleselect' | 'analytics' | 'gov' | 'apis' | 'drone' | 'citizentriage' | 'customdashboard'>('citizentriage');
+  const { t } = useTranslation();
+  const [activeModule, setActiveModuleState] = useState<string>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab') || params.get('module');
+    if (tab) return tab;
+    const hash = window.location.hash.replace('#', '');
+    if (hash) return hash;
+    return 'hub';
+  });
+
+  const setActiveModule = (mod: string) => {
+    setActiveModuleState(mod);
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', mod);
+    window.history.replaceState(null, '', url.toString());
+  };
+  const [sharedMonitoringLoc, setSharedMonitoringLoc] = useState<any>(null);
   const [selectedLayer, setSelectedLayer] = useState<string>('osm');
 
   // Map state
@@ -82,6 +107,30 @@ export default function App() {
   const [weatherCity, setWeatherCity] = useState(NER_HUBS[1]); // Default Shillong
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
+
+  // SOS Emergency Modal State
+  const [isSosModalOpen, setIsSosModalOpen] = useState(false);
+  const [activeSosLocation, setActiveSosLocation] = useState<{
+    lat: number;
+    lon: number;
+    sosId?: string;
+    distressType?: string;
+    landmark?: string;
+    personsTrapped?: string;
+    triageLevel?: string;
+  } | null>(null);
+
+  // Live IST Clock
+  const [currentTime, setCurrentTime] = useState<string>('');
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString('en-US', { hour12: false }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Rerouting state
   const [routeStart, setRouteStart] = useState('Guwahati Logistics Depot');
@@ -113,28 +162,7 @@ export default function App() {
   const droneMapInstanceRef = useRef<L.Map | null>(null);
 
   // Citizen AI Damage Triage state
-  const [triageDesc, setTriageDesc] = useState('Severe landslide breach along NH-6 East Khasi Hills near Km 142. Road completely severed by mud and rockfall.');
-  const [triagePhotoBase64, setTriagePhotoBase64] = useState<string | null>(null);
-  const [triagePhotoPreview, setTriagePhotoPreview] = useState<string | null>(null);
-  const [triageLocation, setTriageLocation] = useState('NH-6 Km 142 (East Khasi Hills, Meghalaya)');
-  const [triageLat, setTriageLat] = useState(25.4200);
-  const [triageLon, setTriageLon] = useState(92.1500);
-  const [triageAnalyzing, setTriageAnalyzing] = useState(false);
-  const [triageResult, setTriageResult] = useState<AIDamageAnalysisResult | null>(null);
-  const [triageBroadcasted, setTriageBroadcasted] = useState(false);
 
-  const handleRunTriage = async () => {
-    setTriageAnalyzing(true);
-    const res = await analyzeCitizenDisasterPhoto({
-      description: triageDesc,
-      imageBase64: triagePhotoBase64 || undefined,
-      lat: triageLat,
-      lon: triageLon,
-      locationName: triageLocation
-    });
-    setTriageResult(res);
-    setTriageAnalyzing(false);
-  };
 
   // Calculate drone flight plan dynamically
   useEffect(() => {
@@ -308,82 +336,198 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen flex-col bg-slate-950 text-slate-100 font-sans">
-      {/* Top Banner / MDoNER Government Bar */}
-      <div className="flex h-8 items-center justify-between border-b border-slate-800 bg-slate-900/90 px-6 text-[11px] text-slate-400">
-        <div className="flex items-center gap-4">
-          <span className="font-semibold text-emerald-400 flex items-center gap-1.5">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Ministry of Development of North Eastern Region (MDoNER)
-          </span>
-          <span className="text-slate-600">|</span>
-          <span className="text-slate-300">North Eastern Council (NEC) Logistics Grid</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1 text-slate-300">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Live Satellite Feed Connected
-          </span>
-          <span className="text-slate-600">|</span>
-          <span className="font-mono text-slate-400">Admin Officer: MDoNER-NER-OPS</span>
-        </div>
-      </div>
-
-      {/* Main App Navigation Header */}
-      <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900 px-6">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveModule('hub')}>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 via-sky-500 to-emerald-500 shadow-lg shadow-indigo-500/25">
-            <Mountain className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold tracking-tight text-white">Jeevan Setu</h1>
-              <span className="rounded bg-indigo-500/20 px-2 py-0.5 text-xs font-semibold text-indigo-300">जीवन सेतु</span>
-              <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-xs font-semibold text-emerald-400">NER Logistics Grid</span>
+    <div className="flex h-screen w-screen bg-[#040814] text-slate-100 font-sans overflow-hidden">
+      
+      {/* 1. LEFT SIDEBAR NAVIGATION BAR */}
+      <aside className="w-16 md:w-60 shrink-0 border-r border-slate-800 bg-[#070d1e] flex flex-col justify-between p-2 md:p-3 shadow-2xl z-50 select-none">
+        <div className="space-y-4">
+          
+          {/* Logo & Brand Header */}
+          <div
+            className="flex items-center gap-3 px-2 py-1.5 cursor-pointer rounded-xl hover:bg-slate-800/50 transition"
+            onClick={() => setActiveModule('hub')}
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 via-sky-500 to-emerald-500 shadow-lg shadow-indigo-500/25">
+              <Mountain className="h-6 w-6 text-white" />
             </div>
-            <p className="text-[11px] text-slate-400">Connecting Routes &bull; Delivering Across North Eastern Region</p>
+            <div className="hidden md:block overflow-hidden">
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-base font-black tracking-tight text-white">Jeevan Setu</h1>
+                <span className="rounded bg-indigo-500/20 px-1.5 py-0.5 text-[10px] font-bold text-indigo-300">जीवन सेतु</span>
+              </div>
+              <p className="text-[10px] text-slate-400 truncate">MoDoNER / NEC Logistics Grid</p>
+            </div>
           </div>
+
+          <div className="h-[1px] bg-slate-800/80 mx-1" />
+
+          {/* Navigation Items List */}
+          <nav className="space-y-1 overflow-y-auto max-h-[calc(100vh-180px)] pr-0.5">
+            {[
+              { id: 'hub', label: t('navigation.dashboard'), shortLabel: t('navigation.dashboard'), icon: Sparkles },
+              { id: 'smartmonitoring', label: t('navigation.smartmonitoring'), shortLabel: t('navigation.smartmonitoring'), icon: Eye, badge: 'NEW' },
+              { id: 'aiimpact', label: t('navigation.aiimpact'), shortLabel: t('navigation.aiimpact'), icon: Camera, badge: 'AI' },
+              { id: 'customdashboard', label: t('navigation.customdashboard'), shortLabel: t('navigation.customdashboard'), icon: Gauge },
+              { id: 'map', label: t('navigation.map'), shortLabel: t('navigation.map'), icon: MapPin },
+              { id: 'drone', label: t('navigation.drone'), shortLabel: t('navigation.drone'), icon: Radio },
+              { id: 'road', label: t('navigation.road'), shortLabel: t('navigation.road'), icon: Activity },
+              { id: 'alerts', label: 'Active Alerts', shortLabel: 'Active Alerts', icon: AlertTriangle, badge: 'LIVE' },
+              { id: 'vehicles', label: t('navigation.vehicles'), shortLabel: t('navigation.vehicles'), icon: Truck },
+              { id: 'rerouting', label: t('navigation.rerouting'), shortLabel: t('navigation.rerouting'), icon: Navigation },
+              { id: 'supplies', label: t('navigation.supplies'), shortLabel: t('navigation.supplies'), icon: Sliders },
+              { id: 'weather', label: t('navigation.weather'), shortLabel: t('navigation.weather'), icon: CloudRain },
+              { id: 'gov', label: t('navigation.gov'), shortLabel: t('navigation.gov'), icon: Building2 }
+            ].map(tab => {
+              const Icon = tab.icon;
+              const active = activeModule === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveModule(tab.id as any)}
+                  title={tab.label}
+                  className={`w-full flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-xs font-semibold transition group relative ${
+                    active
+                      ? 'bg-gradient-to-r from-indigo-600 to-sky-600 text-white shadow-lg shadow-indigo-600/30'
+                      : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-100'
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 shrink-0 transition ${active ? 'text-white' : 'text-slate-400 group-hover:text-sky-400'}`} />
+                  <span className="hidden md:inline-block truncate flex-1 text-left">{tab.shortLabel}</span>
+                  {tab.badge && (
+                    <span className="hidden md:inline-block rounded bg-sky-500/20 border border-sky-500/30 px-1 py-0.5 text-[9px] font-black text-sky-400 leading-none">
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
         </div>
 
-        {/* Quick Nav Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto">
-          {[
-            { id: 'hub', label: 'Operations Hub', icon: Sparkles },
-            { id: 'customdashboard', label: 'Disaster Risk Dashboard', icon: Gauge },
-            { id: 'map', label: 'NER Live Map', icon: MapPin },
-            { id: 'citizentriage', label: 'Citizen AI Photo Triage', icon: Camera },
-            { id: 'drone', label: 'UAV Drone Dispatcher', icon: Radio },
-            { id: 'road', label: 'Road Monitoring', icon: Activity },
-            { id: 'vehicles', label: 'Vehicle Logistics', icon: Truck },
-            { id: 'delivery', label: 'Delivery Mgmt', icon: Package },
-            { id: 'rerouting', label: 'Dynamic Rerouting', icon: Navigation },
-            { id: 'supplies', label: 'Essential Supplies', icon: Sliders },
-            { id: 'weather', label: 'Weather Intel', icon: CloudRain },
-            { id: 'gov', label: 'Gov Dashboard', icon: Building2 },
-            { id: 'apis', label: '22-API Ecosystem', icon: Layers }
-          ].map(tab => {
-            const Icon = tab.icon;
-            const active = activeModule === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveModule(tab.id as any)}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-                  active
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-                }`}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {tab.label}
-              </button>
-            );
-          })}
+        {/* Sidebar Footer / Emergency SOS */}
+        <div className="pt-2 border-t border-slate-800 space-y-2">
+          <button
+            onClick={() => setIsSosModalOpen(true)}
+            className="w-full flex items-center justify-center md:justify-start gap-2 rounded-xl bg-rose-600/20 border border-rose-500/40 p-2.5 text-xs font-bold text-rose-400 hover:bg-rose-600 hover:text-white transition shadow-lg shadow-rose-600/10 cursor-pointer"
+          >
+            <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping shrink-0" />
+            <span className="hidden md:inline">{t('navigation.sos', 'EMERGENCY SOS')}</span>
+          </button>
         </div>
-      </header>
+      </aside>
 
-      {/* Main Workspace Area */}
-      <main className="flex-1 overflow-hidden">
+      {/* 2. RIGHT MAIN CONTENT AREA */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+
+        {/* Top Header Command Bar (Matching screenshot media_1787749633186.png) */}
+        <header className="h-14 shrink-0 border-b border-slate-800 bg-[#040814] px-4 md:px-6 flex items-center justify-between gap-4 backdrop-blur shadow-md">
+          {/* MDoNER / Regional Title */}
+          <div className="flex items-center gap-3">
+            <span className="font-semibold text-xs text-emerald-400 flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4" />
+              {t('header.title', 'Ministry of Development of North Eastern Region (MDoNER)')}
+            </span>
+            <span className="hidden lg:inline text-slate-600">|</span>
+            <span className="hidden lg:inline text-xs text-slate-300">{t('header.subtitle', 'North Eastern Council (NEC) Command Grid')}</span>
+          </div>
+
+          {/* Glowing Header Action Buttons (Matching Screenshot) */}
+          <div className="flex items-center gap-3">
+            {/* 🚨 EMERGENCY SOS Glowing Pill Button */}
+            <button
+              onClick={() => setIsSosModalOpen(true)}
+              className="rounded-full bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 px-4 py-1.5 text-xs font-black text-white shadow-lg shadow-rose-600/50 hover:scale-105 transition flex items-center gap-1.5 border border-rose-400/40 cursor-pointer animate-pulse"
+            >
+              <span>🚨</span>
+              <span>{t('navigation.sos', 'EMERGENCY SOS')}</span>
+            </button>
+
+            {/* 🎮 3D SIM Pill Button */}
+            <button
+              onClick={() => setActiveModule('hub')}
+              className={`rounded-full px-3.5 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
+                activeModule === 'hub'
+                  ? 'bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/40'
+                  : 'bg-slate-900 border border-slate-700 text-slate-300 hover:text-white'
+              }`}
+            >
+              <span>🎮</span>
+              <span>{t('header.sim', '3D SIM')}</span>
+            </button>
+
+            {/* 🤖 AI Pill Button */}
+            <button
+              onClick={() => setActiveModule('aiimpact')}
+              className={`rounded-full px-3.5 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
+                activeModule === 'aiimpact'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-purple-600/40'
+                  : 'bg-slate-900 border border-slate-700 text-slate-300 hover:text-white'
+              }`}
+            >
+              <span>🤖</span>
+              <span>{t('header.ai', 'AI')}</span>
+            </button>
+
+            {/* Live IST Clock */}
+            <div className="hidden md:flex flex-col text-right font-mono px-2">
+              <span className="text-xs font-black text-slate-200 tracking-wider">
+                {currentTime || '18:39:33'} IST
+              </span>
+              <span className="text-[9px] text-slate-400 font-bold">2026 NER Grid</span>
+            </div>
+
+            {/* User Profile Badge: Admin Officer MDoNER L3 (Clickable -> Opens MDoNER Command) */}
+            <button
+              onClick={() => setActiveModule('gov')}
+              title="Click to Open MDoNER Command / Executive Oversight"
+              className={`flex items-center gap-2 rounded-full border transition cursor-pointer px-3 py-1 text-xs ${
+                activeModule === 'gov'
+                  ? 'border-emerald-400 bg-emerald-900/80 shadow-lg shadow-emerald-500/30'
+                  : 'border-emerald-500/40 bg-emerald-950/40 hover:bg-emerald-900/60 hover:border-emerald-400'
+              }`}
+            >
+              <div className="h-6 w-6 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center shrink-0">
+                AO
+              </div>
+              <div className="hidden sm:block text-left text-[11px]">
+                <div className="font-bold text-white leading-none">{t('header.adminOfficer', 'Admin Officer')}</div>
+                <div className="text-[9px] font-mono text-emerald-400 font-semibold leading-none mt-0.5">MDONER L3</div>
+              </div>
+            </button>
+
+            {/* 🌐 MULTI-LANGUAGE SELECTOR DROPDOWN */}
+            <LanguageSelector />
+          </div>
+        </header>
+
+        {/* Main Workspace Render */}
+        <main className="flex-1 overflow-hidden">
+
+          {/* 🛰️ SMART DISASTER MONITORING */}
+          {activeModule === 'smartmonitoring' && (
+            <div className="h-full overflow-y-auto">
+              <SmartDisasterMonitoring
+                initialLoc={sharedMonitoringLoc}
+                onNavigateToImpactAssessment={(loc) => {
+                  setSharedMonitoringLoc({ lat: loc.lat, lon: loc.lon, displayName: loc.name });
+                  setActiveModule('aiimpact');
+                }}
+              />
+            </div>
+          )}
+
+        {/* 🤖 AI DISASTER IMPACT ASSESSMENT */}
+        {activeModule === 'aiimpact' && (
+          <div className="h-full overflow-y-auto">
+            <AIDisasterImpactAssessment
+              onNavigateToMonitoring={(loc) => {
+                setSharedMonitoringLoc({ lat: loc.lat, lon: loc.lon, displayName: loc.name, state: 'NER Sector', country: 'India' });
+                setActiveModule('smartmonitoring');
+              }}
+            />
+          </div>
+        )}
 
         {/* 0. DISASTER RISK DASHBOARD */}
         {activeModule === 'customdashboard' && (
@@ -392,178 +536,33 @@ export default function App() {
           </div>
         )}
 
-        {/* 1. OPERATIONS HUB (Matches jsalgoforge.netlify.app Home) */}
+        {/* 1. OPERATIONS HUB / 3D SIMULATION DIGITAL TWIN */}
         {activeModule === 'hub' && (
-          <div className="h-full overflow-y-auto p-6 space-y-6">
-            {/* Hero Top Bar */}
-            <div className="rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 p-6 shadow-xl flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 flex items-center gap-1">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    North East Region ● Live Satellite & Radar
-                  </span>
-                  <span className="text-xs text-slate-400">"Smart decisions today, safer tomorrow."</span>
-                </div>
-                <h2 className="mt-2 text-2xl font-black text-white tracking-tight">NER Logistics & Accessibility Intelligence Platform</h2>
-                <p className="text-xs text-slate-300 max-w-2xl mt-1">
-                  Real-time logistics, terrain contours, dynamic road blockage detection, and sovereign satellite radar across Assam, Meghalaya, Mizoram, Manipur, Nagaland, Tripura, Arunachal Pradesh, and Sikkim.
-                </p>
-              </div>
-
-              {/* Weather snapshot for Shillong */}
-              <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 min-w-[240px]">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Weather Intelligence</span>
-                  <span className="text-emerald-400 font-medium">Shillong, Meghalaya</span>
-                </div>
-                <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-white">{weatherData ? `${weatherData.temperature}°C` : '21.4°C'}</span>
-                  <span className="text-xs text-sky-400">{weatherData ? `${weatherData.precipitation} mm rain` : 'Precipitation Normal'}</span>
-                </div>
-                <div className="mt-2 text-[10px] text-slate-500">Live 2026 Open-Meteo Satellite Feed</div>
-              </div>
-            </div>
-
-            {/* Live Map Preview & AI Prediction Banner */}
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-8 rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl flex flex-col h-[400px]">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-indigo-400" />
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">Live Region Map ● North Eastern Region Logistics Grid</h3>
-                  </div>
-                  <button onClick={() => setActiveModule('map')} className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-medium">
-                    Expand Full Map <ChevronRight className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-                <div ref={mapContainerRef} className="flex-1 rounded-xl overflow-hidden" />
-              </div>
-
-              {/* Sidebar Quick Stats & AI Alerts */}
-              <div className="col-span-4 space-y-4 flex flex-col justify-between">
-                {/* AI Prediction Box */}
-                <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-slate-900 p-5 shadow-xl">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-400">
-                      <Bot className="h-4 w-4" />
-                      AI Prediction Alert
-                    </span>
-                    <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">High Disruption</span>
-                  </div>
-                  <p className="mt-2 text-sm font-semibold text-slate-200">High disruption expected in East Khasi Hills (NH-6 corridor) on 24 May due to heavy pre-monsoon precipitation.</p>
-                  <div className="mt-3 flex items-center justify-between text-xs border-t border-slate-800 pt-3">
-                    <span className="text-slate-400">Suggested Action:</span>
-                    <span className="text-indigo-400 font-medium cursor-pointer" onClick={() => setActiveModule('rerouting')}>Reroute Via Bypass ➔</span>
-                  </div>
-                </div>
-
-                {/* Live Vehicle Tracking Snapshot */}
-                <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <Truck className="h-4 w-4 text-indigo-400" />
-                      Live Fleet Telemetry
-                    </span>
-                    <span className="text-[10px] text-emerald-400 font-semibold">58 Active Fleets</span>
-                  </div>
-                  <div className="mt-3 space-y-2">
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-2.5 flex items-center justify-between text-xs">
-                      <div>
-                        <div className="font-medium text-white">Guwahati ➔ Aizawl (NH-6)</div>
-                        <div className="text-[10px] text-slate-400">Tata LPTA 4x4 Heavy &bull; Oxygen Cylinders</div>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-mono font-bold text-emerald-400">45 km/h</span>
-                        <div className="text-[10px] text-slate-500">ETA: 3h 15m</div>
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-2.5 flex items-center justify-between text-xs">
-                      <div>
-                        <div className="font-medium text-white">Shillong ➔ Silchar Bypass</div>
-                        <div className="text-[10px] text-slate-400">Mahindra Bolero All-Terrain &bull; Blood Units</div>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-mono font-bold text-indigo-400">38 km/h</span>
-                        <div className="text-[10px] text-slate-500">ETA: 1h 45m</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Smart Operations Hub Grid (10 Interactive Cards from Netlify App) */}
-            <div>
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300">Smart Operations Hub</h3>
-                <span className="text-xs text-slate-500">All 10 Core Modules Synchronized with MDoNER Logistics Server</span>
-              </div>
-
-              <div className="grid grid-cols-5 gap-4">
-                {[
-                  { id: 'citizentriage', title: 'Citizen AI Damage Reporter', desc: 'Upload disaster photos for Gemini AI vision severity assessment & NDRF triage.', icon: Camera, color: 'from-pink-500/20 to-slate-900', border: 'hover:border-pink-500/50' },
-                  { id: 'drone', title: 'UAV Drone Dispatcher', desc: 'Zero-road high-altitude aerial supply corridor dispatch.', icon: Radio, color: 'from-sky-500/20 to-slate-900', border: 'hover:border-sky-500/50' },
-                  { id: 'road', title: 'Road & Accessibility', desc: 'Monitor road status, landslides & blockages in real-time.', icon: Activity, color: 'from-rose-500/20 to-slate-900', border: 'hover:border-rose-500/50' },
-                  { id: 'vehicles', title: 'Vehicle & Logistics', desc: 'Track all-terrain fleets, check speeds & fuel capacity.', icon: Truck, color: 'from-indigo-500/20 to-slate-900', border: 'hover:border-indigo-500/50' },
-                  { id: 'delivery', title: 'Delivery Management', desc: 'Manage deliveries of essential goods & emergency supplies.', icon: Package, color: 'from-emerald-500/20 to-slate-900', border: 'hover:border-emerald-500/50' },
-                  { id: 'rerouting', title: 'Dynamic Rerouting', desc: 'AI-powered smart rerouting for safe & fastest delivery.', icon: Navigation, color: 'from-sky-500/20 to-slate-900', border: 'hover:border-sky-500/50' },
-                  { id: 'supplies', title: 'Essential Supply Priority', desc: 'Prioritize essential supplies like medicine, blood & fuel.', icon: Sliders, color: 'from-amber-500/20 to-slate-900', border: 'hover:border-amber-500/50' },
-                  { id: 'alerts', title: 'Alert & Notifications', desc: 'Real-time alerts & broadcasts for critical road incidents.', icon: Bell, color: 'from-rose-500/20 to-slate-900', border: 'hover:border-rose-500/50' },
-                  { id: 'weather', title: 'Weather Intelligence', desc: 'Live Open-Meteo weather radar & precipitation telemetry.', icon: CloudRain, color: 'from-blue-500/20 to-slate-900', border: 'hover:border-blue-500/50' },
-                  { id: 'vehicleselect', title: 'Smart Vehicle Selection', desc: 'AI selects the most suitable 4x4 or EV carrier for route.', icon: Compass, color: 'from-purple-500/20 to-slate-900', border: 'hover:border-purple-500/50' },
-                  { id: 'analytics', title: 'Analytics & Reports', desc: 'Terrain resilience metrics, transport insights & reports.', icon: FileBarChart, color: 'from-teal-500/20 to-slate-900', border: 'hover:border-teal-500/50' },
-                  { id: 'gov', title: 'Government Dashboard', desc: 'MDoNER administrative oversight & decision support.', icon: Building2, color: 'from-amber-500/20 to-slate-900', border: 'hover:border-amber-500/50' },
-                ].map(card => {
-                  const Icon = card.icon;
-                  return (
-                    <div
-                      key={card.id}
-                      onClick={() => setActiveModule(card.id as any)}
-                      className={`cursor-pointer rounded-2xl border border-slate-800 bg-gradient-to-br ${card.color} p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl ${card.border}`}
-                    >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-950/80 border border-slate-800">
-                        <Icon className="h-4 w-4 text-indigo-400" />
-                      </div>
-                      <h4 className="mt-3 text-xs font-bold text-white">{card.title}</h4>
-                      <p className="mt-1 text-[11px] text-slate-400 leading-snug">{card.desc}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          <div className="h-full overflow-y-auto p-4 lg:p-6">
+            <ThreeDigitalTwin
+              onNavigateToMonitoring={() => setActiveModule('smartmonitoring')}
+              onNavigateToImpact={() => setActiveModule('aiimpact')}
+              onNavigateToRerouting={() => setActiveModule('rerouting')}
+              onNavigateModule={(mod) => setActiveModule(mod as any)}
+            />
           </div>
         )}
 
-        {/* 2. FULL EXPANDED MAP VIEW */}
+        {/* 2. FULL EXPANDED MAP VIEW MATCHING SCREENSHOT media_1787754063833.png */}
         {activeModule === 'map' && (
-          <div className="relative h-full w-full">
-            <div ref={mapContainerRef} className="h-full w-full" />
-            <div className="absolute right-4 top-4 z-[1000] w-72 rounded-xl border border-slate-800 bg-slate-900/95 p-3 shadow-2xl backdrop-blur">
-              <div className="mb-2 flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Satellite & GIS Layers</span>
-                <span className="text-[10px] font-semibold text-emerald-400">100% Free / Sovereign</span>
-              </div>
-              <div className="space-y-1.5">
-                {Object.values(MAP_LAYERS).map(layer => (
-                  <button
-                    key={layer.id}
-                    onClick={() => setSelectedLayer(layer.id)}
-                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs transition ${
-                      selectedLayer === layer.id ? 'bg-indigo-600 text-white font-medium shadow' : 'text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <span>{layer.name}</span>
-                    {selectedLayer === layer.id && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
-                  </button>
-                ))}
-              </div>
-              <div className="mt-3 border-t border-slate-800 pt-2 text-[10px] text-slate-400">
-                🇮🇳 <b>ISRO Bhuvan</b> WMS provides official Indian government satellite thematic overlays across the 8 NER states.
-              </div>
-            </div>
-          </div>
+          <NERLiveMapModule
+            onNavigateTo3DSim={() => setActiveModule('hub')}
+            onTriggerSOS={() => setIsSosModalOpen(true)}
+          />
+        )}
+
+        {/* 🚨 ACTION ALERTS / REAL-TIME EMERGENCY INCIDENT BROADCAST FEED MATCHING SCREENSHOT media_1787753496813.png */}
+        {activeModule === 'alerts' && (
+          <ActionAlertsModule
+            onNavigateToMap={() => setActiveModule('map')}
+            onNavigateTo3D={() => setActiveModule('hub')}
+            onTriggerSOS={() => setIsSosModalOpen(true)}
+          />
         )}
 
         {/* 3. ROAD MONITORING & ACCESSIBILITY */}
@@ -573,9 +572,9 @@ export default function App() {
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Activity className="h-5 w-5 text-rose-400" />
-                  NER Road & Accessibility Monitoring
+                  {t("road.title", "NER Road & Accessibility Monitoring")}
                 </h2>
-                <p className="text-xs text-slate-400">Live telemetry on highway clearance, landslide choke points, and bridge load integrity.</p>
+                <p className="text-xs text-slate-400">{t("road.subtitle", "Live telemetry on highway clearance, landslide choke points, and bridge load integrity.")}</p>
               </div>
               <span className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-400 border border-rose-500/30">
                 2 Active Disrupted Corridors
@@ -614,60 +613,689 @@ export default function App() {
           </div>
         )}
 
-        {/* 4. ESSENTIAL SUPPLIES & PRIORITY */}
-        {activeModule === 'supplies' && (
-          <div className="h-full overflow-y-auto p-6 space-y-6">
-            <div className="flex items-center justify-between">
+        {/* VEHICLE LOGISTICS TELEMETRY ROSTER (8 ACTIVE SECTOR UNITS) */}
+        {activeModule === 'vehicles' && (
+          <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6">
+            {/* Header */}
+            <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Sliders className="h-5 w-5 text-indigo-400" />
-                  Essential Supply Priority Queue
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-xs font-bold text-indigo-400 flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    LIVE CAN-BUS OBD-II DIAGNOSTICS & ISRO NAVIC TRACKING
+                  </span>
+                </div>
+                <h2 className="text-xl lg:text-2xl font-black text-white mt-1 flex items-center gap-2">
+                  <span>🚚</span> {t("vehicles.title", "Inter State Relief Convoy Telemetry Roster")} <span className="text-xs font-normal text-slate-400">(8 Active Sector Units)</span>
                 </h2>
-                <p className="text-xs text-slate-400">Dynamic triage of life-saving medical gear, baby food, and relief fuel across NER.</p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {t("vehicles.subtitle", "Live satellite telemetry, CAN-bus OBD-II sensor diagnostics, cold-chain monitoring, and emergency diversion tracking across all 8 North Eastern States.")}
+                </p>
               </div>
-              <button className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow hover:bg-indigo-500">
-                + Register New Consignment
+
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="px-3 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  ● NavIC 14 Sats Active
+                </span>
+              </div>
+            </div>
+
+            {/* 8 Active Convoy Cards Grid (2 cols x 4 rows) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Convoy #01 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black uppercase">
+                      PRIORITY 1
+                    </span>
+                    <span className="font-extrabold text-sm text-white">AS-01-AB-1234 (Convoy #01)</span>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs font-bold text-sky-400">
+                    45 km/h
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-300 font-medium">
+                    <b>Route:</b> Guwahati Central Hub (Assam) ➔ Aizawl Civil Hospital (Mizoram)
+                  </div>
+                  <div className="text-slate-400 text-[11px]">
+                    <b>Consignment:</b> 12t Medical Oxygen Cylinders (Class 1 Urgent)
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-400 pt-1 font-mono">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Fuel: <b className="text-white">78%</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">NavIC: <b className="text-white">12 Satellites</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Temp: <b className="text-white">21.4°C</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Traction: <b className="text-emerald-400">Optimal</b></div>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div className="h-full bg-gradient-to-r from-emerald-500 to-sky-400 rounded-full" style={{ width: '42%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-slate-300 font-medium">Progress: 42% &bull; Diverted via Sector 9 Jowai Bypass</span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Convoy #02 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-black uppercase">
+                      PRIORITY 2
+                    </span>
+                    <span className="font-extrabold text-sm text-white">AS-02-CD-5678 (Convoy #02)</span>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs font-bold text-sky-400">
+                    52 km/h
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-300 font-medium">
+                    <b>Route:</b> Nagaon Central Silos ➔ Dhemaji Forward Depot (Upper Assam)
+                  </div>
+                  <div className="text-slate-400 text-[11px]">
+                    <b>Consignment:</b> 20t Baby Food & Fortified Grain Bags
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-400 pt-1 font-mono">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Fuel: <b className="text-white">84%</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">NavIC: <b className="text-white">14 Satellites</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Temp: <b className="text-white">26.2°C</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-sky-300">Clear Route 4-Lane</b></div>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full" style={{ width: '68%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-slate-300 font-medium">Progress: 68% &bull; ETA: 1h 45m (NH-27 Green Corridor)</span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Convoy #03 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black uppercase">
+                      ESCORT ACTIVE
+                    </span>
+                    <span className="font-extrabold text-sm text-white">AR-01-EF-9012 (Convoy #03)</span>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs font-bold text-amber-400">
+                    34 km/h
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-300 font-medium">
+                    <b>Route:</b> Tezpur Military Base ➔ Sela Pass & Tawang Sector (Arunachal)
+                  </div>
+                  <div className="text-slate-400 text-[11px]">
+                    <b>Consignment:</b> 25t Ration, Antivenom & Hypothermia Blankets
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-400 pt-1 font-mono">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Fuel: <b className="text-white">92%</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Chains: <b className="text-white">Mounted</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Alt: <b className="text-white">2,410m</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-amber-300">ITBP Fog Beacon</b></div>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full" style={{ width: '25%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-slate-300 font-medium">Progress: 25% &bull; Kalaktang Ridge Bypass &bull; ETA: 4h 10m</span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
+                      <button onClick={() => setActiveModule('drone')} className="px-2 py-0.5 rounded bg-rose-600 text-white text-[10px] font-bold">Air-Drop SOS 🚨</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Convoy #04 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black uppercase">
+                      REROUTED
+                    </span>
+                    <span className="font-extrabold text-sm text-white">NL-01-GH-3456 (Convoy #04)</span>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs font-bold text-sky-400">
+                    41 km/h
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-300 font-medium">
+                    <b>Route:</b> Dimapur Commercial Hub ➔ Kohima Medical Center (Nagaland)
+                  </div>
+                  <div className="text-slate-400 text-[11px]">
+                    <b>Consignment:</b> 18 KL Emergency Diesel for Hospital Generators
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-400 pt-1 font-mono">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Fuel: <b className="text-white">88%</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">NavIC: <b className="text-white">13 Satellites</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-slate-200">Zubza Sector</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-amber-300">35 km/h Escort</b></div>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full" style={{ width: '55%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-slate-300 font-medium">Progress: 55% &bull; Single-Lane Traffic Escort &bull; ETA: 2h 05m</span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Convoy #05 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-black uppercase">
+                      CLASS 1 TRAUMA
+                    </span>
+                    <span className="font-extrabold text-sm text-white">ML-01-IJ-7890 (Convoy #05)</span>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs font-bold text-rose-400">
+                    48 km/h
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-300 font-medium">
+                    <b>Route:</b> Siliguri Staging Depot ➔ Gangtok Civil Hospital (Sikkim)
+                  </div>
+                  <div className="text-slate-400 text-[11px]">
+                    <b>Consignment:</b> 8t Blood Plasma, Trauma Kits & Antivenom Vials
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-400 pt-1 font-mono">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Cold Chain: <b className="text-cyan-300">-20°C</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Fuel: <b className="text-white">70%</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-slate-200">Lava-Rishi Pass</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-emerald-300">Teesta Bypass</b></div>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div className="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full" style={{ width: '79%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-slate-300 font-medium">Progress: 79% &bull; Elevated Ridge Link &bull; ETA: 0h 40m</span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Convoy #06 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black uppercase">
+                      PRIORITY 2
+                    </span>
+                    <span className="font-extrabold text-sm text-white">MN-01-KL-2345 (Convoy #06)</span>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs font-bold text-emerald-400">
+                    58 km/h
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-300 font-medium">
+                    <b>Route:</b> Silchar Logistics Base ➔ Imphal Valley Hospital (Manipur)
+                  </div>
+                  <div className="text-slate-400 text-[11px]">
+                    <b>Consignment:</b> 14t Infant Formula & Water Purification Chem
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-400 pt-1 font-mono">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Fuel: <b className="text-white">66%</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">NavIC: <b className="text-white">11 Satellites</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-slate-200">NH-37 Jiribam</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-emerald-300">All Clear</b></div>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style={{ width: '72%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-slate-300 font-medium">Progress: 72% &bull; Nominal Transit &bull; ETA: 1h 20m</span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Convoy #07 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-black uppercase">
+                      SHELTER CACHE
+                    </span>
+                    <span className="font-extrabold text-sm text-white">TR-01-MN-6789 (Convoy #07)</span>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs font-bold text-sky-400">
+                    50 km/h
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-300 font-medium">
+                    <b>Route:</b> Guwahati Central Hub ➔ Agartala Relief Depot (Tripura)
+                  </div>
+                  <div className="text-slate-400 text-[11px]">
+                    <b>Consignment:</b> 18t Emergency Tarpaulins & Medical Tents
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-400 pt-1 font-mono">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Fuel: <b className="text-white">74%</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">NavIC: <b className="text-white">14 Satellites</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-slate-200">NH-8 South</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-emerald-300">Clear Transit</b></div>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" style={{ width: '87%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-slate-300 font-medium">Progress: 87% &bull; Southern Artery Operational &bull; ETA: 0h 55m</span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Convoy #08 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black uppercase">
+                      HILL CACHE
+                    </span>
+                    <span className="font-extrabold text-sm text-white">MZ-01-OP-4567 (Convoy #08)</span>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs font-bold text-amber-400">
+                    36 km/h
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-300 font-medium">
+                    <b>Route:</b> Silchar Staging Depot ➔ Lunglei Hill Post (Mizoram)
+                  </div>
+                  <div className="text-slate-400 text-[11px]">
+                    <b>Consignment:</b> 10t Survival Rations & Anti-Rabies Vaccine Caches
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-400 pt-1 font-mono">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">Fuel: <b className="text-white">82%</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80">NavIC: <b className="text-white">10 Satellites</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-slate-200">NH-54 Ridge</b></div>
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800/80"><b className="text-amber-300">Rain Reduced</b></div>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full" style={{ width: '45%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-slate-300 font-medium">Progress: 45% &bull; Heavy Mud Silt Drag &bull; ETA: 3h 50m</span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 4. ESSENTIAL SUPPLIES & INTER-STATE STRATEGIC DEPOTS */}
+        {activeModule === 'supplies' && (
+          <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6">
+            {/* Top 4 KPI Stockpile Buffer Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Card 1: Medical Oxygen */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-2 relative overflow-hidden">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-400 tracking-wider text-[11px] uppercase">MEDICAL OXYGEN</span>
+                  <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[9px] font-extrabold uppercase">Class 1</span>
+                </div>
+                <div className="text-2xl lg:text-3xl font-black text-white">120 Tons</div>
+                <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full" style={{ width: '85%' }}></div>
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-1">
+                  <span>4,200 Cylinders</span>
+                  <span className="text-emerald-400 font-bold">14 Days Buffer</span>
+                </div>
+              </div>
+
+              {/* Card 2: Food Grains & Rations */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-2 relative overflow-hidden">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-400 tracking-wider text-[11px] uppercase">FOOD GRAINS & RATIONS</span>
+                  <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-extrabold uppercase">Class 2</span>
+                </div>
+                <div className="text-2xl lg:text-3xl font-black text-white">340 Tons</div>
+                <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full" style={{ width: '70%' }}></div>
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-1">
+                  <span>FCI Regional Silos</span>
+                  <span className="text-emerald-400 font-bold">18 Days Buffer</span>
+                </div>
+              </div>
+
+              {/* Card 3: Emergency Fuel */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-2 relative overflow-hidden">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-400 tracking-wider text-[11px] uppercase">EMERGENCY FUEL</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-extrabold uppercase">Class 1</span>
+                </div>
+                <div className="text-2xl lg:text-3xl font-black text-white">85 KL</div>
+                <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style={{ width: '90%' }}></div>
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-1">
+                  <span>Diesel & Jet-A1</span>
+                  <span className="text-sky-400 font-bold">Helicopter / JCB Fleet</span>
+                </div>
+              </div>
+
+              {/* Card 4: Shelter Gear & Tents */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-2 relative overflow-hidden">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-400 tracking-wider text-[11px] uppercase">SHELTER GEAR & TENTS</span>
+                  <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[9px] font-extrabold uppercase">Class 2</span>
+                </div>
+                <div className="text-2xl lg:text-3xl font-black text-white">200 Tons</div>
+                <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" style={{ width: '65%' }}></div>
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-1">
+                  <span>1,200 Relief Tents</span>
+                  <span className="text-indigo-300 font-bold">Waterproof Tarps</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Strategic Depots Section Header */}
+            <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg lg:text-xl font-black text-white flex items-center gap-2">
+                  <span>📦</span> {t("supplies.title", "Inter-State Strategic Supply Depots & Forward Caches")} <span className="text-xs font-normal text-slate-400">(All 8 NER States)</span>
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {t("supplies.subtitle", "Real-time inventory levels synchronized across FCI, Indian Red Cross & State Civil Supplies Directorates.")}
+                </p>
+              </div>
+
+              <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 font-bold text-white text-xs shadow-lg shadow-rose-600/30 hover:scale-105 transition flex items-center gap-1.5 shrink-0">
+                <span>+</span> Allocate Emergency Supply ➔
               </button>
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-xl">
-              <table className="w-full text-left text-xs">
-                <thead className="border-b border-slate-800 bg-slate-950/70 text-slate-400">
-                  <tr>
-                    <th className="p-3.5">ID</th>
-                    <th className="p-3.5">Supply Item</th>
-                    <th className="p-3.5">Priority Level</th>
-                    <th className="p-3.5">Destination Hub</th>
-                    <th className="p-3.5">Transit Status</th>
-                    <th className="p-3.5">ETA</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800 text-slate-300">
-                  {supplies.map(sup => (
-                    <tr key={sup.id} className="hover:bg-slate-800/40">
-                      <td className="p-3.5 font-mono text-slate-400">{sup.id}</td>
-                      <td className="p-3.5 font-semibold text-white">{sup.item}</td>
-                      <td className="p-3.5">
-                        <span className={`rounded px-2.5 py-1 text-[10px] font-bold ${
-                          sup.priority === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
-                          sup.priority === 'HIGH' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                          'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                        }`}>
-                          {sup.priority}
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-slate-300">{sup.dest}</td>
-                      <td className="p-3.5">
-                        <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-                          <Check className="h-3 w-3" />
-                          {sup.status}
-                        </span>
-                      </td>
-                      <td className="p-3.5 font-mono text-indigo-400 font-bold">{sup.eta}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* 8 Depot Cards Grid (2 cols x 4 rows) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Depot 1 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-black text-sm text-white">Guwahati Central Mega Depot (Assam)</h3>
+                    <p className="text-[11px] text-slate-400">Primary Transit Hub & Gateway for Upper Assam, Meghalaya & Nagaland</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black shrink-0">
+                    95% Stocked
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1 font-mono">
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Oxygen: <b className="text-rose-400 block text-xs">45 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Rations: <b className="text-amber-400 block text-xs">120 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Diesel: <b className="text-sky-400 block text-xs">30 KL</b></div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-800/80">
+                  <span className="text-slate-400 font-medium">📍 Sookreting Staging Base</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setActiveModule('vehicles')} className="px-2.5 py-1 rounded bg-indigo-600 text-white text-[10px] font-bold">Dispatch Convoy 🚛</button>
+                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Depot 2 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-black text-sm text-white">Silchar Civil Medical Staging Post (Cachar, Assam)</h3>
+                    <p className="text-[11px] text-slate-400">High-Priority Buffer Depot for Barak Valley, Mizoram (Aizawl) & Tripura Links</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black shrink-0">
+                    62% Stocked
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1 font-mono">
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Oxygen: <b className="text-rose-400 block text-xs">22 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Rations: <b className="text-amber-400 block text-xs">60 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Blood Units: <b className="text-sky-400 block text-xs">150 Units</b></div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-800/80">
+                  <span className="text-amber-400 font-medium">⚠️ Buffer active for NH-6 blockage</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setActiveModule('hub')} className="px-2.5 py-1 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">Reroute 3D ➔</button>
+                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Depot 3 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-black text-sm text-white">Bomdila High-Altitude Medical Cache (Arunachal Pradesh)</h3>
+                    <p className="text-[11px] text-slate-400">Critical Forward Station supporting Sela Tunnel (2,400m) & Tawang Sectors</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-black shrink-0 uppercase">
+                    41% LOW STOCK
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1 font-mono">
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Oxygen: <b className="text-rose-400 block text-xs">8 Tons (Low)</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Antivenom: <b className="text-amber-400 block text-xs">48 Vials</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Blankets: <b className="text-sky-400 block text-xs">500 Units</b></div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-800/80">
+                  <span className="text-slate-300 font-medium">📍 Resupply Convoy #03 Dispatched</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setActiveModule('drone')} className="px-2.5 py-1 rounded bg-rose-600 text-white text-[10px] font-bold">Air-Drop SOS 🚨</button>
+                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Depot 4 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-black text-sm text-white">Dibrugarh Forward Depot (Upper Assam)</h3>
+                    <p className="text-[11px] text-slate-400">Rail-Road Hub and Bridge Head for Eastern Arunachal & Siang Valley</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black shrink-0">
+                    84% Stocked
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1 font-mono">
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Oxygen: <b className="text-rose-400 block text-xs">28 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Rations: <b className="text-amber-400 block text-xs">85 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Diesel: <b className="text-sky-400 block text-xs">25 KL</b></div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-800/80">
+                  <span className="text-slate-400 font-medium">📍 Regional Railhead Node</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setActiveModule('vehicles')} className="px-2.5 py-1 rounded bg-indigo-600 text-white text-[10px] font-bold">Dispatch Fleet 🚚</button>
+                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Depot 5 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-black text-sm text-white">Shillong Staging Depot (Meghalaya)</h3>
+                    <p className="text-[11px] text-slate-400">High-Altitude East Khasi & Jaintia Hills Emergency Stockpile Hub</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-black shrink-0">
+                    78% Stocked
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1 font-mono">
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Oxygen: <b className="text-rose-400 block text-xs">18 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Rations: <b className="text-amber-400 block text-xs">45 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Fuel: <b className="text-sky-400 block text-xs">12 KL</b></div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-800/80">
+                  <span className="text-slate-400 font-medium">📍 Jowai Sector 9 Detour Active</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Depot 6 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-black text-sm text-white">Gangtok Artery Depot (Sikkim)</h3>
+                    <p className="text-[11px] text-slate-400">Teesta Basin Emergency Medical & Mountain Survival Cache</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black shrink-0">
+                    51% Stocked
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1 font-mono">
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Oxygen: <b className="text-rose-400 block text-xs">14 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Rations: <b className="text-amber-400 block text-xs">35 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Fuel: <b className="text-sky-400 block text-xs">18 KL</b></div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-800/80">
+                  <span className="text-amber-400 font-medium">⚠️ NH-10 cutoff bypass active</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setActiveModule('hub')} className="px-2.5 py-1 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">Reroute 3D ➔</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Depot 7 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-black text-sm text-white">Kohima Relief Center (Nagaland)</h3>
+                    <p className="text-[11px] text-slate-400">NH-29 Highland Artery Logistics Depot supporting Dimapur & Imphal</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black shrink-0">
+                    87% Stocked
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1 font-mono">
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Oxygen: <b className="text-rose-400 block text-xs">16 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Rations: <b className="text-amber-400 block text-xs">48 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Fuel: <b className="text-sky-400 block text-xs">10 KL</b></div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-800/80">
+                  <span className="text-slate-400 font-medium">📍 Zubza Slope Regulated</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Depot 8 */}
+              <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-black text-sm text-white">Aizawl Civil Hospital Reserve (Mizoram)</h3>
+                    <p className="text-[11px] text-slate-400">South NER Critical Care Oxygen & Trauma Stockpile Post</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-black shrink-0 uppercase">
+                    48% CRITICAL
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1 font-mono">
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Oxygen: <b className="text-rose-400 block text-xs">8 Tons (Buffer)</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Rations: <b className="text-amber-400 block text-xs">25 Tons</b></div>
+                  <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">Trauma Kits: <b className="text-sky-400 block text-xs">100 Kits</b></div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-800/80">
+                  <span className="text-emerald-400 font-medium">📍 Convoy #01 En Route (ETA: 3h 15m)</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setActiveModule('hub')} className="px-2.5 py-1 rounded bg-emerald-600 text-white text-[10px] font-bold">Track 3D Convoy ➔</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -679,9 +1307,9 @@ export default function App() {
               <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
                 <h2 className="text-base font-bold text-white flex items-center gap-2">
                   <Navigation className="h-5 w-5 text-indigo-400" />
-                  Dynamic AI Rerouting
+                  {t("rerouting.title", "Dynamic AI Rerouting")}
                 </h2>
-                <p className="text-xs text-slate-400 mt-1">Calculates optimal bypass routes around landslide blockage zones.</p>
+                <p className="text-xs text-slate-400 mt-1">{t("rerouting.subtitle", "Calculates optimal bypass routes around landslide blockage zones.")}</p>
 
                 <div className="mt-4 space-y-3">
                   <div>
@@ -731,7 +1359,7 @@ export default function App() {
                     onClick={handleRunReroute}
                     className="w-full rounded-xl bg-indigo-600 py-2.5 text-xs font-semibold text-white shadow hover:bg-indigo-500"
                   >
-                    Compute Safe Green Corridor
+                    {t("rerouting.computeGreenCorridor", "Compute Safe Green Corridor")}
                   </button>
                 </div>
               </div>
@@ -754,7 +1382,7 @@ export default function App() {
             </div>
 
             <div className="col-span-8 rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl">
-              <h3 className="text-sm font-bold text-white">Turn-by-Turn Emergency Navigation Guidance</h3>
+              <h3 className="text-sm font-bold text-white">{t("rerouting.turnByTurnTitle", "Turn-by-Turn Emergency Navigation Guidance")}</h3>
               <p className="text-xs text-slate-400">Verified via Open Source Routing Machine (OSRM) with live terrain slope clearances.</p>
 
               <div className="mt-4 space-y-2.5 max-h-[500px] overflow-y-auto">
@@ -782,373 +1410,22 @@ export default function App() {
 
         {/* 6. GOVERNMENT DASHBOARD & ANALYTICS */}
         {activeModule === 'gov' && (
-          <div className="h-full overflow-y-auto p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-amber-400" />
-                  MDoNER Executive Oversight Dashboard
-                </h2>
-                <p className="text-xs text-slate-400">Administrative logistics oversight & district-level accessibility telemetry for the 8 North Eastern States.</p>
-              </div>
-              <button className="rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-1.5 text-xs text-slate-200 hover:bg-slate-700">
-                📥 Export Weekly MDoNER Report (PDF)
-              </button>
-            </div>
-
-            <div className="grid grid-cols-4 gap-4">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-                <span className="text-xs text-slate-400 font-medium">Total Active Relief Fleets</span>
-                <div className="mt-2 text-3xl font-bold text-white">58 / 64</div>
-                <span className="text-[10px] text-emerald-400">90.6% Operational Rate</span>
-              </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-                <span className="text-xs text-slate-400 font-medium">Critical Supplies Delivered (24h)</span>
-                <div className="mt-2 text-3xl font-bold text-indigo-400">14.8 Tons</div>
-                <span className="text-[10px] text-slate-400">Across 32 Remote Panchayats</span>
-              </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-                <span className="text-xs text-slate-400 font-medium">Average Corridor Delay</span>
-                <div className="mt-2 text-3xl font-bold text-emerald-400">-18 Mins</div>
-                <span className="text-[10px] text-emerald-400">AI Dynamic Bypass Active</span>
-              </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-                <span className="text-xs text-slate-400 font-medium">Terrain Risk Factor</span>
-                <div className="mt-2 text-3xl font-bold text-amber-400">MODERATE</div>
-                <span className="text-[10px] text-slate-400">Continuous Satellite Monitoring</span>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl">
-              <h3 className="text-sm font-bold text-white mb-3">8 North Eastern States Accessibility Index</h3>
-              <div className="grid grid-cols-4 gap-3">
-                {NER_HUBS.map(hub => (
-                  <div key={hub.id} className="rounded-xl border border-slate-800 bg-slate-950 p-3.5 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-white">{hub.state}</span>
-                      <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${
-                        hub.status === 'HIGH_ALERT' ? 'bg-rose-500/20 text-rose-400' :
-                        hub.status === 'CAUTION' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'
-                      }`}>{hub.status}</span>
-                    </div>
-                    <div className="mt-2 text-[11px] text-slate-400">Hub: {hub.name.split(' ')[0]}</div>
-                    <div className="mt-1 text-[11px] text-slate-500">Active Trucks: {hub.activeVehicles}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <MDoNERCommandModule />
         )}
 
         {/* UAV DRONE DISPATCHER MODULE VIEW */}
         {activeModule === 'drone' && (
-          <div className="grid h-full grid-cols-12 gap-6 p-6 overflow-y-auto">
-            {/* Left Control Panel */}
-            <div className="col-span-4 space-y-4">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
-                <h2 className="text-base font-bold text-white flex items-center gap-2">
-                  <Radio className="h-5 w-5 text-sky-400 animate-pulse" />
-                  UAV Drone Flight Control
-                </h2>
-                <p className="text-xs text-slate-400 mt-1">High-altitude aerial supply dispatch for zero-road emergency zones.</p>
-
-                <div className="mt-4 space-y-3">
-                  <div>
-                    <label className="text-xs text-slate-400">Origin Logistics Hub</label>
-                    <select
-                      value={droneOrigin.id}
-                      onChange={e => {
-                        const found = NER_HUBS.find(h => h.id === e.target.value);
-                        if (found) setDroneOrigin(found);
-                      }}
-                      className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
-                    >
-                      {NER_HUBS.map(h => (
-                        <option key={h.id} value={h.id}>{h.name} ({h.state})</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-slate-400">Destination Helipad / Emergency LZ</label>
-                    <select
-                      value={selectedLZ.id}
-                      onChange={e => {
-                        const found = NER_EMERGENCY_LZS.find(lz => lz.id === e.target.value);
-                        if (found) setSelectedLZ(found);
-                      }}
-                      className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
-                    >
-                      {NER_EMERGENCY_LZS.map(lz => (
-                        <option key={lz.id} value={lz.id}>{lz.name} [{lz.elevationMsl}m MSL]</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-slate-400">Assigned Lifeline UAV Drone</label>
-                    <select
-                      value={selectedDroneId}
-                      onChange={e => setSelectedDroneId(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
-                    >
-                      {NER_DRONE_FLEET.map(d => (
-                        <option key={d.id} value={d.id}>{d.name} (Max Payload: {d.maxPayloadKg}kg)</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-slate-400">Emergency Payload Cargo</label>
-                    <input
-                      type="text"
-                      value={dronePayloadItem}
-                      onChange={e => setDronePayloadItem(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-xs text-slate-400 mb-1">
-                      <span>Payload Mass (kg)</span>
-                      <span className="font-bold text-sky-400">{dronePayloadKg} kg</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="20"
-                      value={dronePayloadKg}
-                      onChange={e => setDronePayloadKg(Number(e.target.value))}
-                      className="w-full accent-sky-500"
-                    />
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setDroneMissionStatus('LAUNCHING');
-                      setTimeout(() => setDroneMissionStatus('IN_FLIGHT'), 2000);
-                    }}
-                    disabled={!droneFlightPlan?.feasible || droneMissionStatus !== 'IDLE'}
-                    className={`w-full rounded-xl py-3 text-xs font-bold text-white shadow-lg transition ${
-                      droneMissionStatus === 'IN_FLIGHT' ? 'bg-emerald-600 hover:bg-emerald-500' :
-                      droneMissionStatus === 'LAUNCHING' ? 'bg-amber-600 animate-pulse' :
-                      droneFlightPlan?.feasible ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-600/30' : 'bg-slate-800 cursor-not-allowed text-slate-500'
-                    }`}
-                  >
-                    {droneMissionStatus === 'IN_FLIGHT' ? '⚡ Autonomous UAV Mission Active' :
-                     droneMissionStatus === 'LAUNCHING' ? '⏳ Initiating Pre-Flight & IAF Corridor Handshake...' :
-                     '🚀 Launch Autonomous Drone Lifeline Mission'}
-                  </button>
-                </div>
-              </div>
-
-              {droneFlightPlan && (
-                <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase text-slate-400">Flight Telemetry Math</span>
-                    <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${
-                      droneFlightPlan.feasibilityStatus === 'FEASIBLE' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                      droneFlightPlan.feasibilityStatus === 'HIGH_WIND_WARNING' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                      'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                    }`}>
-                      {droneFlightPlan.feasibilityStatus}
-                    </span>
-                  </div>
-
-                  <p className="text-xs font-medium text-slate-200">{droneFlightPlan.statusMessage}</p>
-
-                  <div className="grid grid-cols-2 gap-3 pt-2">
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                      <span className="text-[10px] text-slate-500">Direct Aerial Range</span>
-                      <div className="text-base font-bold text-white">{droneFlightPlan.distanceKm} km</div>
-                    </div>
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                      <span className="text-[10px] text-slate-500">Estimated Duration</span>
-                      <div className="text-base font-bold text-sky-400">{droneFlightPlan.flightDurationMins} mins</div>
-                    </div>
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                      <span className="text-[10px] text-slate-500">Est. Battery Cons.</span>
-                      <div className="text-base font-bold text-emerald-400">{droneFlightPlan.batteryConsumptionPercent}%</div>
-                    </div>
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                      <span className="text-[10px] text-slate-500">Cruise Altitude</span>
-                      <div className="text-base font-bold text-indigo-400">{droneFlightPlan.maxAltitudeMsl}m MSL</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Right Map & Aerial Corridor Display */}
-            <div className="col-span-8 space-y-4">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl flex flex-col h-[420px]">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Radio className="h-4 w-4 text-sky-400" />
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">High-Altitude Aerial Lifeline Corridor (Zero Road Dependency)</h3>
-                  </div>
-                  <span className="text-[10px] font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
-                    Live Altitude Telemetry
-                  </span>
-                </div>
-                <div ref={droneMapContainerRef} className="flex-1 rounded-xl overflow-hidden" />
-              </div>
-
-              {/* Pre-Flight Protocol Checklist */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Sovereign Aerial Pre-Flight Protocol & Safety Readiness</h4>
-                <div className="grid grid-cols-4 gap-3 text-xs">
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                    <div className="flex items-center gap-2 font-semibold text-white">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                      IAF Air Corridor
-                    </div>
-                    <div className="text-[10px] text-slate-400 mt-1">Geofenced Military Flight Clearance Active</div>
-                  </div>
-
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                    <div className="flex items-center gap-2 font-semibold text-white">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                      Mountain Wind Check
-                    </div>
-                    <div className="text-[10px] text-slate-400 mt-1">Wind Vector Within Safe Threshold</div>
-                  </div>
-
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                    <div className="flex items-center gap-2 font-semibold text-white">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                      Helipad Receiver
-                    </div>
-                    <div className="text-[10px] text-slate-400 mt-1">Ground Beacon Active at {selectedLZ.name.split(' ')[0]}</div>
-                  </div>
-
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                    <div className="flex items-center gap-2 font-semibold text-white">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                      Cold-Chain Pod
-                    </div>
-                    <div className="text-[10px] text-slate-400 mt-1">Medical Thermal Storage Sealed at 3.8°C</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* CITIZEN AI DAMAGE TRIAGE VIEW */}
-        {activeModule === 'citizentriage' && (
-          <div className="h-full overflow-y-auto">
-            <Dashboard />
-          </div>
+          <UAVDroneModule onNavigateToMonitoring={() => setActiveModule('smartmonitoring')} />
         )}
 
 
         {/* 7. WEATHER INTELLIGENCE VIEW */}
         {activeModule === 'weather' && (
-          <div className="h-full overflow-y-auto p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <CloudRain className="h-5 w-5 text-indigo-400" />
-                  NER Meteorological & Cloudburst Ingestion
-                </h2>
-                <p className="text-xs text-slate-400">Powered by <b>Open-Meteo</b> (100% Free, zero rate limits, live satellite radar).</p>
-              </div>
-
-              <div className="flex gap-2">
-                {NER_HUBS.map(h => (
-                  <button
-                    key={h.id}
-                    onClick={() => setWeatherCity(h)}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-                      weatherCity.id === h.id ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-300 border border-slate-800'
-                    }`}
-                  >
-                    {h.state}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {weatherData && (
-              <div className="grid grid-cols-4 gap-4">
-                <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-                  <span className="text-xs text-slate-400 font-medium">Temperature</span>
-                  <div className="mt-2 text-3xl font-bold text-white">{weatherData.temperature}°C</div>
-                  <span className="text-xs text-slate-500">Elevation: {weatherData.elevation}m MSL</span>
-                </div>
-                <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-                  <span className="text-xs text-slate-400 font-medium">Precipitation (Past Hour)</span>
-                  <div className="mt-2 text-3xl font-bold text-sky-400">{weatherData.precipitation} mm</div>
-                  <span className="text-xs text-slate-500">Rainfall Rate: {weatherData.rain} mm</span>
-                </div>
-                <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-                  <span className="text-xs text-slate-400 font-medium">Wind & Peak Gusts</span>
-                  <div className="mt-2 text-3xl font-bold text-emerald-400">{weatherData.windSpeed} km/h</div>
-                  <span className="text-xs text-slate-500">Peak: {weatherData.windGusts} km/h</span>
-                </div>
-                <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-                  <span className="text-xs text-slate-400 font-medium">Severe Weather Risk</span>
-                  <div className={`mt-2 text-2xl font-bold ${
-                    weatherData.severeRiskLevel === 'EXTREME' ? 'text-rose-500' :
-                    weatherData.severeRiskLevel === 'HIGH' ? 'text-amber-500' : 'text-emerald-400'
-                  }`}>
-                    {weatherData.severeRiskLevel}
-                  </div>
-                  <span className="text-xs text-slate-500">Station: {weatherCity.name}</span>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* 8. 22-API ECOSYSTEM VIEW */}
-        {activeModule === 'apis' && (
-          <div className="h-full overflow-y-auto p-6 space-y-4">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Layers className="h-5 w-5 text-indigo-400" />
-              Jeevan Setu 22-API Ecosystem & Architecture Specification
-            </h2>
-            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-xl">
-              <table className="w-full text-left text-xs">
-                <thead className="border-b border-slate-800 bg-slate-950/60 font-semibold text-slate-400">
-                  <tr>
-                    <th className="p-3">#</th>
-                    <th className="p-3">Category</th>
-                    <th className="p-3">API Name</th>
-                    <th className="p-3">Provider</th>
-                    <th className="p-3">Role in Jeevan Setu NER</th>
-                    <th className="p-3">Tier</th>
-                    <th className="p-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800 text-slate-300">
-                  {getAPIEcosystemRegistry().map((api, idx) => (
-                    <tr key={idx} className="hover:bg-slate-800/40">
-                      <td className="p-3 font-mono text-slate-500">{idx + 1}</td>
-                      <td className="p-3 font-medium text-slate-400">{api.category}</td>
-                      <td className="p-3 font-bold text-white">{api.name}</td>
-                      <td className="p-3 text-slate-400">{api.provider}</td>
-                      <td className="p-3 text-slate-300">{api.notes}</td>
-                      <td className="p-3">
-                        <span className={`rounded px-2 py-0.5 text-[10px] font-semibold ${
-                          api.type === 'PRIMARY_OPEN' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
-                        }`}>
-                          {api.type === 'PRIMARY_OPEN' ? 'Primary (No-Key Free)' : 'Configurable Slot'}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          Operational
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <WeatherIntelligence
+            onNavigateToMap={() => setActiveModule('map')}
+            onNavigateToReroute={() => setActiveModule('rerouting')}
+            onTriggerSOS={() => setIsSosModalOpen(true)}
+          />
         )}
 
         {/* Fallback for other quick tabs */}
@@ -1166,7 +1443,19 @@ export default function App() {
           </div>
         )}
 
+        {/* Emergency SOS Modal (Matching media_1787750104900.png) */}
+        <EmergencySOSModal
+          isOpen={isSosModalOpen}
+          onClose={() => setIsSosModalOpen(false)}
+          onTransmitSOSLocation={(locationData) => {
+            setActiveSosLocation(locationData);
+            setIsSosModalOpen(false);
+            setActiveModule('map');
+          }}
+        />
+
       </main>
     </div>
+  </div>
   );
 }

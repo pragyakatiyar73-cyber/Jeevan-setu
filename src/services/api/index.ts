@@ -10,7 +10,7 @@ export * from './ai';
 export * from './hazardModels';
 export * from './routing';
 export * from './droneRouting';
-export * from './citizenTriage';
+export * from './smartMonitoring';
 
 export interface APIRegistryStatus {
   category: string;
