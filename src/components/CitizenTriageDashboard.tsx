@@ -61,10 +61,27 @@ const CitizenTriageDashboard: React.FC = () => {
     "Set Avoidance Perimeter"
   ]);
 
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setPhoto(URL.createObjectURL(file));
+      const objUrl = URL.createObjectURL(file);
+      setPhoto(objUrl);
+
+      // Trigger /citizen/photo upload endpoint
+      try {
+        await fetch("/citizen/photo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            photoName: file.name,
+            location,
+            incident,
+            notes
+          })
+        });
+      } catch (err) {
+        console.warn("Upload endpoint notice:", err);
+      }
     }
   };
 
@@ -73,7 +90,7 @@ const CitizenTriageDashboard: React.FC = () => {
     try {
       let data = null;
       try {
-        const res = await fetch("/analyze", {
+        const res = await fetch("/citizen/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -92,7 +109,7 @@ const CitizenTriageDashboard: React.FC = () => {
         }
       } catch (e1) {
         try {
-          const res = await fetch("http://localhost:5000/analyze", {
+          const res = await fetch("/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ photo: photo || "demo-photo", location, incident, notes })
@@ -104,11 +121,14 @@ const CitizenTriageDashboard: React.FC = () => {
       }
 
       if (data) {
-        if (data.lhi) setLhiScore(parseFloat(data.lhi));
-        if (data.damage) setDamageScore(parseFloat(data.damage));
+        if (data.lhiScore) setLhiScore(parseFloat(data.lhiScore));
+        else if (data.lhi) setLhiScore(parseFloat(data.lhi));
+
+        if (data.damageScore) setDamageScore(parseFloat(data.damageScore));
+        else if (data.damage) setDamageScore(parseFloat(data.damage));
+
         if (data.actions && Array.isArray(data.actions)) setActions(data.actions);
       } else {
-        // User formula fallback: (0.35*8) + (0.25*7.5) + (0.20*6) + (0.20*5.5) = 7.3
         setLhiScore(7.3);
         setDamageScore(8.8);
       }
@@ -121,7 +141,7 @@ const CitizenTriageDashboard: React.FC = () => {
 
   return (
     <div className="w-full bg-[#080B14] text-slate-100 p-4 md:p-6 font-sans min-h-screen">
-      {/* 3-COLUMN MAIN GRID matching media_1787713332665.png exactly */}
+      {/* 3-COLUMN MAIN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1500px] mx-auto">
         
         {/* ================= COLUMN 1 (LEFT): Disaster Site Details & Incident Map ================= */}
@@ -130,8 +150,8 @@ const CitizenTriageDashboard: React.FC = () => {
           {/* Card: Disaster Site Details */}
           <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl flex flex-col gap-4">
             <div className="flex items-center gap-2 text-slate-200 font-bold text-sm">
-              <span>📋</span>
-              <h2>Disaster Site Details</h2>
+              <span>📸</span>
+              <h2>Citizen Photo Disaster Reporter</h2>
             </div>
 
             {/* Dotted Upload Box */}
