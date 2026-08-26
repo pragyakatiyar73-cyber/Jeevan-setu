@@ -8,11 +8,16 @@ export default defineConfig({
     port: 3000,
     open: true,
     proxy: {
+      '/analyze': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false
+      },
       '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false
       }
     }
   }
-
 });

@@ -61,7 +61,6 @@ const CitizenTriageDashboard: React.FC = () => {
     "Set Avoidance Perimeter"
   ]);
 
-  // User requested handleUpload function
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -69,36 +68,52 @@ const CitizenTriageDashboard: React.FC = () => {
     }
   };
 
-  // User requested analyzeDamage function calling http://localhost:5000/analyze
   const analyzeDamage = async () => {
     setLoading(true);
     try {
-      let response;
+      let data = null;
       try {
-        response = await fetch("http://localhost:5000/analyze", {
+        const res = await fetch("/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ photo: photo || "demo-photo", location, incident, notes })
+          body: JSON.stringify({
+            photo: photo || "demo-photo",
+            location,
+            incident,
+            notes,
+            slope: 8.0,
+            rainfall: 7.5,
+            soil: 6.0,
+            fault: 5.5
+          })
         });
-      } catch (err) {
-        // Fallback to relative endpoint if port 5000 CORS/proxy
-        response = await fetch("/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ photo: photo || "demo-photo", location, incident, notes })
-        });
+        if (res.ok) {
+          data = await res.json();
+        }
+      } catch (e1) {
+        try {
+          const res = await fetch("http://localhost:5000/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ photo: photo || "demo-photo", location, incident, notes })
+          });
+          if (res.ok) data = await res.json();
+        } catch (e2) {
+          console.warn("Backend offline, using fallback LHI calculation");
+        }
       }
 
-      if (response && response.ok) {
-        const data = await response.json();
+      if (data) {
         if (data.lhi) setLhiScore(parseFloat(data.lhi));
         if (data.damage) setDamageScore(parseFloat(data.damage));
-        if (data.actions) setActions(data.actions);
+        if (data.actions && Array.isArray(data.actions)) setActions(data.actions);
+      } else {
+        // User formula fallback: (0.35*8) + (0.25*7.5) + (0.20*6) + (0.20*5.5) = 7.3
+        setLhiScore(7.3);
+        setDamageScore(8.8);
       }
-    } catch (error) {
-      console.warn("Backend fetch fallback:", error);
-      setLhiScore(8.2);
-      setDamageScore(8.8);
+    } catch (err) {
+      console.error("Error analyzing damage:", err);
     } finally {
       setTimeout(() => setLoading(false), 400);
     }
@@ -106,11 +121,11 @@ const CitizenTriageDashboard: React.FC = () => {
 
   return (
     <div className="w-full bg-[#080B14] text-slate-100 p-4 md:p-6 font-sans min-h-screen">
-      {/* 2-COLUMN MAIN GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1400px] mx-auto">
+      {/* 3-COLUMN MAIN GRID matching media_1787713332665.png exactly */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1500px] mx-auto">
         
-        {/* ================= LEFT COLUMN ================= */}
-        <div className="lg:col-span-5 flex flex-col gap-5">
+        {/* ================= COLUMN 1 (LEFT): Disaster Site Details & Incident Map ================= */}
+        <div className="lg:col-span-4 flex flex-col gap-5">
           
           {/* Card: Disaster Site Details */}
           <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl flex flex-col gap-4">
@@ -119,7 +134,7 @@ const CitizenTriageDashboard: React.FC = () => {
               <h2>Disaster Site Details</h2>
             </div>
 
-            {/* Upload Input & Preview */}
+            {/* Dotted Upload Box */}
             <div className="relative border-2 border-dashed border-rose-500/40 hover:border-rose-500/80 rounded-xl p-4 bg-[#0A0E1A] transition text-center cursor-pointer">
               <input
                 type="file"
@@ -142,7 +157,7 @@ const CitizenTriageDashboard: React.FC = () => {
               )}
             </div>
 
-            {/* Field Inputs */}
+            {/* Inputs */}
             <div className="flex flex-col gap-3 text-xs">
               <div className="flex flex-col gap-1">
                 <label className="text-slate-400 font-semibold">Location :</label>
@@ -175,7 +190,7 @@ const CitizenTriageDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Analyze Damage Button */}
+            {/* Analyze Button */}
             <button
               onClick={analyzeDamage}
               disabled={loading}
@@ -189,7 +204,7 @@ const CitizenTriageDashboard: React.FC = () => {
               ) : (
                 <>
                   <Flag className="w-4 h-4 text-amber-300 fill-amber-300" />
-                  <span>🔔 Analyze Damage</span>
+                  <span>Analyze Damage</span>
                 </>
               )}
             </button>
@@ -205,71 +220,49 @@ const CitizenTriageDashboard: React.FC = () => {
 
         </div>
 
-        {/* ================= RIGHT COLUMN ================= */}
-        <div className="lg:col-span-7 flex flex-col gap-5">
+        {/* ================= COLUMN 2 (MIDDLE): LHI Gauge, Damage Score, AI Actions & Metric Cards ================= */}
+        <div className="lg:col-span-4 flex flex-col gap-5">
           
-          {/* Top Row: Gauge Card & (Damage Card + Actions Card) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Card 1: Landslide Hazard Index */}
+          <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl flex flex-col justify-between gap-4">
+            <h3 className="text-xs font-bold text-slate-200">Landslide Hazard Index</h3>
             
-            {/* Card 1: Landslide Hazard Index */}
-            <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl flex flex-col justify-between gap-4">
-              <h3 className="text-xs font-bold text-slate-200">Landslide Hazard Index</h3>
-              
-              <GaugeMeter score={lhiScore} />
+            <GaugeMeter score={lhiScore} />
 
-              <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-0.5">
-                <span className="text-xs font-bold text-slate-300">LHI Score: {lhiScore.toFixed(1)}</span>
-                <span className="text-xs text-slate-400">Elevated Landslide Risk</span>
-              </div>
-
-              {/* Status Bar */}
-              <div className="w-full h-3 rounded-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-600 p-0.5 border border-slate-800" />
+            <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-0.5">
+              <span className="text-xs font-bold text-slate-300">LHI Score</span>
+              <span className="text-xs text-slate-400">Elevated Landslide Risk</span>
             </div>
 
-            {/* Card 2 Container: Stacked Damage Assessment & AI Actions */}
-            <div className="flex flex-col gap-5">
-              
-              {/* Sub-Card A: Damage Assessment */}
-              <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl flex items-center justify-between">
-                <div>
-                  <h3 className="text-xs font-bold text-slate-200 mb-1">Damage Assessment</h3>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-black text-rose-500">{damageScore.toFixed(1)}</span>
-                    <span className="text-xs font-bold text-rose-400">Severe Damage</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sub-Card B: AI Recommended Actions */}
-              <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl flex-1 flex flex-col gap-2.5">
-                <h3 className="text-xs font-bold text-slate-200">AI Recommended Actions</h3>
-                <ol className="flex flex-col gap-1.5 text-xs text-slate-300 font-medium">
-                  {actions.map((act, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="font-bold text-slate-400">{idx + 1}.</span>
-                      <span>{act}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-            </div>
-
+            <div className="w-full h-3 rounded-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-600 p-0.5 border border-slate-800" />
           </div>
 
-          {/* Middle Row: Hazard Timeline */}
-          <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-slate-200">Hazard Timeline</h3>
-              <span className="text-xs text-slate-400">Last 72 Hours</span>
+          {/* Card 2: Damage Assessment */}
+          <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl flex items-center justify-between">
+            <div>
+              <h3 className="text-xs font-bold text-slate-200 mb-1">Damage Assessment</h3>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-black text-rose-500">{damageScore.toFixed(1)}</span>
+                <span className="text-xs font-bold text-rose-400">Severe Damage</span>
+              </div>
             </div>
-            <RainfallChart />
           </div>
 
-          {/* Bottom Row: 2 Metric Cards */}
+          {/* Card 3: AI Recommended Actions */}
+          <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl flex flex-col gap-2.5">
+            <h3 className="text-xs font-bold text-slate-200">AI Recommended Actions</h3>
+            <ol className="flex flex-col gap-1.5 text-xs text-slate-300 font-medium">
+              {actions.map((act, idx) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="font-bold text-slate-400">{idx + 1}.</span>
+                  <span>{act}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* Card 4 & 5: Bottom Metric Cards */}
           <div className="grid grid-cols-2 gap-5">
-            
-            {/* Card: Road Cutoff Distance */}
             <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl">
               <span className="text-xs text-slate-400 font-medium block mb-1">Road Cutoff Distance</span>
               <div className="flex items-baseline gap-1.5">
@@ -278,7 +271,6 @@ const CitizenTriageDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Card: 72hr Rainfall */}
             <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl">
               <span className="text-xs text-slate-400 font-medium block mb-1">72hr Rainfall</span>
               <div className="flex items-baseline gap-1.5">
@@ -286,11 +278,27 @@ const CitizenTriageDashboard: React.FC = () => {
                 <span className="text-xs text-slate-400 font-semibold">mm</span>
               </div>
             </div>
+          </div>
 
+        </div>
+
+        {/* ================= COLUMN 3 (RIGHT): Hazard Timeline Card & Legend Bar ================= */}
+        <div className="lg:col-span-4 flex flex-col gap-5">
+          
+          {/* Card: Hazard Timeline */}
+          <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl flex-1 flex flex-col justify-between gap-3">
+            <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
+              <h3 className="text-xs font-bold text-slate-200">Hazard Timeline</h3>
+              <span className="text-xs text-slate-400">Last 72 Hours</span>
+            </div>
+
+            <div className="flex-1 flex items-center justify-center">
+              <RainfallChart />
+            </div>
           </div>
 
           {/* Bottom Legend Bar */}
-          <div className="bg-[#0F1424] border border-slate-800/80 rounded-xl p-2.5 px-4 flex items-center justify-end gap-6 text-[11px] font-semibold text-slate-300">
+          <div className="bg-[#0F1424] border border-slate-800/80 rounded-xl p-3 px-4 flex items-center justify-around text-[11px] font-semibold text-slate-300">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Safe &lt; 4.0
             </span>
