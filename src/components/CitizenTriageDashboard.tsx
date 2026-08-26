@@ -50,24 +50,58 @@ const CitizenTriageDashboard: React.FC = () => {
   const [location, setLocation] = useState("NH-6 Km 142, East Khasi Hills, Meghalaya");
   const [incident, setIncident] = useState("Massive Landslide & Slope Mudslide");
   const [notes, setNotes] = useState("Both lanes blocked by landslide debris.");
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [lhiScore] = useState(8.2);
-  const [damageScore] = useState(8.8);
+  const [lhiScore, setLhiScore] = useState<number>(8.2);
+  const [damageScore, setDamageScore] = useState<number>(8.8);
+  const [actions, setActions] = useState<string[]>([
+    "Dispatch 3 BRO JCB Excavators",
+    "Notify NDRF 1078 Triage Team",
+    "Set Avoidance Perimeter"
+  ]);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // User requested handleUpload function
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setPhotoPreview(reader.result as string);
-      reader.readAsDataURL(file);
+      setPhoto(URL.createObjectURL(file));
     }
   };
 
-  const handleAnalyzeDamage = () => {
+  // User requested analyzeDamage function calling http://localhost:5000/analyze
+  const analyzeDamage = async () => {
     setLoading(true);
-    setTimeout(() => setLoading(false), 500);
+    try {
+      let response;
+      try {
+        response = await fetch("http://localhost:5000/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ photo: photo || "demo-photo", location, incident, notes })
+        });
+      } catch (err) {
+        // Fallback to relative endpoint if port 5000 CORS/proxy
+        response = await fetch("/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ photo: photo || "demo-photo", location, incident, notes })
+        });
+      }
+
+      if (response && response.ok) {
+        const data = await response.json();
+        if (data.lhi) setLhiScore(parseFloat(data.lhi));
+        if (data.damage) setDamageScore(parseFloat(data.damage));
+        if (data.actions) setActions(data.actions);
+      }
+    } catch (error) {
+      console.warn("Backend fetch fallback:", error);
+      setLhiScore(8.2);
+      setDamageScore(8.8);
+    } finally {
+      setTimeout(() => setLoading(false), 400);
+    }
   };
 
   return (
@@ -85,19 +119,18 @@ const CitizenTriageDashboard: React.FC = () => {
               <h2>Disaster Site Details</h2>
             </div>
 
-            {/* Dotted Upload Box */}
+            {/* Upload Input & Preview */}
             <div className="relative border-2 border-dashed border-rose-500/40 hover:border-rose-500/80 rounded-xl p-4 bg-[#0A0E1A] transition text-center cursor-pointer">
               <input
                 type="file"
                 accept="image/*"
-                capture="environment"
-                onChange={handlePhotoUpload}
+                onChange={handleUpload}
                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
               />
 
-              {photoPreview ? (
+              {photo ? (
                 <div className="relative rounded-lg overflow-hidden border border-slate-800 max-h-36">
-                  <img src={photoPreview} alt="Disaster Site Preview" className="w-full h-36 object-cover" />
+                  <img src={photo} alt="Uploaded disaster site" className="w-full h-36 object-cover mx-auto" />
                 </div>
               ) : (
                 <div className="py-3 flex flex-col items-center justify-center gap-2">
@@ -144,19 +177,19 @@ const CitizenTriageDashboard: React.FC = () => {
 
             {/* Analyze Damage Button */}
             <button
-              onClick={handleAnalyzeDamage}
+              onClick={analyzeDamage}
               disabled={loading}
-              className="w-full bg-gradient-to-r from-rose-600 via-pink-600 to-rose-600 hover:from-rose-500 hover:to-pink-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-lg flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-rose-600 via-pink-600 to-rose-600 hover:from-rose-500 hover:to-pink-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95"
             >
               {loading ? (
                 <>
                   <Activity className="w-4 h-4 animate-spin text-white" />
-                  <span>Analyzing...</span>
+                  <span>Analyzing Damage...</span>
                 </>
               ) : (
                 <>
                   <Flag className="w-4 h-4 text-amber-300 fill-amber-300" />
-                  <span>Analyze Damage</span>
+                  <span>🔔 Analyze Damage</span>
                 </>
               )}
             </button>
@@ -185,7 +218,7 @@ const CitizenTriageDashboard: React.FC = () => {
               <GaugeMeter score={lhiScore} />
 
               <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-0.5">
-                <span className="text-xs font-bold text-slate-300">LHI Score</span>
+                <span className="text-xs font-bold text-slate-300">LHI Score: {lhiScore.toFixed(1)}</span>
                 <span className="text-xs text-slate-400">Elevated Landslide Risk</span>
               </div>
 
@@ -211,18 +244,12 @@ const CitizenTriageDashboard: React.FC = () => {
               <div className="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl flex-1 flex flex-col gap-2.5">
                 <h3 className="text-xs font-bold text-slate-200">AI Recommended Actions</h3>
                 <ol className="flex flex-col gap-1.5 text-xs text-slate-300 font-medium">
-                  <li className="flex items-start gap-2">
-                    <span className="font-bold text-slate-400">1.</span>
-                    <span>Dispatch 3 BRO JCB Excavators</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="font-bold text-slate-400">2.</span>
-                    <span>Notify NDRF 1078 Triage Team</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="font-bold text-slate-400">3.</span>
-                    <span>Set Avoidance Perimeter</span>
-                  </li>
+                  {actions.map((act, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="font-bold text-slate-400">{idx + 1}.</span>
+                      <span>{act}</span>
+                    </li>
+                  ))}
                 </ol>
               </div>
 
