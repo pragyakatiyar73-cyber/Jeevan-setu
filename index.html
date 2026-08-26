@@ -1544,129 +1544,258 @@
       <!-- ===================================================================== -->
       <!-- VIEW: CITIZEN PHOTO DISASTER REPORTER & AI DAMAGE TRIAGE              -->
       <!-- ===================================================================== -->
-      <div id="view-citizentriage-view" class="space-y-6 hidden">
-        <div class="rounded-2xl border border-[#112240] bg-[#070d1e] p-5 shadow-2xl space-y-4">
-          <div class="border-b border-slate-800 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h3 class="text-base font-bold text-white flex items-center gap-2">
-                <span class="text-lg">📸</span>
-                <span>Citizen Photo Disaster Reporter & AI Damage Triage</span>
+      <div id="view-citizentriage-view" class="space-y-6">
+        <!-- 2-COLUMN MAIN GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- LEFT COLUMN: Disaster Site Details & Map Overview -->
+          <div class="lg:col-span-5 space-y-6">
+            
+            <!-- Card: Disaster Site Details -->
+            <div class="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl space-y-4">
+              <div class="flex items-center gap-2.5 text-slate-200 font-bold text-sm">
+                <span class="text-base">📋</span>
+                <h2>Disaster Site Details</h2>
+              </div>
+
+              <!-- Dotted Upload Box -->
+              <div class="relative border-2 border-dashed border-rose-500/40 hover:border-rose-500/80 rounded-xl p-4 bg-[#0A0E1A] transition text-center cursor-pointer">
+                <div class="py-4 flex flex-col items-center justify-center space-y-2">
+                  <span class="text-xl">📷</span>
+                  <span class="text-xs font-semibold text-slate-300">
+                    Select or Drop Disaster Site Photo
+                  </span>
+                </div>
+              </div>
+
+              <!-- Field Inputs matching exact labels & italic styling -->
+              <div class="space-y-3 text-xs">
+                <div class="space-y-1">
+                  <label class="block text-slate-400 font-semibold">Location :</label>
+                  <input
+                    type="text"
+                    value="NH-6 Km 142, East Khasi Hills, Meghalaya"
+                    class="w-full bg-[#13192B] border border-slate-800 rounded-xl px-3.5 py-2 text-slate-200 italic font-mono text-xs focus:outline-none focus:border-rose-500"
+                  />
+                </div>
+
+                <div class="space-y-1">
+                  <label class="block text-slate-400 font-semibold">Incident :</label>
+                  <input
+                    type="text"
+                    value="Massive Landslide & Slope Mudslide"
+                    class="w-full bg-[#13192B] border border-slate-800 rounded-xl px-3.5 py-2 text-slate-200 font-medium text-xs focus:outline-none focus:border-rose-500"
+                  />
+                </div>
+
+                <div class="space-y-1">
+                  <label class="block text-slate-400 font-semibold">Notes :</label>
+                  <input
+                    type="text"
+                    value="Both lanes blocked by landslide debris."
+                    class="w-full bg-[#13192B] border border-slate-800 rounded-xl px-3.5 py-2 text-slate-200 text-xs focus:outline-none focus:border-rose-500"
+                  />
+                </div>
+              </div>
+
+              <!-- Analyze Damage Button -->
+              <button
+                class="w-full bg-gradient-to-r from-rose-600 via-pink-600 to-rose-600 hover:from-rose-500 hover:to-pink-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-lg flex items-center justify-center gap-2"
+              >
+                <span>🚩</span>
+                <span>Analyze Damage</span>
+              </button>
+            </div>
+
+            <!-- Card: Incident Zone Overview -->
+            <div class="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl space-y-3">
+              <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                Incident Zone Overview
               </h3>
-              <p class="text-xs text-slate-400">Multimodal Google Gemini AI Vision damage assessment with geolocation anti-spoofing verification.</p>
-            </div>
-            <span class="px-2.5 py-1 rounded-full bg-pink-500/20 text-pink-300 font-bold text-xs border border-pink-500/30 flex items-center gap-1.5 self-start sm:self-auto">
-              <span class="w-2 h-2 rounded-full bg-pink-400 animate-pulse"></span>
-              Crowdsourced NDRF Intelligence
-            </span>
-          </div>
+              <!-- Satellite Image Map Graphic matching exact screenshot -->
+              <div class="relative h-60 rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+                <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover opacity-80" alt="Satellite map" />
+                
+                <!-- Yellow Polyline Overlay -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 240">
+                  <path d="M 10 220 L 120 180 L 220 140 L 320 100 L 390 60" fill="none" stroke="#eab308" stroke-width="6" stroke-linecap="round" />
+                  <polygon points="180,100 320,80 370,140 220,180" fill="rgba(239, 68, 68, 0.45)" stroke="#dc2626" stroke-width="2" />
+                  <text x="240" y="160" fill="#ffffff" font-size="12" font-weight="bold" transform="rotate(-15, 240, 160)">Breach 350m ➔</text>
+                </svg>
 
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Incident Form -->
-            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 text-xs">
-              <div class="font-bold text-pink-300 uppercase text-[11px] flex items-center justify-between">
-                <span>Disaster Site Photo & Details</span>
-                <span class="text-[9px] text-pink-400 font-mono">EXIF & GPS Sync</span>
-              </div>
-
-              <!-- Photo Upload Dropzone Box -->
-              <div>
-                <label class="text-[10px] text-slate-400 block mb-1">Disaster Site Photo Upload (Mobile Camera / Gallery):</label>
-                <div class="relative border-2 border-dashed border-pink-500/40 hover:border-pink-500 rounded-xl p-3.5 bg-[#040814] text-center cursor-pointer transition space-y-1" onclick="document.getElementById('triage-html-file-input').click()">
-                  <div id="triage-html-photo-preview" class="space-y-1">
-                    <span class="text-2xl block">📸</span>
-                    <span class="text-[11px] text-slate-200 font-bold block">Click to Select or Drop Disaster Site Photo</span>
-                    <span class="text-[9px] text-pink-400 block">EXIF Geotag & GPS Anti-Spoofing Sync</span>
-                  </div>
-                  <input type="file" id="triage-html-file-input" accept="image/*" class="hidden" onchange="handleHtmlPhotoSelect(this)" />
+                <!-- ROAD CLOSED Badge -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-xs font-black px-3 py-1 rounded-lg border border-red-400 shadow-xl tracking-wider">
+                  ROAD CLOSED
                 </div>
               </div>
-
-              <div>
-                <label class="text-[10px] text-slate-400 block mb-1">Disaster Incident Location:</label>
-                <input type="text" id="triage-html-loc" value="NH-6 Km 142 (East Khasi Hills, Meghalaya)" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-pink-500" />
-              </div>
-
-              <div>
-                <label class="text-[10px] text-slate-400 block mb-1">Incident Type Category:</label>
-                <select id="triage-html-type" onchange="runHtmlCitizenTriage()" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-pink-500">
-                  <option value="landslide" selected>⛰️ Massive Landslide & Slope Mudslide</option>
-                  <option value="flood">🌊 Flash Flood / Submerged Road</option>
-                  <option value="bridge">🌉 Bridge Structural Breach</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="text-[10px] text-slate-400 block mb-1">Citizen Notes & Description:</label>
-                <textarea id="triage-html-desc" rows="3" class="w-full bg-[#040814] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-pink-500">Severe landslide breach along NH-6 near Km 142. Both lanes completely blocked by mountain mudfall and boulders.</textarea>
-              </div>
-
-              <button onclick="runHtmlCitizenTriage()" id="btn-run-triage-html" class="w-full py-3 rounded-xl bg-gradient-to-r from-pink-600 via-rose-600 to-indigo-600 font-black text-white text-xs shadow-lg shadow-pink-600/30 hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-2">
-                <span>✨</span>
-                <span>Analyze Damage with Gemini AI Vision</span>
-              </button>
             </div>
 
-            <!-- Right Results Container -->
-            <div class="lg:col-span-2 space-y-4">
-              <!-- Severity Banner -->
-              <div id="triage-html-banner" class="p-4 rounded-xl border border-rose-500/50 bg-rose-950/30 text-xs flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="h-12 w-12 rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center">
-                    <span id="triage-html-score" class="text-xl font-black text-rose-400 font-mono">8.8</span>
-                    <span class="text-[8px] text-slate-400">/ 10 SCORE</span>
+          </div>
+
+          <!-- RIGHT COLUMN: Scores, AI Actions, Timeline & Stats -->
+          <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Top Row: Gauge Card & (Damage Card + Actions Card) -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-6">
+              
+              <!-- Card: Landslide Hazard Index -->
+              <div class="sm:col-span-6 bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl flex flex-col justify-between space-y-4">
+                <h3 class="text-xs font-bold text-slate-200">Landslide Hazard Index</h3>
+                
+                <!-- Semicircle SVG Gauge -->
+                <div class="relative flex flex-col items-center justify-center pt-2">
+                  <svg viewBox="0 0 200 115" class="w-52 h-28">
+                    <defs>
+                      <linearGradient id="gaugeArcGradientHtml" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#22c55e" />
+                        <stop offset="30%" stop-color="#84cc16" />
+                        <stop offset="55%" stop-color="#eab308" />
+                        <stop offset="75%" stop-color="#f97316" />
+                        <stop offset="100%" stop-color="#ef4444" />
+                      </linearGradient>
+                    </defs>
+
+                    <path
+                      d="M 25 100 A 75 75 0 0 1 175 100"
+                      fill="none"
+                      stroke="url(#gaugeArcGradientHtml)"
+                      stroke-width="20"
+                      stroke-linecap="round"
+                    />
+
+                    <!-- Needle pointing to 8.2 -->
+                    <g transform="rotate(57.6, 100, 100)">
+                      <polygon points="97,100 103,100 100,32" fill="#f87171" />
+                      <circle cx="100" cy="100" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="2" />
+                    </g>
+                  </svg>
+
+                  <div class="absolute bottom-2 text-center">
+                    <span class="text-4xl font-black text-white tracking-tight">8.2</span>
+                    <div class="text-xs font-bold text-rose-500 uppercase tracking-wide mt-0.5">High Risk</div>
                   </div>
+                </div>
+
+                <div class="border-t border-slate-800/80 pt-3 space-y-1">
+                  <span class="text-xs font-bold text-slate-300 block">LHI Score</span>
+                  <span class="text-xs text-slate-400 block">Elevated Landslide Risk</span>
+                </div>
+
+                <!-- Horizontal Status Bar -->
+                <div class="w-full h-3 rounded-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-600 p-0.5 border border-slate-800 shadow-inner" />
+              </div>
+
+              <!-- Right Sub-Column: Damage Assessment & AI Actions -->
+              <div class="sm:col-span-6 space-y-6 flex flex-col justify-between">
+                
+                <!-- Card: Damage Assessment -->
+                <div class="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl flex items-center justify-between">
                   <div>
-                    <div class="flex items-center gap-2">
-                      <span id="triage-html-cat" class="font-bold text-white uppercase">LANDSLIDE BREACH</span>
-                      <span id="triage-html-badge" class="px-2 py-0.5 rounded bg-rose-500/30 text-rose-300 font-bold text-[10px] border border-rose-400/40">CRITICAL SEVERITY</span>
+                    <h3 class="text-xs font-bold text-slate-200 mb-1">Damage Assessment</h3>
+                    <div class="flex items-baseline gap-2">
+                      <span class="text-3xl font-black text-rose-500">8.8</span>
+                      <span class="text-xs font-bold text-rose-400">Severe Damage</span>
                     </div>
-                    <p id="triage-html-summary" class="text-[11px] text-slate-300 mt-0.5">Verified Landslide breach at NH-6. Road cut by ~350m with heavy slope debris. Urgent NDRF dispatch required.</p>
                   </div>
                 </div>
 
-                <div class="text-right">
-                  <span class="text-[9px] text-emerald-400 font-bold block">✓ Anti-Spoofing Validated</span>
-                  <span class="text-[10px] font-mono text-slate-300">96% Authenticity</span>
+                <!-- Card: AI Recommended Actions -->
+                <div class="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl flex-1 space-y-3">
+                  <h3 class="text-xs font-bold text-slate-200">AI Recommended Actions</h3>
+                  <ol class="space-y-2 text-xs text-slate-300 font-medium">
+                    <li class="flex items-start gap-2">
+                      <span class="font-bold text-slate-400">1.</span>
+                      <span>Dispatch 3 BRO JCB Excavators</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <span class="font-bold text-slate-400">2.</span>
+                      <span>Notify NDRF 1078 Triage Team</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <span class="font-bold text-slate-400">3.</span>
+                      <span>Set Avoidance Perimeter</span>
+                    </li>
+                  </ol>
                 </div>
+
               </div>
 
-              <!-- Damage Metrics Grid -->
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                  <span class="text-[9px] text-slate-400 block">Road Breach Cutoff</span>
-                  <b id="triage-html-breach" class="text-base text-rose-400">350 meters</b>
-                </div>
-                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                  <span class="text-[9px] text-slate-400 block">Debris Volume</span>
-                  <b id="triage-html-debris" class="text-base text-amber-400">1,450 m³</b>
-                </div>
-                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                  <span class="text-[9px] text-slate-400 block">Required Earthmovers</span>
-                  <b id="triage-html-jcb" class="text-base text-sky-400">3 JCB Units</b>
-                </div>
-                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                  <span class="text-[9px] text-slate-400 block">NDRF Battalions</span>
-                  <b id="triage-html-ndrf" class="text-base text-emerald-400">2 Units</b>
-                </div>
-              </div>
-
-              <!-- Action Step Checklist -->
-              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
-                <div class="font-bold text-white uppercase tracking-wider text-[11px]">AI Recommended Triage Steps</div>
-                <div id="triage-html-actions" class="space-y-1 text-slate-300 text-[11px]">
-                  <div class="p-2 rounded bg-slate-900 border border-slate-800">1. Dispatch 3 BRO JCB Earthmovers from Guwahati staging depot</div>
-                  <div class="p-2 rounded bg-slate-900 border border-slate-800">2. Notify NDRF 1078 Triage Command Triage Center</div>
-                  <div class="p-2 rounded bg-slate-900 border border-slate-800">3. Inject avoidance polygon into Jeevan Setu LHI Rerouting Engine</div>
-                </div>
-              </div>
-
-              <!-- Broadcast Button -->
-              <button onclick="broadcastHtmlCitizenTriage()" id="btn-broadcast-triage-html" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white font-bold text-xs shadow-xl shadow-rose-700/40 hover:scale-[1.01] transition flex items-center justify-center gap-2">
-                <span>⚡</span>
-                <span>BROADCAST VERIFIED INCIDENT TO NDRF COMMAND & UPDATE MAP ➔</span>
-              </button>
             </div>
+
+            <!-- Card: Hazard Timeline -->
+            <div class="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-5 shadow-2xl space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold text-slate-200">Hazard Timeline</h3>
+                <span class="text-[11px] text-slate-400">Last 72 Hours</span>
+              </div>
+              
+              <!-- Hazard Timeline Visual Bars -->
+              <div class="h-32 w-full flex items-end justify-between px-6 pt-4 border-b border-slate-800/60 pb-2">
+                <!-- Tue -->
+                <div class="flex flex-col items-center gap-2">
+                  <div class="flex items-end gap-1.5 h-20">
+                    <div class="w-4 bg-emerald-500 rounded-t h-4"></div>
+                    <div class="w-4 bg-emerald-400 rounded-t h-3"></div>
+                  </div>
+                  <span class="text-xs font-bold text-slate-400">Tue</span>
+                </div>
+                <!-- Wed -->
+                <div class="flex flex-col items-center gap-2">
+                  <div class="flex items-end gap-1.5 h-20">
+                    <div class="w-4 bg-lime-500 rounded-t h-10"></div>
+                    <div class="w-4 bg-yellow-500 rounded-t h-6"></div>
+                  </div>
+                  <span class="text-xs font-bold text-slate-400">Wed</span>
+                </div>
+                <!-- Thu -->
+                <div class="flex flex-col items-center gap-2">
+                  <div class="flex items-end gap-1.5 h-20">
+                    <div class="w-4 bg-amber-500 rounded-t h-16"></div>
+                    <div class="w-4 bg-orange-500 rounded-t h-12"></div>
+                  </div>
+                  <span class="text-xs font-bold text-slate-400">Thu</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Row Stats & Legend Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              
+              <!-- Card: Road Cutoff Distance -->
+              <div class="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl">
+                <span class="text-xs text-slate-400 font-medium block mb-1">Road Cutoff Distance</span>
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-2xl font-black text-amber-500">350</span>
+                  <span class="text-xs text-slate-400 font-semibold">meters</span>
+                </div>
+              </div>
+
+              <!-- Card: 72hr Rainfall -->
+              <div class="bg-[#0F1424] border border-slate-800/80 rounded-2xl p-4 shadow-2xl">
+                <span class="text-xs text-slate-400 font-medium block mb-1">72hr Rainfall</span>
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-2xl font-black text-emerald-400">115</span>
+                  <span class="text-xs text-slate-400 font-semibold">mm</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Bottom Legend Bar -->
+            <div class="bg-[#0F1424] border border-slate-800/80 rounded-xl p-2.5 px-4 flex items-center justify-end gap-6 text-[11px] font-semibold text-slate-300">
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Safe &lt; 4.0
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Moderate 4.0-7.0
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> High Risk &gt; 7.0
+              </span>
+            </div>
+
           </div>
+
         </div>
       </div>
 
