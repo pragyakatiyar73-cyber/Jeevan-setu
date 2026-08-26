@@ -171,12 +171,16 @@ const CitizenTriageDashboard: React.FC = () => {
 
               <div className="flex flex-col gap-1">
                 <label className="text-slate-400 font-semibold">Incident :</label>
-                <input
-                  type="text"
+                <select
                   value={incident}
                   onChange={(e) => setIncident(e.target.value)}
-                  className="w-full bg-[#13192B] border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-medium text-xs focus:outline-none focus:border-rose-500"
-                />
+                  className="w-full bg-[#13192B] border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-medium text-xs focus:outline-none focus:border-rose-500 cursor-pointer"
+                >
+                  <option value="Massive Landslide & Slope Mudslide">⛰️ Massive Landslide & Slope Mudslide</option>
+                  <option value="Flash Flood / Submerged Road">🌊 Flash Flood / Submerged Road</option>
+                  <option value="Earthquake & Ground Rupture">🌋 Earthquake & Ground Rupture</option>
+                  <option value="Bridge Washout & Structural Cutoff">🌉 Bridge Washout & Structural Cutoff</option>
+                </select>
               </div>
 
               <div className="flex flex-col gap-1">
@@ -203,7 +207,7 @@ const CitizenTriageDashboard: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Flag className="w-4 h-4 text-amber-300 fill-amber-300" />
+                  <span>🔔</span>
                   <span>Analyze Damage</span>
                 </>
               )}
