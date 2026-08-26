@@ -55,6 +55,7 @@ import {
   analyzeCitizenDisasterPhoto,
   AIDamageAnalysisResult
 } from './services/api';
+import Dashboard from './components/Dashboard';
 
 // NER State Data
 const NER_HUBS = [
@@ -69,7 +70,7 @@ const NER_HUBS = [
 ];
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<'hub' | 'map' | 'road' | 'vehicles' | 'delivery' | 'rerouting' | 'supplies' | 'alerts' | 'weather' | 'vehicleselect' | 'analytics' | 'gov' | 'apis' | 'drone' | 'citizentriage'>('hub');
+  const [activeModule, setActiveModule] = useState<'hub' | 'map' | 'road' | 'vehicles' | 'delivery' | 'rerouting' | 'supplies' | 'alerts' | 'weather' | 'vehicleselect' | 'analytics' | 'gov' | 'apis' | 'drone' | 'citizentriage' | 'customdashboard'>('hub');
   const [selectedLayer, setSelectedLayer] = useState<string>('osm');
 
   // Map state
@@ -348,6 +349,7 @@ export default function App() {
         <div className="flex items-center gap-1.5 overflow-x-auto">
           {[
             { id: 'hub', label: 'Operations Hub', icon: Sparkles },
+            { id: 'customdashboard', label: 'Disaster Risk Dashboard', icon: Gauge },
             { id: 'map', label: 'NER Live Map', icon: MapPin },
             { id: 'citizentriage', label: 'Citizen AI Photo Triage', icon: Camera },
             { id: 'drone', label: 'UAV Drone Dispatcher', icon: Radio },
@@ -382,6 +384,13 @@ export default function App() {
 
       {/* Main Workspace Area */}
       <main className="flex-1 overflow-hidden">
+
+        {/* 0. DISASTER RISK DASHBOARD */}
+        {activeModule === 'customdashboard' && (
+          <div className="h-full overflow-y-auto">
+            <Dashboard />
+          </div>
+        )}
 
         {/* 1. OPERATIONS HUB (Matches jsalgoforge.netlify.app Home) */}
         {activeModule === 'hub' && (
