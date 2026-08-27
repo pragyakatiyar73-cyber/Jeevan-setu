@@ -171,6 +171,9 @@ export default function App() {
   const rerouteMapContainerRef = useRef<HTMLDivElement>(null);
   const rerouteMapInstanceRef = useRef<L.Map | null>(null);
 
+  const roadMapContainerRef = useRef<HTMLDivElement>(null);
+  const roadMapInstanceRef = useRef<L.Map | null>(null);
+
   // Citizen AI Damage Triage state
 
 
@@ -306,6 +309,71 @@ export default function App() {
       rerouteMapInstanceRef.current = rmap;
     }
   }, [activeModule, routeStart, routeDest, avoidBlockedSectors]);
+
+  // Live Highway Accessibility Leaflet Map Render
+  useEffect(() => {
+    if (activeModule === 'road' && roadMapContainerRef.current) {
+      if (roadMapInstanceRef.current) {
+        roadMapInstanceRef.current.remove();
+        roadMapInstanceRef.current = null;
+      }
+
+      const rmap = L.map(roadMapContainerRef.current).setView([26.0, 92.5], 7);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: 'Jeevan Setu Highway Telemetry'
+      }).addTo(rmap);
+
+      // 1. NH-6 (Pink/Red - Blocked)
+      const nh6Waypoints: [number, number][] = [[26.1445, 91.7362], [25.5788, 91.8933], [24.8333, 92.7789]];
+      L.polyline(nh6Waypoints, { color: '#ef4444', weight: 6, opacity: 0.9 }).addTo(rmap);
+      L.marker([25.495, 91.508], {
+        icon: L.divIcon({
+          className: 'nh6-block-badge',
+          html: `<div style="background:#dc2626;color:#fff;padding:4px 8px;border-radius:8px;font-weight:900;font-size:10px;border:1.5px solid #f87171;white-space:nowrap;box-shadow:0 0 12px #ef4444;">🔴 NH-6 Km 142 Landslide Blocked</div>`,
+          iconSize: [210, 24],
+          iconAnchor: [105, 12]
+        })
+      }).addTo(rmap);
+
+      // 2. NH-29 (Green - Clear)
+      const nh29Waypoints: [number, number][] = [[25.9060, 93.7270], [25.6751, 94.1086]];
+      L.polyline(nh29Waypoints, { color: '#10b981', weight: 5, opacity: 0.9 }).addTo(rmap);
+      L.marker([25.7900, 93.9000], {
+        icon: L.divIcon({
+          className: 'nh29-clear-badge',
+          html: `<div style="background:#059669;color:#fff;padding:3px 8px;border-radius:8px;font-weight:800;font-size:10px;border:1px solid #34d399;white-space:nowrap;">🟢 NH-29 Dimapur ➔ Kohima (Clear)</div>`,
+          iconSize: [190, 24],
+          iconAnchor: [95, 12]
+        })
+      }).addTo(rmap);
+
+      // 3. NH-10 (Orange - Caution)
+      const nh10Waypoints: [number, number][] = [[26.7167, 88.4333], [27.1000, 88.5000], [27.3389, 88.6065]];
+      L.polyline(nh10Waypoints, { color: '#f97316', weight: 5, opacity: 0.9 }).addTo(rmap);
+      L.marker([27.1000, 88.5000], {
+        icon: L.divIcon({
+          className: 'nh10-caution-badge',
+          html: `<div style="background:#c2410c;color:#fff;padding:3px 8px;border-radius:8px;font-weight:800;font-size:10px;border:1px solid #fb923c;white-space:nowrap;">⚠️ NH-10 Teesta River Swelling</div>`,
+          iconSize: [180, 24],
+          iconAnchor: [90, 12]
+        })
+      }).addTo(rmap);
+
+      // 4. NH-306 (Green - Clear)
+      const nh306Waypoints: [number, number][] = [[24.8333, 92.7789], [23.7271, 92.7176]];
+      L.polyline(nh306Waypoints, { color: '#10b981', weight: 5, opacity: 0.9 }).addTo(rmap);
+
+      // 5. NH-415 (Green - Clear)
+      const nh415Waypoints: [number, number][] = [[27.0000, 93.6000], [27.1000, 93.6200]];
+      L.polyline(nh415Waypoints, { color: '#10b981', weight: 5, opacity: 0.9 }).addTo(rmap);
+
+      // 6. NH-37 (Amber - Monitored)
+      const nh37Waypoints: [number, number][] = [[26.1445, 91.7362], [26.5800, 93.1700], [27.4728, 94.9120]];
+      L.polyline(nh37Waypoints, { color: '#eab308', weight: 5, opacity: 0.9 }).addTo(rmap);
+
+      roadMapInstanceRef.current = rmap;
+    }
+  }, [activeModule]);
 
   // Load weather for NER
   useEffect(() => {
@@ -703,7 +771,7 @@ export default function App() {
         {/* 3. ROAD MONITORING & ACCESSIBILITY */}
         {activeModule === 'road' && (
           <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 gap-3">
               <div>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Activity className="h-5 w-5 text-rose-500" />
@@ -711,11 +779,34 @@ export default function App() {
                 </h2>
                 <p className="text-xs text-slate-600 dark:text-slate-400">{t("road.subtitle", "Live telemetry on highway clearance, landslide choke points, and bridge load integrity.")}</p>
               </div>
-              <span className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-700 dark:text-rose-400 border border-rose-500/30">
-                2 Active Disrupted Corridors
-              </span>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => setActiveModule('map')}
+                  className="rounded-xl bg-indigo-600 px-3.5 py-1.5 text-xs font-bold text-white shadow hover:bg-indigo-500 flex items-center gap-1.5 cursor-pointer border border-indigo-400/30"
+                >
+                  <span>🗺️</span> Open Full 2D Tactical Map
+                </button>
+                <span className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-700 dark:text-rose-400 border border-rose-500/30">
+                  2 Active Disrupted Corridors
+                </span>
+              </div>
             </div>
 
+            {/* Live Interactive Highway Clearance Map Container */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-xl space-y-2 transition-colors duration-300">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>🛣️</span> Live Interactive Highway Telemetry & Clearance Map
+                </h3>
+                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                  ● Live Map Synchronization Active
+                </span>
+              </div>
+              <div ref={roadMapContainerRef} className="h-72 w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner" />
+            </div>
+
+            {/* Highway Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
                 { name: 'NH-6: Meghalaya ➔ Silchar Corridor', status: 'PARTIALLY_BLOCKED', risk: 'HIGH (Landslide at Km 142)', detour: 'Active Bypass Operational', speed: '25 km/h' },
@@ -739,8 +830,11 @@ export default function App() {
                   <div className="text-xs text-slate-600 dark:text-slate-400">Risk Assessment: <span className="text-slate-900 dark:text-slate-200 font-semibold">{route.risk}</span></div>
                   <div className="text-xs text-slate-600 dark:text-slate-400">Detour Status: <span className="text-indigo-600 dark:text-indigo-300 font-semibold">{route.detour}</span></div>
                   <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-2 text-[11px]">
-                    <span className="text-slate-500">Average Transit Speed</span>
-                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{route.speed}</span>
+                    <span className="text-slate-500">Speed: <b className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{route.speed}</b></span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-indigo-600 text-white text-[10px] font-bold cursor-pointer">Live Map 🗺️</button>
+                      <button onClick={() => setActiveModule('hub')} className="px-2.5 py-1 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold cursor-pointer">Track 3D 🎮</button>
+                    </div>
                   </div>
                 </div>
               ))}
