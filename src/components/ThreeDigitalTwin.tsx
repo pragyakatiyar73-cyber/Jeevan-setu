@@ -415,24 +415,24 @@ export default function ThreeDigitalTwin({
       {/* 3D SIMULATION / 2D MAP DIGITAL TWIN CONTAINER */}
       <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 lg:p-7 shadow-xl dark:shadow-2xl relative overflow-hidden transition-colors duration-300">
         {/* Header Bar */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs lg:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-2 border border-emerald-500/30">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
+              <span className="rounded-full bg-emerald-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-emerald-700 dark:text-emerald-400 flex items-center gap-2 border border-emerald-500/30">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
                 Live Region Map &bull; Live Satellite & Radar
               </span>
               <span className="text-xs lg:text-sm text-slate-500 dark:text-slate-400 italic hidden sm:inline font-sans font-medium">"Smart decisions today, safer tomorrow."</span>
             </div>
-            <h2 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1.5">North Eastern Region Accessibility & Logistics Overview</h2>
+            <h2 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-2">North Eastern Region Accessibility & Logistics Overview</h2>
           </div>
 
           {/* Controls Mode Switcher */}
-          <div className="flex items-center gap-2.5">
-            <div className="flex items-center rounded-xl bg-slate-100 dark:bg-[#040814] p-1.5 border border-slate-200 dark:border-slate-800 text-xs lg:text-sm font-bold">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center rounded-2xl bg-slate-100 dark:bg-[#040814] p-1.5 border border-slate-200 dark:border-slate-800 text-xs lg:text-sm font-extrabold">
               <button
                 onClick={() => setDisplayMode("3d")}
-                className={"px-4 py-2 rounded-lg font-black transition flex items-center gap-2 cursor-pointer " + (
+                className={"px-4 py-2.5 rounded-xl font-black transition flex items-center gap-2 cursor-pointer " + (
                   displayMode === "3d" ? "bg-sky-500 text-white dark:text-slate-950 shadow-lg shadow-sky-500/30" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 )}
               >
@@ -440,7 +440,7 @@ export default function ThreeDigitalTwin({
               </button>
               <button
                 onClick={() => setDisplayMode("2d")}
-                className={"px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 cursor-pointer " + (
+                className={"px-4 py-2.5 rounded-xl font-extrabold transition flex items-center gap-2 cursor-pointer " + (
                   displayMode === "2d" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 )}
               >

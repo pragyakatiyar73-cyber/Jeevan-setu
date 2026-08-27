@@ -269,37 +269,43 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
     : "STABLE";
 
   return (
-    <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+    <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
       
       {/* 📍 1. TOP HEADER & LOCATION SELECTION BAR */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-5 transition-colors duration-300">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div>
-            <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <ShieldAlert className="h-6 w-6 text-rose-500" />
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-rose-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-rose-700 dark:text-rose-400 border border-rose-500/30 flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                EXECUTIVE LANDSLIDE & GEOTECHNICAL DISASTER RISK TELEMETRY
+              </span>
+            </div>
+            <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-3">
+              <ShieldAlert className="h-7 w-7 text-rose-500" />
               <span>{t("landslide.title", "🏔️ LANDSLIDE RISK ASSESSMENT")}</span>
             </h1>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-3xl">
+            <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium max-w-4xl leading-relaxed">
               {t("landslide.subtitle", "Location-specific geotechnical & meteorological slope failure evaluation grid for North East India.")}
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
             <button
               onClick={() => fetchLandslideData(parseFloat(latInput), parseFloat(lonInput))}
               disabled={loading}
-              className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition flex items-center gap-1.5 cursor-pointer shadow"
+              className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs lg:text-sm font-extrabold text-slate-800 dark:text-slate-200 transition flex items-center gap-2 cursor-pointer shadow"
             >
-              <RefreshCw className={`h-3.5 w-3.5 text-sky-500 dark:text-sky-400 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw className={`h-4 w-4 text-sky-500 dark:text-sky-400 ${loading ? "animate-spin" : ""}`} />
               <span>{t("mdoner.refreshData", "↻ Refresh Data")}</span>
             </button>
 
             <button
               onClick={handleFetchLiveGPS}
               disabled={isLocating || loading}
-              className="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 font-bold text-slate-950 text-xs shadow-lg shadow-sky-500/20 transition flex items-center gap-1.5 cursor-pointer disabled:opacity-75"
+              className="px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 font-extrabold text-slate-950 text-xs lg:text-sm shadow-lg shadow-sky-500/20 transition flex items-center gap-2 cursor-pointer disabled:opacity-75"
             >
-              <MapPin className={`h-3.5 w-3.5 ${isLocating ? "animate-bounce" : ""}`} />
+              <MapPin className={`h-4 w-4 ${isLocating ? "animate-bounce" : ""}`} />
               <span>{isLocating ? t("landslide.locating", "⏳ Locating...") : t("landslide.fetchGps", "📍 Fetch My Live GPS")}</span>
             </button>
 
@@ -314,7 +320,7 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
                   });
                 }
               }}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 font-black text-white text-xs shadow-lg shadow-rose-600/30 transition flex items-center gap-1.5 cursor-pointer border border-rose-400/40"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 font-extrabold text-white text-xs lg:text-sm shadow-lg shadow-rose-600/30 transition flex items-center gap-2 cursor-pointer border border-rose-400/40"
             >
               <span>{t("landslide.trackOnMap", "📍 Track Disaster Sector on Live Map ➔")}</span>
             </button>
@@ -322,15 +328,15 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
         </div>
 
         {/* LOCATION SELECTOR INPUTS ROW */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 pt-2 border-t border-slate-200 dark:border-slate-800/80">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 pt-3 border-t border-slate-200 dark:border-slate-800/80">
           <div className="md:col-span-5">
-            <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
+            <label className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block mb-1.5">
               {t("landslide.selectPreset", "📍 SELECT LOCATION PRESET")}
             </label>
             <select
               value={selectedPresetId}
               onChange={(e) => handleSelectPreset(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs lg:text-sm font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
             >
               {LOCATION_PRESETS.map((p) => (
                 <option key={p.id} value={p.id} className="bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 font-bold py-1">
@@ -341,33 +347,33 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
           </div>
 
           <div className="md:col-span-3">
-            <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
+            <label className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block mb-1.5">
               {t("landslide.latitude", "LATITUDE (°N)")}
             </label>
             <input
               type="text"
               value={latInput}
               onChange={(e) => setLatInput(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs lg:text-sm font-mono font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
             />
           </div>
 
           <div className="md:col-span-3">
-            <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
+            <label className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block mb-1.5">
               {t("landslide.longitude", "LONGITUDE (°E)")}
             </label>
             <input
               type="text"
               value={lonInput}
               onChange={(e) => setLonInput(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs lg:text-sm font-mono font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
             />
           </div>
 
           <div className="md:col-span-1 flex items-end">
             <button
               onClick={handleInspectManualCoords}
-              className="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition shadow"
+              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs lg:text-sm transition shadow cursor-pointer"
             >
               Inspect
             </button>
@@ -375,23 +381,23 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
         </div>
 
         {/* SELECTED LOCATION AUDIT BANNER */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500 dark:text-slate-400">{t("landslide.selected", "Selected:")}</span>
-            <b className="text-slate-900 dark:text-white font-sans">{locationName}</b>
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 flex flex-wrap items-center justify-between gap-3 text-xs lg:text-sm font-mono">
+          <div className="flex items-center gap-2.5">
+            <span className="text-slate-500 dark:text-slate-400 font-sans font-bold">{t("landslide.selected", "Selected:")}</span>
+            <b className="text-slate-900 dark:text-white font-sans text-sm lg:text-base font-black">{locationName}</b>
             <span className="text-slate-400 dark:text-slate-500">|</span>
             <span className="text-sky-600 dark:text-sky-400 font-bold">{latInput}° N, {lonInput}° E</span>
             <span className="text-slate-400 dark:text-slate-500">|</span>
-            <span className="text-slate-700 dark:text-slate-300">{elevation}</span>
+            <span className="text-slate-700 dark:text-slate-300 font-bold">{elevation}</span>
           </div>
 
-          <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 text-[11px]">
+          <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 text-xs font-bold">
             {dataAvailable ? (
-              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1">
+              <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-black flex items-center gap-1">
                 {t("landslide.liveDataActive", "🟢 LIVE DATA ACTIVE")}
               </span>
             ) : (
-              <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 font-bold flex items-center gap-1">
+              <span className="px-3 py-1 rounded-full bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 font-black flex items-center gap-1">
                 {t("landslide.dataUnavailable", "🔴 DATA UNAVAILABLE")}
               </span>
             )}
@@ -401,14 +407,14 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
       </div>
 
       {/* 🏔️ 2. LANDSLIDE RISK SCORE HERO CARDS */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left Hero Risk Score Gauge Card */}
         <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col justify-between space-y-4 relative overflow-hidden transition-colors duration-300">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-xs lg:text-sm font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider">
               {t("landslide.riskScore", "🏔️ LANDSLIDE RISK SCORE")}
             </span>
-            <span className={`px-3 py-1 rounded-full text-xs font-black border uppercase ${currentScoreObj.bgClass}`}>
+            <span className={`px-3.5 py-1 rounded-full text-xs lg:text-sm font-black border uppercase ${currentScoreObj.bgClass}`}>
               {currentScoreObj.level}
             </span>
           </div>
@@ -417,26 +423,26 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
             <span className={`text-5xl lg:text-6xl font-black font-mono tracking-tight ${currentScoreObj.colorClass}`}>
               {currentScoreObj.score}
             </span>
-            <span className="text-xl font-bold text-slate-500">/ 100</span>
+            <span className="text-2xl font-bold text-slate-500">/ 100</span>
           </div>
 
           {/* Risk Confidence Indicator */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-600 dark:text-slate-400 font-medium">{t("landslide.confidence", "Risk Assessment Confidence:")}</span>
-              <span className={`font-black text-xs ${dataAvailable ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 space-y-1.5">
+            <div className="flex items-center justify-between text-xs lg:text-sm">
+              <span className="text-slate-600 dark:text-slate-400 font-bold">{t("landslide.confidence", "Risk Assessment Confidence:")}</span>
+              <span className={`font-black text-xs lg:text-sm ${dataAvailable ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
                 {dataAvailable ? t("landslide.highConfidence", "HIGH CONFIDENCE") : t("landslide.mediumConfidence", "MEDIUM (PARTIAL DATA)")}
               </span>
             </div>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal">
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
               {t("landslide.confidenceNote", "Score derived from Open-Meteo precipitation telemetry, DEM slope gradient & ISRO Bhuvan soil saturation.")}
             </p>
           </div>
 
           {/* Trend Banner */}
-          <div className="flex items-center justify-between text-xs border-t border-slate-200 dark:border-slate-800 pt-3">
-            <span className="text-slate-600 dark:text-slate-400">{t("landslide.trend", "72-Hour Risk Trend:")}</span>
-            <span className="font-bold flex items-center gap-1.5 text-amber-600 dark:text-orange-400">
+          <div className="flex items-center justify-between text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800 pt-3.5">
+            <span className="text-slate-600 dark:text-slate-400 font-medium">{t("landslide.trend", "72-Hour Risk Trend:")}</span>
+            <span className="font-extrabold flex items-center gap-1.5 text-amber-600 dark:text-orange-400">
               {trend === "INCREASING" && <TrendingUp className="h-4 w-4 text-amber-600 dark:text-orange-400" />}
               {trend === "DECREASING" && <TrendingDown className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
               {trend === "STABLE" && <Minus className="h-4 w-4 text-sky-600 dark:text-sky-400" />}
@@ -448,53 +454,53 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
         {/* Right 4 Factor Metric Cards */}
         <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: 72h Rain */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl space-y-2 flex flex-col justify-between transition-colors duration-300">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               <span>{t("landslide.rain72h", "RAIN (72h)")}</span>
               <CloudRain className="h-4 w-4 text-sky-500 dark:text-sky-400" />
             </div>
             <div>
-              <div className="text-2xl font-black text-slate-900 dark:text-white">{rain72h} mm</div>
-              <span className="text-[10px] text-sky-600 dark:text-sky-400 font-semibold">{rain24h} mm (Last 24h)</span>
+              <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">{rain72h} mm</div>
+              <span className="text-xs text-sky-600 dark:text-sky-400 font-bold block mt-1">{rain24h} mm (Last 24h)</span>
             </div>
-            <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+            <div className="text-xs text-slate-500 pt-2 border-t border-slate-200 dark:border-slate-800/80 font-medium">
               Source: <b className="text-slate-700 dark:text-slate-300">Open-Meteo IMD Grid</b>
             </div>
           </div>
 
           {/* Card 2: Terrain Slope */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl space-y-2 flex flex-col justify-between transition-colors duration-300">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               <span>{t("landslide.terrainSlope", "TERRAIN SLOPE")}</span>
               <Compass className="h-4 w-4 text-amber-500 dark:text-amber-400" />
             </div>
             <div>
-              <div className="text-2xl font-black text-amber-600 dark:text-amber-400">{slopeAngle}° Gradient</div>
-              <span className="text-[10px] text-amber-700 dark:text-amber-300 font-semibold">{t("landslide.highIncline", "High Mountain Incline")}</span>
+              <div className="text-2xl lg:text-3xl font-black text-amber-600 dark:text-amber-400">{slopeAngle}° Gradient</div>
+              <span className="text-xs text-amber-700 dark:text-amber-300 font-bold block mt-1">{t("landslide.highIncline", "High Mountain Incline")}</span>
             </div>
-            <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+            <div className="text-xs text-slate-500 pt-2 border-t border-slate-200 dark:border-slate-800/80 font-medium">
               Source: <b className="text-slate-700 dark:text-slate-300">SRTM 30m DEM</b>
             </div>
           </div>
 
           {/* Card 3: Soil Saturation */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl space-y-2 flex flex-col justify-between transition-colors duration-300">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               <span>{t("landslide.soilSaturation", "SOIL SATURATION")}</span>
               <Activity className="h-4 w-4 text-rose-500 dark:text-rose-400" />
             </div>
             <div>
-              <div className="text-2xl font-black text-rose-600 dark:text-rose-400">{soilSatPercent}%</div>
-              <span className="text-[10px] text-rose-700 dark:text-rose-300 font-semibold">{t("landslide.poreWater", "Pore Water Saturation")}</span>
+              <div className="text-2xl lg:text-3xl font-black text-rose-600 dark:text-rose-400">{soilSatPercent}%</div>
+              <span className="text-xs text-rose-700 dark:text-rose-300 font-bold block mt-1">{t("landslide.poreWater", "Pore Water Saturation")}</span>
             </div>
-            <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+            <div className="text-xs text-slate-500 pt-2 border-t border-slate-200 dark:border-slate-800/80 font-medium">
               Source: <b className="text-slate-700 dark:text-slate-300">ISRO Bhuvan Hydro Grid</b>
             </div>
           </div>
 
           {/* Card 4: Geological Fault */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl space-y-2 flex flex-col justify-between transition-colors duration-300">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               <span>{t("landslide.faultProximity", "FAULT PROXIMITY")}</span>
               <Layers className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
             </div>
