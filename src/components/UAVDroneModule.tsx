@@ -297,30 +297,30 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
   const etaMinsRemaining = Math.max(0, Math.round((distanceRemainingKm / selectedDrone.cruiseSpeedKmH) * 60));
 
   return (
-    <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6 select-none bg-[#040814] text-slate-100">
+    <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
       {/* HEADER SECTION */}
-      <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-colors duration-300">
         <div>
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-sky-500/20 px-3 py-0.5 text-xs font-bold text-sky-400 border border-sky-500/30 flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-sky-400 animate-ping"></span>
+            <span className="rounded-full bg-sky-500/20 px-3 py-0.5 text-xs font-bold text-sky-700 dark:text-sky-400 border border-sky-500/30 flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-sky-500 dark:bg-sky-400 animate-ping"></span>
               🛸 SOVEREIGN UAV LIFELINE EMERGENCY DISPATCH &bull; SIMULATION MODE ACTIVE
             </span>
           </div>
-          <h1 className="text-xl lg:text-2xl font-black text-white mt-1.5 flex items-center gap-2">
+          <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1.5 flex items-center gap-2">
             <span>🛸</span> Fully Autonomous UAV Emergency Aerial Delivery Module
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5 max-w-3xl">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 max-w-3xl">
             High-Altitude Medical Cargo Dispatch & Live Flight Corridor Control for Zero-Road Mountain Emergency Zones across all 8 North Eastern States.
           </p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
           <span className={"px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold border " + (
-            missionStatus === "IN TRANSIT" || missionStatus === "MISSION ACTIVE" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 animate-pulse" :
-            missionStatus === "ABORTED" ? "bg-rose-500/20 text-rose-300 border-rose-500/40" :
-            missionStatus === "VALIDATING" ? "bg-amber-500/20 text-amber-300 border-amber-500/40" :
-            "bg-slate-900 text-slate-300 border-slate-800"
+            missionStatus === "IN TRANSIT" || missionStatus === "MISSION ACTIVE" ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/40 animate-pulse" :
+            missionStatus === "ABORTED" ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/40" :
+            missionStatus === "VALIDATING" ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/40" :
+            "bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-800"
           )}>
             ● STATUS: {missionStatus}
           </span>
@@ -363,25 +363,25 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
         {/* LEFT COLUMN: MISSION CONFIGURATION & SAFETY PROTOCOL */}
         <div className="lg:col-span-5 space-y-5">
           {/* 1. MISSION CONFIGURATION PANEL */}
-          <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <h2 className="text-sm font-black uppercase text-white flex items-center gap-2">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+              <h2 className="text-sm font-black uppercase text-slate-900 dark:text-white flex items-center gap-2">
                 <span>⚙️</span> UAV Mission Configuration
               </h2>
-              <span className="text-[10px] text-slate-400 font-mono">MDoNER Direct Corridor</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">MDoNER Direct Corridor</span>
             </div>
 
             <div className="space-y-3 text-xs">
               {/* Origin Hub */}
               <div>
-                <label className="text-slate-400 font-medium block mb-1">{t("uav.origin", "Origin Logistics Hub")}</label>
+                <label className="text-slate-600 dark:text-slate-400 font-medium block mb-1">{t("uav.origin", "Origin Logistics Hub")}</label>
                 <select
                   value={selectedHub.id}
                   onChange={(e) => {
                     const found = hubs.find((h) => h.id === e.target.value);
                     if (found) setSelectedHub(found);
                   }}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-white font-bold focus:border-sky-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-slate-900 dark:text-white font-bold focus:border-sky-500 focus:outline-none"
                 >
                   {hubs.map((h) => (
                     <option key={h.id} value={h.id}>{h.name}</option>
@@ -391,14 +391,14 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
 
               {/* Destination Helipad */}
               <div>
-                <label className="text-slate-400 font-medium block mb-1">{t("uav.destination", "Destination Helipad / Emergency LZ")}</label>
+                <label className="text-slate-600 dark:text-slate-400 font-medium block mb-1">{t("uav.destination", "Destination Helipad / Emergency LZ")}</label>
                 <select
                   value={selectedLZ.id}
                   onChange={(e) => {
                     const found = helipads.find((lz) => lz.id === e.target.value);
                     if (found) setSelectedLZ(found);
                   }}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-white font-bold focus:border-sky-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-slate-900 dark:text-white font-bold focus:border-sky-500 focus:outline-none"
                 >
                   {helipads.map((lz) => (
                     <option key={lz.id} value={lz.id}>{lz.name}</option>
@@ -408,14 +408,14 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
 
               {/* Assigned UAV Drone */}
               <div>
-                <label className="text-slate-400 font-medium block mb-1">{t("uav.drone", "Assigned Lifeline UAV Drone")}</label>
+                <label className="text-slate-600 dark:text-slate-400 font-medium block mb-1">{t("uav.drone", "Assigned Lifeline UAV Drone")}</label>
                 <select
                   value={selectedDrone.id}
                   onChange={(e) => {
                     const found = drones.find((d) => d.id === e.target.value);
                     if (found) setSelectedDrone(found);
                   }}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-white font-bold focus:border-sky-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-slate-900 dark:text-white font-bold focus:border-sky-500 focus:outline-none"
                 >
                   {drones.map((d) => (
                     <option key={d.id} value={d.id}>{d.name} (Max Payload: {d.maxPayloadKg}kg, Radius: {d.operatingRadiusKm}km)</option>
@@ -423,22 +423,22 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
                 </select>
               </div>
 
-              {/* {t("uav.cargo", "Emergency Payload Cargo")} */}
+              {/* Emergency Payload Cargo */}
               <div>
-                <label className="text-slate-400 font-medium block mb-1">Emergency Payload Cargo</label>
+                <label className="text-slate-600 dark:text-slate-400 font-medium block mb-1">Emergency Payload Cargo</label>
                 <input
                   type="text"
                   value={cargoName}
                   onChange={(e) => setCargoName(e.target.value)}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-white font-bold focus:border-sky-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-slate-900 dark:text-white font-bold focus:border-sky-500 focus:outline-none"
                 />
               </div>
 
               {/* Payload Mass Slider */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-slate-400 font-medium">{t("uav.payloadMass", "Payload Mass (kg)")}</span>
-                  <span className={"font-black text-sm " + (isPayloadOverloaded ? "text-rose-400" : "text-sky-400")}>
+                  <span className="text-slate-600 dark:text-slate-400 font-medium">{t("uav.payloadMass", "Payload Mass (kg)")}</span>
+                  <span className={"font-black text-sm " + (isPayloadOverloaded ? "text-rose-600 dark:text-rose-400" : "text-sky-600 dark:text-sky-400")}>
                     {payloadKg} kg / {selectedDrone.maxPayloadKg} kg Max
                   </span>
                 </div>
@@ -448,7 +448,7 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
                   max="30"
                   value={payloadKg}
                   onChange={(e) => setPayloadKg(Number(e.target.value))}
-                  className="w-full accent-sky-500 bg-slate-950 cursor-pointer"
+                  className="w-full accent-sky-500 bg-slate-200 dark:bg-slate-950 cursor-pointer"
                 />
               </div>
             </div>
@@ -460,8 +460,8 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
               className={"w-full py-3 rounded-xl font-black text-xs shadow-xl transition flex items-center justify-center gap-2 " + (
                 missionStatus === "IN TRANSIT" || missionStatus === "MISSION ACTIVE" ? "bg-emerald-600 text-white cursor-default shadow-emerald-600/30" :
                 missionStatus === "VALIDATING" ? "bg-amber-600 text-white animate-pulse" :
-                isMissionFeasible ? "bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 cursor-pointer shadow-sky-500/30" :
-                "bg-slate-900 border border-slate-800 text-slate-500 cursor-not-allowed"
+                isMissionFeasible ? "bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white cursor-pointer shadow-sky-500/30" :
+                "bg-slate-200 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed"
               )}
             >
               {missionStatus === "IN TRANSIT" || missionStatus === "MISSION ACTIVE" ? "⚡ Autonomous UAV Mission Active" :
@@ -470,13 +470,13 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
             </button>
           </div>
 
-          {/* 2. {t("uav.flightTelemetryMath", "FLIGHT TELEMETRY MATH")} CARD */}
-          <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="text-xs font-black uppercase text-slate-300 tracking-wider">FLIGHT TELEMETRY MATH</span>
+          {/* 2. FLIGHT TELEMETRY MATH CARD */}
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-3 transition-colors duration-300">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+              <span className="text-xs font-black uppercase text-slate-700 dark:text-slate-300 tracking-wider">FLIGHT TELEMETRY MATH</span>
               <span className={"px-2.5 py-0.5 rounded text-[10px] font-black uppercase border " + (
-                isRangeExceeded || isPayloadOverloaded ? "bg-rose-500/20 text-rose-300 border-rose-500/40" :
-                "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                isRangeExceeded || isPayloadOverloaded ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/40" :
+                "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/40"
               )}>
                 {isRangeExceeded ? t("uav.rangeExceeded", "RANGE EXCEEDED") : isPayloadOverloaded ? "PAYLOAD OVERLOAD" : "SAFE"}
               </span>
@@ -484,7 +484,7 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
 
             {/* Validation Message */}
             <p className={"text-xs font-semibold leading-relaxed " + (
-              isRangeExceeded || isPayloadOverloaded ? "text-rose-300" : "text-emerald-300"
+              isRangeExceeded || isPayloadOverloaded ? "text-rose-600 dark:text-rose-300" : "text-emerald-600 dark:text-emerald-300"
             )}>
               {isRangeExceeded ? `⚠️ Flight distance (${flightDistanceKm} km) exceeds maximum operating radius (${selectedDrone.operatingRadiusKm} km) of ${selectedDrone.name}.` :
                isPayloadOverloaded ? `⚠️ Payload mass (${payloadKg} kg) exceeds maximum capacity (${selectedDrone.maxPayloadKg} kg) of ${selectedDrone.name}.` :
@@ -492,63 +492,63 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
             </p>
 
             <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
-              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-[10px] text-slate-400 block">Flight Distance</span>
-                <b className="text-white text-sm">{flightDistanceKm} km</b>
+              <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Flight Distance</span>
+                <b className="text-slate-900 dark:text-white text-sm">{flightDistanceKm} km</b>
               </div>
-              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-[10px] text-slate-400 block">Max Radius Limit</span>
-                <b className="text-sky-400 text-sm">{selectedDrone.operatingRadiusKm} km</b>
+              <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Max Radius Limit</span>
+                <b className="text-sky-600 dark:text-sky-400 text-sm">{selectedDrone.operatingRadiusKm} km</b>
               </div>
-              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-[10px] text-slate-400 block">Remaining Payload</span>
-                <b className="text-emerald-400 text-sm">{Math.max(0, selectedDrone.maxPayloadKg - payloadKg)} kg</b>
+              <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Remaining Payload</span>
+                <b className="text-emerald-600 dark:text-emerald-400 text-sm">{Math.max(0, selectedDrone.maxPayloadKg - payloadKg)} kg</b>
               </div>
-              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-[10px] text-slate-400 block">Est. Battery Required</span>
-                <b className="text-indigo-300 text-sm">{estimatedBatteryRequired}%</b>
+              <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Est. Battery Required</span>
+                <b className="text-indigo-600 dark:text-indigo-300 text-sm">{estimatedBatteryRequired}%</b>
               </div>
             </div>
           </div>
 
-          {/* 3. {t("uav.preflightSafetyProtocol", "PRE-FLIGHT SAFETY PROTOCOL")} (4 CARDS MATCHING REFERENCE) */}
+          {/* 3. PRE-FLIGHT SAFETY PROTOCOL (4 CARDS) */}
           <div className="space-y-2.5 pt-1">
-            <div className="text-xs font-black uppercase text-slate-400 tracking-wider">PRE-FLIGHT SAFETY PROTOCOL</div>
+            <div className="text-xs font-black uppercase text-slate-600 dark:text-slate-400 tracking-wider">PRE-FLIGHT SAFETY PROTOCOL</div>
             <div className="grid grid-cols-2 gap-3">
               {/* Card 1: IAF Air Corridor */}
-              <div className="p-3 rounded-xl border border-slate-800 bg-[#070d1e] space-y-1">
+              <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] space-y-1 transition-colors duration-300">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-white">IAF Air Corridor</span>
-                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black">PASS</span>
+                  <span className="font-bold text-slate-900 dark:text-white">IAF Air Corridor</span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[9px] font-black">PASS</span>
                 </div>
-                <p className="text-[10px] text-slate-400">Authorized Corridor #IAF-NER-9981 Active</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">Authorized Corridor #IAF-NER-9981 Active</p>
               </div>
 
               {/* Card 2: Mountain Wind Check */}
-              <div className="p-3 rounded-xl border border-slate-800 bg-[#070d1e] space-y-1">
+              <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] space-y-1 transition-colors duration-300">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-white">Mountain Wind Check</span>
-                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black">PASS</span>
+                  <span className="font-bold text-slate-900 dark:text-white">Mountain Wind Check</span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[9px] font-black">PASS</span>
                 </div>
-                <p className="text-[10px] text-slate-400">Wind: 28 km/h (&lt; 55 km/h Safe)</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">Wind: 28 km/h (&lt; 55 km/h Safe)</p>
               </div>
 
               {/* Card 3: Helipad Receiver */}
-              <div className="p-3 rounded-xl border border-slate-800 bg-[#070d1e] space-y-1">
+              <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] space-y-1 transition-colors duration-300">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-white">Helipad Receiver</span>
-                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black">PASS</span>
+                  <span className="font-bold text-slate-900 dark:text-white">Helipad Receiver</span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[9px] font-black">PASS</span>
                 </div>
-                <p className="text-[10px] text-slate-400">Ground Optical Beacon Operational</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">Ground Optical Beacon Operational</p>
               </div>
 
               {/* Card 4: Cold-Chain Pod */}
-              <div className="p-3 rounded-xl border border-slate-800 bg-[#070d1e] space-y-1">
+              <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] space-y-1 transition-colors duration-300">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-white">Cold-Chain Pod</span>
-                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black">PASS</span>
+                  <span className="font-bold text-slate-900 dark:text-white">Cold-Chain Pod</span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[9px] font-black">PASS</span>
                 </div>
-                <p className="text-[10px] text-slate-400">+4.2°C Thermal Storage Protected</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">+4.2°C Thermal Storage Protected</p>
               </div>
             </div>
           </div>
@@ -557,20 +557,20 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
         {/* RIGHT COLUMN: INTERACTIVE MAP & LIVE TELEMETRY DASHBOARD */}
         <div className="lg:col-span-7 space-y-5">
           {/* 1. INTERACTIVE LEAFLET FLIGHT CORRIDOR MAP */}
-          <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="text-xs font-black uppercase text-white flex items-center gap-2">
-                <Navigation className="h-4 w-4 text-sky-400" />
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl dark:shadow-2xl space-y-3 transition-colors duration-300">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+              <span className="text-xs font-black uppercase text-slate-900 dark:text-white flex items-center gap-2">
+                <Navigation className="h-4 w-4 text-sky-500 dark:text-sky-400" />
                 {t("uav.aerialLifelineCorridor", "HIGH-ALTITUDE AERIAL LIFELINE CORRIDOR (ZERO ROAD DEPENDENCY)")}
               </span>
-              <span className="text-[10px] text-emerald-400 font-mono font-bold">Leaflet GIS Vector</span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">Leaflet GIS Vector</span>
             </div>
 
-            <div className="relative rounded-xl overflow-hidden h-[340px] border border-slate-800 shadow-xl">
+            <div className="relative rounded-xl overflow-hidden h-[340px] border border-slate-200 dark:border-slate-800 shadow-xl">
               <div ref={mapRef} className="w-full h-full z-0" />
 
               {/* Overlay HUD info badge */}
-              <div className="absolute top-3 left-3 z-20 rounded-lg bg-slate-950/80 border border-slate-800 p-2 text-[10px] font-mono backdrop-blur space-y-0.5 text-sky-400">
+              <div className="absolute top-3 left-3 z-20 rounded-lg bg-white/90 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 p-2 text-[10px] font-mono backdrop-blur space-y-0.5 text-sky-600 dark:text-sky-400">
                 <div>MISSION ID: {missionId || "UAV-READY"}</div>
                 <div>CORRIDOR: {selectedHub.name.split(' ')[0]} ➔ {selectedLZ.name.split(' ')[0]}</div>
                 <div>AERIAL DISTANCE: {flightDistanceKm} km</div>
@@ -579,58 +579,58 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
           </div>
 
           {/* 2. LIVE DRONE TELEMETRY GRID (8 METRICS) */}
-          <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <h3 className="text-xs font-black uppercase text-white flex items-center gap-2">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+              <h3 className="text-xs font-black uppercase text-slate-900 dark:text-white flex items-center gap-2">
                 <span>📡</span> Live UAV Telemetry System
               </h3>
-              <span className="text-[10px] font-mono text-sky-400">Updated every 1.0s</span>
+              <span className="text-[10px] font-mono text-sky-600 dark:text-sky-400">Updated every 1.0s</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block uppercase">Altitude</span>
-                <b className="text-white text-base">{currentAltitude} m MSL</b>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Altitude</span>
+                <b className="text-slate-900 dark:text-white text-base">{currentAltitude} m MSL</b>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block uppercase">Speed</span>
-                <b className="text-sky-400 text-base">{currentSpeed} km/h</b>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Speed</span>
+                <b className="text-sky-600 dark:text-sky-400 text-base">{currentSpeed} km/h</b>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block uppercase">Battery Level</span>
-                <b className={"text-base " + (currentBattery < 30 ? "text-rose-400" : "text-emerald-400")}>{currentBattery}%</b>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Battery Level</span>
+                <b className={"text-base " + (currentBattery < 30 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400")}>{currentBattery}%</b>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block uppercase">Heading</span>
-                <b className="text-amber-400 text-base">142° SE</b>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Heading</span>
+                <b className="text-amber-600 dark:text-amber-400 text-base">142° SE</b>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block uppercase">Dist. Travelled</span>
-                <b className="text-indigo-300 text-base">{currentDistanceTravelled} km</b>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Dist. Travelled</span>
+                <b className="text-indigo-600 dark:text-indigo-300 text-base">{currentDistanceTravelled} km</b>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block uppercase">Dist. Remaining</span>
-                <b className="text-sky-400 text-base">{distanceRemainingKm} km</b>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Dist. Remaining</span>
+                <b className="text-sky-600 dark:text-sky-400 text-base">{distanceRemainingKm} km</b>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block uppercase">Est. ETA</span>
-                <b className="text-emerald-400 text-base">00:{etaMinsRemaining < 10 ? '0' + etaMinsRemaining : etaMinsRemaining}:00</b>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Est. ETA</span>
+                <b className="text-emerald-600 dark:text-emerald-400 text-base">00:{etaMinsRemaining < 10 ? '0' + etaMinsRemaining : etaMinsRemaining}:00</b>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block uppercase">Mission Progress</span>
-                <b className="text-white text-base">{progressPercent}%</b>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Mission Progress</span>
+                <b className="text-slate-900 dark:text-white text-base">{progressPercent}%</b>
               </div>
             </div>
 
             {/* Flight Progress Bar */}
             <div className="space-y-1 pt-1">
-              <div className="h-2 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                 <div className="h-full bg-gradient-to-r from-sky-500 via-indigo-500 to-emerald-400 rounded-full transition-all duration-500" style={{ width: progressPercent + "%" }}></div>
               </div>
-              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+              <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                 <span>{selectedHub.name.split(' ')[0]}</span>
-                <span className="text-emerald-400 font-bold">{progressPercent}% Trajectory Cleared</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">{progressPercent}% Trajectory Cleared</span>
                 <span>{selectedLZ.name.split(' ')[0]}</span>
               </div>
             </div>

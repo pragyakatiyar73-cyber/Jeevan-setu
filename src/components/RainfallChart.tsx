@@ -8,12 +8,14 @@ import {
   Tooltip,
   Legend
 } from "chart.js";
+import { useTheme } from "../theme/ThemeContext";
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const RainfallChart: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstanceRef = useRef<Chart | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -25,6 +27,10 @@ const RainfallChart: React.FC = () => {
 
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
+
+    const isDark = theme === "dark";
+    const tickColor = isDark ? "#94a3b8" : "#475569";
+    const gridColor = isDark ? "rgba(51, 65, 85, 0.2)" : "rgba(226, 232, 240, 0.8)";
 
     chartInstanceRef.current = new Chart(ctx, {
       type: "bar",
@@ -56,14 +62,14 @@ const RainfallChart: React.FC = () => {
         },
         scales: {
           x: {
-            ticks: { color: "#94a3b8", font: { size: 11, weight: "bold" } },
+            ticks: { color: tickColor, font: { size: 11, weight: "bold" } },
             grid: { display: false }
           },
           y: {
             beginAtZero: true,
             max: 10,
             ticks: { display: false },
-            grid: { color: "rgba(51, 65, 85, 0.2)" }
+            grid: { color: gridColor }
           }
         }
       }
@@ -75,7 +81,7 @@ const RainfallChart: React.FC = () => {
         chartInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [theme]);
 
   return (
     <div style={{ height: "130px", width: "100%" }}>

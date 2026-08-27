@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+}
+
+.dark {
+  --bg-primary: #040814;
+  --bg-secondary: #070d1e;
+  --bg-card: #0b1329;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border-color: #1e293b;
+}
+
+html {
+  font-size: 20px;
+}
+
+@media (min-width: 1440px) {
+  html {
+    font-size: 21px;
+  }
+}
+
 html, body, #root {
   height: 100%;
   width: 100%;
@@ -9,6 +37,9 @@ html, body, #root {
   padding: 0;
   overflow-x: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
 /* Leaflet Container Styling */
@@ -16,7 +47,25 @@ html, body, #root {
   width: 100%;
   height: 100%;
   border-radius: 0.75rem;
+  background-color: #e2e8f0;
+  transition: background-color 0.25s ease;
+}
+
+.dark .leaflet-container {
   background-color: #0f172a;
+}
+
+/* Leaflet Popup Light/Dark Adjustments */
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-radius: 0.5rem;
+}
+
+.dark .leaflet-popup-content-wrapper, .dark .leaflet-popup-tip {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155;
 }
 
 /* Custom Scrollbars */
@@ -26,14 +75,27 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.dark ::-webkit-scrollbar-track {
   background: #0f172a;
 }
 
 ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }

@@ -284,7 +284,7 @@ export default function NERLiveMapModule({
         <b>${activeSosLocation?.landmark || 'NH-6 Km 142 (East Khasi Hills, Meghalaya)'}</b><br/>
         <span>GPS: <b>${sosLat.toFixed(4)}° N, ${sosLon.toFixed(4)}° E</b></span><br/>
         <div style="margin-top:6px; background:#dcfce7; color:#15803d; padding:4px 8px; border-radius:6px; font-weight:800;">
-          ✓ निकटतम 4x4 काफिला #01 भेजा गया (ETA: 14 मिनट)
+          ✓ Nearest 4x4 Convoy #01 Dispatched (ETA: 14 mins)
         </div>
       </div>
     `).openPopup();
@@ -319,16 +319,16 @@ export default function NERLiveMapModule({
     <div className="h-full w-full relative flex flex-col select-none bg-[#040814] text-slate-100 font-sans overflow-hidden">
       
       {/* 🟢 TOP HEADER BAR MATCHING SCREENSHOT */}
-      <div className="h-16 shrink-0 border-b border-slate-800 bg-[#040814] px-4 lg:px-6 flex items-center justify-between gap-4 z-20 backdrop-blur">
+      <div className="h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-4 lg:px-6 flex items-center justify-between gap-4 z-20 backdrop-blur transition-colors duration-300">
         <div>
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
               Live Region Map &bull; Live Satellite & Radar
             </span>
-            <span className="hidden sm:inline text-xs italic text-slate-400">"Smart decisions today, safer tomorrow."</span>
+            <span className="hidden sm:inline text-xs italic text-slate-500 dark:text-slate-400">"Smart decisions today, safer tomorrow."</span>
           </div>
-          <h1 className="text-base lg:text-lg font-black text-white tracking-tight mt-0.5">
+          <h1 className="text-base lg:text-lg font-black text-slate-900 dark:text-white tracking-tight mt-0.5">
             North Eastern Region Accessibility & Logistics Overview
           </h1>
         </div>
@@ -337,7 +337,7 @@ export default function NERLiveMapModule({
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={onNavigateTo3DSim}
-            className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-1.5 cursor-pointer shadow"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer shadow"
           >
             <span>🎮</span> 3D SIMULATION
           </button>
@@ -346,11 +346,11 @@ export default function NERLiveMapModule({
             <span>🗺️</span> 2D Map
           </button>
 
-          <div className="hidden xl:flex items-center gap-1.5 pl-2 border-l border-slate-800 text-xs">
+          <div className="hidden xl:flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-slate-800 text-xs">
             <button
               onClick={() => setBaseStyle("topo")}
               className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${
-                baseStyle === "topo" ? "bg-indigo-600 text-white" : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+                baseStyle === "topo" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               ⛰️ Terrain
@@ -359,7 +359,7 @@ export default function NERLiveMapModule({
             <button
               onClick={() => setBaseStyle("dark")}
               className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${
-                baseStyle === "dark" ? "bg-indigo-600 text-white" : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+                baseStyle === "dark" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               🌙 Dark
@@ -368,7 +368,7 @@ export default function NERLiveMapModule({
             <button
               onClick={() => setBaseStyle("osm")}
               className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${
-                baseStyle === "osm" ? "bg-indigo-600 text-white" : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+                baseStyle === "osm" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               🗺️ OSM
@@ -377,7 +377,7 @@ export default function NERLiveMapModule({
             <button
               onClick={() => setBaseStyle("esri")}
               className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${
-                baseStyle === "esri" ? "bg-indigo-600 text-white" : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+                baseStyle === "esri" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               🛰️ Esri
@@ -392,25 +392,25 @@ export default function NERLiveMapModule({
         {/* LEAFLET MAP CANVAS */}
         <div ref={mapRef} className="w-full h-full z-0" />
         {hideHeader && (
-          <div className="absolute top-4 right-4 z-[1000] flex items-center gap-1.5 text-xs bg-slate-950/80 p-1.5 rounded-xl border border-slate-800 backdrop-blur shadow-xl">
-            <button onClick={() => setBaseStyle("topo")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${baseStyle === "topo" ? "bg-indigo-600 text-white" : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"}`}>⛰️ Terrain</button>
-            <button onClick={() => setBaseStyle("dark")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${baseStyle === "dark" ? "bg-indigo-600 text-white" : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"}`}>🌙 Dark</button>
-            <button onClick={() => setBaseStyle("osm")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${baseStyle === "osm" ? "bg-indigo-600 text-white" : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"}`}>🗺️ OSM</button>
-            <button onClick={() => setBaseStyle("esri")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${baseStyle === "esri" ? "bg-indigo-600 text-white" : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"}`}>🛰️ Esri</button>
+          <div className="absolute top-4 right-4 z-[1000] flex items-center gap-1.5 text-xs bg-white/90 dark:bg-slate-950/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 backdrop-blur shadow-xl">
+            <button onClick={() => setBaseStyle("topo")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${baseStyle === "topo" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}>⛰️ Terrain</button>
+            <button onClick={() => setBaseStyle("dark")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${baseStyle === "dark" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}>🌙 Dark</button>
+            <button onClick={() => setBaseStyle("osm")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${baseStyle === "osm" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}>🗺️ OSM</button>
+            <button onClick={() => setBaseStyle("esri")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${baseStyle === "esri" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}>🛰️ Esri</button>
           </div>
         )}
 
         {/* LEFT FLOATING LAYERS & OVERLAYS INTERACTIVE PANEL MATCHING SCREENSHOT media_1787755898566.png */}
         {isLayersPanelOpen ? (
-          <div className="absolute left-4 top-4 z-[1000] w-72 rounded-2xl border border-slate-800 bg-[#070d1e]/95 p-4 shadow-2xl backdrop-blur text-xs space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <div className="flex items-center gap-2 font-black uppercase text-white tracking-wider">
+          <div className="absolute left-4 top-4 z-[1000] w-72 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#070d1e]/95 p-4 shadow-2xl backdrop-blur text-xs space-y-3 transition-colors duration-300">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+              <div className="flex items-center gap-2 font-black uppercase text-slate-900 dark:text-white tracking-wider">
                 <span>{t("map.layersPanel", "LAYERS & OVERLAYS")}</span>
-                <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[9px]">{t("map.interactive", "Interactive")}</span>
+                <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-400 border border-sky-500/30 text-[9px]">{t("map.interactive", "Interactive")}</span>
               </div>
               <button
                 onClick={() => setIsLayersPanelOpen(false)}
-                className="text-slate-400 hover:text-white cursor-pointer"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -418,13 +418,13 @@ export default function NERLiveMapModule({
 
             {/* Base Map Style Dropdown */}
             <div>
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
                 {t("map.baseStyle", "Base Map Style:")}
               </label>
               <select
                 value={baseStyle}
                 onChange={(e) => setBaseStyle(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2 text-xs font-bold text-white focus:border-sky-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
               >
                 <option value="dark">🌙 Dark Matter (Tactical)</option>
                 <option value="esri">🛰️ Esri Sovereign Satellite</option>
@@ -435,63 +435,63 @@ export default function NERLiveMapModule({
 
             {/* 100% Functional Checkboxes */}
             <div className="space-y-2.5 pt-1 font-semibold">
-              <label className="flex items-center justify-between text-slate-200 cursor-pointer hover:text-sky-400 transition">
+              <label className="flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition">
                 <span className="flex items-center gap-2">{t("map.roads", "🛣️ Roads & Highways")}</span>
                 <input
                   type="checkbox"
                   checked={overlays.roads}
                   onChange={() => toggleOverlay("roads")}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
                 />
               </label>
 
-              <label className="flex items-center justify-between text-slate-200 cursor-pointer hover:text-sky-400 transition">
+              <label className="flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition">
                 <span className="flex items-center gap-2">{t("map.traffic", "🚦 Traffic & Status")}</span>
                 <input
                   type="checkbox"
                   checked={overlays.traffic}
                   onChange={() => toggleOverlay("traffic")}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
                 />
               </label>
 
-              <label className="flex items-center justify-between text-slate-200 cursor-pointer hover:text-sky-400 transition">
+              <label className="flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition">
                 <span className="flex items-center gap-2">{t("map.weather", "🌧️ Weather Radar")}</span>
                 <input
                   type="checkbox"
                   checked={overlays.weather}
                   onChange={() => toggleOverlay("weather")}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
                 />
               </label>
 
-              <label className="flex items-center justify-between text-slate-200 cursor-pointer hover:text-sky-400 transition">
+              <label className="flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition">
                 <span className="flex items-center gap-2">{t("map.disruptions", "⚠️ Disruptions / Landslides")}</span>
                 <input
                   type="checkbox"
                   checked={overlays.disruptions}
                   onChange={() => toggleOverlay("disruptions")}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
                 />
               </label>
 
-              <label className="flex items-center justify-between text-slate-200 cursor-pointer hover:text-sky-400 transition">
+              <label className="flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition">
                 <span className="flex items-center gap-2">{t("map.convoys", "🚚 Essential Supply Convoys")}</span>
                 <input
                   type="checkbox"
                   checked={overlays.convoys}
                   onChange={() => toggleOverlay("convoys")}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
                 />
               </label>
 
-              <label className="flex items-center justify-between text-slate-200 cursor-pointer hover:text-sky-400 transition">
+              <label className="flex items-center justify-between text-slate-800 dark:text-slate-200 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition">
                 <span className="flex items-center gap-2">{t("map.depots", "🌉 Bridges & Supply Depots")}</span>
                 <input
                   type="checkbox"
                   checked={overlays.depots}
                   onChange={() => toggleOverlay("depots")}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sky-500 focus:ring-0 cursor-pointer"
                 />
               </label>
             </div>
@@ -499,43 +499,43 @@ export default function NERLiveMapModule({
         ) : (
           <button
             onClick={() => setIsLayersPanelOpen(true)}
-            className="absolute left-4 top-4 z-[1000] rounded-xl border border-slate-800 bg-[#070d1e]/90 p-2.5 text-xs font-bold text-white shadow-2xl backdrop-blur flex items-center gap-2 cursor-pointer"
+            className="absolute left-4 top-4 z-[1000] rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-2.5 text-xs font-bold text-slate-900 dark:text-white shadow-2xl backdrop-blur flex items-center gap-2 cursor-pointer"
           >
-            <Layers className="h-4 w-4 text-sky-400" />
+            <Layers className="h-4 w-4 text-sky-500 dark:text-sky-400" />
             <span>Layers Panel</span>
           </button>
         )}
 
         {/* RIGHT FLOATING ZOOM CONTROLS */}
         <div className="absolute right-4 top-4 z-[1000] flex flex-col gap-2">
-          <div className="flex flex-col rounded-xl border border-slate-800 bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
+          <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
             <button
               onClick={() => mapInstanceRef.current?.zoomIn()}
-              className="h-8 w-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-black text-sm flex items-center justify-center cursor-pointer"
+              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
               title="Zoom In"
             >
               +
             </button>
             <button
               onClick={() => mapInstanceRef.current?.zoomOut()}
-              className="h-8 w-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-black text-sm flex items-center justify-center cursor-pointer"
+              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
               title="Zoom Out"
             >
               -
             </button>
           </div>
 
-          <div className="flex flex-col rounded-xl border border-slate-800 bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
+          <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
             <button
               onClick={() => setBaseStyle(baseStyle === "dark" ? "esri" : "dark")}
-              className="h-8 w-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
+              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
               title="Toggle Map Style"
             >
               🌙
             </button>
             <button
               onClick={() => mapInstanceRef.current?.setView([25.8000, 92.5000], 7)}
-              className="h-8 w-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
+              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
               title="Center on NER Region"
             >
               🎯

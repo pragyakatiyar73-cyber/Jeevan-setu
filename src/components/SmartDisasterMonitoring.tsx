@@ -363,11 +363,11 @@ export default function SmartDisasterMonitoring({
     markerRef.current = L.marker([monitoredLoc.lat, monitoredLoc.lon], { icon: customMarkerIcon }).addTo(map);
     markerRef.current.bindPopup(`
       <div style="font-family: sans-serif; font-size: 12px; color: #0f172a;">
-        <b style="color: #e11d48;">🛰️ निगरानी किया गया आपदा स्थल</b><br/>
+        <b style="color: #e11d48;">🛰️ Monitored Disaster Site</b><br/>
         <b>${monitoredLoc.displayName}</b><br/>
         Lat: ${monitoredLoc.lat.toFixed(4)} &bull; Lon: ${monitoredLoc.lon.toFixed(4)}<br/>
-        <span>आपदा प्रकार: <b>${disasterType}</b></span><br/>
-        <span>वर्तमान जोखिम: <b style="color: #ef4444;">${currentRisk.level} (${currentRisk.score}%)</b></span>
+        <span>Disaster Type: <b>${disasterType}</b></span><br/>
+        <span>Current Risk: <b style="color: #ef4444;">${currentRisk.level} (${currentRisk.score}%)</b></span>
       </div>
     `).openPopup();
 
@@ -525,10 +525,10 @@ export default function SmartDisasterMonitoring({
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#030712] text-slate-100 p-4 sm:p-6 space-y-6 font-sans">
+    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-100 p-4 sm:p-6 space-y-6 font-sans transition-colors duration-300">
       
       {/* 1. TOP HEADER & EMERGENCY COMMAND BAR */}
-      <div className="rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 via-rose-950/30 to-slate-900 p-5 shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-r from-white via-slate-50 to-white dark:from-slate-900 dark:via-rose-950/30 dark:to-slate-900 p-5 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-colors duration-300">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <span className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-400 border border-rose-500/30 flex items-center gap-1.5">
@@ -556,12 +556,12 @@ export default function SmartDisasterMonitoring({
         {/* Header Right Status Badges & Controls */}
         <div className="flex items-center gap-3 flex-wrap">
           {/* Disaster Type Selector */}
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-2 text-xs">
-            <label className="text-[10px] uppercase tracking-wider text-slate-500 block mb-0.5 font-bold">{t("smartmonitoring.disasterVector", "Disaster Vector")}</label>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs">
+            <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.disasterVector", "Disaster Vector")}</label>
             <select
               value={disasterType}
               onChange={e => setDisasterType(e.target.value)}
-              className="bg-transparent text-white font-bold cursor-pointer focus:outline-none"
+              className="bg-transparent text-slate-900 dark:text-white font-bold cursor-pointer focus:outline-none"
             >
               <option value="Landslide & Cloudburst">🌧️ Landslide & Cloudburst</option>
               <option value="Severe Flash Flood">🌊 Severe Flash Flood</option>
@@ -572,12 +572,12 @@ export default function SmartDisasterMonitoring({
           </div>
 
           {/* Disaster Status Selector */}
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-2 text-xs">
-            <label className="text-[10px] uppercase tracking-wider text-slate-500 block mb-0.5 font-bold">{t("smartmonitoring.statusMode", "Status Mode")}</label>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs">
+            <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.statusMode", "Status Mode")}</label>
             <select
               value={disasterStatus}
               onChange={e => setDisasterStatus(e.target.value as any)}
-              className="bg-transparent text-emerald-400 font-bold cursor-pointer focus:outline-none"
+              className="bg-transparent text-emerald-600 dark:text-emerald-400 font-bold cursor-pointer focus:outline-none"
             >
               <option value="ACTIVE">🔴 ACTIVE</option>
               <option value="ESCALATING">⚠️ ESCALATING</option>
@@ -595,7 +595,7 @@ export default function SmartDisasterMonitoring({
       </div>
 
       {/* 2. LOCATION CONTROLS & MONITORING RADIUS BAR */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-4 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-4 items-center transition-colors duration-300">
         
         {/* Search Place Address */}
         <div className="lg:col-span-5 relative">
@@ -607,7 +607,7 @@ export default function SmartDisasterMonitoring({
                 placeholder={t("smartmonitoring.searchPlaceholder", "Search location, village, PIN code or district...")}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
               />
             </div>
             <button
@@ -621,16 +621,16 @@ export default function SmartDisasterMonitoring({
 
           {/* Search Results Dropdown */}
           {searchResults.length > 0 && (
-            <div className="absolute left-0 right-0 top-12 z-[2000] rounded-xl border border-slate-800 bg-slate-950 p-2 shadow-2xl max-h-56 overflow-y-auto">
+            <div className="absolute left-0 right-0 top-12 z-[2000] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 shadow-2xl max-h-56 overflow-y-auto">
               <div className="text-[10px] font-bold text-slate-500 uppercase px-2 py-1">Nominatim OSM Match Results</div>
               {searchResults.map((res, i) => (
                 <div
                   key={i}
                   onClick={() => handleSelectSearchResult(res)}
-                  className="cursor-pointer rounded-lg p-2 text-xs hover:bg-slate-800 transition"
+                  className="cursor-pointer rounded-lg p-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
-                  <div className="font-semibold text-white">{res.displayName}</div>
-                  <div className="text-[10px] text-slate-400 font-mono">Lat: {res.lat.toFixed(4)}, Lon: {res.lon.toFixed(4)}</div>
+                  <div className="font-semibold text-slate-900 dark:text-white">{res.displayName}</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">Lat: {res.lat.toFixed(4)}, Lon: {res.lon.toFixed(4)}</div>
                 </div>
               ))}
             </div>
@@ -641,26 +641,26 @@ export default function SmartDisasterMonitoring({
         <div className="lg:col-span-4">
           <form onSubmit={handleManualCoordSubmit} className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 flex-1">
-              <span className="text-xs text-slate-400 font-mono">{t("smartmonitoring.latLabel", "Lat:")}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">{t("smartmonitoring.latLabel", "Lat:")}</span>
               <input
                 type="text"
                 value={latInput}
                 onChange={e => setLatInput(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 p-1.5 text-xs text-white font-mono text-center"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-1.5 text-xs text-slate-900 dark:text-white font-mono text-center"
               />
             </div>
             <div className="flex items-center gap-1.5 flex-1">
-              <span className="text-xs text-slate-400 font-mono">{t("smartmonitoring.lonLabel", "Lon:")}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">{t("smartmonitoring.lonLabel", "Lon:")}</span>
               <input
                 type="text"
                 value={lonInput}
                 onChange={e => setLonInput(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 p-1.5 text-xs text-white font-mono text-center"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-1.5 text-xs text-slate-900 dark:text-white font-mono text-center"
               />
             </div>
             <button
               type="submit"
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-700"
+              className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
             >
               {t("smartmonitoring.updateBtn", "Update")}
             </button>
@@ -671,19 +671,19 @@ export default function SmartDisasterMonitoring({
         <div className="lg:col-span-3 flex items-center justify-end gap-2">
           <button
             onClick={handleUseCurrentLocation}
-            className="flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20"
+            className="flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
           >
             <Compass className="h-3.5 w-3.5" />
             {t("smartmonitoring.myLocationBtn", "My Location")}
           </button>
 
-          <div className="flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-950 p-1">
+          <div className="flex items-center gap-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 p-1">
             {[2, 5, 10, 25].map(r => (
               <button
                 key={r}
                 onClick={() => setMonitoringRadiusKm(r)}
                 className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
-                  monitoringRadiusKm === r ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                  monitoringRadiusKm === r ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 {r}km
@@ -693,29 +693,29 @@ export default function SmartDisasterMonitoring({
         </div>
       </div>
 
-      {/* 3. MAIN DASHBOARD GRID (MAP + SATELLITE + WEATHER & ENVIRONMENT) */}
+      {/* 3. MAIN DASHBOARD GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        {/* LEFT COLUMN (8 COLS): LIVE MAP & SATELLITE MONITORING */}
+        {/* LEFT COLUMN: LIVE MAP & SATELLITE MONITORING */}
         <div className="lg:col-span-8 space-y-6">
 
           {/* LIVE MAP CARD */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl flex flex-col h-[480px]">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl flex flex-col h-[480px] transition-colors duration-300">
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-rose-400" />
-                <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider">
+                <MapPin className="h-5 w-5 text-rose-500 dark:text-rose-400" />
+                <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
                   {t("smartmonitoring.liveMonitoringMap", "Live Interactive Disaster Monitoring Map")}
                 </h2>
               </div>
 
-              {/* Mode Toggle: Map View | Satellite View */}
+              {/* Mode Toggle */}
               <div className="flex items-center gap-2">
-                <div className="flex items-center rounded-xl border border-slate-800 bg-slate-950 p-1">
+                <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 p-1">
                   <button
                     onClick={() => setViewMode('map')}
                     className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
-                      viewMode === 'map' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                      viewMode === 'map' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
                     {t("smartmonitoring.mapView", "🗺️ Map View")}
@@ -723,7 +723,7 @@ export default function SmartDisasterMonitoring({
                   <button
                     onClick={() => setViewMode('satellite')}
                     className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
-                      viewMode === 'satellite' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                      viewMode === 'satellite' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
                     {t("smartmonitoring.satelliteView", "🛰️ Satellite View")}
@@ -735,7 +735,7 @@ export default function SmartDisasterMonitoring({
                   <select
                     value={selectedMapLayer}
                     onChange={e => setSelectedMapLayer(e.target.value)}
-                    className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-1 text-xs text-white font-medium cursor-pointer"
+                    className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-1 text-xs text-slate-900 dark:text-white font-medium cursor-pointer"
                   >
                     <option value="osm">OSM Standard</option>
                     <option value="esriImagery">Esri Satellite</option>
@@ -748,11 +748,11 @@ export default function SmartDisasterMonitoring({
             </div>
 
             {/* Map Container */}
-            <div className="relative flex-1 rounded-xl overflow-hidden border border-slate-800">
+            <div className="relative flex-1 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
               <div ref={mapContainerRef} className="h-full w-full" />
               
               {/* Map Footer Overlay Instructions */}
-              <div className="absolute left-3 bottom-3 z-[1000] rounded-xl border border-slate-800 bg-slate-950/90 px-3 py-1.5 text-[10px] text-slate-300 backdrop-blur flex items-center gap-2">
+              <div className="absolute left-3 bottom-3 z-[1000] rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/90 px-3 py-1.5 text-[10px] text-slate-700 dark:text-slate-300 backdrop-blur flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
                 <span>{t("smartmonitoring.mapFooterNotice", "Click anywhere on the map to set a new monitored location pin.")}</span>
               </div>
@@ -760,24 +760,24 @@ export default function SmartDisasterMonitoring({
           </div>
 
           {/* 4. SATELLITE MONITORING & CHANGE DETECTION PANEL */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 flex-wrap gap-2">
               <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Eye className="h-5 w-5 text-sky-400" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-sky-500 dark:text-sky-400" />
                   <span>{t("smartmonitoring.satelliteObservationTitle", "Satellite Observation & Change Monitoring")}</span>
                 </h3>
-                <p className="text-xs text-slate-400">{t("smartmonitoring.satelliteSubtitle", "Comparing previous baseline observation with latest satellite pass.")}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t("smartmonitoring.satelliteSubtitle", "Comparing previous baseline observation with latest satellite pass.")}</p>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="rounded bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-bold text-sky-300 border border-sky-500/30">
+                <span className="rounded bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-bold text-sky-700 dark:text-sky-300 border border-sky-500/30">
                   {t("smartmonitoring.satelliteObservationBtn", "Satellite-based observation / AI-assisted estimation")}
                 </span>
 
                 <button
                   onClick={() => setSatelliteDataAvailable(!satelliteDataAvailable)}
-                  className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] text-slate-300 hover:bg-slate-700"
+                  className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[11px] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                 >
                   {t("smartmonitoring.toggleDataAvailability", "Toggle Satellite Data Availability")}
                 </button>
@@ -787,36 +787,36 @@ export default function SmartDisasterMonitoring({
             {satelliteDataAvailable ? (
               <div className="space-y-4">
                 {/* Mode Selector & Metadata */}
-                <div className="flex items-center justify-between text-xs text-slate-400 flex-wrap gap-2">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 flex-wrap gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-300">{t("smartmonitoring.observationView", "Observation View:")}</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">{t("smartmonitoring.observationView", "Observation View:")}</span>
                     <button
                       onClick={() => setChangeViewMode('split')}
-                      className={`rounded px-2.5 py-1 ${changeViewMode === 'split' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-950 text-slate-400'}`}
+                      className={`rounded px-2.5 py-1 ${changeViewMode === 'split' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-400'}`}
                     >
                       {t("smartmonitoring.beforeAfter", "Before / After Comparison")}
                     </button>
                     <button
                       onClick={() => setChangeViewMode('latest')}
-                      className={`rounded px-2.5 py-1 ${changeViewMode === 'latest' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-950 text-slate-400'}`}
+                      className={`rounded px-2.5 py-1 ${changeViewMode === 'latest' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-400'}`}
                     >
                       {t("smartmonitoring.latestPass", "Latest Pass (Today)")}
                     </button>
                     <button
                       onClick={() => setChangeViewMode('previous')}
-                      className={`rounded px-2.5 py-1 ${changeViewMode === 'previous' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-950 text-slate-400'}`}
+                      className={`rounded px-2.5 py-1 ${changeViewMode === 'previous' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-400'}`}
                     >
                       {t("smartmonitoring.baselineObs", "Baseline Observation")}
                     </button>
                   </div>
 
-                  <div className="font-mono text-[11px] text-slate-400">
-                    Source: <b className="text-white">Esri World Imagery / ISRO Bhuvan</b> &bull; Resolution: <b>0.5m/px</b>
+                  <div className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+                    Source: <b className="text-slate-900 dark:text-white">Esri World Imagery / ISRO Bhuvan</b> &bull; Resolution: <b>0.5m/px</b>
                   </div>
                 </div>
 
                 {/* Satellite Imagery Box */}
-                <div className="relative h-64 w-full rounded-xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center">
+                <div className="relative h-64 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 flex items-center justify-center">
                   <img
                     src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
                     alt="Satellite Observation View"
@@ -829,17 +829,17 @@ export default function SmartDisasterMonitoring({
                       <span className="rounded bg-rose-600/90 text-white px-2.5 py-1 text-xs font-bold shadow">
                         🔴 {t("smartmonitoring.detectedFlood", "Detected Flood & Mud Expansion (+34%)")}
                       </span>
-                      <span className="rounded bg-slate-950/80 border border-slate-700 text-slate-200 px-2.5 py-1 text-xs font-mono">
+                      <span className="rounded bg-slate-900/80 text-white px-2.5 py-1 text-xs font-mono">
                         Pass Time: {reportTime} UTC+5:30
                       </span>
                     </div>
 
-                    <div className="rounded-xl border border-amber-500/40 bg-slate-950/90 p-3 max-w-md backdrop-blur">
-                      <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                    <div className="rounded-xl border border-amber-500/40 bg-white/90 dark:bg-slate-950/90 p-3 max-w-md backdrop-blur">
+                      <div className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                         <AlertTriangle className="h-4 w-4" />
                         {t("smartmonitoring.aiInterpretationTitle", "AI Change Interpretation Summary")}
                       </div>
-                      <p className="mt-1 text-[11px] text-slate-300 leading-snug">
+                      <p className="mt-1 text-[11px] text-slate-800 dark:text-slate-300 leading-snug">
                         {t("smartmonitoring.aiInterpretationText", "Automated surface change detection highlights increased water spread near low-lying river tributaries and 215m debris accumulation along slopes.")}
                       </p>
                     </div>
@@ -847,8 +847,8 @@ export default function SmartDisasterMonitoring({
                 </div>
 
                 {/* Important Disclaimer */}
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-3 text-[11px] text-slate-400 flex items-start gap-2">
-                  <Info className="h-4 w-4 text-sky-400 shrink-0 mt-0.5" />
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 text-[11px] text-slate-600 dark:text-slate-400 flex items-start gap-2">
+                  <Info className="h-4 w-4 text-sky-500 dark:text-sky-400 shrink-0 mt-0.5" />
                   <span>
                     <b>Observation Notice:</b> Satellite change detection provides macro-level environmental indicators (water spread, vegetation loss, surface slope movement). It does not certify exact building structural damage or casualty numbers.
                   </span>
@@ -856,9 +856,9 @@ export default function SmartDisasterMonitoring({
               </div>
             ) : (
               /* Satellite Data Unavailable State */
-              <div className="rounded-xl border border-slate-800 bg-slate-950 p-8 text-center space-y-3">
-                <Eye className="h-10 w-10 text-slate-600 mx-auto" />
-                <h4 className="text-sm font-bold text-slate-300">Satellite Data Unavailable</h4>
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-8 text-center space-y-3">
+                <Eye className="h-10 w-10 text-slate-400 dark:text-slate-600 mx-auto" />
+                <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">Satellite Data Unavailable</h4>
                 <p className="text-xs text-slate-500 max-w-md mx-auto">
                   High-resolution satellite observation pass is currently unavailable for this coordinate or requires an enterprise API key slot. Ground radar and Open-Meteo weather telemetry remain active.
                 </p>
@@ -867,17 +867,17 @@ export default function SmartDisasterMonitoring({
           </div>
         </div>
 
-        {/* RIGHT COLUMN (4 COLS): TELEMETRY, WEATHER, ENVIRONMENT, ALERTS */}
+        {/* RIGHT COLUMN: TELEMETRY, WEATHER, ENVIRONMENT, ALERTS */}
         <div className="lg:col-span-4 space-y-6">
 
           {/* 5. WEATHER MONITORING PANEL */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <CloudRain className="h-5 w-5 text-indigo-400" />
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <CloudRain className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
                 <span>{t("smartmonitoring.weatherTelemetry", "Weather Telemetry (Open-Meteo)")}</span>
               </h3>
-              <span className="text-[10px] text-emerald-400 font-mono font-bold">{t("smartmonitoring.liveRadar", "LIVE RADAR")}</span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">{t("smartmonitoring.liveRadar", "LIVE RADAR")}</span>
             </div>
 
             {weatherLoading ? (
@@ -885,88 +885,88 @@ export default function SmartDisasterMonitoring({
             ) : weather ? (
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
                     <span className="text-[10px] text-slate-500 font-bold uppercase">Temperature</span>
-                    <div className="text-2xl font-bold text-white">{weather.temperature}°C</div>
-                    <span className="text-[10px] text-slate-400">Elevation: {weather.elevation}m MSL</span>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{weather.temperature}°C</div>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">Elevation: {weather.elevation}m MSL</span>
                   </div>
 
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
                     <span className="text-[10px] text-slate-500 font-bold uppercase">Rainfall Rate</span>
-                    <div className="text-2xl font-bold text-sky-400">{weather.precipitation} mm</div>
-                    <span className="text-[10px] text-slate-400">{t("smartmonitoring.pastHourPrecip", "Past Hour Precipitation")}</span>
+                    <div className="text-2xl font-bold text-sky-600 dark:text-sky-400">{weather.precipitation} mm</div>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">{t("smartmonitoring.pastHourPrecip", "Past Hour Precipitation")}</span>
                   </div>
 
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
                     <span className="text-[10px] text-slate-500 font-bold uppercase">{t("smartmonitoring.relativeHumidity", "Relative Humidity")}</span>
-                    <div className="text-2xl font-bold text-indigo-400">{weather.relativeHumidity}%</div>
-                    <span className="text-[10px] text-slate-400">{t("smartmonitoring.saturationHigh", "Saturation High")}</span>
+                    <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{weather.relativeHumidity}%</div>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">{t("smartmonitoring.saturationHigh", "Saturation High")}</span>
                   </div>
 
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
                     <span className="text-[10px] text-slate-500 font-bold uppercase">{t("smartmonitoring.windGusts", "Wind & Gusts")}</span>
-                    <div className="text-2xl font-bold text-emerald-400">{weather.windSpeed} km/h</div>
-                    <span className="text-[10px] text-slate-400">Peak Gust: {weather.windGusts} km/h</span>
+                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{weather.windSpeed} km/h</div>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">Peak Gust: {weather.windGusts} km/h</span>
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-3 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">{t("smartmonitoring.atmosphericSeverity", "Atmospheric Severity Index")}</span>
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 flex items-center justify-between text-xs">
+                  <span className="text-slate-600 dark:text-slate-400">{t("smartmonitoring.atmosphericSeverity", "Atmospheric Severity Index")}</span>
                   <span className={`font-bold rounded px-2 py-0.5 ${
-                    weather.severeRiskLevel === 'EXTREME' ? 'bg-rose-500/20 text-rose-400' :
-                    weather.severeRiskLevel === 'HIGH' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'
+                    weather.severeRiskLevel === 'EXTREME' ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400' :
+                    weather.severeRiskLevel === 'HIGH' ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400' : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                   }`}>
                     {weather.severeRiskLevel} RISK
                   </span>
                 </div>
               </div>
             ) : (
-              <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 text-center text-xs text-rose-400">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 text-center text-xs text-rose-500">
                 Live weather data unavailable.
               </div>
             )}
           </div>
 
           {/* 6. ENVIRONMENTAL MONITORING PANEL */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Mountain className="h-5 w-5 text-emerald-400" />
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Mountain className="h-5 w-5 text-emerald-500 dark:text-emerald-400" />
                 <span>Environmental Terrain Indicators</span>
               </h3>
-              <span className="text-[10px] text-slate-400 font-mono">NER Topography</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">NER Topography</span>
             </div>
 
             {envData && (
               <div className="space-y-2.5 text-xs">
-                <div className="flex justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400">Terrain Elevation (MSL):</span>
-                  <span className="font-bold text-white">{envData.elevationMsl} meters</span>
+                <div className="flex justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">Terrain Elevation (MSL):</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{envData.elevationMsl} meters</span>
                 </div>
 
-                <div className="flex justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400">{t("smartmonitoring.terrainSteepness", "Terrain Slope Steepness:")}</span>
-                  <span className="font-bold text-amber-400">{envData.slopeDegrees}° Slope</span>
+                <div className="flex justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t("smartmonitoring.terrainSteepness", "Terrain Slope Steepness:")}</span>
+                  <span className="font-bold text-amber-600 dark:text-amber-400">{envData.slopeDegrees}° Slope</span>
                 </div>
 
-                <div className="flex justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400">{t("smartmonitoring.soilMoisture", "Soil Moisture Saturation:")}</span>
-                  <span className="font-bold text-sky-400">{envData.soilMoistureIndex}%</span>
+                <div className="flex justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t("smartmonitoring.soilMoisture", "Soil Moisture Saturation:")}</span>
+                  <span className="font-bold text-sky-600 dark:text-sky-400">{envData.soilMoistureIndex}%</span>
                 </div>
 
-                <div className="flex justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400">{t("smartmonitoring.nearestWaterbody", "Nearest River / Waterbody:")}</span>
-                  <span className="font-bold text-indigo-400">{envData.waterBodyProximityKm} km</span>
+                <div className="flex justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t("smartmonitoring.nearestWaterbody", "Nearest River / Waterbody:")}</span>
+                  <span className="font-bold text-indigo-600 dark:text-indigo-400">{envData.waterBodyProximityKm} km</span>
                 </div>
 
-                <div className="flex justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400">{t("smartmonitoring.activeFaultLine", "Active Fault Line Proximity:")}</span>
-                  <span className="font-bold text-slate-300">{envData.seismicFaultDistanceKm} km</span>
+                <div className="flex justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t("smartmonitoring.activeFaultLine", "Active Fault Line Proximity:")}</span>
+                  <span className="font-bold text-slate-700 dark:text-slate-300">{envData.seismicFaultDistanceKm} km</span>
                 </div>
 
-                <div className="flex justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400">{t("smartmonitoring.drainageCapacity", "Drainage Capacity Rating:")}</span>
-                  <span className={`font-bold ${envData.drainageCapacity === 'POOR' || envData.drainageCapacity === 'CRITICAL' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                <div className="flex justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-600 dark:text-slate-400">{t("smartmonitoring.drainageCapacity", "Drainage Capacity Rating:")}</span>
+                  <span className={`font-bold ${envData.drainageCapacity === 'POOR' || envData.drainageCapacity === 'CRITICAL' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                     {envData.drainageCapacity}
                   </span>
                 </div>
@@ -975,31 +975,31 @@ export default function SmartDisasterMonitoring({
           </div>
 
           {/* 7. ROAD ACCESSIBILITY PANEL */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Activity className="h-5 w-5 text-rose-400" />
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Activity className="h-5 w-5 text-rose-500 dark:text-rose-400" />
                 <span>{t("smartmonitoring.roadAccessibilityTitle", "Road & Transport Accessibility")}</span>
               </h3>
-              <span className="text-[10px] text-slate-400">4 Arterial Corridors</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">4 Arterial Corridors</span>
             </div>
 
             <div className="space-y-3">
               {roads.map(rd => (
-                <div key={rd.id} className="rounded-xl border border-slate-800 bg-slate-950 p-3 space-y-1.5">
+                <div key={rd.id} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-white">{rd.name}</span>
+                    <span className="font-bold text-xs text-slate-900 dark:text-white">{rd.name}</span>
                     <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${
-                      rd.status === 'OPEN' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                      rd.status === 'PARTIALLY_ACCESSIBLE' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                      rd.status === 'BLOCKED' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
-                      'bg-slate-800 text-slate-400'
+                      rd.status === 'OPEN' ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
+                      rd.status === 'PARTIALLY_ACCESSIBLE' ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30' :
+                      rd.status === 'BLOCKED' ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30' :
+                      'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                     }`}>
                       {rd.status === 'OPEN' ? '🟢 OPEN' : rd.status === 'PARTIALLY_ACCESSIBLE' ? '🟡 PARTIAL' : rd.status === 'BLOCKED' ? '🔴 BLOCKED' : '⚪ UNKNOWN'}
                     </span>
                   </div>
-                  <div className="text-[11px] text-slate-400">{rd.warning}</div>
-                  <div className="text-[10px] text-indigo-300">Detour: {rd.detour}</div>
+                  <div className="text-[11px] text-slate-600 dark:text-slate-400">{rd.warning}</div>
+                  <div className="text-[10px] text-indigo-600 dark:text-indigo-300">Detour: {rd.detour}</div>
                 </div>
               ))}
             </div>
@@ -1011,106 +1011,105 @@ export default function SmartDisasterMonitoring({
       {/* 4. DISASTER ALERTS & 72-HOUR MONITORING TREND SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        {/* ACTIVE DISASTER ALERTS PANEL (6 COLS) */}
-        <div className="lg:col-span-6 rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        {/* ACTIVE DISASTER ALERTS PANEL */}
+        <div className="lg:col-span-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-amber-400 animate-bounce" />
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              <Bell className="h-5 w-5 text-amber-500 dark:text-amber-400 animate-bounce" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 Active Disaster Alerts & Verification
               </h3>
             </div>
-            <span className="text-xs text-slate-400">{t("smartmonitoring.distinguishesData", "Distinguishes Live Data vs AI Estimates")}</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">{t("smartmonitoring.distinguishesData", "Distinguishes Live Data vs AI Estimates")}</span>
           </div>
 
           <div className="space-y-3">
             {alerts.map(alt => (
-              <div key={alt.id} className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-2">
+              <div key={alt.id} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 space-y-2">
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <span className="font-bold text-sm text-white flex items-center gap-2">
-                    <AlertTriangle className={`h-4 w-4 ${alt.severity === 'EXTREME' ? 'text-rose-500' : 'text-amber-400'}`} />
+                  <span className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                    <AlertTriangle className={`h-4 w-4 ${alt.severity === 'EXTREME' ? 'text-rose-500' : 'text-amber-500'}`} />
                     {alt.type}
                   </span>
 
                   <div className="flex items-center gap-2">
-                    {/* VERIFIED vs AI-ASSISTED BADGE */}
                     {alt.isVerified ? (
-                      <span className="rounded bg-emerald-500/20 text-emerald-400 px-2 py-0.5 text-[10px] font-bold border border-emerald-500/30 flex items-center gap-1">
+                      <span className="rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 text-[10px] font-bold border border-emerald-500/30 flex items-center gap-1">
                         <CheckCircle2 className="h-3 w-3" />
                         VERIFIED / LIVE DATA
                       </span>
                     ) : (
-                      <span className="rounded bg-indigo-500/20 text-indigo-300 px-2 py-0.5 text-[10px] font-bold border border-indigo-500/30 flex items-center gap-1">
-                        <Sparkles className="h-3 w-3 text-indigo-400" />
+                      <span className="rounded bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 text-[10px] font-bold border border-indigo-500/30 flex items-center gap-1">
+                        <Sparkles className="h-3 w-3 text-indigo-500 dark:text-indigo-400" />
                         AI-ASSISTED ESTIMATE
                       </span>
                     )}
 
                     <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${
-                      alt.severity === 'EXTREME' ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'
+                      alt.severity === 'EXTREME' ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400' : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
                     }`}>
                       {alt.severity}
                     </span>
                   </div>
                 </div>
 
-                <div className="text-xs text-slate-300">Target Zone: <span className="text-white font-semibold">{alt.locationName}</span></div>
+                <div className="text-xs text-slate-700 dark:text-slate-300">Target Zone: <span className="text-slate-900 dark:text-white font-semibold">{alt.locationName}</span></div>
                 
-                <div className="flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-800/80 pt-2">
-                  <span>Source: <b className="text-slate-400">{alt.source}</b></span>
-                  <span>Timestamp: <b className="text-slate-400">{alt.timestamp}</b></span>
+                <div className="flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-200 dark:border-slate-800/80 pt-2">
+                  <span>Source: <b className="text-slate-700 dark:text-slate-400">{alt.source}</b></span>
+                  <span>Timestamp: <b className="text-slate-700 dark:text-slate-400">{alt.timestamp}</b></span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* 72-HOUR MONITORING SECTION (6 COLS) */}
-        <div className="lg:col-span-6 rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
+        {/* 72-HOUR MONITORING SECTION */}
+        <div className="lg:col-span-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-sky-400" />
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              <Clock className="h-5 w-5 text-sky-500 dark:text-sky-400" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 72-Hour Disaster Monitoring Outlook
               </h3>
             </div>
 
-            <span className="rounded bg-indigo-500/20 px-2.5 py-0.5 text-[10px] font-bold text-indigo-300 border border-indigo-500/30">
+            <span className="rounded bg-indigo-500/20 px-2.5 py-0.5 text-[10px] font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
               {t("smartmonitoring.aiAssistedRisk", "AI-ASSISTED RISK OUTLOOK")}
             </span>
           </div>
 
           {/* 0-24h, 24-48h, 48-72h Tabs */}
-          <div className="flex items-center rounded-xl border border-slate-800 bg-slate-950 p-1">
+          <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 p-1">
             <button
               onClick={() => setActiveTab72h('24h')}
-              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${activeTab72h === '24h' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${activeTab72h === '24h' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}`}
             >
               0 – 24 HOURS (Immediate)
             </button>
             <button
               onClick={() => setActiveTab72h('48h')}
-              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${activeTab72h === '48h' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${activeTab72h === '48h' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}`}
             >
               24 – 48 HOURS (Evolution)
             </button>
             <button
               onClick={() => setActiveTab72h('72h')}
-              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${activeTab72h === '72h' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${activeTab72h === '72h' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}`}
             >
               48 – 72 HOURS (Recovery)
             </button>
           </div>
 
           {/* Tab Content */}
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 text-xs space-y-3">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 text-xs space-y-3">
             {activeTab72h === '24h' && (
               <>
-                <div className="font-bold text-rose-400 text-sm">Phase 1: Immediate Risk & Heavy Precipitation Window</div>
-                <p className="text-slate-300">
+                <div className="font-bold text-rose-600 dark:text-rose-400 text-sm">Phase 1: Immediate Risk & Heavy Precipitation Window</div>
+                <p className="text-slate-700 dark:text-slate-300">
                   Current conditions present peak rainfall intensity (up to 45 mm cumulative). Landslide hazard along NH-6 remains elevated.
                 </p>
-                <div className="space-y-1.5 text-slate-400">
+                <div className="space-y-1.5 text-slate-600 dark:text-slate-400">
                   <div>&bull; <b>Active Alerts:</b> Heavy Rainfall & Flash Flood Warning active.</div>
                   <div>&bull; <b>Monitoring Priority:</b> Clear debris at NH-6 Km 142 and maintain continuous Open-Meteo telemetry.</div>
                 </div>
@@ -1119,11 +1118,11 @@ export default function SmartDisasterMonitoring({
 
             {activeTab72h === '48h' && (
               <>
-                <div className="font-bold text-amber-400 text-sm">Phase 2: Expected Environmental Evolution & Water Stabilization</div>
-                <p className="text-slate-300">
+                <div className="font-bold text-amber-600 dark:text-amber-400 text-sm">Phase 2: Expected Environmental Evolution & Water Stabilization</div>
+                <p className="text-slate-700 dark:text-slate-300">
                   Precipitation levels expected to subside to 15 mm. Secondary runoff into low-lying Panchayats requires monitoring.
                 </p>
-                <div className="space-y-1.5 text-slate-400">
+                <div className="space-y-1.5 text-slate-600 dark:text-slate-400">
                   <div>&bull; <b>Infrastructure Concerns:</b> Bridge load limits under waterlogging pressure.</div>
                   <div>&bull; <b>Monitoring Priority:</b> Monitor slope drainage capacity and clear alternate transport bypasses.</div>
                 </div>
@@ -1132,11 +1131,11 @@ export default function SmartDisasterMonitoring({
 
             {activeTab72h === '72h' && (
               <>
-                <div className="font-bold text-emerald-400 text-sm">Phase 3: Risk Reduction & Recovery Logistics Monitoring</div>
-                <p className="text-slate-300">
+                <div className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">Phase 3: Risk Reduction & Recovery Logistics Monitoring</div>
+                <p className="text-slate-700 dark:text-slate-300">
                   Weather conditions stabilize with precipitation dropping below 5 mm. Risk score decreases from HIGH (85%) to LOW (25%).
                 </p>
-                <div className="space-y-1.5 text-slate-400">
+                <div className="space-y-1.5 text-slate-600 dark:text-slate-400">
                   <div>&bull; <b>Recovery Concerns:</b> Silt clearing along feeder roads and restoring grid power lines.</div>
                   <div>&bull; <b>Monitoring Priority:</b> Transition from active emergency monitoring to routine maintenance.</div>
                 </div>
@@ -1149,16 +1148,16 @@ export default function SmartDisasterMonitoring({
       {/* 5. 72-HOUR RISK TREND CHART & AI SITUATION SUMMARY */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        {/* 72-HOUR RISK TREND CHART (8 COLS) */}
-        <div className="lg:col-span-8 rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl space-y-4 flex flex-col">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        {/* 72-HOUR RISK TREND CHART */}
+        <div className="lg:col-span-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl space-y-4 flex flex-col transition-colors duration-300">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-indigo-400" />
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              <TrendingUp className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 72-Hour Visual Risk Trend Chart (0h ➔ 72h)
               </h3>
             </div>
-            <span className="text-xs text-slate-400 font-mono">Open-Meteo Hourly Forecast Data</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">Open-Meteo Hourly Forecast Data</span>
           </div>
 
           <div className="relative flex-1 min-h-[220px] w-full">
@@ -1166,34 +1165,34 @@ export default function SmartDisasterMonitoring({
           </div>
         </div>
 
-        {/* AI SITUATION SUMMARY & MDONER DISPATCH (4 COLS) */}
-        <div className="lg:col-span-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl space-y-4 flex flex-col justify-between">
+        {/* AI SITUATION SUMMARY */}
+        <div className="lg:col-span-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl space-y-4 flex flex-col justify-between transition-colors duration-300">
           <div>
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-indigo-400" />
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
                 <span>AI Situation Summary</span>
               </h3>
-              <span className="text-[10px] text-slate-400">Gemini AI Engine</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">Gemini AI Engine</span>
             </div>
 
             {aiLoading ? (
               <div className="py-6 text-center text-xs text-slate-500">Generating AI Situation Summary...</div>
             ) : aiSummary ? (
               <div className="mt-3 space-y-3 text-xs">
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
                   <span className="text-[10px] font-bold text-slate-500 uppercase">Current Situation</span>
-                  <p className="mt-1 text-slate-200 leading-relaxed">{aiSummary.currentSituation}</p>
+                  <p className="mt-1 text-slate-800 dark:text-slate-200 leading-relaxed">{aiSummary.currentSituation}</p>
                 </div>
 
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
                   <span className="text-[10px] font-bold text-slate-500 uppercase">Main Risk Vector</span>
-                  <p className="mt-1 text-slate-200 leading-relaxed">{aiSummary.mainRisk}</p>
+                  <p className="mt-1 text-slate-800 dark:text-slate-200 leading-relaxed">{aiSummary.mainRisk}</p>
                 </div>
 
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
                   <span className="text-[10px] font-bold text-slate-500 uppercase">Monitoring Priority</span>
-                  <p className="mt-1 text-indigo-300 font-medium leading-relaxed">{aiSummary.monitoringPriority}</p>
+                  <p className="mt-1 text-indigo-600 dark:text-indigo-300 font-medium leading-relaxed">{aiSummary.monitoringPriority}</p>
                 </div>
               </div>
             ) : null}
@@ -1204,14 +1203,13 @@ export default function SmartDisasterMonitoring({
             {onNavigateToImpactAssessment && (
               <button
                 onClick={() => onNavigateToImpactAssessment({ lat: monitoredLoc.lat, lon: monitoredLoc.lon, name: monitoredLoc.displayName })}
-                className="w-full rounded-xl border border-indigo-500/30 bg-indigo-500/10 py-2.5 text-xs font-bold text-indigo-300 hover:bg-indigo-500/20 flex items-center justify-center gap-2 transition"
+                className="w-full rounded-xl border border-indigo-500/30 bg-indigo-500/10 py-2.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 flex items-center justify-center gap-2 transition"
               >
-                <Sparkles className="h-4 w-4 text-indigo-400" />
+                <Sparkles className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
                 <span>{t("smartmonitoring.performPhotoDamage", "Perform Photo Damage Assessment ➔ AI Impact Assessment")}</span>
               </button>
             )}
 
-            {/* Send Important Alert -> MDoNER Command Button */}
             <button
               onClick={() => setMdonerModalOpen(true)}
               className="w-full rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 py-3 text-xs font-bold text-white shadow-lg shadow-rose-600/20 hover:from-rose-500 hover:to-indigo-500 flex items-center justify-center gap-2"
@@ -1224,23 +1222,22 @@ export default function SmartDisasterMonitoring({
       </div>
 
       {/* 6. MONITORING TIMELINE EVENT LOG */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-indigo-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            <Clock className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Disaster Monitoring Timeline & Log
             </h3>
           </div>
 
-          {/* Add Manual Note Input */}
           <form onSubmit={handleAddTimelineNote} className="flex items-center gap-2 flex-1 max-w-md">
             <input
               type="text"
               placeholder={t("smartmonitoring.addNotePlaceholder", "Add command officer note to timeline...")}
               value={customNote}
               onChange={e => setCustomNote(e.target.value)}
-              className="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none"
+              className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
             />
             <button
               type="submit"
@@ -1254,12 +1251,12 @@ export default function SmartDisasterMonitoring({
         {/* Timeline Events List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
           {timeline.map(item => (
-            <div key={item.id} className="rounded-xl border border-slate-800 bg-slate-950 p-3 space-y-1">
+            <div key={item.id} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-xs text-white">{item.title}</span>
+                <span className="font-bold text-xs text-slate-900 dark:text-white">{item.title}</span>
                 <span className="font-mono text-[10px] text-slate-500">{item.time}</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-snug">{item.details}</p>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug">{item.details}</p>
             </div>
           ))}
         </div>
@@ -1268,15 +1265,15 @@ export default function SmartDisasterMonitoring({
       {/* 7. MDONER ALERT DISPATCH MODAL */}
       {mdonerModalOpen && (
         <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur">
-          <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5 text-rose-500" />
                 Dispatch Alert to MDoNER Command
               </h3>
               <button
                 onClick={() => setMdonerModalOpen(false)}
-                className="text-slate-400 hover:text-white font-bold"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white font-bold"
               >
                 ✕
               </button>
@@ -1284,35 +1281,35 @@ export default function SmartDisasterMonitoring({
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="text-slate-400 block mb-1">Target Command Agency</label>
+                <label className="text-slate-600 dark:text-slate-400 block mb-1">Target Command Agency</label>
                 <input
                   type="text"
                   value={mdonerAgency}
                   onChange={e => setMdonerAgency(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-white"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="text-slate-400 block mb-1">Monitored Target Location</label>
-                <div className="font-semibold text-white bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                <label className="text-slate-600 dark:text-slate-400 block mb-1">Monitored Target Location</label>
+                <div className="font-semibold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
                   {monitoredLoc.displayName}
                 </div>
               </div>
 
               <div>
-                <label className="text-slate-400 block mb-1">Emergency Alert Message</label>
+                <label className="text-slate-600 dark:text-slate-400 block mb-1">Emergency Alert Message</label>
                 <textarea
                   rows={3}
                   value={mdonerMsg}
                   onChange={e => setMdonerMsg(e.target.value)}
                   placeholder={`Urgent: Continuous monitoring indicates ${currentRisk.level} risk at ${monitoredLoc.displayName}. Requesting NDRF team standby.`}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-white"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-slate-900 dark:text-white"
                 />
               </div>
 
               {mdonerSuccess && (
-                <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/20 p-3 text-emerald-400 text-center font-bold">
+                <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/20 p-3 text-emerald-600 dark:text-emerald-400 text-center font-bold">
                   ✓ Alert Dispatched Successfully to MDoNER Command Grid!
                 </div>
               )}
@@ -1320,7 +1317,7 @@ export default function SmartDisasterMonitoring({
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   onClick={() => setMdonerModalOpen(false)}
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                 >
                   Cancel
                 </button>

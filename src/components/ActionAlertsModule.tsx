@@ -87,7 +87,7 @@ export default function ActionAlertsModule({
   ];
 
   return (
-    <div className="h-full overflow-y-auto bg-[#040814] text-slate-100 font-sans select-none p-4 lg:p-6 space-y-6">
+    <div className="h-full overflow-y-auto bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans select-none p-4 lg:p-6 space-y-6 transition-colors duration-300">
       
       {/* 🔴 TOP PERSISTENT EMERGENCY SOS BANNER TICKER */}
       <div className="rounded-2xl bg-gradient-to-r from-rose-900/90 via-rose-950/80 to-amber-950/90 border border-rose-500/50 p-3.5 shadow-2xl flex items-center justify-between gap-4 text-xs">
@@ -106,49 +106,49 @@ export default function ActionAlertsModule({
         </button>
       </div>
 
-      {/* 📊 TOP METRIC CARDS ROW (MATCHING SCREENSHOT) */}
+      {/* 📊 TOP METRIC CARDS ROW */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* CARD 1: CRITICAL LEVEL 1 */}
-        <div className="rounded-2xl border border-rose-500/40 bg-gradient-to-br from-rose-950/40 to-slate-950/80 p-5 shadow-xl flex items-center justify-between">
+        <div className="rounded-2xl border border-rose-500/40 bg-white dark:bg-gradient-to-br dark:from-rose-950/40 dark:to-slate-950/80 p-5 shadow-xl flex items-center justify-between transition-colors duration-300">
           <div>
-            <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider">CRITICAL (LEVEL 1)</div>
-            <div className="text-2xl lg:text-3xl font-black text-white mt-1">4 Active</div>
+            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">CRITICAL (LEVEL 1)</div>
+            <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">4 Active</div>
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-600/20 border border-rose-500/40 text-rose-400 shadow-lg shadow-rose-600/30 animate-pulse">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-600/20 border border-rose-500/40 text-rose-600 dark:text-rose-400 shadow-lg shadow-rose-600/30 animate-pulse">
             <Siren className="h-6 w-6" />
           </div>
         </div>
 
         {/* CARD 2: HIGH RISK LEVEL 2 */}
-        <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-950/40 to-slate-950/80 p-5 shadow-xl flex items-center justify-between">
+        <div className="rounded-2xl border border-amber-500/40 bg-white dark:bg-gradient-to-br dark:from-amber-950/40 dark:to-slate-950/80 p-5 shadow-xl flex items-center justify-between transition-colors duration-300">
           <div>
-            <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider">HIGH RISK (LEVEL 2)</div>
-            <div className="text-2xl lg:text-3xl font-black text-white mt-1">6 Regulated</div>
+            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">HIGH RISK (LEVEL 2)</div>
+            <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">6 Regulated</div>
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-600/20 border border-amber-500/40 text-amber-400 shadow-lg shadow-amber-600/30">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-600/20 border border-amber-500/40 text-amber-600 dark:text-amber-400 shadow-lg shadow-amber-600/30">
             <AlertTriangle className="h-6 w-6" />
           </div>
         </div>
 
         {/* CARD 3: SURGE / WEATHER */}
-        <div className="rounded-2xl border border-sky-500/40 bg-gradient-to-br from-sky-950/40 to-slate-950/80 p-5 shadow-xl flex items-center justify-between">
+        <div className="rounded-2xl border border-sky-500/40 bg-white dark:bg-gradient-to-br dark:from-sky-950/40 dark:to-slate-950/80 p-5 shadow-xl flex items-center justify-between transition-colors duration-300">
           <div>
-            <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider">SURGE / WEATHER</div>
-            <div className="text-2xl lg:text-3xl font-black text-white mt-1">4 Monitored</div>
+            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">SURGE / WEATHER</div>
+            <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">4 Monitored</div>
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-600/20 border border-sky-500/40 text-sky-400 shadow-lg shadow-sky-600/30">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-600/20 border border-sky-500/40 text-sky-600 dark:text-sky-400 shadow-lg shadow-sky-600/30">
             <CloudRain className="h-6 w-6" />
           </div>
         </div>
 
         {/* CARD 4: AVG DISPATCH SPEED */}
-        <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 to-slate-950/80 p-5 shadow-xl flex items-center justify-between">
+        <div className="rounded-2xl border border-emerald-500/40 bg-white dark:bg-gradient-to-br dark:from-emerald-950/40 dark:to-slate-950/80 p-5 shadow-xl flex items-center justify-between transition-colors duration-300">
           <div>
-            <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider">AVG DISPATCH SPEED</div>
-            <div className="text-2xl lg:text-3xl font-black text-emerald-400 mt-1">14.2 min</div>
+            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">AVG DISPATCH SPEED</div>
+            <div className="text-2xl lg:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1">14.2 min</div>
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 shadow-lg shadow-emerald-600/30">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 shadow-lg shadow-emerald-600/30">
             <Zap className="h-6 w-6" />
           </div>
         </div>
@@ -156,17 +156,17 @@ export default function ActionAlertsModule({
       </div>
 
       {/* 🚨 REAL-TIME EMERGENCY INCIDENT BROADCAST FEED HEADER */}
-      <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-6 shadow-2xl space-y-5">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-5 transition-colors duration-300">
         
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800/80 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xl">🚨</span>
-              <h2 className="text-lg font-black text-white tracking-tight">
+              <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
                 Real-Time Emergency Incident Broadcast Feed (14 Events)
               </h2>
             </div>
-            <p className="text-xs text-slate-400 mt-1 font-medium">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
               Live operational alerts across 8 NER States synchronized with NDRF, BRO & State Disaster Management Authorities (SDMAs)
             </p>
           </div>
@@ -176,7 +176,7 @@ export default function ActionAlertsModule({
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs font-bold text-slate-200 focus:border-sky-500 focus:outline-none"
+              className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3.5 py-2 text-xs font-bold text-slate-900 dark:text-slate-200 focus:border-sky-500 focus:outline-none"
             >
               <option value="all">🔴 Critical Distress (4)</option>
               <option value="high">🟡 High Risk Regulated (6)</option>
@@ -198,7 +198,7 @@ export default function ActionAlertsModule({
           {incidentList.map((inc) => (
             <div
               key={inc.id}
-              className="rounded-2xl border border-slate-800/90 bg-slate-950/70 p-5 shadow-xl hover:border-slate-700 transition space-y-3"
+              className="rounded-2xl border border-slate-200 dark:border-slate-800/90 bg-slate-50 dark:bg-slate-950/70 p-5 shadow-md hover:border-slate-400 dark:hover:border-slate-700 transition space-y-3"
             >
               <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-3">
                 <div className="space-y-1.5 flex-1">
@@ -206,21 +206,21 @@ export default function ActionAlertsModule({
                     <span className={`rounded px-2 py-0.5 text-[10px] font-black tracking-wider border ${inc.badgeColor}`}>
                       {inc.badge}
                     </span>
-                    <h3 className="text-sm font-black text-white tracking-tight">
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
                       {inc.title}
                     </h3>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
                     {inc.description}
                   </p>
                   
                   {/* METADATA ROW */}
-                  <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono text-slate-400 pt-1">
-                    <span className="flex items-center gap-1 text-slate-300 font-semibold">
-                      <MapPin className="h-3.5 w-3.5 text-rose-400" />
+                  <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono text-slate-500 dark:text-slate-400 pt-1">
+                    <span className="flex items-center gap-1 text-slate-800 dark:text-slate-300 font-semibold">
+                      <MapPin className="h-3.5 w-3.5 text-rose-500 dark:text-rose-400" />
                       GPS: {inc.gps}
                     </span>
-                    <span className="flex items-center gap-1 text-sky-300 font-semibold">
+                    <span className="flex items-center gap-1 text-sky-600 dark:text-sky-300 font-semibold">
                       🚜 Dispatched: {inc.dispatched}
                     </span>
                     <span className="text-slate-500">
@@ -260,7 +260,7 @@ export default function ActionAlertsModule({
 
                   <button
                     onClick={onNavigateToMap}
-                    className="rounded-xl bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 font-bold text-xs px-3.5 py-2 transition cursor-pointer flex items-center gap-1"
+                    className="rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs px-3.5 py-2 transition cursor-pointer flex items-center gap-1"
                   >
                     <span>View Map 🗺️</span>
                   </button>

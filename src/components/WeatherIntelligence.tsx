@@ -26,7 +26,6 @@ interface WeatherIntelligenceProps {
 }
 
 export default function WeatherIntelligence({
-
   onNavigateToMap,
   onNavigateToReroute,
   onTriggerSOS
@@ -244,52 +243,52 @@ export default function WeatherIntelligence({
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const msg = `📍 जीपीएस प्राप्त: ${pos.coords.latitude.toFixed(4)}° N, ${pos.coords.longitude.toFixed(4)}° E • आपके क्षेत्र के लिए लाइव IMD रडार ग्रिड लोड हो रही है।`;
+          const msg = `📍 GPS Fetched: ${pos.coords.latitude.toFixed(4)}° N, ${pos.coords.longitude.toFixed(4)}° E • Loading live IMD radar grid for your sector.`;
           setGpsToast(msg);
           setSelectedSector("shillong");
           setTimeout(() => setGpsToast(null), 5000);
         },
         () => {
-          setGpsToast("📍 जीपीएस सेक्टर प्राप्त: 25.5788° N, 91.8933° E (शिलांग सेक्टर)");
+          setGpsToast("📍 GPS Sector Acquired: 25.5788° N, 91.8933° E (Shillong Sector)");
           setSelectedSector("shillong");
           setTimeout(() => setGpsToast(null), 5000);
         }
       );
     } else {
-      setGpsToast("📍 जीपीएस सेक्टर प्राप्त: 25.5788° N, 91.8933° E (शिलांग सेक्टर)");
+      setGpsToast("📍 GPS Sector Acquired: 25.5788° N, 91.8933° E (Shillong Sector)");
       setSelectedSector("shillong");
       setTimeout(() => setGpsToast(null), 5000);
     }
   };
 
   return (
-    <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6 select-none">
+    <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
       {/* SECTION 1: HEADER & HERO METEOROLOGICAL GRID */}
       <div className="space-y-4">
         {/* SLEEK INLINE GPS TOAST BANNER */}
         {gpsToast && (
-          <div className="rounded-xl border border-sky-500/40 bg-sky-950/90 p-3 text-xs font-bold text-sky-200 shadow-xl backdrop-blur flex items-center justify-between animate-fade-in">
+          <div className="rounded-xl border border-sky-500/40 bg-sky-500/10 dark:bg-sky-950/90 p-3 text-xs font-bold text-sky-700 dark:text-sky-200 shadow-xl backdrop-blur flex items-center justify-between animate-fade-in">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-sky-400 animate-ping"></span>
+              <span className="h-2 w-2 rounded-full bg-sky-500 dark:bg-sky-400 animate-ping"></span>
               <span>{gpsToast}</span>
             </div>
-            <button onClick={() => setGpsToast(null)} className="text-sky-400 hover:text-white font-black text-sm">✕</button>
+            <button onClick={() => setGpsToast(null)} className="text-sky-600 dark:text-sky-400 hover:text-slate-900 dark:hover:text-white font-black text-sm">✕</button>
           </div>
         )}
 
         {/* Header Bar */}
-        <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-colors duration-300">
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-xs font-bold text-indigo-400 flex items-center gap-1.5 border border-indigo-500/30">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span className="rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5 border border-indigo-500/30">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
                 📡 {t("weather.liveTelemetryNode", "LIVE METEOROLOGICAL TELEMETRY NODE • Sync: Live IMD / NASA GPM Radar")}
               </span>
             </div>
-            <h1 className="text-xl lg:text-2xl font-black text-white mt-1.5 flex items-center gap-2">
+            <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1.5 flex items-center gap-2">
               <span>🌧️</span> {t("weather.title", "8-State Meteorological Grid & Cloudburst Intelligence")}
             </h1>
-            <p className="text-xs text-slate-400 mt-0.5 max-w-3xl">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 max-w-3xl">
               {t("weather.subtitle", "Real-time satellite precipitation tracking, IMD Doppler radar reflectivity matrix, and geotechnical soil saturation correlation for all 8 North Eastern States (MDoNER / NEC).")}
             </p>
           </div>
@@ -297,7 +296,7 @@ export default function WeatherIntelligence({
           <div className="flex flex-wrap items-center gap-2 shrink-0">
             <button
               onClick={handleFetchGPS}
-              className="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 font-bold text-slate-950 text-xs shadow-lg shadow-sky-500/20 transition flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 font-bold text-white dark:text-slate-950 text-xs shadow-lg shadow-sky-500/20 transition flex items-center gap-1.5 cursor-pointer"
             >
               📍 {t("weather.fetchGps", "Fetch My Live GPS")}
             </button>
@@ -305,7 +304,7 @@ export default function WeatherIntelligence({
             <select
               value={selectedSector}
               onChange={(e) => setSelectedSector(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-bold text-white focus:border-sky-500 focus:outline-none"
+              className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
             >
               <option value="tawang">📍 Sector: Tawang / Sela Pass (Arunachal)</option>
               <option value="shillong">📍 Sector: Shillong & Sohra (Meghalaya)</option>
@@ -318,40 +317,40 @@ export default function WeatherIntelligence({
         {/* Hero Cards (1 Monitored Box + 4 Metric Cards) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Monitored Sector Box */}
-          <div className="lg:col-span-5 rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl flex flex-col justify-between space-y-4 relative overflow-hidden">
+          <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl flex flex-col justify-between space-y-4 relative overflow-hidden transition-colors duration-300">
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-400 uppercase tracking-wider text-[11px]">{t("weather.currentMonitoredSector", "CURRENT MONITORED SECTOR:")}</span>
-                <span className="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 font-mono text-[10px] font-bold text-sky-400">{currentSector.coords}</span>
+                <span className="font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[11px]">{t("weather.currentMonitoredSector", "CURRENT MONITORED SECTOR:")}</span>
+                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-[10px] font-bold text-sky-600 dark:text-sky-400">{currentSector.coords}</span>
               </div>
 
               <div className="flex items-baseline justify-between">
-                <h3 className="text-lg lg:text-xl font-black text-white">{currentSector.name}</h3>
-                <span className="text-xs font-mono text-slate-400 font-semibold">{currentSector.altitude}</span>
+                <h3 className="text-lg lg:text-xl font-black text-slate-900 dark:text-white">{currentSector.name}</h3>
+                <span className="text-xs font-mono text-slate-500 dark:text-slate-400 font-semibold">{currentSector.altitude}</span>
               </div>
 
-              <p className="text-xs text-slate-300 leading-relaxed">{currentSector.desc}</p>
+              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{currentSector.desc}</p>
             </div>
 
             {/* Warning Clearance Box */}
-            <div className="rounded-xl border border-amber-500/40 bg-amber-950/30 p-3 space-y-1 relative">
-              <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">{t("weather.logisticsClearance", "LOGISTICS TRANSIT CLEARANCE:")}</div>
-              <div className="text-sm font-black text-amber-300 flex items-center justify-between">
+            <div className="rounded-xl border border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 p-3 space-y-1 relative">
+              <div className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{t("weather.logisticsClearance", "LOGISTICS TRANSIT CLEARANCE:")}</div>
+              <div className="text-sm font-black text-amber-800 dark:text-amber-300 flex items-center justify-between">
                 <span>{currentSector.clearance}</span>
-                <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0" />
+                <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
               </div>
-              <p className="text-[11px] text-slate-300 pt-0.5">{currentSector.clearanceSub}</p>
+              <p className="text-[11px] text-slate-700 dark:text-slate-300 pt-0.5">{currentSector.clearanceSub}</p>
             </div>
 
             {/* Action Buttons */}
             <div className="grid grid-cols-3 gap-2 pt-1">
-              <button onClick={onNavigateToMap} className="py-2 px-3 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xs font-bold text-slate-200 transition text-center">
+              <button onClick={onNavigateToMap} className="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200 transition text-center cursor-pointer">
                 🗺️ {t("weather.viewMap", "View Map")}
               </button>
-              <button onClick={() => onNavigateToReroute && onNavigateToReroute("NH-13")} className="py-2 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-xs font-black text-slate-950 shadow-md transition text-center">
+              <button onClick={() => onNavigateToReroute && onNavigateToReroute("NH-13")} className="py-2 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-xs font-black text-white dark:text-slate-950 shadow-md transition text-center cursor-pointer">
                 🎯 {t("weather.reroute3d", "Reroute 3D")}
               </button>
-              <button onClick={onTriggerSOS} className="py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-black text-white shadow-md transition text-center">
+              <button onClick={onTriggerSOS} className="py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-black text-white shadow-md transition text-center cursor-pointer">
                 🚨 {t("weather.sosDistress", "SOS Distress")}
               </button>
             </div>
@@ -360,61 +359,61 @@ export default function WeatherIntelligence({
           {/* Right 4 Metric Cards */}
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Card 1: Rain Rate */}
-            <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">{t("weather.rainRate", "RAIN RATE")}</span>
-                <CloudRain className="h-4 w-4 text-sky-400" />
+                <span className="font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">{t("weather.rainRate", "RAIN RATE")}</span>
+                <CloudRain className="h-4 w-4 text-sky-500 dark:text-sky-400" />
               </div>
               <div>
-                <div className="text-3xl font-black text-white">{currentSector.rainRate}</div>
-                <div className="text-[11px] text-slate-400 mt-0.5 font-medium">{currentSector.rainUnit}</div>
+                <div className="text-3xl font-black text-slate-900 dark:text-white">{currentSector.rainRate}</div>
+                <div className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">{currentSector.rainUnit}</div>
               </div>
-              <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                 <div className="h-full bg-rose-500 rounded-full" style={{ width: "75%" }}></div>
               </div>
             </div>
 
             {/* Card 2: Soil Saturation */}
-            <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">{t("weather.soilSaturation", "SOIL SATURATION")}</span>
-                <Droplets className="h-4 w-4 text-sky-400" />
+                <span className="font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">{t("weather.soilSaturation", "SOIL SATURATION")}</span>
+                <Droplets className="h-4 w-4 text-sky-500 dark:text-sky-400" />
               </div>
               <div>
-                <div className="text-3xl font-black text-white">{currentSector.soilSat}</div>
-                <div className="text-[11px] text-slate-400 mt-0.5 font-medium">{currentSector.soilSub}</div>
+                <div className="text-3xl font-black text-slate-900 dark:text-white">{currentSector.soilSat}</div>
+                <div className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">{currentSector.soilSub}</div>
               </div>
-              <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                 <div className="h-full bg-rose-500 rounded-full" style={{ width: "68%" }}></div>
               </div>
             </div>
 
             {/* Card 3: Temperature */}
-            <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">{t("weather.temperature", "TEMPERATURE")}</span>
-                <Thermometer className="h-4 w-4 text-rose-400" />
+                <span className="font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">{t("weather.temperature", "TEMPERATURE")}</span>
+                <Thermometer className="h-4 w-4 text-rose-500 dark:text-rose-400" />
               </div>
               <div>
-                <div className="text-3xl font-black text-white">{currentSector.temp}</div>
-                <div className="text-[11px] text-slate-400 mt-0.5 font-medium">Humidity: {currentSector.humidity}</div>
+                <div className="text-3xl font-black text-slate-900 dark:text-white">{currentSector.temp}</div>
+                <div className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Humidity: {currentSector.humidity}</div>
               </div>
-              <div className="text-[10px] text-emerald-400 font-mono font-bold flex items-center gap-1 border-t border-slate-800/80 pt-2">
+              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold flex items-center gap-1 border-t border-slate-200 dark:border-slate-800/80 pt-2">
                 <span>● Dew Pt: {currentSector.dewPoint}</span>
               </div>
             </div>
 
             {/* Card 4: Doppler dBZ */}
-            <div className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">{t("weather.dopplerDbz", "DOPPLER DBZ")}</span>
-                <Radio className="h-4 w-4 text-indigo-400" />
+                <span className="font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">{t("weather.dopplerDbz", "DOPPLER DBZ")}</span>
+                <Radio className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
               </div>
               <div>
-                <div className="text-3xl font-black text-white">{currentSector.dopplerDbz}</div>
-                <div className="text-[11px] text-slate-400 mt-0.5 font-medium">{currentSector.dopplerNode}</div>
+                <div className="text-3xl font-black text-slate-900 dark:text-white">{currentSector.dopplerDbz}</div>
+                <div className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">{currentSector.dopplerNode}</div>
               </div>
-              <div className="text-[10px] text-amber-400 font-bold flex items-center gap-1 border-t border-slate-800/80 pt-2">
+              <div className="text-[10px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1 border-t border-slate-200 dark:border-slate-800/80 pt-2">
                 <span>{currentSector.echoType}</span>
               </div>
             </div>
@@ -424,24 +423,24 @@ export default function WeatherIntelligence({
 
       {/* SECTION 2: INTERACTIVE DOPPLER RADAR & HYDROLOGICAL SURGE */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Box: {t("weather.cloudburstRadarSimulation", "Interactive IMD Doppler Cloudburst Radar Simulation")} */}
-        <div className="lg:col-span-7 rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl space-y-4 flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        {/* Left Box: Interactive IMD Doppler Cloudburst Radar Simulation */}
+        <div className="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-4 flex flex-col justify-between transition-colors duration-300">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="text-sm lg:text-base font-black text-white flex items-center gap-2">
+              <h3 className="text-sm lg:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <span>📡</span> Interactive IMD Doppler Cloudburst Radar Simulation
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">{t("weather.cloudburstRadarSubtitle", "High-resolution S-band Doppler sweep displaying extreme convective storm cores.")}</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{t("weather.cloudburstRadarSubtitle", "High-resolution S-band Doppler sweep displaying extreme convective storm cores.")}</p>
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsScanning(!isScanning)}
-                className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-800 transition flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer"
               >
                 {isScanning ? "⏸️ Freeze Scan" : "▶️ Resume Scan"}
               </button>
-              <span className="px-2.5 py-1 rounded-xl bg-sky-500/20 text-sky-300 text-[10px] font-mono font-bold">120 RPM</span>
+              <span className="px-2.5 py-1 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 text-[10px] font-mono font-bold">120 RPM</span>
             </div>
           </div>
 
@@ -483,27 +482,27 @@ export default function WeatherIntelligence({
               <button
                 key={node.id}
                 onClick={() => setActiveRadarNode(node.id)}
-                className={"p-2.5 rounded-xl border text-left transition flex flex-col justify-between " + (
+                className={"p-2.5 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer " + (
                   activeRadarNode === node.id
-                    ? "bg-sky-500/20 border-sky-500 text-white"
-                    : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
+                    ? "bg-sky-500/20 border-sky-500 text-slate-900 dark:text-white"
+                    : "bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-700"
                 )}
               >
-                <div className="text-[10px] text-slate-400">{node.name}</div>
-                <div className="font-bold text-xs text-white truncate">{node.label}</div>
-                <div className="text-[10px] font-mono font-semibold text-sky-400 mt-1">{node.val}</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">{node.name}</div>
+                <div className="font-bold text-xs text-slate-900 dark:text-white truncate">{node.label}</div>
+                <div className="text-[10px] font-mono font-semibold text-sky-600 dark:text-sky-400 mt-1">{node.val}</div>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Right Box: {t("weather.riverBasinHydrologicalSurge", "River Basin & Hydrological Surge")} */}
-        <div className="lg:col-span-5 rounded-2xl border border-slate-800 bg-[#070d1e] p-5 shadow-2xl space-y-4 flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 className="text-sm lg:text-base font-black text-white flex items-center gap-2">
+        {/* Right Box: River Basin & Hydrological Surge */}
+        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-4 flex flex-col justify-between transition-colors duration-300">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <h3 className="text-sm lg:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span>🌊</span> River Basin & Hydrological Surge
             </h3>
-            <span className="px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-300 text-[10px] font-mono font-bold border border-rose-500/30">
+            <span className="px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-700 dark:text-rose-300 text-[10px] font-mono font-bold border border-rose-500/30">
               {t("weather.cwcTelemetryActive", "CWC Telemetry Active")}
             </span>
           </div>
@@ -511,58 +510,58 @@ export default function WeatherIntelligence({
           {/* 3 River Cards */}
           <div className="space-y-3">
             {/* Station 1 */}
-            <div className="rounded-xl border border-rose-500/40 bg-rose-950/20 p-3.5 space-y-2">
+            <div className="rounded-xl border border-rose-500/40 bg-rose-50 dark:bg-rose-950/20 p-3.5 space-y-2 transition-colors duration-300">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-white">Teesta River (Melli Gauge Station)</span>
-                <span className="font-mono text-rose-400 font-bold">Velocity: 4.2 m/s</span>
+                <span className="font-bold text-slate-900 dark:text-white">Teesta River (Melli Gauge Station)</span>
+                <span className="font-mono text-rose-600 dark:text-rose-400 font-bold">Velocity: 4.2 m/s</span>
               </div>
-              <div className="flex items-center justify-between text-[11px] font-mono text-slate-300">
+              <div className="flex items-center justify-between text-[11px] font-mono text-slate-700 dark:text-slate-300">
                 <span>Discharge: 3,420 cumec</span>
-                <span className="text-rose-400 font-bold">+1.8m Above Danger Mark</span>
+                <span className="text-rose-600 dark:text-rose-400 font-bold">+1.8m Above Danger Mark</span>
               </div>
-              <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
                 <div className="h-full bg-rose-500 rounded-full" style={{ width: "92%" }}></div>
               </div>
             </div>
 
             {/* Station 2 */}
-            <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-3.5 space-y-2">
+            <div className="rounded-xl border border-amber-500/40 bg-amber-50 dark:bg-amber-950/20 p-3.5 space-y-2 transition-colors duration-300">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-white">Barak River (Badarpur Junction)</span>
-                <span className="font-mono text-amber-400 font-bold">Rising (+0.14 m/hr)</span>
+                <span className="font-bold text-slate-900 dark:text-white">Barak River (Badarpur Junction)</span>
+                <span className="font-mono text-amber-600 dark:text-amber-400 font-bold">Rising (+0.14 m/hr)</span>
               </div>
-              <div className="flex items-center justify-between text-[11px] font-mono text-slate-300">
+              <div className="flex items-center justify-between text-[11px] font-mono text-slate-700 dark:text-slate-300">
                 <span>Water Level: 20.85m MSL</span>
-                <span className="text-amber-400 font-bold">+0.9m Above Danger Mark</span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">+0.9m Above Danger Mark</span>
               </div>
-              <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
                 <div className="h-full bg-amber-500 rounded-full" style={{ width: "78%" }}></div>
               </div>
             </div>
 
             {/* Station 3 */}
-            <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-3.5 space-y-2">
+            <div className="rounded-xl border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/20 p-3.5 space-y-2 transition-colors duration-300">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-white">Brahmaputra (Pandu Port Base)</span>
-                <span className="font-mono text-emerald-400 font-bold">Steady</span>
+                <span className="font-bold text-slate-900 dark:text-white">Brahmaputra (Pandu Port Base)</span>
+                <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">Steady</span>
               </div>
-              <div className="flex items-center justify-between text-[11px] font-mono text-slate-300">
+              <div className="flex items-center justify-between text-[11px] font-mono text-slate-700 dark:text-slate-300">
                 <span>Discharge: 18,200 cumec</span>
-                <span className="text-emerald-400 font-bold">1.4m Below Danger Mark</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">1.4m Below Danger Mark</span>
               </div>
-              <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
                 <div className="h-full bg-emerald-500 rounded-full" style={{ width: "50%" }}></div>
               </div>
             </div>
           </div>
 
           {/* IMD Cloudburst Warning Banner */}
-          <div className="rounded-xl border border-rose-500/50 bg-rose-950/40 p-3.5 space-y-1">
-            <div className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
-              <AlertTriangle className="h-4 w-4 text-rose-400" />
+          <div className="rounded-xl border border-rose-500/50 bg-rose-50 dark:bg-rose-950/40 p-3.5 space-y-1 transition-colors duration-300">
+            <div className="text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
+              <AlertTriangle className="h-4 w-4 text-rose-500 dark:text-rose-400" />
               IMD Cloudburst Watch: Khasi Hills & Teesta Basin
             </div>
-            <p className="text-[11px] text-slate-300 leading-snug">
+            <p className="text-[11px] text-slate-700 dark:text-slate-300 leading-snug">
               Convective cell updrafts exceeding 35 m/s. High flash flood potential along hill streams for the next 180 minutes.
             </p>
           </div>
@@ -571,17 +570,17 @@ export default function WeatherIntelligence({
 
       {/* SECTION 3: 8-STATE METEOROLOGICAL MATRIX */}
       <div className="space-y-4 pt-2">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
           <div>
-            <h2 className="text-base lg:text-lg font-black text-white flex items-center gap-2">
+            <h2 className="text-base lg:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span>🗺️</span> 8-State North Eastern Meteorological Matrix (All States)
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
               Click on any state card to inspect radar telemetry, view live highway clearance, or trigger 3D bypass reroute.
             </p>
           </div>
-          <span className="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
             8 / 8 States Telemetry Synchronized
           </span>
         </div>
@@ -598,32 +597,32 @@ export default function WeatherIntelligence({
             { state: "MANIPUR", title: "Imphal / Noney", rate: "5.4 mm/h", temp: "24.1°C", sub1: "Ijei Silt: 66%", sub2: "Valley Transit: 4-Lane Operable", badge: "🔵 Silt Basin Watch", badgeType: "sky" },
             { state: "TRIPURA", title: "Agartala Transit", rate: "2.4 mm/h", temp: "29.2°C", sub1: "Humidity: 76%", sub2: "Inter-State Gate: 100% Nominal", badge: "🟢 Logistics Clear", badgeType: "emerald" }
           ].map((st, i) => (
-            <div key={i} className="rounded-2xl border border-slate-800 bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between hover:border-sky-500/50 transition">
+            <div key={i} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 shadow-xl space-y-3 flex flex-col justify-between hover:border-sky-500/50 transition-colors duration-300">
               <div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-400 uppercase text-[10px]">{st.state}</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 font-mono text-[10px] font-bold text-sky-400">{st.rate}</span>
+                  <span className="font-bold text-slate-600 dark:text-slate-400 uppercase text-[10px]">{st.state}</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-[10px] font-bold text-sky-600 dark:text-sky-400">{st.rate}</span>
                 </div>
-                <h4 className="font-black text-sm text-white mt-1">{st.title}</h4>
-                <div className="text-[11px] text-slate-300 font-mono mt-1 space-y-0.5">
+                <h4 className="font-black text-sm text-slate-900 dark:text-white mt-1">{st.title}</h4>
+                <div className="text-[11px] text-slate-700 dark:text-slate-300 font-mono mt-1 space-y-0.5">
                   <div>Temp: <b>{st.temp}</b> &bull; {st.sub1}</div>
-                  <div className="text-slate-400">{st.sub2}</div>
+                  <div className="text-slate-500 dark:text-slate-400">{st.sub2}</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between border-t border-slate-800 pt-2 text-xs">
+              <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-2 text-xs">
                 <span className={
                   "px-2 py-0.5 rounded text-[10px] font-bold " + (
-                    st.badgeType === "rose" ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" :
-                    st.badgeType === "amber" ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" :
-                    st.badgeType === "sky" ? "bg-sky-500/20 text-sky-300 border border-sky-500/30" :
-                    "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    st.badgeType === "rose" ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30" :
+                    st.badgeType === "amber" ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30" :
+                    st.badgeType === "sky" ? "bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30" :
+                    "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
                   )
                 }>
                   {st.badge}
                 </span>
 
-                <button onClick={() => setSelectedSector(st.state.toLowerCase().split(" ")[0])} className="text-sky-400 font-bold hover:underline text-[11px]">
+                <button onClick={() => setSelectedSector(st.state.toLowerCase().split(" ")[0])} className="text-sky-600 dark:text-sky-400 font-bold hover:underline text-[11px] cursor-pointer">
                   Inspect ➔
                 </button>
               </div>
@@ -634,24 +633,24 @@ export default function WeatherIntelligence({
 
       {/* SECTION 4: ALL-WEATHER HIGHWAY WEATHER CLEARANCE ADVISORY */}
       <div className="space-y-4 pt-2">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
           <div>
-            <h2 className="text-base lg:text-lg font-black text-white flex items-center gap-2">
+            <h2 className="text-base lg:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span>🚛</span> All-Weather Highway Weather Clearance Advisory (Logistics Corridors)
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
               Automated vehicle convoy clearance derived from real-time precipitation & geotechnical slope stability.
             </p>
           </div>
-          <span className="px-3 py-1 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono font-bold">
+          <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-mono font-bold">
             MDoNER / BRO Coordinated
           </span>
         </div>
 
         {/* Advisory Table */}
-        <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-[#070d1e] shadow-2xl">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] shadow-xl dark:shadow-2xl transition-colors duration-300">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 bg-slate-950/80 font-bold text-slate-400 uppercase text-[10px] tracking-wider">
+            <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80 font-bold text-slate-700 dark:text-slate-400 uppercase text-[10px] tracking-wider">
               <tr>
                 <th className="p-3.5">HIGHWAY CORRIDOR</th>
                 <th className="p-3.5">STATE / ROUTE</th>
@@ -661,7 +660,7 @@ export default function WeatherIntelligence({
                 <th className="p-3.5 text-center">ACTION</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80 text-slate-200">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80 text-slate-800 dark:text-slate-200">
               {[
                 { corridor: "NH-6 Arterial Pass", route: "Meghalaya ➔ Assam (Km 142)", hazard: "16.4 mm/h Cloudburst Saturation", clearance: "IMPASSABLE AT KM 142", clearanceType: "CRITICAL", bypass: "Sector 9 Jowai Ridge Bypass", action: "Reroute 3D" },
                 { corridor: "NH-13 Trans-Arunachal", route: "Tezpur ➔ Tawang (Sela Pass)", hazard: "-1.2°C Freezing Snow Slurry", clearance: "4x4 CHAINS ONLY", clearanceType: "CHAINS", bypass: "Kalaktang Low-Altitude Bypass", action: "Reroute 3D" },
@@ -669,33 +668,33 @@ export default function WeatherIntelligence({
                 { corridor: "NH-29 Highland Pass", route: "Dimapur ➔ Kohima (Zubza)", hazard: "Soil Shear Subsidence", clearance: "REGULATED 15 KM/H", clearanceType: "REGULATED", bypass: "Pfutsero Highland Bedrock Link", action: "Reroute 3D" },
                 { corridor: "NH-37 Imphal Link", route: "Silchar ➔ Imphal Valley", hazard: "5.4 mm/h Light Valley Rain", clearance: "100% ALL CLEAR", clearanceType: "CLEAR", bypass: "Standard 4-Lane Valley Highway", action: "Track 3D" }
               ].map((row, idx) => (
-                <tr key={idx} className="hover:bg-slate-900/60 transition">
-                  <td className="p-3.5 font-bold text-white flex items-center gap-2">
+                <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors duration-200">
+                  <td className="p-3.5 font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <span className={"h-2 w-2 rounded-full " + (
                       row.clearanceType === "CRITICAL" ? "bg-rose-500 animate-ping" :
-                      row.clearanceType === "CHAINS" ? "bg-amber-400" :
-                      row.clearanceType === "REGULATED" ? "bg-orange-400" : "bg-emerald-400"
+                      row.clearanceType === "CHAINS" ? "bg-amber-500" :
+                      row.clearanceType === "REGULATED" ? "bg-orange-500" : "bg-emerald-500"
                     )}></span>
                     {row.corridor}
                   </td>
-                  <td className="p-3.5 text-slate-300">{row.route}</td>
-                  <td className={"p-3.5 font-semibold " + (row.clearanceType === "CRITICAL" ? "text-rose-400" : "text-amber-300")}>{row.hazard}</td>
+                  <td className="p-3.5 text-slate-700 dark:text-slate-300">{row.route}</td>
+                  <td className={"p-3.5 font-semibold " + (row.clearanceType === "CRITICAL" ? "text-rose-600 dark:text-rose-400" : "text-amber-600 dark:text-amber-300")}>{row.hazard}</td>
                   <td className="p-3.5">
                     <span className={"px-2.5 py-1 rounded text-[10px] font-black uppercase " + (
-                      row.clearanceType === "CRITICAL" ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" :
-                      row.clearanceType === "CHAINS" ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" :
-                      row.clearanceType === "REGULATED" ? "bg-orange-500/20 text-orange-300 border border-orange-500/30" :
-                      "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                      row.clearanceType === "CRITICAL" ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30" :
+                      row.clearanceType === "CHAINS" ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30" :
+                      row.clearanceType === "REGULATED" ? "bg-orange-500/20 text-orange-700 dark:text-orange-300 border border-orange-500/30" :
+                      "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
                     )}>
                       {row.clearance}
                     </span>
                   </td>
-                  <td className="p-3.5 text-emerald-400 font-medium">{row.bypass}</td>
+                  <td className="p-3.5 text-emerald-600 dark:text-emerald-400 font-medium">{row.bypass}</td>
                   <td className="p-3.5 text-center">
                     <button
                       onClick={() => onNavigateToReroute && onNavigateToReroute(row.corridor)}
-                      className={"px-3 py-1.5 rounded-lg font-bold text-[11px] shadow transition " + (
-                        row.action === "Track 3D" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "bg-sky-500 hover:bg-sky-400 text-slate-950"
+                      className={"px-3 py-1.5 rounded-lg font-bold text-[11px] shadow transition cursor-pointer " + (
+                        row.action === "Track 3D" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "bg-sky-500 hover:bg-sky-400 text-white dark:text-slate-950"
                       )}
                     >
                       {row.action}
