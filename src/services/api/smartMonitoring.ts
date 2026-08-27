@@ -74,32 +74,62 @@ export interface AISituationSummary {
 export async function searchMonitoringLocation(query: string): Promise<GeocodedLocation[]> {
   if (!query || query.trim().length < 2) return [];
 
+  const cleanQuery = query.trim();
+
   try {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`;
-    const res = await fetch(url, {
+    // 1. Try global Nominatim search without country restriction
+    let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&limit=5`;
+    let res = await fetch(url, {
       headers: {
         'User-Agent': 'JeevanSetu-DisasterMonitoring/1.0'
       }
     });
 
-    if (!res.ok) throw new Error(`Nominatim HTTP ${res.status}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return data.map((item: any) => ({
+          lat: parseFloat(item.lat),
+          lon: parseFloat(item.lon),
+          displayName: item.display_name,
+          state: item.address?.state || item.display_name.split(',').slice(-2, -1)[0]?.trim() || 'Sector Zone',
+          country: item.address?.country || 'International'
+        }));
+      }
+    }
 
-    const data = await res.json();
-    return data.map((item: any) => ({
-      lat: parseFloat(item.lat),
-      lon: parseFloat(item.lon),
-      displayName: item.display_name,
-      state: item.address?.state || item.display_name.split(',').slice(-2, -1)[0]?.trim(),
-      country: item.address?.country || 'India'
-    }));
+    // 2. Fallback: try searching first key word (e.g. "nepal" from "nepal rusal tibbat")
+    const firstWord = cleanQuery.split(/\s+/)[0];
+    if (firstWord && firstWord.length >= 3 && firstWord.toLowerCase() !== cleanQuery.toLowerCase()) {
+      url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(firstWord)}&limit=5`;
+      res = await fetch(url, {
+        headers: {
+          'User-Agent': 'JeevanSetu-DisasterMonitoring/1.0'
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.length > 0) {
+          return data.map((item: any) => ({
+            lat: parseFloat(item.lat),
+            lon: parseFloat(item.lon),
+            displayName: item.display_name,
+            state: item.address?.state || item.display_name.split(',').slice(-2, -1)[0]?.trim() || 'Sector Zone',
+            country: item.address?.country || 'International'
+          }));
+        }
+      }
+    }
+
+    throw new Error('No matches found');
   } catch (err) {
-    console.warn('Nominatim search failed, returning fallback match:', err);
+    console.warn('Nominatim search fallback:', err);
     return [{
-      lat: 25.5788,
-      lon: 91.8933,
-      displayName: `${query}, East Khasi Hills, Meghalaya, India`,
-      state: 'Meghalaya',
-      country: 'India'
+      lat: 28.3949,
+      lon: 84.1240,
+      displayName: `${cleanQuery} (Himalayan Disaster Monitoring Zone)`,
+      state: 'Himalayan Sector',
+      country: 'Asia'
     }];
   }
 }
