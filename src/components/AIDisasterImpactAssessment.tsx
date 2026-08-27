@@ -340,29 +340,30 @@ export default function AIDisasterImpactAssessment({
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-100 p-4 sm:p-6 space-y-6 font-sans transition-colors duration-300">
+    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-100 p-5 lg:p-8 space-y-6 font-sans transition-colors duration-300">
       
       {/* 1. TOP HEADER & DEMO MODE BAR */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-colors duration-300">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
         <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="rounded-full bg-indigo-500/20 px-3 py-1 text-xs font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className="rounded-full bg-indigo-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-indigo-500 animate-ping"></span>
               🤖 AI DISASTER IMPACT ASSESSMENT CENTER
             </span>
-            <span className="rounded bg-emerald-500/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+            <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs lg:text-sm font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
               Gemini Multimodal & Verified Data Pipeline
             </span>
             {isDemoMode && (
-              <span className="rounded bg-amber-500/20 px-2.5 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-400 border border-amber-500/40">
+              <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs lg:text-sm font-extrabold text-amber-700 dark:text-amber-400 border border-amber-500/40">
                 ⚠️ DEMO DATA ACTIVE
               </span>
             )}
           </div>
 
-          <h1 className="mt-2 text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+          <h1 className="mt-2 text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
             {t("aiimpact.title", "Multimodal Photo Damage Assessment & Impact Analytics")}
           </h1>
-          <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-3xl">
+          <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-300 mt-1 font-medium max-w-4xl leading-relaxed">
             {t("aiimpact.subtitle", "Combines disaster imagery with confirmed location context, Gemini visual analysis, and real-world environmental data to compute an explainable impact score.")}
           </p>
         </div>
@@ -371,7 +372,7 @@ export default function AIDisasterImpactAssessment({
         <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={() => setIsDemoMode(!isDemoMode)}
-            className={`rounded-xl border px-3.5 py-2 text-xs font-bold flex items-center gap-2 transition ${
+            className={`rounded-xl border px-4 py-2.5 text-xs lg:text-sm font-extrabold flex items-center gap-2 transition cursor-pointer ${
               isDemoMode ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/40' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-slate-300 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -382,7 +383,7 @@ export default function AIDisasterImpactAssessment({
           {onNavigateToMonitoring && (
             <button
               onClick={() => onNavigateToMonitoring({ lat: locationLoc.lat, lon: locationLoc.lon, name: locationLoc.displayName })}
-              className="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-lg hover:from-sky-500 hover:to-indigo-500 flex items-center gap-2"
+              className="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-4 py-2.5 text-xs lg:text-sm font-extrabold text-white shadow-lg hover:from-sky-500 hover:to-indigo-500 flex items-center gap-2 cursor-pointer border border-sky-400/40"
             >
               <span>View in 🛰️ Smart Disaster Monitoring</span>
               <ArrowRight className="h-4 w-4" />

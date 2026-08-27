@@ -322,30 +322,30 @@ export default function NERLiveMapModule({
     <div className="h-full w-full relative flex flex-col select-none bg-[#040814] text-slate-100 font-sans overflow-hidden">
       
       {/* 🟢 TOP HEADER BAR MATCHING SCREENSHOT */}
-      <div className="h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-4 lg:px-6 flex items-center justify-between gap-4 z-20 backdrop-blur transition-colors duration-300">
+      <div className="h-20 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-5 lg:px-8 flex items-center justify-between gap-4 z-20 backdrop-blur transition-colors duration-300">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+          <div className="flex items-center gap-2.5">
+            <span className="rounded-full bg-emerald-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
               Live Region Map &bull; Live Satellite & Radar
             </span>
-            <span className="hidden sm:inline text-xs italic text-slate-500 dark:text-slate-400">"Smart decisions today, safer tomorrow."</span>
+            <span className="hidden sm:inline text-xs lg:text-sm italic text-slate-500 dark:text-slate-400 font-medium">"Smart decisions today, safer tomorrow."</span>
           </div>
-          <h1 className="text-base lg:text-lg font-black text-slate-900 dark:text-white tracking-tight mt-0.5">
+          <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
             North Eastern Region Accessibility & Logistics Overview
           </h1>
         </div>
 
         {/* TOP RIGHT MODE & LAYER PILLS */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0">
           <button
             onClick={onNavigateTo3DSim}
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer shadow"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-3.5 py-2 text-xs lg:text-sm font-extrabold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer shadow"
           >
             <span>🎮</span> 3D SIMULATION
           </button>
 
-          <button className="rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 cursor-pointer border border-indigo-400/40">
+          <button className="rounded-xl bg-indigo-600 px-3.5 py-2 text-xs lg:text-sm font-extrabold text-white shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 cursor-pointer border border-indigo-400/40">
             <span>🗺️</span> 2D Map
           </button>
 

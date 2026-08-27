@@ -770,36 +770,45 @@ export default function App() {
 
         {/* 3. ROAD MONITORING & ACCESSIBILITY */}
         {activeModule === 'road' && (
-          <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
-            <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 gap-3">
+          <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+            {/* 🔴 TOP EXECUTIVE COMMAND BAR */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
               <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-rose-500" />
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-rose-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-rose-700 dark:text-rose-400 border border-rose-500/30 flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                    EXECUTIVE HIGHWAY & BRIDGE INTEGRITY TELEMETRY
+                  </span>
+                </div>
+                <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-3">
+                  <Activity className="h-7 w-7 text-rose-500" />
                   {t("road.title", "NER Road & Accessibility Monitoring")}
-                </h2>
-                <p className="text-xs text-slate-600 dark:text-slate-400">{t("road.subtitle", "Live telemetry on highway clearance, landslide choke points, and bridge load integrity.")}</p>
+                </h1>
+                <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium max-w-4xl leading-relaxed">
+                  {t("road.subtitle", "Live telemetry on highway clearance, landslide choke points, and bridge load integrity.")}
+                </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-3 shrink-0">
                 <button
                   onClick={() => setActiveModule('map')}
-                  className="rounded-xl bg-indigo-600 px-3.5 py-1.5 text-xs font-bold text-white shadow hover:bg-indigo-500 flex items-center gap-1.5 cursor-pointer border border-indigo-400/30"
+                  className="rounded-xl bg-indigo-600 hover:bg-indigo-500 px-4 py-2.5 text-xs lg:text-sm font-extrabold text-white shadow-lg shadow-indigo-600/30 flex items-center gap-2 cursor-pointer border border-indigo-400/30 transition"
                 >
                   <span>🗺️</span> Open Full 2D Tactical Map
                 </button>
-                <span className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-700 dark:text-rose-400 border border-rose-500/30">
+                <span className="rounded-xl bg-rose-500/20 px-4 py-2 text-xs lg:text-sm font-black text-rose-700 dark:text-rose-400 border border-rose-500/30">
                   2 Active Disrupted Corridors
                 </span>
               </div>
             </div>
 
             {/* Live Interactive Highway Clearance Map Container */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-xl space-y-2 transition-colors duration-300">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-3 transition-colors duration-300">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase text-slate-900 dark:text-white flex items-center gap-2">
+                <h3 className="text-lg lg:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <span>🛣️</span> Live Interactive Highway Telemetry & Clearance Map
                 </h3>
-                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-black bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/30">
                   ● Live Map Synchronization Active
                 </span>
               </div>
@@ -807,7 +816,7 @@ export default function App() {
             </div>
 
             {/* Highway Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {[
                 { name: 'NH-6: Meghalaya ➔ Silchar Corridor', status: 'PARTIALLY_BLOCKED', risk: 'HIGH (Landslide at Km 142)', detour: 'Active Bypass Operational', speed: '25 km/h' },
                 { name: 'NH-29: Dimapur ➔ Kohima Pass', status: 'CLEAR', risk: 'LOW (Optimal Flow)', detour: 'None Required', speed: '55 km/h' },
@@ -816,10 +825,10 @@ export default function App() {
                 { name: 'NH-415: Banderdewa ➔ Itanagar', status: 'CLEAR', risk: 'LOW (Paved Terrain)', detour: 'None', speed: '60 km/h' },
                 { name: 'NH-37: Kaziranga Flood Barrier Pass', status: 'MONITORED', risk: 'MODERATE (Wildlife + Rain)', detour: 'Speed Regulation 40 km/h', speed: '40 km/h' }
               ].map((route, i) => (
-                <div key={i} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl space-y-3 transition-colors duration-300">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-slate-900 dark:text-white">{route.name}</span>
-                    <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${
+                <div key={i} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 transition-colors duration-300">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-black text-base lg:text-lg text-slate-900 dark:text-white">{route.name}</span>
+                    <span className={`rounded-lg px-3 py-1 text-xs font-black shrink-0 ${
                       route.status === 'CLEAR' ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30' :
                       route.status === 'CAUTION' || route.status === 'MONITORED' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30' :
                       'bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/30'
@@ -827,13 +836,13 @@ export default function App() {
                       {route.status}
                     </span>
                   </div>
-                  <div className="text-xs text-slate-600 dark:text-slate-400">Risk Assessment: <span className="text-slate-900 dark:text-slate-200 font-semibold">{route.risk}</span></div>
-                  <div className="text-xs text-slate-600 dark:text-slate-400">Detour Status: <span className="text-indigo-600 dark:text-indigo-300 font-semibold">{route.detour}</span></div>
-                  <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-2 text-[11px]">
-                    <span className="text-slate-500">Speed: <b className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{route.speed}</b></span>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-indigo-600 text-white text-[10px] font-bold cursor-pointer">Live Map 🗺️</button>
-                      <button onClick={() => setActiveModule('hub')} className="px-2.5 py-1 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold cursor-pointer">Track 3D 🎮</button>
+                  <div className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">Risk Assessment: <span className="text-slate-900 dark:text-slate-200 font-bold">{route.risk}</span></div>
+                  <div className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">Detour Status: <span className="text-indigo-600 dark:text-indigo-300 font-bold">{route.detour}</span></div>
+                  <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-3 text-xs lg:text-sm">
+                    <span className="text-slate-500 font-medium">Speed: <b className="font-mono font-black text-emerald-600 dark:text-emerald-400 text-sm lg:text-base">{route.speed}</b></span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs lg:text-sm font-extrabold cursor-pointer shadow">Live Map 🗺️</button>
+                      <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Track 3D 🎮</button>
                     </div>
                   </div>
                 </div>
