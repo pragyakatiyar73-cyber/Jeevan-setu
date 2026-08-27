@@ -87,22 +87,14 @@ export default function NERLiveMapModule({
 
     mapInstanceRef.current = map;
 
-    // Sovereign Watermark-Free Esri Dark Tactical Canvas (Matching media_1787755898566.png)
-    let tileUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
-    let tileAttr = "Esri Dark Tactical GIS";
+    const getTileUrl = (style: string) => {
+      if (style === "esri") return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+      if (style === "osm") return "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+      if (style === "topo") return "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
+      return "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+    };
 
-    if (baseStyle === "esri") {
-      tileUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-      tileAttr = "Esri Sovereign Satellite";
-    } else if (baseStyle === "osm") {
-      tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-      tileAttr = "&copy; OpenStreetMap";
-    } else if (baseStyle === "topo") {
-      tileUrl = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
-      tileAttr = "OpenTopoMap";
-    }
-
-    const baseTile = L.tileLayer(tileUrl, { attribution: tileAttr }).addTo(map);
+    const baseTile = L.tileLayer(getTileUrl(baseStyle), { attribution: "Jeevan Setu Tactical GIS" }).addTo(map);
     currentTileLayerRef.current = baseTile;
 
     // Create & Add Layer Groups to Map
@@ -296,7 +288,18 @@ export default function NERLiveMapModule({
         mapInstanceRef.current = null;
       }
     };
-  }, [baseStyle, activeSosLocation]);
+  }, [activeSosLocation]);
+
+  // Dynamically update base tile URL on style switch without map teardown
+  useEffect(() => {
+    if (!currentTileLayerRef.current) return;
+    let url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+    if (baseStyle === "esri") url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    else if (baseStyle === "osm") url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    else if (baseStyle === "topo") url = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
+
+    currentTileLayerRef.current.setUrl(url);
+  }, [baseStyle]);
 
   // Synchronize Checkbox Toggles with Leaflet Layer Groups Dynamically
   useEffect(() => {
@@ -426,10 +429,10 @@ export default function NERLiveMapModule({
                 onChange={(e) => setBaseStyle(e.target.value)}
                 className="w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
               >
-                <option value="dark">🌙 Dark Matter (Tactical)</option>
-                <option value="esri">🛰️ Esri Sovereign Satellite</option>
-                <option value="osm">🗺️ OpenStreetMap (Standard)</option>
-                <option value="topo">⛰️ OpenTopoMap (Relief)</option>
+                <option value="dark" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">🌙 Dark Matter (Tactical)</option>
+                <option value="esri" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">🛰️ Esri Sovereign Satellite</option>
+                <option value="osm" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">🗺️ OpenStreetMap (Standard)</option>
+                <option value="topo" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">⛰️ OpenTopoMap (Relief)</option>
               </select>
             </div>
 
