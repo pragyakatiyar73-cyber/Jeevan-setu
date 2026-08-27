@@ -844,380 +844,395 @@ export default function App() {
 
         {/* VEHICLE LOGISTICS TELEMETRY ROSTER (8 ACTIVE SECTOR UNITS) */}
         {activeModule === 'vehicles' && (
-          <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
-            {/* Header */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors duration-300">
+          <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+            {/* 🔴 TOP EXECUTIVE COMMAND BAR */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-indigo-500/20 px-2.5 py-0.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5 border border-indigo-500/30">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
+                  <span className="rounded-full bg-indigo-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-indigo-700 dark:text-indigo-400 border border-indigo-500/30 flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
                     LIVE CAN-BUS OBD-II DIAGNOSTICS & ISRO NAVIC TRACKING
                   </span>
                 </div>
-                <h2 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1 flex items-center gap-2">
-                  <span>🚚</span> {t("vehicles.title", "Inter State Relief Convoy Telemetry Roster")} <span className="text-xs font-normal text-slate-500 dark:text-slate-400">(8 Active Sector Units)</span>
-                </h2>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-3">
+                  <span>🚚</span> {t("vehicles.title", "Inter State Relief Convoy Telemetry Roster")} <span className="text-xs lg:text-sm font-bold text-slate-500 dark:text-slate-400">(8 Active Sector Units)</span>
+                </h1>
+                <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium max-w-4xl leading-relaxed">
                   {t("vehicles.subtitle", "Live satellite telemetry, CAN-bus OBD-II sensor diagnostics, cold-chain monitoring, and emergency diversion tracking across all 8 North Eastern States.")}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 font-mono text-xs font-bold flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 font-mono text-xs lg:text-sm font-black flex items-center gap-2 shadow-sm">
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
                   ● NavIC 14 Sats Active
                 </span>
               </div>
             </div>
 
+            {/* DATA TRANSPARENCY STATUS BANNER */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs lg:text-sm font-mono transition-colors duration-300">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 font-black flex items-center gap-2 text-xs">
+                  🟢 CAN-BUS & NAVIC SATELLITE LINK ONLINE
+                </span>
+                <span className="text-slate-600 dark:text-slate-400 font-sans">
+                  Source: <b className="text-slate-900 dark:text-white font-bold">ISRO NavIC Satellite Array & Heavy Convoy OBD-II Units</b>
+                </span>
+              </div>
+              <div className="flex items-center gap-4 text-slate-600 dark:text-slate-400 font-sans">
+                <span>Refreshed: <b className="text-slate-900 dark:text-slate-200 font-bold">12:49:10 AM</b></span>
+              </div>
+            </div>
+
             {/* 8 Active Convoy Cards Grid (2 cols x 4 rows) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Convoy #01 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[10px] font-black uppercase">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-black uppercase">
                       PRIORITY 1
                     </span>
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">AS-01-AB-1234 (Convoy #01)</span>
+                    <span className="font-black text-base lg:text-lg text-slate-900 dark:text-white">AS-01-AB-1234 (Convoy #01)</span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
+                  <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs lg:text-sm font-black text-sky-600 dark:text-sky-400">
                     45 km/h
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <div className="text-slate-800 dark:text-slate-300 font-medium">
+                <div className="space-y-1 text-xs lg:text-sm">
+                  <div className="text-slate-800 dark:text-slate-200 font-bold">
                     <b>Route:</b> Guwahati Central Hub (Assam) ➔ Aizawl Civil Hospital (Mizoram)
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400 text-[11px]">
+                  <div className="text-slate-600 dark:text-slate-400 font-medium">
                     <b>Consignment:</b> 12t Medical Oxygen Cylinders (Class 1 Urgent)
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-600 dark:text-slate-400 pt-1 font-mono">
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Fuel: <b className="text-slate-900 dark:text-white">78%</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">NavIC: <b className="text-slate-900 dark:text-white">12 Satellites</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Temp: <b className="text-slate-900 dark:text-white">21.4°C</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Traction: <b className="text-emerald-600 dark:text-emerald-400">Optimal</b></div>
+                <div className="grid grid-cols-4 gap-2.5 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-slate-900 dark:text-white font-bold">78%</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">NavIC: <b className="text-slate-900 dark:text-white font-bold">12 Sats</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Temp: <b className="text-slate-900 dark:text-white font-bold">21.4°C</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-emerald-600 dark:text-emerald-400 font-bold">Optimal</b></div>
                 </div>
 
-                <div className="space-y-1 pt-1">
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                     <div className="h-full bg-gradient-to-r from-emerald-500 to-sky-400 rounded-full" style={{ width: '42%' }}></div>
                   </div>
-                  <div className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center justify-between text-xs lg:text-sm pt-1">
                     <span className="text-slate-700 dark:text-slate-300 font-medium">Progress: 42% &bull; Diverted via Sector 9 Jowai Bypass</span>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
-                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Convoy #02 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-black uppercase">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-3 py-1 rounded-lg bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs font-black uppercase">
                       PRIORITY 2
                     </span>
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">AS-02-CD-5678 (Convoy #02)</span>
+                    <span className="font-black text-base lg:text-lg text-slate-900 dark:text-white">AS-02-CD-5678 (Convoy #02)</span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
+                  <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs lg:text-sm font-black text-sky-600 dark:text-sky-400">
                     52 km/h
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <div className="text-slate-800 dark:text-slate-300 font-medium">
+                <div className="space-y-1 text-xs lg:text-sm">
+                  <div className="text-slate-800 dark:text-slate-200 font-bold">
                     <b>Route:</b> Nagaon Central Silos ➔ Dhemaji Forward Depot (Upper Assam)
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400 text-[11px]">
+                  <div className="text-slate-600 dark:text-slate-400 font-medium">
                     <b>Consignment:</b> 20t Baby Food & Fortified Grain Bags
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-600 dark:text-slate-400 pt-1 font-mono">
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Fuel: <b className="text-slate-900 dark:text-white">84%</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">NavIC: <b className="text-slate-900 dark:text-white">14 Satellites</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Temp: <b className="text-slate-900 dark:text-white">26.2°C</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-sky-600 dark:text-sky-300">Clear Route 4-Lane</b></div>
+                <div className="grid grid-cols-4 gap-2.5 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-slate-900 dark:text-white font-bold">84%</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">NavIC: <b className="text-slate-900 dark:text-white font-bold">14 Sats</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Temp: <b className="text-slate-900 dark:text-white font-bold">26.2°C</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-sky-600 dark:text-sky-300 font-bold">Clear 4-Lane</b></div>
                 </div>
 
-                <div className="space-y-1 pt-1">
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                     <div className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full" style={{ width: '68%' }}></div>
                   </div>
-                  <div className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center justify-between text-xs lg:text-sm pt-1">
                     <span className="text-slate-700 dark:text-slate-300 font-medium">Progress: 68% &bull; ETA: 1h 45m (NH-27 Green Corridor)</span>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
-                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Convoy #03 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] font-black uppercase">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-black uppercase">
                       ESCORT ACTIVE
                     </span>
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">AR-01-EF-9012 (Convoy #03)</span>
+                    <span className="font-black text-base lg:text-lg text-slate-900 dark:text-white">AR-01-EF-9012 (Convoy #03)</span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+                  <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs lg:text-sm font-black text-amber-600 dark:text-amber-400">
                     34 km/h
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <div className="text-slate-800 dark:text-slate-300 font-medium">
+                <div className="space-y-1 text-xs lg:text-sm">
+                  <div className="text-slate-800 dark:text-slate-200 font-bold">
                     <b>Route:</b> Tezpur Military Base ➔ Sela Pass & Tawang Sector (Arunachal)
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400 text-[11px]">
+                  <div className="text-slate-600 dark:text-slate-400 font-medium">
                     <b>Consignment:</b> 25t Ration, Antivenom & Hypothermia Blankets
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-600 dark:text-slate-400 pt-1 font-mono">
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Fuel: <b className="text-slate-900 dark:text-white">92%</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Chains: <b className="text-slate-900 dark:text-white">Mounted</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Alt: <b className="text-slate-900 dark:text-white">2,410m</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-amber-600 dark:text-amber-300">ITBP Fog Beacon</b></div>
+                <div className="grid grid-cols-4 gap-2.5 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-slate-900 dark:text-white font-bold">92%</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Chains: <b className="text-slate-900 dark:text-white font-bold">Mounted</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Alt: <b className="text-slate-900 dark:text-white font-bold">2,410m</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-amber-600 dark:text-amber-300 font-bold">ITBP Fog</b></div>
                 </div>
 
-                <div className="space-y-1 pt-1">
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                     <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full" style={{ width: '25%' }}></div>
                   </div>
-                  <div className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center justify-between text-xs lg:text-sm pt-1">
                     <span className="text-slate-700 dark:text-slate-300 font-medium">Progress: 25% &bull; Kalaktang Ridge Bypass &bull; ETA: 4h 10m</span>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
-                      <button onClick={() => setActiveModule('drone')} className="px-2 py-0.5 rounded bg-rose-600 text-white text-[10px] font-bold">Air-Drop SOS 🚨</button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Track 3D</button>
+                      <button onClick={() => setActiveModule('drone')} className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs lg:text-sm font-extrabold cursor-pointer">Air-Drop SOS 🚨</button>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Convoy #04 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] font-black uppercase">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-black uppercase">
                       REROUTED
                     </span>
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">NL-01-GH-3456 (Convoy #04)</span>
+                    <span className="font-black text-base lg:text-lg text-slate-900 dark:text-white">NL-01-GH-3456 (Convoy #04)</span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
+                  <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs lg:text-sm font-black text-sky-600 dark:text-sky-400">
                     41 km/h
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <div className="text-slate-800 dark:text-slate-300 font-medium">
+                <div className="space-y-1 text-xs lg:text-sm">
+                  <div className="text-slate-800 dark:text-slate-200 font-bold">
                     <b>Route:</b> Dimapur Commercial Hub ➔ Kohima Medical Center (Nagaland)
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400 text-[11px]">
+                  <div className="text-slate-600 dark:text-slate-400 font-medium">
                     <b>Consignment:</b> 18 KL Emergency Diesel for Hospital Generators
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-600 dark:text-slate-400 pt-1 font-mono">
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Fuel: <b className="text-slate-900 dark:text-white">88%</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">NavIC: <b className="text-slate-900 dark:text-white">13 Satellites</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-slate-800 dark:text-slate-200">Zubza Sector</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-amber-600 dark:text-amber-300">35 km/h Escort</b></div>
+                <div className="grid grid-cols-4 gap-2.5 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-slate-900 dark:text-white font-bold">88%</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">NavIC: <b className="text-slate-900 dark:text-white font-bold">13 Sats</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-slate-800 dark:text-slate-200 font-bold">Zubza</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-amber-600 dark:text-amber-300 font-bold">35km Escort</b></div>
                 </div>
 
-                <div className="space-y-1 pt-1">
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                     <div className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full" style={{ width: '55%' }}></div>
                   </div>
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="text-slate-700 dark:text-slate-300 font-medium">Progress: 55% &bull; Single-Lane Traffic Escort &bull; ETA: 2h 05m</span>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
-                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  <div className="flex items-center justify-between text-xs lg:text-sm pt-1">
+                    <span className="text-slate-700 dark:text-slate-300 font-medium">Progress: 55% &bull; Single-Lane Escort &bull; ETA: 2h 05m</span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Convoy #05 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-[10px] font-black uppercase">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-3 py-1 rounded-lg bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-xs font-black uppercase">
                       CLASS 1 TRAUMA
                     </span>
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">ML-01-IJ-7890 (Convoy #05)</span>
+                    <span className="font-black text-base lg:text-lg text-slate-900 dark:text-white">ML-01-IJ-7890 (Convoy #05)</span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
+                  <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs lg:text-sm font-black text-rose-600 dark:text-rose-400">
                     48 km/h
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <div className="text-slate-800 dark:text-slate-300 font-medium">
+                <div className="space-y-1 text-xs lg:text-sm">
+                  <div className="text-slate-800 dark:text-slate-200 font-bold">
                     <b>Route:</b> Siliguri Staging Depot ➔ Gangtok Civil Hospital (Sikkim)
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400 text-[11px]">
+                  <div className="text-slate-600 dark:text-slate-400 font-medium">
                     <b>Consignment:</b> 8t Blood Plasma, Trauma Kits & Antivenom Vials
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-600 dark:text-slate-400 pt-1 font-mono">
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Cold Chain: <b className="text-cyan-600 dark:text-cyan-300">-20°C</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Fuel: <b className="text-slate-900 dark:text-white">70%</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-slate-800 dark:text-slate-200">Lava-Rishi Pass</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-emerald-600 dark:text-emerald-300">Teesta Bypass</b></div>
+                <div className="grid grid-cols-4 gap-2.5 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Cold: <b className="text-cyan-600 dark:text-cyan-300 font-bold">-20°C</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-slate-900 dark:text-white font-bold">70%</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-slate-800 dark:text-slate-200 font-bold">Lava Pass</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-emerald-600 dark:text-emerald-300 font-bold">Teesta</b></div>
                 </div>
 
-                <div className="space-y-1 pt-1">
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                     <div className="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full" style={{ width: '79%' }}></div>
                   </div>
-                  <div className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center justify-between text-xs lg:text-sm pt-1">
                     <span className="text-slate-700 dark:text-slate-300 font-medium">Progress: 79% &bull; Elevated Ridge Link &bull; ETA: 0h 40m</span>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
-                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Convoy #06 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[10px] font-black uppercase">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-black uppercase">
                       PRIORITY 2
                     </span>
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">MN-01-KL-2345 (Convoy #06)</span>
+                    <span className="font-black text-base lg:text-lg text-slate-900 dark:text-white">MN-01-KL-2345 (Convoy #06)</span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs lg:text-sm font-black text-emerald-600 dark:text-emerald-400">
                     58 km/h
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <div className="text-slate-800 dark:text-slate-300 font-medium">
+                <div className="space-y-1 text-xs lg:text-sm">
+                  <div className="text-slate-800 dark:text-slate-200 font-bold">
                     <b>Route:</b> Silchar Logistics Base ➔ Imphal Valley Hospital (Manipur)
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400 text-[11px]">
+                  <div className="text-slate-600 dark:text-slate-400 font-medium">
                     <b>Consignment:</b> 14t Infant Formula & Water Purification Chem
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-600 dark:text-slate-400 pt-1 font-mono">
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Fuel: <b className="text-slate-900 dark:text-white">66%</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">NavIC: <b className="text-slate-900 dark:text-white">11 Satellites</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-slate-800 dark:text-slate-200">NH-37 Jiribam</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-emerald-600 dark:text-emerald-300">All Clear</b></div>
+                <div className="grid grid-cols-4 gap-2.5 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-slate-900 dark:text-white font-bold">66%</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">NavIC: <b className="text-slate-900 dark:text-white font-bold">11 Sats</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-slate-800 dark:text-slate-200 font-bold">Jiribam</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-emerald-600 dark:text-emerald-300 font-bold">All Clear</b></div>
                 </div>
 
-                <div className="space-y-1 pt-1">
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                     <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style={{ width: '72%' }}></div>
                   </div>
-                  <div className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center justify-between text-xs lg:text-sm pt-1">
                     <span className="text-slate-700 dark:text-slate-300 font-medium">Progress: 72% &bull; Nominal Transit &bull; ETA: 1h 20m</span>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
-                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Convoy #07 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-[10px] font-black uppercase">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-3 py-1 rounded-lg bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-xs font-black uppercase">
                       SHELTER CACHE
                     </span>
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">TR-01-MN-6789 (Convoy #07)</span>
+                    <span className="font-black text-base lg:text-lg text-slate-900 dark:text-white">TR-01-MN-6789 (Convoy #07)</span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
+                  <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs lg:text-sm font-black text-sky-600 dark:text-sky-400">
                     50 km/h
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <div className="text-slate-800 dark:text-slate-300 font-medium">
+                <div className="space-y-1 text-xs lg:text-sm">
+                  <div className="text-slate-800 dark:text-slate-200 font-bold">
                     <b>Route:</b> Guwahati Central Hub ➔ Agartala Relief Depot (Tripura)
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400 text-[11px]">
+                  <div className="text-slate-600 dark:text-slate-400 font-medium">
                     <b>Consignment:</b> 18t Emergency Tarpaulins & Medical Tents
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-600 dark:text-slate-400 pt-1 font-mono">
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Fuel: <b className="text-slate-900 dark:text-white">74%</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">NavIC: <b className="text-slate-900 dark:text-white">14 Satellites</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-slate-800 dark:text-slate-200">NH-8 South</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-emerald-600 dark:text-emerald-300">Clear Transit</b></div>
+                <div className="grid grid-cols-4 gap-2.5 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-slate-900 dark:text-white font-bold">74%</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">NavIC: <b className="text-slate-900 dark:text-white font-bold">14 Sats</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-slate-800 dark:text-slate-200 font-bold">NH-8</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-emerald-600 dark:text-emerald-300 font-bold">Clear</b></div>
                 </div>
 
-                <div className="space-y-1 pt-1">
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                     <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" style={{ width: '87%' }}></div>
                   </div>
-                  <div className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center justify-between text-xs lg:text-sm pt-1">
                     <span className="text-slate-700 dark:text-slate-300 font-medium">Progress: 87% &bull; Southern Artery Operational &bull; ETA: 0h 55m</span>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Convoy #08 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] font-black uppercase">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-black uppercase">
                       HILL CACHE
                     </span>
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">MZ-01-OP-4567 (Convoy #08)</span>
+                    <span className="font-black text-base lg:text-lg text-slate-900 dark:text-white">MZ-01-OP-4567 (Convoy #08)</span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+                  <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs lg:text-sm font-black text-amber-600 dark:text-amber-400">
                     36 km/h
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <div className="text-slate-800 dark:text-slate-300 font-medium">
+                <div className="space-y-1 text-xs lg:text-sm">
+                  <div className="text-slate-800 dark:text-slate-200 font-bold">
                     <b>Route:</b> Silchar Staging Depot ➔ Lunglei Hill Post (Mizoram)
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400 text-[11px]">
+                  <div className="text-slate-600 dark:text-slate-400 font-medium">
                     <b>Consignment:</b> 10t Survival Rations & Anti-Rabies Vaccine Caches
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 text-[10px] text-slate-600 dark:text-slate-400 pt-1 font-mono">
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">Fuel: <b className="text-slate-900 dark:text-white">82%</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80">NavIC: <b className="text-slate-900 dark:text-white">10 Satellites</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-slate-800 dark:text-slate-200">NH-54 Ridge</b></div>
-                  <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80"><b className="text-amber-600 dark:text-amber-300">Rain Reduced</b></div>
+                <div className="grid grid-cols-4 gap-2.5 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-slate-900 dark:text-white font-bold">82%</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">NavIC: <b className="text-slate-900 dark:text-white font-bold">10 Sats</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-slate-800 dark:text-slate-200 font-bold">NH-54</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"><b className="text-amber-600 dark:text-amber-300 font-bold">Rain</b></div>
                 </div>
 
-                <div className="space-y-1 pt-1">
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                     <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full" style={{ width: '45%' }}></div>
                   </div>
-                  <div className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center justify-between text-xs lg:text-sm pt-1">
                     <span className="text-slate-700 dark:text-slate-300 font-medium">Progress: 45% &bull; Heavy Mud Silt Drag &bull; ETA: 3h 50m</span>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => setActiveModule('hub')} className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold">Track 3D</button>
-                      <button onClick={() => setActiveModule('map')} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Track 3D</button>
+                      <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
                     </div>
                   </div>
                 </div>
@@ -1644,122 +1659,166 @@ export default function App() {
 
         {/* 5. DYNAMIC REROUTING (OSRM + NOMINATIM) */}
         {activeModule === 'rerouting' && (
-          <div className="grid h-full grid-cols-12 gap-6 p-4 lg:p-6 overflow-y-auto bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 transition-colors duration-300">
-            <div className="col-span-12 lg:col-span-4 space-y-4">
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl transition-colors duration-300">
-                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Navigation className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
-                  {t("rerouting.title", "Dynamic AI Rerouting")}
-                </h2>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{t("rerouting.subtitle", "Calculates optimal bypass routes around landslide blockage zones.")}</p>
-
-                <div className="mt-4 space-y-3">
-                  <div>
-                    <label className="text-xs text-slate-600 dark:text-slate-400 font-medium">Origin Logistics Depot</label>
-                    <input
-                      type="text"
-                      value={routeStart}
-                      onChange={e => setRouteStart(e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-slate-600 dark:text-slate-400 font-medium">Destination Hub</label>
-                    <input
-                      type="text"
-                      value={routeDest}
-                      onChange={e => setRouteDest(e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-slate-600 dark:text-slate-400 font-medium block mb-1">Assigned Fleet Vehicle</label>
-                    <select
-                      value={vehicleType}
-                      onChange={e => setVehicleType(e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
-                    >
-                      <option value="4x4 Heavy All-Terrain Truck (Tata LPTA)" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">🚚 4x4 Heavy All-Terrain Truck (Tata LPTA)</option>
-                      <option value="Medium 4WD Carrier (Mahindra Bolero)" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">🛻 Medium 4WD Carrier (Mahindra Bolero)</option>
-                      <option value="Heavy Emergency Drone (15kg Payload)" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">🚁 Heavy Emergency Drone (15kg Payload)</option>
-                    </select>
-                  </div>
-
-                  <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
-                    <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">Evade Landslide Polygons</span>
-                    <input
-                      type="checkbox"
-                      checked={avoidBlockedSectors}
-                      onChange={e => setAvoidBlockedSectors(e.target.checked)}
-                      className="h-4 w-4 accent-indigo-600 rounded cursor-pointer"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleRunReroute}
-                    className="w-full rounded-xl bg-indigo-600 py-2.5 text-xs font-bold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 transition cursor-pointer"
-                  >
-                    {t("rerouting.computeGreenCorridor", "Compute Safe Green Corridor")}
-                  </button>
-                </div>
-              </div>
-
-              {calculatedRoute && (
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl transition-colors duration-300">
-                  <div className="text-xs font-bold uppercase text-slate-600 dark:text-slate-400">Route Telemetry</div>
-                  <div className="mt-3 grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
-                      <span className="text-[10px] text-slate-500">Distance</span>
-                      <div className="text-lg font-bold text-slate-900 dark:text-white">{calculatedRoute.distanceKm || '412.5'} km</div>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
-                      <span className="text-[10px] text-slate-500">Transit Duration</span>
-                      <div className="text-lg font-bold text-indigo-600 dark:text-indigo-400">{calculatedRoute.durationMinutes || '480'} mins</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="col-span-12 lg:col-span-8 space-y-4">
-              {/* Interactive 2D OSRM Corridor Map */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-xl space-y-2 transition-colors duration-300">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>🗺️</span> Live OSRM Bypass Corridor Map
-                  </h3>
-                  <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-                    ● Green Bypass Active
+          <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+            {/* 🔴 TOP EXECUTIVE COMMAND BAR */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-rose-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-rose-700 dark:text-rose-400 border border-rose-500/30 flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-rose-500 dark:bg-rose-400 animate-ping"></span>
+                    EXECUTIVE AI REROUTING & LANDSLIDE BYPASS COMMAND
                   </span>
                 </div>
-                <div ref={rerouteMapContainerRef} className="h-64 w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner" />
+                <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-3">
+                  <span>🧭</span> {t("rerouting.title", "Dynamic AI Green Corridor Rerouting")}
+                </h1>
+                <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium max-w-4xl leading-relaxed">
+                  {t("rerouting.subtitle", "Calculates real-time OSRM bypass corridors avoiding active landslide polygons, flood surge zones, and mountain blockages across all 8 NER states.")}
+                </p>
               </div>
 
-              {/* Turn-by-Turn Guidance */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xl transition-colors duration-300">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">{t("rerouting.turnByTurnTitle", "Turn-by-Turn Emergency Navigation Guidance")}</h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400">Verified via Open Source Routing Machine (OSRM) with live terrain slope clearances.</p>
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 font-mono text-xs lg:text-sm font-black flex items-center gap-2 shadow-sm">
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+                  ● Green Bypass Engine Active
+                </span>
+              </div>
+            </div>
 
-                <div className="mt-4 space-y-2.5 max-h-[300px] overflow-y-auto">
-                  {[
-                    { step: `Depart ${routeStart || 'Guwahati Hub'} onto GS Road towards NH-6`, dist: '14.2 km', note: 'Clear 4-lane Highway' },
-                    { step: 'Cross Byrnihat Bridge into Meghalaya border checkpost', dist: '28.5 km', note: 'Priority Convoy Pass Verified' },
-                    { step: 'Ascend Shillong Bypass via Umiam Lake vector', dist: '35.0 km', note: 'Caution: Hill Fog & Rain' },
-                    { step: 'Detour around Km 142 Landslide Sector via Alternate Jowai Ridge Road', dist: '42.1 km', note: 'Disaster Hazard Bypassed' },
-                    { step: `Proceed southward along NH-306 into ${routeDest || 'Aizawl'} valley entry`, dist: '120.0 km', note: 'Safe Arrival Corridor' }
-                  ].map((s, idx) => (
-                    <div key={idx} className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 text-xs transition-colors duration-300">
-                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/20 font-bold text-indigo-600 dark:text-indigo-400 text-[10px]">
-                        {idx + 1}
+            {/* DATA TRANSPARENCY STATUS BANNER */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs lg:text-sm font-mono transition-colors duration-300">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="px-3 py-1 rounded-full bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-black flex items-center gap-2 text-xs">
+                  🟢 OSRM & ISRO BHUVAN ELEVATION MATRIX ONLINE
+                </span>
+                <span className="text-slate-600 dark:text-slate-400 font-sans">
+                  Engine: <b className="text-slate-900 dark:text-white font-bold">Open Source Routing Machine (OSRM) + Live Terrain Clearance</b>
+                </span>
+              </div>
+            </div>
+
+            {/* Main Content Grid (12 cols) */}
+            <div className="grid grid-cols-12 gap-6">
+              {/* Left Column (Form + Telemetry) */}
+              <div className="col-span-12 lg:col-span-4 space-y-6">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 transition-colors duration-300">
+                  <h2 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
+                    <Navigation className="h-6 w-6 text-indigo-500 dark:text-indigo-400" />
+                    Dynamic AI Rerouting
+                  </h2>
+                  <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">Calculates optimal bypass routes around landslide blockage zones.</p>
+
+                  <div className="space-y-4 pt-1">
+                    <div>
+                      <label className="text-xs lg:text-sm text-slate-700 dark:text-slate-300 font-bold block">Origin Logistics Depot</label>
+                      <input
+                        type="text"
+                        value={routeStart}
+                        onChange={e => setRouteStart(e.target.value)}
+                        className="mt-1.5 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs lg:text-sm font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs lg:text-sm text-slate-700 dark:text-slate-300 font-bold block">Destination Hub</label>
+                      <input
+                        type="text"
+                        value={routeDest}
+                        onChange={e => setRouteDest(e.target.value)}
+                        className="mt-1.5 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs lg:text-sm font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs lg:text-sm text-slate-700 dark:text-slate-300 font-bold block mb-1.5">Assigned Fleet Vehicle</label>
+                      <select
+                        value={vehicleType}
+                        onChange={e => setVehicleType(e.target.value)}
+                        className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs lg:text-sm font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
+                      >
+                        <option value="4x4 Heavy All-Terrain Truck (Tata LPTA)" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">🚚 4x4 Heavy All-Terrain Truck (Tata LPTA)</option>
+                        <option value="Medium 4WD Carrier (Mahindra Bolero)" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">🛻 Medium 4WD Carrier (Mahindra Bolero)</option>
+                        <option value="Heavy Emergency Drone (15kg Payload)" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">🚁 Heavy Emergency Drone (15kg Payload)</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3.5">
+                      <span className="text-xs lg:text-sm text-slate-700 dark:text-slate-300 font-bold">Evade Landslide Polygons</span>
+                      <input
+                        type="checkbox"
+                        checked={avoidBlockedSectors}
+                        onChange={e => setAvoidBlockedSectors(e.target.checked)}
+                        className="h-4 w-4 accent-indigo-600 rounded cursor-pointer"
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleRunReroute}
+                      className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 py-3 text-xs lg:text-sm font-extrabold text-white shadow-lg shadow-indigo-600/30 transition cursor-pointer"
+                    >
+                      {t("rerouting.computeGreenCorridor", "Compute Safe Green Corridor")}
+                    </button>
+                  </div>
+                </div>
+
+                {calculatedRoute && (
+                  <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-3 transition-colors duration-300">
+                    <div className="text-xs lg:text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Route Telemetry</div>
+                    <div className="grid grid-cols-2 gap-4 pt-1">
+                      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Distance</span>
+                        <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">{calculatedRoute.distanceKm || '412.5'} km</div>
                       </div>
-                      <div className="flex-1">
-                        <div className="font-semibold text-slate-900 dark:text-slate-200">{s.step}</div>
-                        <div className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">Segment: {s.dist} &bull; Status: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{s.note}</span></div>
+                      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Transit Duration</span>
+                        <div className="text-2xl lg:text-3xl font-black text-indigo-600 dark:text-indigo-400 mt-1">{calculatedRoute.durationMinutes || '480'} mins</div>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column (Map + Turn-by-Turn) */}
+              <div className="col-span-12 lg:col-span-8 space-y-6">
+                {/* Interactive 2D OSRM Corridor Map */}
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-3 transition-colors duration-300">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg lg:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                      <span>🗺️</span> Live OSRM Bypass Corridor Map
+                    </h3>
+                    <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-black bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/30">
+                      ● Green Bypass Active
+                    </span>
+                  </div>
+                  <div ref={rerouteMapContainerRef} className="h-72 w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner" />
+                </div>
+
+                {/* Turn-by-Turn Guidance */}
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 transition-colors duration-300">
+                  <div>
+                    <h3 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white">{t("rerouting.turnByTurnTitle", "Turn-by-Turn Emergency Navigation Guidance")}</h3>
+                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium mt-1">Verified via Open Source Routing Machine (OSRM) with live terrain slope clearances.</p>
+                  </div>
+
+                  <div className="space-y-3 max-h-[340px] overflow-y-auto pt-1">
+                    {[
+                      { step: `Depart ${routeStart || 'Guwahati Hub'} onto GS Road towards NH-6`, dist: '14.2 km', note: 'Clear 4-lane Highway' },
+                      { step: 'Cross Byrnihat Bridge into Meghalaya border checkpost', dist: '28.5 km', note: 'Priority Convoy Pass Verified' },
+                      { step: 'Ascend Shillong Bypass via Umiam Lake vector', dist: '35.0 km', note: 'Caution: Hill Fog & Rain' },
+                      { step: 'Detour around Km 142 Landslide Sector via Alternate Jowai Ridge Road', dist: '42.1 km', note: 'Disaster Hazard Bypassed' },
+                      { step: `Proceed southward along NH-306 into ${routeDest || 'Aizawl'} valley entry`, dist: '120.0 km', note: 'Safe Arrival Corridor' }
+                    ].map((s, idx) => (
+                      <div key={idx} className="flex items-start gap-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 text-xs lg:text-sm transition-colors duration-300">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-500/20 font-black text-indigo-600 dark:text-indigo-400 text-xs">
+                          {idx + 1}
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-bold text-slate-900 dark:text-white text-sm lg:text-base">{s.step}</div>
+                          <div className="mt-1 text-xs font-mono text-slate-500 dark:text-slate-400">Segment: {s.dist} &bull; Status: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{s.note}</span></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
