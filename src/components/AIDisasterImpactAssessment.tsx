@@ -194,6 +194,9 @@ export default function AIDisasterImpactAssessment({
     const results = await searchMonitoringLocation(searchQuery);
     setSearchResults(results);
     setIsSearching(false);
+    if (results && results.length > 0) {
+      handleSelectSearchResult(results[0]);
+    }
   };
 
   const handleSelectSearchResult = (res: GeocodedLocation) => {
