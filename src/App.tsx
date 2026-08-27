@@ -1228,68 +1228,68 @@ export default function App() {
 
         {/* 4. ESSENTIAL SUPPLIES & INTER-STATE STRATEGIC DEPOTS */}
         {activeModule === 'supplies' && (
-          <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+          <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
             {/* Top 4 KPI Stockpile Buffer Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Card 1: Medical Oxygen */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-2 relative overflow-hidden transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 relative overflow-hidden transition-colors duration-300">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-600 dark:text-slate-400 tracking-wider text-[11px] uppercase">MEDICAL OXYGEN</span>
-                  <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-[9px] font-extrabold uppercase">Class 1</span>
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">MEDICAL OXYGEN</span>
+                  <span className="px-2.5 py-1 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-xs font-extrabold uppercase">Class 1</span>
                 </div>
                 <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">120 Tons</div>
                 <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                   <div className="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full" style={{ width: '85%' }}></div>
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono pt-1">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-mono pt-1">
                   <span>4,200 Cylinders</span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-bold">14 Days Buffer</span>
                 </div>
               </div>
 
               {/* Card 2: Food Grains & Rations */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-2 relative overflow-hidden transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 relative overflow-hidden transition-colors duration-300">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-600 dark:text-slate-400 tracking-wider text-[11px] uppercase">FOOD GRAINS & RATIONS</span>
-                  <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[9px] font-extrabold uppercase">Class 2</span>
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">FOOD GRAINS & RATIONS</span>
+                  <span className="px-2.5 py-1 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-extrabold uppercase">Class 2</span>
                 </div>
                 <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">340 Tons</div>
                 <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                   <div className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full" style={{ width: '70%' }}></div>
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono pt-1">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-mono pt-1">
                   <span>FCI Regional Silos</span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-bold">18 Days Buffer</span>
                 </div>
               </div>
 
               {/* Card 3: Emergency Fuel */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-2 relative overflow-hidden transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 relative overflow-hidden transition-colors duration-300">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-600 dark:text-slate-400 tracking-wider text-[11px] uppercase">EMERGENCY FUEL</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[9px] font-extrabold uppercase">Class 1</span>
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">EMERGENCY FUEL</span>
+                  <span className="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-extrabold uppercase">Class 1</span>
                 </div>
                 <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">85 KL</div>
                 <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                   <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style={{ width: '90%' }}></div>
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono pt-1">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-mono pt-1">
                   <span>Diesel & Jet-A1</span>
                   <span className="text-sky-600 dark:text-sky-400 font-bold">Helicopter / JCB Fleet</span>
                 </div>
               </div>
 
               {/* Card 4: Shelter Gear & Tents */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-2 relative overflow-hidden transition-colors duration-300">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 relative overflow-hidden transition-colors duration-300">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-600 dark:text-slate-400 tracking-wider text-[11px] uppercase">SHELTER GEAR & TENTS</span>
-                  <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-[9px] font-extrabold uppercase">Class 2</span>
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">SHELTER GEAR & TENTS</span>
+                  <span className="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-xs font-extrabold uppercase">Class 2</span>
                 </div>
                 <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">200 Tons</div>
                 <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                   <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" style={{ width: '65%' }}></div>
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono pt-1">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-mono pt-1">
                   <span>1,200 Relief Tents</span>
                   <span className="text-indigo-600 dark:text-indigo-300 font-bold">Waterproof Tarps</span>
                 </div>
@@ -1297,17 +1297,17 @@ export default function App() {
             </div>
 
             {/* Strategic Depots Section Header */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors duration-300">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors duration-300">
               <div>
-                <h2 className="text-lg lg:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <span>📦</span> {t("supplies.title", "Inter-State Strategic Supply Depots & Forward Caches")} <span className="text-xs font-normal text-slate-500 dark:text-slate-400">(All 8 NER States)</span>
+                <h2 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
+                  <span>📦</span> {t("supplies.title", "Inter-State Strategic Supply Depots & Forward Caches")} <span className="text-xs lg:text-sm font-bold text-slate-500 dark:text-slate-400">(All 8 NER States)</span>
                 </h2>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium">
                   {t("supplies.subtitle", "Real-time inventory levels synchronized across FCI, Indian Red Cross & State Civil Supplies Directorates.")}
                 </p>
               </div>
 
-              <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 font-bold text-white text-xs shadow-lg shadow-rose-600/30 hover:scale-105 transition flex items-center gap-1.5 shrink-0 border border-rose-400/40 cursor-pointer">
+              <button className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 font-extrabold text-white text-xs lg:text-sm shadow-lg shadow-rose-600/30 hover:scale-105 transition flex items-center gap-2 shrink-0 border border-rose-400/40 cursor-pointer">
                 <span>+</span> Allocate Emergency Supply ➔
               </button>
             </div>
@@ -1315,213 +1315,213 @@ export default function App() {
             {/* 8 Depot Cards Grid (2 cols x 4 rows) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Depot 1 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3.5 relative transition-colors duration-300">
+                <div className="flex items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-black text-sm text-slate-900 dark:text-white">Guwahati Central Mega Depot (Assam)</h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">Primary Transit Hub & Gateway for Upper Assam, Meghalaya & Nagaland</p>
+                    <h3 className="font-black text-base lg:text-lg text-slate-900 dark:text-white">Guwahati Central Mega Depot (Assam)</h3>
+                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">Primary Transit Hub & Gateway for Upper Assam, Meghalaya & Nagaland</p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[10px] font-black shrink-0">
+                  <span className="px-3 py-1 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-black shrink-0">
                     95% Stocked
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs">45 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs">120 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Diesel: <b className="text-sky-600 dark:text-sky-400 block text-xs">30 KL</b></div>
+                <div className="grid grid-cols-3 gap-2.5 text-xs text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs lg:text-sm">45 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs lg:text-sm">120 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Diesel: <b className="text-sky-600 dark:text-sky-400 block text-xs lg:text-sm">30 KL</b></div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-200 dark:border-slate-800/80">
+                <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-200 dark:border-slate-800/80">
                   <span className="text-slate-600 dark:text-slate-400 font-medium">📍 Sookreting Staging Base</span>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => setActiveModule('vehicles')} className="px-2.5 py-1 rounded bg-indigo-600 text-white text-[10px] font-bold">Dispatch Convoy 🚛</button>
-                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setActiveModule('vehicles')} className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-extrabold cursor-pointer">Dispatch Convoy 🚛</button>
+                    <button onClick={() => setActiveModule('map')} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs font-extrabold cursor-pointer">Map 🗺️</button>
                   </div>
                 </div>
               </div>
 
               {/* Depot 2 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3.5 relative transition-colors duration-300">
+                <div className="flex items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-black text-sm text-slate-900 dark:text-white">Silchar Civil Medical Staging Post (Cachar, Assam)</h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">High-Priority Buffer Depot for Barak Valley, Mizoram (Aizawl) & Tripura Links</p>
+                    <h3 className="font-black text-base lg:text-lg text-slate-900 dark:text-white">Silchar Civil Medical Staging Post (Cachar, Assam)</h3>
+                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">High-Priority Buffer Depot for Barak Valley, Mizoram (Aizawl) & Tripura Links</p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] font-black shrink-0">
+                  <span className="px-3 py-1 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-black shrink-0">
                     62% Stocked
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs">22 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs">60 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Blood Units: <b className="text-sky-600 dark:text-sky-400 block text-xs">150 Units</b></div>
+                <div className="grid grid-cols-3 gap-2.5 text-xs text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs lg:text-sm">22 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs lg:text-sm">60 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Blood Units: <b className="text-sky-600 dark:text-sky-400 block text-xs lg:text-sm">150 Units</b></div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-200 dark:border-slate-800/80">
+                <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-200 dark:border-slate-800/80">
                   <span className="text-amber-600 dark:text-amber-400 font-medium">⚠️ Buffer active for NH-6 blockage</span>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => setActiveModule('hub')} className="px-2.5 py-1 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold">Reroute 3D ➔</button>
-                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setActiveModule('hub')} className="px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs font-extrabold cursor-pointer">Reroute 3D ➔</button>
+                    <button onClick={() => setActiveModule('map')} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs font-extrabold cursor-pointer">Map 🗺️</button>
                   </div>
                 </div>
               </div>
 
               {/* Depot 3 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3.5 relative transition-colors duration-300">
+                <div className="flex items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-black text-sm text-slate-900 dark:text-white">Bomdila High-Altitude Medical Cache (Arunachal Pradesh)</h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">Critical Forward Station supporting Sela Tunnel (2,400m) & Tawang Sectors</p>
+                    <h3 className="font-black text-base lg:text-lg text-slate-900 dark:text-white">Bomdila High-Altitude Medical Cache (Arunachal Pradesh)</h3>
+                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">Critical Forward Station supporting Sela Tunnel (2,400m) & Tawang Sectors</p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-[10px] font-black shrink-0 uppercase">
+                  <span className="px-3 py-1 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-xs font-black shrink-0 uppercase">
                     41% LOW STOCK
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs">8 Tons (Low)</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Antivenom: <b className="text-amber-600 dark:text-amber-400 block text-xs">48 Vials</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Blankets: <b className="text-sky-600 dark:text-sky-400 block text-xs">500 Units</b></div>
+                <div className="grid grid-cols-3 gap-2.5 text-xs text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs lg:text-sm">8 Tons (Low)</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Antivenom: <b className="text-amber-600 dark:text-amber-400 block text-xs lg:text-sm">48 Vials</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Blankets: <b className="text-sky-600 dark:text-sky-400 block text-xs lg:text-sm">500 Units</b></div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-200 dark:border-slate-800/80">
+                <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-200 dark:border-slate-800/80">
                   <span className="text-slate-800 dark:text-slate-300 font-medium">📍 Resupply Convoy #03 Dispatched</span>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => setActiveModule('drone')} className="px-2.5 py-1 rounded bg-rose-600 text-white text-[10px] font-bold">Air-Drop SOS 🚨</button>
-                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setActiveModule('drone')} className="px-3 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-extrabold cursor-pointer">Air-Drop SOS 🚨</button>
+                    <button onClick={() => setActiveModule('map')} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs font-extrabold cursor-pointer">Map 🗺️</button>
                   </div>
                 </div>
               </div>
 
               {/* Depot 4 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3.5 relative transition-colors duration-300">
+                <div className="flex items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-black text-sm text-slate-900 dark:text-white">Dibrugarh Forward Depot (Upper Assam)</h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">Rail-Road Hub and Bridge Head for Eastern Arunachal & Siang Valley</p>
+                    <h3 className="font-black text-base lg:text-lg text-slate-900 dark:text-white">Dibrugarh Forward Depot (Upper Assam)</h3>
+                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">Rail-Road Hub and Bridge Head for Eastern Arunachal & Siang Valley</p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[10px] font-black shrink-0">
+                  <span className="px-3 py-1 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-black shrink-0">
                     84% Stocked
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs">28 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs">85 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Diesel: <b className="text-sky-600 dark:text-sky-400 block text-xs">25 KL</b></div>
+                <div className="grid grid-cols-3 gap-2.5 text-xs text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs lg:text-sm">28 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs lg:text-sm">85 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Diesel: <b className="text-sky-600 dark:text-sky-400 block text-xs lg:text-sm">25 KL</b></div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-200 dark:border-slate-800/80">
+                <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-200 dark:border-slate-800/80">
                   <span className="text-slate-600 dark:text-slate-400 font-medium">📍 Regional Railhead Node</span>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => setActiveModule('vehicles')} className="px-2.5 py-1 rounded bg-indigo-600 text-white text-[10px] font-bold">Dispatch Fleet 🚚</button>
-                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setActiveModule('vehicles')} className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-extrabold cursor-pointer">Dispatch Fleet 🚚</button>
+                    <button onClick={() => setActiveModule('map')} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs font-extrabold cursor-pointer">Map 🗺️</button>
                   </div>
                 </div>
               </div>
 
               {/* Depot 5 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3.5 relative transition-colors duration-300">
+                <div className="flex items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-black text-sm text-slate-900 dark:text-white">Shillong Staging Depot (Meghalaya)</h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">High-Altitude East Khasi & Jaintia Hills Emergency Stockpile Hub</p>
+                    <h3 className="font-black text-base lg:text-lg text-slate-900 dark:text-white">Shillong Staging Depot (Meghalaya)</h3>
+                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">High-Altitude East Khasi & Jaintia Hills Emergency Stockpile Hub</p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-black shrink-0">
+                  <span className="px-3 py-1 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs font-black shrink-0">
                     78% Stocked
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs">18 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs">45 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-sky-600 dark:text-sky-400 block text-xs">12 KL</b></div>
+                <div className="grid grid-cols-3 gap-2.5 text-xs text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs lg:text-sm">18 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs lg:text-sm">45 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-sky-600 dark:text-sky-400 block text-xs lg:text-sm">12 KL</b></div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-200 dark:border-slate-800/80">
+                <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-200 dark:border-slate-800/80">
                   <span className="text-slate-600 dark:text-slate-400 font-medium">📍 Jowai Sector 9 Detour Active</span>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setActiveModule('map')} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs font-extrabold cursor-pointer">Map 🗺️</button>
                   </div>
                 </div>
               </div>
 
               {/* Depot 6 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3.5 relative transition-colors duration-300">
+                <div className="flex items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-black text-sm text-slate-900 dark:text-white">Gangtok Artery Depot (Sikkim)</h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">Teesta Basin Emergency Medical & Mountain Survival Cache</p>
+                    <h3 className="font-black text-base lg:text-lg text-slate-900 dark:text-white">Gangtok Artery Depot (Sikkim)</h3>
+                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">Teesta Basin Emergency Medical & Mountain Survival Cache</p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] font-black shrink-0">
+                  <span className="px-3 py-1 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-black shrink-0">
                     51% Stocked
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs">14 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs">35 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-sky-600 dark:text-sky-400 block text-xs">18 KL</b></div>
+                <div className="grid grid-cols-3 gap-2.5 text-xs text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs lg:text-sm">14 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs lg:text-sm">35 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-sky-600 dark:text-sky-400 block text-xs lg:text-sm">18 KL</b></div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-200 dark:border-slate-800/80">
+                <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-200 dark:border-slate-800/80">
                   <span className="text-amber-600 dark:text-amber-400 font-medium">⚠️ NH-10 cutoff bypass active</span>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => setActiveModule('hub')} className="px-2.5 py-1 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-[10px] font-bold">Reroute 3D ➔</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setActiveModule('hub')} className="px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs font-extrabold cursor-pointer">Reroute 3D ➔</button>
                   </div>
                 </div>
               </div>
 
               {/* Depot 7 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3.5 relative transition-colors duration-300">
+                <div className="flex items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-black text-sm text-slate-900 dark:text-white">Kohima Relief Center (Nagaland)</h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">NH-29 Highland Artery Logistics Depot supporting Dimapur & Imphal</p>
+                    <h3 className="font-black text-base lg:text-lg text-slate-900 dark:text-white">Kohima Relief Center (Nagaland)</h3>
+                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">NH-29 Highland Artery Logistics Depot supporting Dimapur & Imphal</p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[10px] font-black shrink-0">
+                  <span className="px-3 py-1 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-black shrink-0">
                     87% Stocked
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs">16 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs">48 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-sky-600 dark:text-sky-400 block text-xs">10 KL</b></div>
+                <div className="grid grid-cols-3 gap-2.5 text-xs text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs lg:text-sm">16 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs lg:text-sm">48 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Fuel: <b className="text-sky-600 dark:text-sky-400 block text-xs lg:text-sm">10 KL</b></div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-200 dark:border-slate-800/80">
+                <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-200 dark:border-slate-800/80">
                   <span className="text-slate-600 dark:text-slate-400 font-medium">📍 Zubza Slope Regulated</span>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => setActiveModule('map')} className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-[10px] font-bold">Map 🗺️</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setActiveModule('map')} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs font-extrabold cursor-pointer">Map 🗺️</button>
                   </div>
                 </div>
               </div>
 
               {/* Depot 8 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl space-y-3 relative transition-colors duration-300">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3.5 relative transition-colors duration-300">
+                <div className="flex items-center justify-between gap-2">
                   <div>
-                    <h3 className="font-black text-sm text-slate-900 dark:text-white">Aizawl Civil Hospital Reserve (Mizoram)</h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">South NER Critical Care Oxygen & Trauma Stockpile Post</p>
+                    <h3 className="font-black text-base lg:text-lg text-slate-900 dark:text-white">Aizawl Civil Hospital Reserve (Mizoram)</h3>
+                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium">South NER Critical Care Oxygen & Trauma Stockpile Post</p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-[10px] font-black shrink-0 uppercase">
+                  <span className="px-3 py-1 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-xs font-black shrink-0 uppercase">
                     48% CRITICAL
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs">8 Tons (Buffer)</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs">25 Tons</b></div>
-                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Trauma Kits: <b className="text-sky-600 dark:text-sky-400 block text-xs">100 Kits</b></div>
+                <div className="grid grid-cols-3 gap-2.5 text-xs text-slate-700 dark:text-slate-300 pt-1 font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Oxygen: <b className="text-rose-600 dark:text-rose-400 block text-xs lg:text-sm">8 Tons (Buffer)</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Rations: <b className="text-amber-600 dark:text-amber-400 block text-xs lg:text-sm">25 Tons</b></div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">Trauma Kits: <b className="text-sky-600 dark:text-sky-400 block text-xs lg:text-sm">100 Kits</b></div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-200 dark:border-slate-800/80">
+                <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-200 dark:border-slate-800/80">
                   <span className="text-emerald-600 dark:text-emerald-400 font-medium">📍 Convoy #01 En Route (ETA: 3h 15m)</span>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => setActiveModule('hub')} className="px-2.5 py-1 rounded bg-emerald-600 text-white text-[10px] font-bold">Track 3D Convoy ➔</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setActiveModule('hub')} className="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold cursor-pointer">Track 3D Convoy ➔</button>
                   </div>
                 </div>
               </div>
