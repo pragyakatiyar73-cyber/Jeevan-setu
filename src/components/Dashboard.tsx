@@ -138,13 +138,29 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
     }
   };
 
-  // Manual Coordinates {t("landslide.inspect", "Inspect")}
-  const handleInspectManualCoords = () => {
+  // Manual Coordinates Inspect with reverse geocoding
+  const handleInspectManualCoords = async () => {
     const parsedLat = parseFloat(latInput);
     const parsedLon = parseFloat(lonInput);
     if (!isNaN(parsedLat) && !isNaN(parsedLon)) {
-      setLocationName(`Custom Coordinate Sector (${parsedLat.toFixed(2)}°, ${parsedLon.toFixed(2)}°)`);
-      setElevation("1,200m MSL (Est.)");
+      const presetMatch = LOCATION_PRESETS.find(p => Math.abs(p.lat - parsedLat) < 0.05 && Math.abs(p.lon - parsedLon) < 0.05);
+      if (presetMatch) {
+        setSelectedPresetId(presetMatch.id);
+        setLocationName(presetMatch.name);
+        setElevation(presetMatch.elevation);
+        setSlopeAngle(presetMatch.defaultSlope);
+        setSoilSatPercent(presetMatch.soilSaturation);
+        setFaultDistanceKm(presetMatch.faultDistKm);
+      } else {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${parsedLat}&lon=${parsedLon}`);
+          const json = await res.json();
+          setLocationName(json.display_name || `Custom Sector (${parsedLat.toFixed(4)}°N, ${parsedLon.toFixed(4)}°E)`);
+        } catch {
+          setLocationName(`Custom Sector (${parsedLat.toFixed(4)}°N, ${parsedLon.toFixed(4)}°E)`);
+        }
+        setElevation("1,200m MSL (Est.)");
+      }
       fetchLandslideData(parsedLat, parsedLon);
     }
   };
@@ -317,7 +333,7 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
               className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
             >
               {LOCATION_PRESETS.map((p) => (
-                <option key={p.id} value={p.id}>
+                <option key={p.id} value={p.id} className="bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 font-bold py-1">
                   {p.name} ({p.state})
                 </option>
               ))}
