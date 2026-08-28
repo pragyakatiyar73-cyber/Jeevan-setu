@@ -1,0 +1,36 @@
+[
+  {
+    "sosId": "SOS-2026-6841",
+    "distressType": "Trapped in Landslide",
+    "lat": 27.26,
+    "lon": 92.42,
+    "landmark": "Bomdila",
+    "personsTrapped": "5 to 10 Persons",
+    "triageLevel": "LEVEL 1 (Immediate Rescue / Air-Drop)",
+    "status": "ACTIVE_DISPATCH",
+    "timestamp": "2026-08-27T16:58:28.461Z",
+    "respondersNotified": [
+      "NDRF 12th Bn",
+      "SDRF Arunachal",
+      "MDoNER Triage Center",
+      "IAF Helicopter Unit Tezpur"
+    ]
+  },
+  {
+    "sosId": "SOS-2026-4514",
+    "distressType": "Trapped in Landslide / Mudflow",
+    "lat": 25.1459,
+    "lon": 82.5416,
+    "landmark": "Live GPS Sector - North Eastern Region",
+    "personsTrapped": "50+ Persons (Mass Evacuation Zone)",
+    "triageLevel": "LEVEL 1 (Immediate Rescue / Air-Drop)",
+    "status": "ACTIVE_DISPATCH",
+    "timestamp": "2026-08-27T16:31:32.248Z",
+    "respondersNotified": [
+      "NDRF 12th Bn",
+      "SDRF Arunachal",
+      "MDoNER Triage Center",
+      "IAF Helicopter Unit Tezpur"
+    ]
+  }
+]

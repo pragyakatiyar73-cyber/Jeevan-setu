@@ -1,0 +1,101 @@
+{
+  "roads": [
+    {
+      "id": "NH-6",
+      "name": "NH-6 Meghalaya-Silchar Corridor",
+      "waypoints": [
+        [
+          26.1445,
+          91.7362
+        ],
+        [
+          25.5788,
+          91.8933
+        ],
+        [
+          24.8333,
+          92.7789
+        ]
+      ],
+      "status": "DISRUPTED"
+    },
+    {
+      "id": "NH-39",
+      "name": "NH-39 Dimapur-Kohima Pass",
+      "waypoints": [
+        [
+          25.906,
+          93.727
+        ],
+        [
+          25.6751,
+          94.1086
+        ]
+      ],
+      "status": "CLEAR"
+    },
+    {
+      "id": "NH-10",
+      "name": "NH-10 Siliguri-Gangtok Artery",
+      "waypoints": [
+        [
+          26.7271,
+          88.4353
+        ],
+        [
+          27.3389,
+          88.6138
+        ]
+      ],
+      "status": "CAUTION"
+    }
+  ],
+  "disruptions": [
+    {
+      "id": "LANDSLIDE-01",
+      "location": "NH-6 Km 142 East Khasi Hills",
+      "lat": 25.514,
+      "lon": 91.502,
+      "breachLength": "350m",
+      "priority": "CRITICAL"
+    },
+    {
+      "id": "SNOW-01",
+      "location": "NH-13 Sela Pass Pass",
+      "lat": 27.5861,
+      "lon": 91.8594,
+      "breachLength": "120m",
+      "priority": "HIGH"
+    }
+  ],
+  "depots": [
+    {
+      "id": "DEPOT-GUW",
+      "name": "Guwahati Primary Central Depot",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "capacity": "95%"
+    },
+    {
+      "id": "DEPOT-SHL",
+      "name": "Shillong High-Altitude Cache",
+      "lat": 25.5788,
+      "lon": 91.8933,
+      "capacity": "82%"
+    },
+    {
+      "id": "DEPOT-SIL",
+      "name": "Silchar Southern Logistics Hub",
+      "lat": 24.8333,
+      "lon": 92.7789,
+      "capacity": "78%"
+    },
+    {
+      "id": "DEPOT-[#01]",
+      "name": "Aizawl Emergency Relief Center",
+      "lat": 23.7271,
+      "lon": 92.7176,
+      "capacity": "64%"
+    }
+  ]
+}
