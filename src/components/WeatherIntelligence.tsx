@@ -351,26 +351,26 @@ export default function WeatherIntelligence({
         )}
 
         {/* Header Bar */}
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
-          <div>
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 lg:p-6 shadow-xl dark:shadow-2xl flex flex-col xl:flex-row xl:items-center justify-between gap-4 transition-colors duration-300 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-indigo-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-indigo-700 dark:text-indigo-400 flex items-center gap-2 border border-indigo-500/30">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+              <span className="rounded-full bg-indigo-500/20 px-3 py-0.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5 border border-indigo-500/30">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
                 📡 {t("weather.liveTelemetryNode", "LIVE METEOROLOGICAL TELEMETRY NODE • Sync: Live IMD / NASA GPM Radar")}
               </span>
             </div>
-            <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-3">
+            <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1.5 flex items-center gap-2.5">
               <span>🌧️</span> {t("weather.title", "8-State Meteorological Grid & Cloudburst Intelligence")}
             </h1>
-            <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium max-w-4xl leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-4xl leading-relaxed">
               {t("weather.subtitle", "Real-time satellite precipitation tracking, IMD Doppler radar reflectivity matrix, and geotechnical soil saturation correlation for all 8 North Eastern States (MDoNER / NEC).")}
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <button
               onClick={handleFetchGPS}
-              className="px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 font-extrabold text-white dark:text-slate-950 text-xs lg:text-sm shadow-lg shadow-sky-500/20 transition flex items-center gap-2 cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 font-bold text-white dark:text-slate-950 text-xs shadow-md shadow-sky-500/20 transition flex items-center gap-1.5 cursor-pointer"
             >
               📍 {t("weather.fetchGps", "Fetch My Live GPS")}
             </button>
@@ -378,7 +378,7 @@ export default function WeatherIntelligence({
             <select
               value={selectedSector}
               onChange={(e) => setSelectedSector(e.target.value)}
-              className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3.5 py-2.5 text-xs lg:text-sm font-extrabold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
+              className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none cursor-pointer"
             >
               {customLiveGpsSector && (
                 <option value="live_gps" className="bg-white dark:bg-slate-950 text-sky-600 dark:text-sky-400 font-bold py-1">

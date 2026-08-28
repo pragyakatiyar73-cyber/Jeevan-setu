@@ -127,6 +127,41 @@ export default function App() {
     triageLevel?: string;
   } | null>(null);
 
+  // Real-time synchronization of SOS alerts from central DB across all devices
+  useEffect(() => {
+    const syncSosAlerts = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/sos/alerts');
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.alerts && data.alerts.length > 0) {
+            const latest = data.alerts[0];
+            setActiveSosLocation(prev => {
+              if (!prev || prev.sosId !== latest.sosId) {
+                return {
+                  lat: Number(latest.lat) || 27.26,
+                  lon: Number(latest.lon) || 92.42,
+                  sosId: latest.sosId,
+                  distressType: latest.distressType,
+                  landmark: latest.landmark,
+                  personsTrapped: latest.personsTrapped,
+                  triageLevel: latest.triageLevel
+                };
+              }
+              return prev;
+            });
+          }
+        }
+      } catch (e) {
+        // Silent fallback if server offline
+      }
+    };
+
+    syncSosAlerts();
+    const interval = setInterval(syncSosAlerts, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Live IST Clock
   const [currentTime, setCurrentTime] = useState<string>('');
   useEffect(() => {
@@ -248,8 +283,9 @@ export default function App() {
       }
 
       const rmap = L.map(rerouteMapContainerRef.current).setView([25.2, 92.5], 7);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: 'CartoDB Dark Matter'
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 16,
+        attribution: 'Esri World Dark Gray Canvas'
       }).addTo(rmap);
 
       // Interconnected Waypoints (Guwahati -> Shillong -> Jowai Bypass -> Silchar -> Aizawl)
@@ -319,8 +355,9 @@ export default function App() {
       }
 
       const rmap = L.map(roadMapContainerRef.current).setView([26.0, 92.5], 7);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: 'Jeevan Setu Highway Telemetry'
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 16,
+        attribution: 'Jeevan Setu Highway Telemetry &bull; Esri Dark Canvas'
       }).addTo(rmap);
 
       // 1. NH-6 (Pink/Red - Blocked)
@@ -485,10 +522,10 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
+    <div className="flex h-screen w-full max-w-full bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
       
       {/* 1. LEFT SIDEBAR NAVIGATION BAR (Sleek & Perfectly Sized) */}
-      <aside className="w-16 md:w-64 lg:w-72 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] flex flex-col justify-between p-2.5 md:p-3 shadow-xl dark:shadow-2xl z-50 select-none transition-colors duration-300">
+      <aside className="w-16 md:w-60 lg:w-64 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] flex flex-col justify-between p-2.5 md:p-3 shadow-xl dark:shadow-2xl z-50 select-none transition-colors duration-300">
         <div className="space-y-3">
           
           {/* Logo & Brand Header (Sleek & Compact) */}
@@ -613,10 +650,10 @@ export default function App() {
       {/* 2. RIGHT MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
 
-        {/* Top Header Command Bar (Enlarged & Prominent) */}
-        <header className="h-16 lg:h-18 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-4 md:px-6 flex items-center justify-between gap-4 backdrop-blur shadow-sm dark:shadow-md transition-colors duration-300">
-          {/* MDoNER / Regional Title */}
-          <div className="flex items-center gap-3">
+        {/* Top Header Command Bar Matching media_1787858147598.png */}
+        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-3 sm:px-4 lg:px-6 flex items-center justify-between gap-3 backdrop-blur shadow-sm dark:shadow-md transition-colors duration-300 min-w-0">
+          {/* MDoNER / Regional Title matching media_1787858147598.png */}
+          <div className="flex items-center gap-3 shrink-0">
             <img
               src="/jeevan-setu-logo.jpg"
               alt="Jeevan Setu Emblem"
@@ -624,83 +661,93 @@ export default function App() {
               onClick={() => setActiveModule('hub')}
               title="Jeevan Setu Home"
             />
-            <span className="font-extrabold text-sm lg:text-base text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5" />
-              {t('header.title', 'Ministry of Development of North Eastern Region (MDoNER)')}
-            </span>
-            <span className="hidden lg:inline text-slate-300 dark:text-slate-600 font-bold">|</span>
-            <span className="hidden lg:inline text-xs lg:text-sm text-slate-700 dark:text-slate-300 font-bold">{t('header.subtitle', 'North Eastern Council (NEC) Command Grid')}</span>
+            <div className="flex items-center gap-3">
+              <div className="text-[11px] font-black leading-tight text-emerald-600 dark:text-emerald-400">
+                <div>{t('header.titleLine1', 'Ministry of Development')}</div>
+                <div>{t('header.titleLine2', 'of North Eastern Region')}</div>
+                <div>{t('header.titleLine3', '(MDoNER)')}</div>
+              </div>
+              <div className="hidden sm:block text-[11px] font-bold leading-tight text-slate-600 dark:text-slate-300 border-l border-slate-200 dark:border-slate-800 pl-3">
+                <div>{t('header.councilLine1', 'North Eastern')}</div>
+                <div>{t('header.councilLine2', 'Council (NEC)')}</div>
+                <div>{t('header.councilLine3', 'Command Grid')}</div>
+              </div>
+            </div>
           </div>
 
           {/* Glowing Header Action Buttons */}
-          <div className="flex items-center gap-2.5 md:gap-3.5 shrink-0 z-50">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 z-50">
             {/* 🚨 EMERGENCY SOS Glowing Pill Button */}
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="rounded-full bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 px-4 py-2 text-xs lg:text-sm font-black text-white shadow-lg shadow-rose-600/50 hover:scale-105 transition flex items-center gap-2 border border-rose-400/40 cursor-pointer animate-pulse"
+              className="rounded-full bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 px-3.5 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1.5 border border-rose-400/40 cursor-pointer animate-pulse shrink-0"
             >
-              <span className="text-sm">🚨</span>
-              <span>{t('navigation.sos', 'EMERGENCY SOS')}</span>
+              <span className="text-xs">🚨</span>
+              <span>{t('navigation.sos', 'Emergency SOS')}</span>
             </button>
 
             {/* 🎮 3D SIM Pill Button */}
             <button
               onClick={() => setActiveModule('hub')}
-              className={`rounded-full px-4 py-2 text-xs lg:text-sm font-black transition flex items-center gap-2 cursor-pointer ${
+              className={`rounded-full px-3 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeModule === 'hub'
-                  ? 'bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/40'
-                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-sky-500 text-slate-950 shadow-md shadow-sky-500/40'
+                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <span className="text-sm">🎮</span>
+              <span className="text-xs">🎮</span>
               <span>{t('header.sim', '3D SIM')}</span>
             </button>
 
             {/* 🤖 AI Pill Button */}
             <button
               onClick={() => setActiveModule('aiimpact')}
-              className={`rounded-full px-4 py-2 text-xs lg:text-sm font-black transition flex items-center gap-2 cursor-pointer ${
+              className={`rounded-full px-3 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 activeModule === 'aiimpact'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-purple-600/40'
-                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-purple-600/40'
+                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <span className="text-sm">🤖</span>
+              <span className="text-xs">🤖</span>
               <span>{t('header.ai', 'AI')}</span>
             </button>
 
             {/* Live IST Clock */}
-            <div className="hidden md:flex flex-col text-right font-mono px-2">
-              <span className="text-sm lg:text-base font-black text-slate-900 dark:text-slate-100 tracking-wider">
-                {currentTime || '18:39:33'} IST
+            <div className="flex flex-col text-right font-mono px-1.5 shrink-0">
+              <span className="text-xs lg:text-sm font-black text-slate-900 dark:text-slate-100 tracking-wider">
+                {currentTime || '23:45:11'} IST
               </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">2026 NER Grid</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">2026 NER Grid</span>
             </div>
 
             {/* User Profile Badge: Admin Officer MDoNER L3 */}
             <button
               onClick={() => setActiveModule('gov')}
               title="Click to Open MDoNER Command / Executive Oversight"
-              className={`flex items-center gap-2.5 rounded-full border transition cursor-pointer px-3.5 py-1.5 text-xs lg:text-sm ${
+              className={`flex items-center gap-2 rounded-full border transition cursor-pointer px-3 py-1.5 text-xs shrink-0 ${
                 activeModule === 'gov'
-                  ? 'border-emerald-400 bg-emerald-900/80 text-white shadow-lg shadow-emerald-500/30'
-                  : 'border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border-emerald-400'
+                  ? 'border-emerald-400 bg-emerald-900/80 text-white shadow-md shadow-emerald-500/30'
+                  : 'border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
               }`}
             >
-              <div className="h-7 w-7 rounded-full bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center shrink-0">
+              <div className="h-6 w-6 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center shrink-0">
                 AO
               </div>
-              <div className="hidden sm:block text-left">
-                <div className="font-extrabold text-slate-900 dark:text-white leading-none text-xs lg:text-sm">{t('header.adminOfficer', 'Admin Officer')}</div>
-                <div className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5">MDONER L3</div>
+              <div className="text-left">
+                <div className="font-extrabold text-slate-900 dark:text-white leading-none text-xs">{t('header.adminOfficer', 'Admin Officer')}</div>
+                <div className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5">MDONER L3</div>
               </div>
             </button>
 
             {/* 🌐 Language Switcher (EN <-> हिन्दी Toggle) */}
-            <LanguageSelector />
+            <div className="shrink-0">
+              <LanguageSelector />
+            </div>
 
             {/* ☀️/🌙 Theme Toggle Switch */}
-            <ThemeToggle />
+            <div className="shrink-0 pr-1">
+              <ThemeToggle />
+            </div>
           </div>
         </header>
 

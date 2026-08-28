@@ -528,39 +528,39 @@ export default function SmartDisasterMonitoring({
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-100 p-5 lg:p-8 space-y-6 font-sans transition-colors duration-300">
+    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-100 p-4 sm:p-6 space-y-6 font-sans transition-colors duration-300">
       
       {/* 1. TOP HEADER & EMERGENCY COMMAND BAR */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-r from-white via-slate-50 to-white dark:from-slate-900 dark:via-rose-950/30 dark:to-slate-900 p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:via-rose-950/30 dark:to-slate-900 p-5 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-colors duration-300">
         <div>
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="rounded-full bg-rose-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-rose-400 border border-rose-500/30 flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping"></span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-700 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
               🛰️ SMART DISASTER MONITORING CENTER
             </span>
-            <span className="rounded-full bg-indigo-500/20 px-3 py-1 text-xs lg:text-sm font-bold text-indigo-300 border border-indigo-500/30">
+            <span className="rounded bg-indigo-500/20 px-2.5 py-0.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
               MDoNER Operations Command Grid
             </span>
-            <span className="text-xs lg:text-sm text-slate-400 font-medium">{t("smartmonitoring.continuousTracking", "Continuous 72-Hour Situation Tracking")}</span>
+            <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">{t("smartmonitoring.continuousTracking", "Continuous 72-Hour Situation Tracking")}</span>
           </div>
 
-          <h1 className="mt-2 text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+          <h1 className="mt-2 text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             <span>{monitoredLoc.displayName}</span>
           </h1>
 
-          <div className="mt-1 flex items-center gap-4 text-xs lg:text-sm font-mono text-slate-400 flex-wrap font-bold">
-            <span>{t("smartmonitoring.latitude", "Latitude:")} <b className="text-slate-900 dark:text-white">{monitoredLoc.lat.toFixed(4)}° N</b></span>
-            <span>{t("smartmonitoring.longitude", "Longitude:")} <b className="text-slate-900 dark:text-white">{monitoredLoc.lon.toFixed(4)}° E</b></span>
-            <span>{t("smartmonitoring.stateLabel", "State:")} <b className="text-slate-700 dark:text-slate-200">{monitoredLoc.state || 'NER Sector'}</b></span>
-            <span>{t("smartmonitoring.lastSync", "Last Telemetry Sync:")} <b className="text-emerald-500 dark:text-emerald-400">{reportTime}</b></span>
+          <div className="mt-1 flex items-center gap-4 text-xs font-mono text-slate-600 dark:text-slate-400 flex-wrap">
+            <span>{t("smartmonitoring.latitude", "Latitude:")} <b className="text-slate-900 dark:text-white font-bold">{monitoredLoc.lat.toFixed(4)}° N</b></span>
+            <span>{t("smartmonitoring.longitude", "Longitude:")} <b className="text-slate-900 dark:text-white font-bold">{monitoredLoc.lon.toFixed(4)}° E</b></span>
+            <span>{t("smartmonitoring.stateLabel", "State:")} <b className="text-slate-800 dark:text-slate-200 font-bold">{monitoredLoc.state || 'NER Sector'}</b></span>
+            <span>{t("smartmonitoring.lastSync", "Last Telemetry Sync:")} <b className="text-emerald-600 dark:text-emerald-400 font-bold">{reportTime}</b></span>
           </div>
         </div>
 
         {/* Header Right Status Badges & Controls */}
         <div className="flex items-center gap-3 flex-wrap">
           {/* Disaster Type Selector */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs lg:text-sm">
-            <label className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.disasterVector", "Disaster Vector")}</label>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs">
+            <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.disasterVector", "Disaster Vector")}</label>
             <select
               value={disasterType}
               onChange={e => setDisasterType(e.target.value)}
@@ -575,8 +575,8 @@ export default function SmartDisasterMonitoring({
           </div>
 
           {/* Disaster Status Selector */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs lg:text-sm">
-            <label className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.statusMode", "Status Mode")}</label>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs">
+            <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.statusMode", "Status Mode")}</label>
             <select
               value={disasterStatus}
               onChange={e => setDisasterStatus(e.target.value as any)}
@@ -590,9 +590,9 @@ export default function SmartDisasterMonitoring({
           </div>
 
           {/* Current Risk Badge */}
-          <div className={`rounded-2xl border px-5 py-3 shadow-lg flex flex-col items-end ${currentRisk.color}`}>
-            <span className="text-xs font-bold uppercase tracking-wider opacity-90">{t("smartmonitoring.currentDisasterRisk", "CURRENT DISASTER RISK")}</span>
-            <div className="text-2xl lg:text-3xl font-black">{currentRisk.level} ({currentRisk.score}%)</div>
+          <div className={`rounded-2xl border px-4 py-2.5 shadow-lg flex flex-col items-end ${currentRisk.color}`}>
+            <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">{t("smartmonitoring.currentDisasterRisk", "CURRENT DISASTER RISK")}</span>
+            <div className="text-xl font-black">{currentRisk.level} ({currentRisk.score}%)</div>
           </div>
         </div>
       </div>
@@ -889,27 +889,27 @@ export default function SmartDisasterMonitoring({
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
-                    <span className="text-[10px] text-slate-500 font-bold uppercase">Temperature</span>
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">{t("smartmonitoring.temperature", "TEMPERATURE")}</span>
                     <div className="text-2xl font-bold text-slate-900 dark:text-white">{weather.temperature}°C</div>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400">Elevation: {weather.elevation}m MSL</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">{t("smartmonitoring.elevation", "Elevation:")} {weather.elevation}m MSL</span>
                   </div>
 
                   <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
-                    <span className="text-[10px] text-slate-500 font-bold uppercase">Rainfall Rate</span>
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">{t("smartmonitoring.rainfallRate", "RAINFALL RATE")}</span>
                     <div className="text-2xl font-bold text-sky-600 dark:text-sky-400">{weather.precipitation} mm</div>
                     <span className="text-[10px] text-slate-500 dark:text-slate-400">{t("smartmonitoring.pastHourPrecip", "Past Hour Precipitation")}</span>
                   </div>
 
                   <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
-                    <span className="text-[10px] text-slate-500 font-bold uppercase">{t("smartmonitoring.relativeHumidity", "Relative Humidity")}</span>
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">{t("smartmonitoring.relativeHumidity", "RELATIVE HUMIDITY")}</span>
                     <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{weather.relativeHumidity}%</div>
                     <span className="text-[10px] text-slate-500 dark:text-slate-400">{t("smartmonitoring.saturationHigh", "Saturation High")}</span>
                   </div>
 
                   <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
-                    <span className="text-[10px] text-slate-500 font-bold uppercase">{t("smartmonitoring.windGusts", "Wind & Gusts")}</span>
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">{t("smartmonitoring.windGusts", "WIND & GUSTS")}</span>
                     <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{weather.windSpeed} km/h</div>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400">Peak Gust: {weather.windGusts} km/h</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">{t("smartmonitoring.peakGust", "Peak Gust:")} {weather.windGusts} km/h</span>
                   </div>
                 </div>
 

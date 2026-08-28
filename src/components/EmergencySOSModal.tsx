@@ -185,21 +185,21 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-rose-500/40 bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 p-6 shadow-2xl space-y-5 overflow-hidden animate-in fade-in zoom-in duration-200 transition-colors duration-300">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-2xl rounded-3xl border border-rose-500/40 bg-[#070d1e] text-white p-6 shadow-2xl space-y-5 overflow-hidden animate-in fade-in zoom-in duration-200">
         
         {/* Ambient Backdrop Accent */}
         <div className="absolute top-0 right-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-rose-600/20 blur-3xl pointer-events-none"></div>
 
         {/* HEADER SECTION */}
-        <div className="flex items-start justify-between border-b border-slate-200 dark:border-slate-800/80 pb-4">
+        <div className="flex items-start justify-between border-b border-slate-800/80 pb-4">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600 to-amber-600 shadow-lg shadow-rose-600/40 animate-pulse">
               <span className="text-2xl">🚨</span>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-black tracking-wide text-slate-900 dark:text-white">
+                <h2 className="text-lg font-black tracking-wide text-white">
                   {t("sos.title", "JEEVAN SETU EMERGENCY SOS DISPATCH")}
                 </h2>
                 <div className="flex items-center gap-1 font-mono text-[9px] font-black text-rose-300">

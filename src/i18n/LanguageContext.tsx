@@ -3,8 +3,55 @@ import enJSON from "./locales/en.json";
 import hiJSON from "./locales/hi.json";
 import asJSON from "./locales/as.json";
 import bnJSON from "./locales/bn.json";
+import brxJSON from "./locales/brx.json";
+import mniJSON from "./locales/mni.json";
+import khaJSON from "./locales/kha.json";
+import grtJSON from "./locales/grt.json";
+import mzoJSON from "./locales/mzo.json";
+import neJSON from "./locales/ne.json";
+import trpJSON from "./locales/trp.json";
+import nagJSON from "./locales/nag.json";
 
-export type LanguageCode = "en" | "hi" | "as" | "bn";
+export type LanguageCode =
+  | "en"
+  | "hi"
+  | "as"
+  | "bn"
+  | "brx"
+  | "mni"
+  | "kha"
+  | "grt"
+  | "mzo"
+  | "ne"
+  | "trp"
+  | "nag";
+
+export interface LanguageMeta {
+  code: LanguageCode;
+  label: string;
+  nativeLabel: string;
+  region: string;
+  flag: string;
+  isNorthEast: boolean;
+}
+
+export const SUPPORTED_LANGUAGES: LanguageMeta[] = [
+  // National Languages
+  { code: "en", label: "English", nativeLabel: "English", region: "National / Global", flag: "🇬🇧", isNorthEast: false },
+  { code: "hi", label: "Hindi", nativeLabel: "हिन्दी", region: "National", flag: "🇮🇳", isNorthEast: false },
+
+  // All North Eastern Languages
+  { code: "as", label: "Assamese", nativeLabel: "অসমীয়া", region: "Assam", flag: "🌿", isNorthEast: true },
+  { code: "bn", label: "Bengali", nativeLabel: "বাংলা", region: "Tripura / Barak", flag: "🌸", isNorthEast: true },
+  { code: "brx", label: "Bodo", nativeLabel: "बड़ो", region: "Bodoland, Assam", flag: "🏹", isNorthEast: true },
+  { code: "mni", label: "Manipuri", nativeLabel: "মৈতৈলোন্", region: "Manipur", flag: "🦚", isNorthEast: true },
+  { code: "kha", label: "Khasi", nativeLabel: "Ka Ktien Khasi", region: "Meghalaya", flag: "🏔️", isNorthEast: true },
+  { code: "grt", label: "Garo", nativeLabel: "A·chik", region: "Meghalaya", flag: "🌲", isNorthEast: true },
+  { code: "mzo", label: "Mizo", nativeLabel: "Mizo ṭawng", region: "Mizoram", flag: "🌄", isNorthEast: true },
+  { code: "ne", label: "Nepali", nativeLabel: "नेपाली", region: "Sikkim", flag: "🏔️", isNorthEast: true },
+  { code: "trp", label: "Kokborok", nativeLabel: "ককবরক", region: "Tripura", flag: "🌺", isNorthEast: true },
+  { code: "nag", label: "Nagamese", nativeLabel: "Nagamese", region: "Nagaland", flag: "🦅", isNorthEast: true }
+];
 
 interface LanguageContextType {
   language: LanguageCode;
@@ -16,7 +63,15 @@ const translations: Record<LanguageCode, any> = {
   en: enJSON,
   hi: hiJSON,
   as: asJSON,
-  bn: bnJSON
+  bn: bnJSON,
+  brx: brxJSON,
+  mni: mniJSON,
+  kha: khaJSON,
+  grt: grtJSON,
+  mzo: mzoJSON,
+  ne: neJSON,
+  trp: trpJSON,
+  nag: nagJSON
 };
 
 const STORAGE_KEY = "jeevan_setu_language";
@@ -26,7 +81,8 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<LanguageCode>(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as LanguageCode;
-    if (saved && ["en", "hi", "as", "bn"].includes(saved)) {
+    const validCodes = SUPPORTED_LANGUAGES.map(l => l.code);
+    if (saved && validCodes.includes(saved)) {
       return saved;
     }
     return "en";

@@ -57,6 +57,7 @@ export default function NERLiveMapModule({
   // Base Style (Default to Tactical Dark Matter matching media_1787755898566.png)
   const [baseStyle, setBaseStyle] = useState<string>("dark");
   const [isLayersPanelOpen, setIsLayersPanelOpen] = useState<boolean>(true);
+  const [showSosBroadcast, setShowSosBroadcast] = useState<boolean>(true);
 
   // Overlay Checkboxes State
   const [overlays, setOverlays] = useState({
@@ -91,10 +92,13 @@ export default function NERLiveMapModule({
       if (style === "esri") return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
       if (style === "osm") return "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
       if (style === "topo") return "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
-      return "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+      return "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
     };
 
-    const baseTile = L.tileLayer(getTileUrl(baseStyle), { attribution: "Jeevan Setu Tactical GIS" }).addTo(map);
+    const baseTile = L.tileLayer(getTileUrl(baseStyle), {
+      maxZoom: 16,
+      attribution: "Esri World Dark Gray &bull; Jeevan Setu Tactical GIS"
+    }).addTo(map);
     currentTileLayerRef.current = baseTile;
 
     // Create & Add Layer Groups to Map
@@ -293,7 +297,7 @@ export default function NERLiveMapModule({
   // Dynamically update base tile URL on style switch without map teardown
   useEffect(() => {
     if (!currentTileLayerRef.current) return;
-    let url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+    let url = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
     if (baseStyle === "esri") url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
     else if (baseStyle === "osm") url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     else if (baseStyle === "topo") url = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
@@ -319,41 +323,41 @@ export default function NERLiveMapModule({
   };
 
   return (
-    <div className="h-full w-full relative flex flex-col select-none bg-[#040814] text-slate-100 font-sans overflow-hidden">
+    <div className="h-full w-full relative flex flex-col select-none bg-[#040814] text-slate-100 font-sans overflow-hidden min-w-0">
       
       {/* 🟢 TOP HEADER BAR MATCHING SCREENSHOT */}
-      <div className="h-20 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-5 lg:px-8 flex items-center justify-between gap-4 z-20 backdrop-blur transition-colors duration-300">
+      <div className="h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-4 lg:px-6 flex items-center justify-between gap-4 z-20 backdrop-blur transition-colors duration-300">
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="rounded-full bg-emerald-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
-              Live Region Map &bull; Live Satellite & Radar
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shrink-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+              {t("dashboard.liveRegionMap", "Live Region Map • Live Satellite & Radar")}
             </span>
-            <span className="hidden sm:inline text-xs lg:text-sm italic text-slate-500 dark:text-slate-400 font-medium">"Smart decisions today, safer tomorrow."</span>
+            <span className="hidden sm:inline text-xs italic text-slate-500 dark:text-slate-400">{t("dashboard.smartDecisions", "\"Smart decisions today, safer tomorrow.\"")}</span>
           </div>
-          <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
-            North Eastern Region Accessibility & Logistics Overview
+          <h1 className="text-base lg:text-lg font-black text-slate-900 dark:text-white tracking-tight mt-0.5">
+            {t("dashboard.overviewTitle", "North Eastern Region Accessibility & Logistics Overview")}
           </h1>
         </div>
 
         {/* TOP RIGHT MODE & LAYER PILLS */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={onNavigateTo3DSim}
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-3.5 py-2 text-xs lg:text-sm font-extrabold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer shadow"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer shadow shrink-0"
           >
-            <span>🎮</span> 3D SIMULATION
+            <span>🎮</span> <span>{t("dashboard.sim3d", "3D SIMULATION")}</span>
           </button>
 
-          <button className="rounded-xl bg-indigo-600 px-3.5 py-2 text-xs lg:text-sm font-extrabold text-white shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 cursor-pointer border border-indigo-400/40">
-            <span>🗺️</span> 2D Map
+          <button className="rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-600/30 flex items-center gap-1.5 cursor-pointer border border-indigo-400/40 shrink-0">
+            <span>🗺️</span> <span>{t("dashboard.map2d", "2D Map")}</span>
           </button>
 
-          <div className="hidden xl:flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-slate-800 text-xs">
+          <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-slate-800 text-xs shrink-0">
             <button
               onClick={() => setBaseStyle("topo")}
-              className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${
-                baseStyle === "topo" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className={`px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs ${
+                baseStyle === "topo" ? "bg-indigo-600 text-white shadow" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               ⛰️ Terrain
@@ -361,8 +365,8 @@ export default function NERLiveMapModule({
 
             <button
               onClick={() => setBaseStyle("dark")}
-              className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${
-                baseStyle === "dark" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className={`px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs ${
+                baseStyle === "dark" ? "bg-indigo-600 text-white shadow" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               🌙 Dark
@@ -370,8 +374,8 @@ export default function NERLiveMapModule({
 
             <button
               onClick={() => setBaseStyle("osm")}
-              className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${
-                baseStyle === "osm" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className={`px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs ${
+                baseStyle === "osm" ? "bg-indigo-600 text-white shadow" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               🗺️ OSM
@@ -379,8 +383,8 @@ export default function NERLiveMapModule({
 
             <button
               onClick={() => setBaseStyle("esri")}
-              className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer ${
-                baseStyle === "esri" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className={`px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs ${
+                baseStyle === "esri" ? "bg-indigo-600 text-white shadow" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               🛰️ Esri
@@ -507,6 +511,32 @@ export default function NERLiveMapModule({
             <Layers className="h-4 w-4 text-sky-500 dark:text-sky-400" />
             <span>Layers Panel</span>
           </button>
+        )}
+
+        {/* CENTER FLOATING SOS BROADCAST BANNER MATCHING media_1787858147598.png */}
+        {showSosBroadcast && (
+          <div className="absolute top-[48%] left-[55%] -translate-x-1/2 -translate-y-1/2 z-[1000] w-80 sm:w-96 rounded-2xl border border-slate-700/80 bg-[#070d1e]/95 p-4 shadow-2xl backdrop-blur text-xs space-y-3 animate-fade-in transition-all">
+            <div className="flex items-center justify-between">
+              <span className="font-black text-rose-500 flex items-center gap-1.5 text-[11px] tracking-wide uppercase">
+                <span>🚨</span> EMERGENCY SOS BROADCAST &bull; {activeSosLocation?.sosId || 'SOS-2026-7154'}
+              </span>
+              <button
+                onClick={() => setShowSosBroadcast(false)}
+                className="text-slate-400 hover:text-white cursor-pointer text-sm font-bold px-1"
+                title="Close Broadcast Card"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="rounded-xl bg-[#dcfce7] text-[#15803d] p-3.5 font-extrabold text-xs shadow-sm space-y-0.5 border border-emerald-300/40">
+              <div className="flex items-center gap-1.5">
+                <span>✓</span> Nearest 4x4 Convoy #01 Dispatched
+              </div>
+              <div className="text-[11px] pl-4 font-mono font-bold text-[#166534]">
+                (ETA: 14 mins)
+              </div>
+            </div>
+          </div>
         )}
 
         {/* RIGHT FLOATING ZOOM CONTROLS */}
