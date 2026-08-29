@@ -1110,49 +1110,6 @@ export default function ThreeDigitalTwin({
         </div>
       </div>
 
-      {/* SECTION: SMART OPERATIONS HUB */}
-      <div className="space-y-3 pt-2">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-            SMART OPERATIONS HUB
-          </h3>
-          <span className="text-[10px] text-slate-500 dark:text-slate-400">MDoNER Integrated Operations Modules</span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          {[
-            { id: 'hub', title: t('dashboard.sim3d', '3D Simulation'), desc: 'Interactive 3D terrain & convoy bypass simulation engine.', icon: '🎮' },
-            { id: 'aiimpact', title: t('navigation.aiimpact', 'Smart AI Disaster Impact'), desc: 'Gemini Multimodal photo damage & AI satellite change analysis.', icon: '🤖', isNew: true },
-            { id: 'road', title: t('navigation.road', 'Road & Accessibility'), desc: 'Monitor road status, blockages & accessibility in real-time.', icon: '🛣️' },
-            { id: 'vehicles', title: t('navigation.vehicles', 'Vehicle & Logistics'), desc: 'Track vehicles, check status & optimize logistics operations.', icon: '🚚' },
-            { id: 'drone', title: t('navigation.drone', 'UAV Drone Dispatcher'), desc: 'High-altitude aerial supply dispatch for zero-road zones.', icon: '🛸' },
-            { id: 'rerouting', title: t('navigation.rerouting', 'Dynamic Rerouting'), desc: 'AI-powered smart rerouting for safe & fastest delivery.', icon: '🧭' },
-            { id: 'supplies', title: t('navigation.supplies', 'Essential Supply Priority'), desc: 'Prioritize essential supplies like medicine, food & fuel.', icon: '⚙️' },
-            { id: 'alerts', title: t('navigation.alerts', 'Alert & Notifications'), desc: 'Real-time alerts & notifications for critical incidents.', icon: '🔔' },
-            { id: 'weather', title: t('navigation.weather', 'Weather Intelligence'), desc: 'Live weather updates & forecasts for decision making.', icon: '🌧️' },
-            { id: 'customdashboard', title: t('navigation.customdashboard', 'Analytics & Reports'), desc: 'Insights, reports & dashboards for better planning.', icon: '📊' },
-            { id: 'gov', title: t('navigation.gov', 'Government Dashboard'), desc: 'Administrative oversight & data-driven decision support.', icon: '🏛️' }
-          ].map((card, idx) => (
-            <div
-              key={idx}
-              onClick={() => handleNav(card.id)}
-              className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-3.5 shadow-lg hover:border-indigo-500/60 dark:hover:border-indigo-500/60 hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer transition flex flex-col justify-between group space-y-2 relative overflow-hidden"
-            >
-              {card.isNew && (
-                <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/40 text-[9px] font-black uppercase">
-                  AI FEATURE
-                </span>
-              )}
-              <div className="text-xl">{card.icon}</div>
-              <div>
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">{card.title}</h4>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{card.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* SECTION: BOTTOM 4-PANEL TELEMETRY GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
         {/* Panel 1: LIVE VEHICLE TRACKING */}
