@@ -179,11 +179,16 @@ export default function SmartDisasterMonitoring({
       setWeatherLoading(true);
       setAiLoading(true);
 
-      const [w, env, rds, alr, trd] = await Promise.all([
+      // 1. Fetch real-time weather & environmental elevation/soil data
+      const [w, env] = await Promise.all([
         getLiveWeather(monitoredLoc.lat, monitoredLoc.lon),
-        getEnvironmentalData(monitoredLoc.lat, monitoredLoc.lon),
-        getRoadAccessibility(monitoredLoc.lat, monitoredLoc.lon),
-        getDisasterAlerts(monitoredLoc.lat, monitoredLoc.lon, monitoredLoc.displayName),
+        getEnvironmentalData(monitoredLoc.lat, monitoredLoc.lon)
+      ]);
+
+      // 2. Fetch dynamic alerts, roads, and 72h trend using real weather + env data
+      const [rds, alr, trd] = await Promise.all([
+        getRoadAccessibility(monitoredLoc.lat, monitoredLoc.lon, monitoredLoc.displayName, w, env),
+        getDisasterAlerts(monitoredLoc.lat, monitoredLoc.lon, monitoredLoc.displayName, w, env),
         get72HourTrend(monitoredLoc.lat, monitoredLoc.lon)
       ]);
 
@@ -194,10 +199,27 @@ export default function SmartDisasterMonitoring({
       setTrendData(trd);
       setWeatherLoading(false);
 
+      // Calculate overall risk
+      let score = 20;
+      if (w) {
+        if (w.precipitation > 30) score += 40;
+        else if (w.precipitation > 10) score += 25;
+        else if (w.precipitation > 1) score += 10;
+
+        if (w.windGusts > 50) score += 20;
+        else if (w.windGusts > 30) score += 10;
+      }
+      if (env) {
+        if (env.soilMoistureIndex > 80) score += 15;
+        if (env.slopeDegrees > 20) score += 15;
+      }
+      score = Math.min(98, Math.max(10, score));
+      const riskLevel = score >= 75 ? 'CRITICAL' : score >= 55 ? 'HIGH' : score >= 35 ? 'MODERATE' : 'LOW';
+
       const summary = await generateAISituationSummary(
         monitoredLoc.displayName,
         disasterType,
-        currentRisk.level,
+        riskLevel,
         w,
         alr,
         rds
@@ -214,7 +236,7 @@ export default function SmartDisasterMonitoring({
           time: nowStr,
           title: `Monitored Location Updated`,
           category: 'SYSTEM',
-          details: `Target: ${monitoredLoc.displayName} (${monitoredLoc.lat.toFixed(4)}°N, ${monitoredLoc.lon.toFixed(4)}°E)`
+          details: `Target: ${monitoredLoc.displayName} (${monitoredLoc.lat.toFixed(4)}°N, ${monitoredLoc.lon.toFixed(4)}°E) • Elevation: ${env.elevationMsl}m MSL • Precip: ${w.precipitation} mm/hr`
         },
         ...prev
       ]);
@@ -242,6 +264,9 @@ export default function SmartDisasterMonitoring({
     setLonInput(res.lon.toString());
     setSearchResults([]);
     setSearchQuery('');
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setView([res.lat, res.lon], 12);
+    }
   };
 
   const handleManualCoordSubmit = async (e: React.FormEvent) => {
@@ -299,7 +324,8 @@ export default function SmartDisasterMonitoring({
         setMonitoredLoc(geo);
       });
     } else {
-      mapInstanceRef.current.setView([monitoredLoc.lat, monitoredLoc.lon], 12);
+      const currentZoom = mapInstanceRef.current.getZoom();
+      mapInstanceRef.current.setView([monitoredLoc.lat, monitoredLoc.lon], currentZoom && currentZoom >= 5 ? currentZoom : 12);
     }
 
     const map = mapInstanceRef.current;
@@ -330,6 +356,9 @@ export default function SmartDisasterMonitoring({
     newTileLayer.addTo(map);
     tileLayerRef.current = newTileLayer;
 
+    // Dynamic Risk Color
+    const riskColor = currentRisk.level === 'CRITICAL' ? '#ef4444' : currentRisk.level === 'HIGH' ? '#f59e0b' : currentRisk.level === 'MODERATE' ? '#38bdf8' : '#10b981';
+
     // Update Monitored Pin Marker
     if (markerRef.current) map.removeLayer(markerRef.current);
 
@@ -353,7 +382,7 @@ export default function SmartDisasterMonitoring({
             width: 52px;
             height: 52px;
             border-radius: 50%;
-            border: 2px solid #ef4444;
+            border: 2px solid ${riskColor};
             animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
           "></span>
           <span style="font-size: 16px;">🛰️</span>
@@ -365,23 +394,27 @@ export default function SmartDisasterMonitoring({
 
     markerRef.current = L.marker([monitoredLoc.lat, monitoredLoc.lon], { icon: customMarkerIcon }).addTo(map);
     markerRef.current.bindPopup(`
-      <div style="font-family: sans-serif; font-size: 12px; color: #0f172a;">
-        <b style="color: #e11d48;">🛰️ Monitored Disaster Site</b><br/>
+      <div style="font-family: sans-serif; font-size: 12px; color: #0f172a; min-width: 220px; line-height: 1.5;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
+          <b style="color: #e11d48; font-size: 13px;">🛰️ Monitored Site</b>
+          <span style="background: ${riskColor}22; color: ${riskColor}; border: 1px solid ${riskColor}55; padding: 2px 6px; border-radius: 9999px; font-weight: 800; font-size: 10px;">${currentRisk.level}</span>
+        </div>
         <b>${monitoredLoc.displayName}</b><br/>
-        Lat: ${monitoredLoc.lat.toFixed(4)} &bull; Lon: ${monitoredLoc.lon.toFixed(4)}<br/>
-        <span>Disaster Type: <b>${disasterType}</b></span><br/>
-        <span>Current Risk: <b style="color: #ef4444;">${currentRisk.level} (${currentRisk.score}%)</b></span>
+        <span style="color: #64748b; font-size: 11px;">GPS: ${monitoredLoc.lat.toFixed(4)}° N, ${monitoredLoc.lon.toFixed(4)}° E</span><br/>
+        <span>Real Elevation: <b>${envData ? envData.elevationMsl : 150}m MSL</b></span><br/>
+        <span>Live Rainfall: <b>${weather ? weather.precipitation : 0} mm/hr</b></span><br/>
+        <span>Dynamic Hazard Score: <b style="color: ${riskColor};">${currentRisk.score}%</b></span>
       </div>
     `).openPopup();
 
-    // Update Monitoring Radius Circle
+    // Update Monitoring Radius Circle (Danger Zone)
     if (radiusCircleRef.current) map.removeLayer(radiusCircleRef.current);
 
     radiusCircleRef.current = L.circle([monitoredLoc.lat, monitoredLoc.lon], {
       radius: monitoringRadiusKm * 1000,
-      color: '#f43f5e',
-      fillColor: '#f43f5e',
-      fillOpacity: 0.12,
+      color: riskColor,
+      fillColor: riskColor,
+      fillOpacity: currentRisk.level === 'CRITICAL' || currentRisk.level === 'HIGH' ? 0.18 : 0.08,
       weight: 2,
       dashArray: '6, 6'
     }).addTo(map);
