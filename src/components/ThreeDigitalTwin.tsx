@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import MapComponent from "./MapComponent";
 import NERLiveMapModule from "./NERLiveMapModule";
+import StateRiskMatrixSection from "./StateRiskMatrixSection";
 
 interface ThreeDigitalTwinProps {
   onNavigateToMonitoring?: () => void;
@@ -33,6 +34,156 @@ interface ThreeDigitalTwinProps {
   onNavigateToRerouting?: () => void;
   onNavigateModule?: (moduleId: string) => void;
 }
+
+// 🏔️ ALL MAJOR NORTH EASTERN 3D HIGHWAY & HILLY CORRIDORS CONFIGURATION
+const HIGHWAYS_CONFIG: Record<string, {
+  id: string;
+  name: string;
+  shortCode: string;
+  state: string;
+  terrainType: "rainforest" | "snow" | "river_gorge" | "pine_ridge" | "bamboo_range" | "floodplain";
+  breachSector: string;
+  bypassSector: string;
+  blockedTitle: string;
+  blockedEta: string;
+  blockedDesc: string;
+  bypassTitle: string;
+  bypassSavings: string;
+  bypassDesc: string;
+  convoyName: string;
+  convoyCargo: string;
+  convoyRoute: string;
+  convoyProgress: string;
+  fogDensity: number;
+  terrainHeightMod: number;
+}> = {
+  nh6: {
+    id: "nh6",
+    name: "NH-6: Meghalaya ➔ Silchar (East Khasi Hills Landslide)",
+    shortCode: "NH-6 Active",
+    state: "Meghalaya",
+    terrainType: "rainforest",
+    breachSector: "Sector 14 (Breach)",
+    bypassSector: "Sector 9 (Bypass)",
+    blockedTitle: "NH-6 Blocked (Km 142)",
+    blockedEta: "4h 30m",
+    blockedDesc: "400m landslide debris breach. Standard vehicles barred.",
+    bypassTitle: "Green Corridor (Jowai Bypass)",
+    bypassSavings: "-4.2 hours saved",
+    bypassDesc: "Active AI bypass clear across Sector 9 ridge.",
+    convoyName: "Convoy #01 (AS-01-AB-1234)",
+    convoyCargo: "12T Medical Oxygen Cylinders",
+    convoyRoute: "Guwahati ➔ Silchar ➔ Aizawl",
+    convoyProgress: "72%",
+    fogDensity: 0.006,
+    terrainHeightMod: 1.0
+  },
+  nh13: {
+    id: "nh13",
+    name: "NH-13: Sela Pass ➔ Tawang (High-Altitude Snow Slurry)",
+    shortCode: "NH-13 Active",
+    state: "Arunachal Pradesh",
+    terrainType: "snow",
+    breachSector: "Sela Summit (Freeze)",
+    bypassSector: "Kalaktang (Bypass)",
+    blockedTitle: "NH-13 Sela Pass (3,500m MSL)",
+    blockedEta: "6h 15m",
+    blockedDesc: "Sub-zero blizzard snow slurry & shale rockfall.",
+    bypassTitle: "Kalaktang Low-Altitude Corridor",
+    bypassSavings: "-5.6 hours saved",
+    bypassDesc: "Heavy 4x4 snowplow convoy route operational.",
+    convoyName: "Convoy #04 (AR-01-SP-9912)",
+    convoyCargo: "Emergency Rations & Cold Fuel",
+    convoyRoute: "Tezpur ➔ Kalaktang ➔ Tawang",
+    convoyProgress: "64%",
+    fogDensity: 0.009,
+    terrainHeightMod: 1.35
+  },
+  nh10: {
+    id: "nh10",
+    name: "NH-10: Teesta River Basin ➔ Gangtok (River Surge)",
+    shortCode: "NH-10 Active",
+    state: "Sikkim",
+    terrainType: "river_gorge",
+    breachSector: "Melli Basin (Surge)",
+    bypassSector: "Lava Ridge (Bypass)",
+    blockedTitle: "NH-10 Melli Basin Surge",
+    blockedEta: "5h 00m",
+    blockedDesc: "Teesta river velocity 4.2 m/s overtopping carriageway.",
+    bypassTitle: "Lava High-Elevation Green Bypass",
+    bypassSavings: "-3.8 hours saved",
+    bypassDesc: "High-clearance medical convoy route clear.",
+    convoyName: "Convoy #02 (SK-02-MD-4411)",
+    convoyCargo: "Blood Plasma & Dialysis Buffer",
+    convoyRoute: "Siliguri ➔ Lava ➔ Gangtok",
+    convoyProgress: "81%",
+    fogDensity: 0.007,
+    terrainHeightMod: 1.2
+  },
+  nh29: {
+    id: "nh29",
+    name: "NH-29: Dimapur ➔ Kohima Pass (Naga Hills Ridge)",
+    shortCode: "NH-29 Active",
+    state: "Nagaland",
+    terrainType: "pine_ridge",
+    breachSector: "Pagla Pahar (Slump)",
+    bypassSector: "Zubza Valley (Bypass)",
+    blockedTitle: "NH-29 Pagla Pahar Mudflow",
+    blockedEta: "3h 45m",
+    blockedDesc: "Mudflow slump & slope subsidence blocking arterial link.",
+    bypassTitle: "Zubza Valley Green Corridor",
+    bypassSavings: "-2.4 hours saved",
+    bypassDesc: "All-weather bypass reinforced with BRO retaining mesh.",
+    convoyName: "Convoy #06 (NL-07-TR-7721)",
+    convoyCargo: "Satellite Transceivers & Starlink Grid",
+    convoyRoute: "Dimapur ➔ Zubza ➔ Kohima",
+    convoyProgress: "58%",
+    fogDensity: 0.006,
+    terrainHeightMod: 0.95
+  },
+  nh306: {
+    id: "nh306",
+    name: "NH-306: Silchar ➔ Aizawl (Mizoram Bamboo Ridges)",
+    shortCode: "NH-306 Active",
+    state: "Mizoram",
+    terrainType: "bamboo_range",
+    breachSector: "Vairengte (Depression)",
+    bypassSector: "Bairabi (Bypass)",
+    blockedTitle: "NH-306 Vairengte Subsidence",
+    blockedEta: "4h 10m",
+    blockedDesc: "Heavy soil saturation & carriageway lateral crack.",
+    bypassTitle: "Bairabi Railhead-Road Bypass",
+    bypassSavings: "-3.1 hours saved",
+    bypassDesc: "Multi-modal railhead link clear for supplies.",
+    convoyName: "Convoy #03 (MZ-01-FD-3388)",
+    convoyCargo: "Shelter Tarpaulins & Grain Stock",
+    convoyRoute: "Silchar ➔ Bairabi ➔ Aizawl",
+    convoyProgress: "69%",
+    fogDensity: 0.005,
+    terrainHeightMod: 0.9
+  },
+  nh37: {
+    id: "nh37",
+    name: "NH-37 / NH-715: Kaziranga Floodplain ➔ Jorhat",
+    shortCode: "NH-37 Active",
+    state: "Assam",
+    terrainType: "floodplain",
+    breachSector: "Bagori (Inundation)",
+    bypassSector: "Elevated Flyover",
+    blockedTitle: "NH-37 Kaziranga Flood Surge",
+    blockedEta: "2h 30m",
+    blockedDesc: "Brahmaputra overflow & wildlife crossing speed cap.",
+    bypassTitle: "Elevated Green Flyover Corridor",
+    bypassSavings: "-1.9 hours saved",
+    bypassDesc: "Elevated bypass clear for rapid emergency transit.",
+    convoyName: "Convoy #05 (AS-03-WP-5520)",
+    convoyCargo: "Mobile Water Purifiers & Generators",
+    convoyRoute: "Guwahati ➔ Bokakhat ➔ Jorhat",
+    convoyProgress: "88%",
+    fogDensity: 0.006,
+    terrainHeightMod: 0.65
+  }
+};
 
 export default function ThreeDigitalTwin({
   onNavigateToMonitoring,
@@ -45,8 +196,13 @@ export default function ThreeDigitalTwin({
   const isDark = theme === "dark";
 
   const mountRef = useRef<HTMLDivElement>(null);
+  const mapSectionRef = useRef<HTMLElement | null>(null);
   const [displayMode, setDisplayMode] = useState<"3d" | "2d">("3d");
+  const [focusedMapTarget, setFocusedMapTarget] = useState<{ coord: [number, number]; zoom: number } | null>(null);
+  const [selectedHighwayId, setSelectedHighwayId] = useState<string>("nh6");
   const [activeZone, setActiveZone] = useState<"breach" | "corridor">("corridor");
+
+  const currentHighway = HIGHWAYS_CONFIG[selectedHighwayId] || HIGHWAYS_CONFIG["nh6"];
 
   // HUD Cards Slideshow State
   const [hudSlideIndex, setHudSlideIndex] = useState<number>(0);
@@ -81,47 +237,89 @@ export default function ThreeDigitalTwin({
   useEffect(() => {
     if (!mountRef.current || displayMode !== "3d") return;
 
-    // Helper: Generate Photorealistic Satellite Terrain Canvas Texture
-    const createPhotorealisticTerrainTexture = () => {
+    // Helper: Generate Photorealistic Satellite Terrain Canvas Texture Based on Terrain Type
+    const createPhotorealisticTerrainTexture = (terrainType: string) => {
       const canvas = document.createElement("canvas");
       canvas.width = 1024;
       canvas.height = 1024;
       const ctx = canvas.getContext("2d");
       if (!ctx) return null;
 
-      // 1. Mountain Base Altitude Gradient
       const grad = ctx.createLinearGradient(0, 0, 1024, 1024);
-      grad.addColorStop(0, "#0a2318");    // Deep Pine Valley
-      grad.addColorStop(0.25, "#123b28"); // Dense Forest Slope
-      grad.addColorStop(0.55, "#1e4d36"); // Mid-Altitude Foliage
-      grad.addColorStop(0.75, "#3b4538"); // Alpine High Meadow
-      grad.addColorStop(1, "#334155");    // Rocky Granite Peak
+
+      if (terrainType === "snow") {
+        // High-Altitude Alpine Snowy Peaks (Sela Pass)
+        grad.addColorStop(0, "#475569");
+        grad.addColorStop(0.3, "#94a3b8");
+        grad.addColorStop(0.65, "#cbd5e1");
+        grad.addColorStop(0.85, "#e2e8f0");
+        grad.addColorStop(1, "#f8fafc");
+      } else if (terrainType === "river_gorge") {
+        // Sikkim Teesta Deep River Gorge
+        grad.addColorStop(0, "#0c4a6e");
+        grad.addColorStop(0.25, "#0369a1");
+        grad.addColorStop(0.55, "#1e3a2b");
+        grad.addColorStop(0.8, "#334155");
+        grad.addColorStop(1, "#1e293b");
+      } else if (terrainType === "pine_ridge") {
+        // Nagaland Naga Hills Pine Terraces
+        grad.addColorStop(0, "#14532d");
+        grad.addColorStop(0.3, "#166534");
+        grad.addColorStop(0.6, "#292524");
+        grad.addColorStop(0.85, "#44403c");
+        grad.addColorStop(1, "#57534e");
+      } else if (terrainType === "bamboo_range") {
+        // Mizoram Lush Rolling Bamboo Hills
+        grad.addColorStop(0, "#14532d");
+        grad.addColorStop(0.35, "#15803d");
+        grad.addColorStop(0.7, "#16a34a");
+        grad.addColorStop(0.9, "#1e40af");
+        grad.addColorStop(1, "#334155");
+      } else if (terrainType === "floodplain") {
+        // Assam Brahmaputra Alluvial Floodplain
+        grad.addColorStop(0, "#065f46");
+        grad.addColorStop(0.3, "#047857");
+        grad.addColorStop(0.6, "#854d0e");
+        grad.addColorStop(0.85, "#ca8a04");
+        grad.addColorStop(1, "#0284c7");
+      } else {
+        // Meghalaya Subtropical Rainforest (NH-6 Default)
+        grad.addColorStop(0, "#0a2318");
+        grad.addColorStop(0.25, "#123b28");
+        grad.addColorStop(0.55, "#1e4d36");
+        grad.addColorStop(0.75, "#3b4538");
+        grad.addColorStop(1, "#334155");
+      }
+
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 1024, 1024);
 
-      // 2. High-Density Organic Vegetation & Rock Strata Noise
+      // High-Density Organic Vegetation & Geological Noise
       for (let i = 0; i < 40000; i++) {
         const x = Math.random() * 1024;
         const y = Math.random() * 1024;
         const radius = Math.random() * 2.5 + 0.8;
         const tone = Math.random();
-        if (tone < 0.45) {
-          ctx.fillStyle = `rgba(10, 36, 24, ${Math.random() * 0.45})`;
-        } else if (tone < 0.8) {
-          ctx.fillStyle = `rgba(28, 75, 48, ${Math.random() * 0.35})`;
-        } else if (tone < 0.92) {
-          ctx.fillStyle = `rgba(110, 95, 75, ${Math.random() * 0.3})`;
+
+        if (terrainType === "snow") {
+          ctx.fillStyle = tone < 0.6 ? `rgba(255, 255, 255, ${Math.random() * 0.5})` : `rgba(148, 163, 184, ${Math.random() * 0.4})`;
+        } else if (terrainType === "river_gorge") {
+          ctx.fillStyle = tone < 0.4 ? `rgba(2, 132, 199, ${Math.random() * 0.45})` : `rgba(30, 41, 59, ${Math.random() * 0.35})`;
         } else {
-          ctx.fillStyle = `rgba(148, 163, 184, ${Math.random() * 0.25})`;
+          if (tone < 0.45) ctx.fillStyle = `rgba(10, 36, 24, ${Math.random() * 0.45})`;
+          else if (tone < 0.8) ctx.fillStyle = `rgba(28, 75, 48, ${Math.random() * 0.35})`;
+          else if (tone < 0.92) ctx.fillStyle = `rgba(110, 95, 75, ${Math.random() * 0.3})`;
+          else ctx.fillStyle = `rgba(148, 163, 184, ${Math.random() * 0.25})`;
         }
+
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // 3. Mountain River / Valley Creek Flow
-      ctx.strokeStyle = "rgba(56, 189, 248, 0.5)";
-      ctx.lineWidth = 14;
+      // Mountain River / Valley Creek Flow
+      ctx.strokeStyle = terrainType === "snow" ? "rgba(186, 230, 253, 0.6)" : "rgba(56, 189, 248, 0.55)";
+      ctx.lineWidth = terrainType === "river_gorge" ? 22 : 14;
       ctx.lineCap = "round";
       ctx.beginPath();
       ctx.moveTo(80, 0);
@@ -170,7 +368,7 @@ export default function ThreeDigitalTwin({
     // 1. Scene Setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(isDark ? 0x030712 : 0xf1f5f9);
-    scene.fog = new THREE.FogExp2(isDark ? 0x030712 : 0xf1f5f9, 0.006);
+    scene.fog = new THREE.FogExp2(isDark ? 0x030712 : 0xf1f5f9, currentHighway.fogDensity);
     sceneRef.current = scene;
 
     // 2. Camera Setup
@@ -213,6 +411,7 @@ export default function ThreeDigitalTwin({
     const terrainGeo = new THREE.PlaneGeometry(150, 150, 80, 80);
     terrainGeo.rotateX(-Math.PI / 2);
     const posAttr = terrainGeo.attributes.position;
+    const heightMod = currentHighway.terrainHeightMod;
     for (let i = 0; i < posAttr.count; i++) {
       const x = posAttr.getX(i);
       const z = posAttr.getZ(i);
@@ -220,14 +419,14 @@ export default function ThreeDigitalTwin({
       const d1 = Math.sin(x * 0.07) * Math.cos(z * 0.07) * 9.5;
       const d2 = Math.sin(x * 0.14 + z * 0.09) * 4.2;
       const d3 = Math.cos(x * 0.04 - z * 0.03) * 5.8;
-      let y = d1 + d2 + d3;
+      let y = (d1 + d2 + d3) * heightMod;
       // Flatten central valley for road corridor
       if (Math.abs(z + 1.8 * x) < 28) y *= 0.22;
       posAttr.setY(i, y - 5.5);
     }
     terrainGeo.computeVertexNormals();
 
-    const satelliteTex = createPhotorealisticTerrainTexture();
+    const satelliteTex = createPhotorealisticTerrainTexture(currentHighway.terrainType);
     const bumpTex = createTerrainBumpMap();
 
     const terrainMat = new THREE.MeshStandardMaterial({
@@ -609,27 +808,37 @@ export default function ThreeDigitalTwin({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [displayMode, activeZone, isDark]);
+  }, [displayMode, activeZone, selectedHighwayId, isDark]);
 
   return (
     <div className="space-y-6 select-none">
       {/* 3D SIMULATION / 2D MAP DIGITAL TWIN CONTAINER */}
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 lg:p-7 shadow-xl dark:shadow-2xl relative overflow-hidden transition-colors duration-300">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 sm:p-5 lg:p-7 shadow-xl dark:shadow-2xl relative overflow-hidden transition-colors duration-300">
         {/* Header Bar */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs lg:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-2 border border-emerald-500/30">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 border border-emerald-500/30 shrink-0">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
                 {t("dashboard.liveRegionMap", "Live Region Map • Live Satellite & Radar")}
               </span>
-              <span className="text-xs lg:text-sm text-slate-500 dark:text-slate-400 italic hidden sm:inline font-sans font-medium">{t("dashboard.smartDecisions", "\"Smart decisions today, safer tomorrow.\"")}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 italic hidden md:inline font-sans font-medium">{t("dashboard.smartDecisions", "\"Smart decisions today, safer tomorrow.\"")}</span>
             </div>
-            <h2 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1.5">{t("dashboard.overviewTitle", "North Eastern Region Accessibility & Logistics Overview")}</h2>
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight mt-1 leading-snug">
+              {t("dashboard.overviewTitle", "North Eastern Region Accessibility & Logistics Overview")}
+            </h2>
           </div>
 
           {/* Controls Mode Switcher */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start lg:self-center">
+            <button
+              onClick={() => handleNav('staterisk')}
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-600 via-amber-600 to-emerald-600 hover:brightness-110 text-white font-extrabold text-xs lg:text-sm shadow-md shadow-rose-600/25 flex items-center gap-2 cursor-pointer transition shrink-0"
+              title="Open Dedicated Regional State Risk Matrix Tab"
+            >
+              <span>📊</span> <span>State Risk Matrix</span>
+            </button>
+
             <div className="flex items-center rounded-xl bg-slate-100 dark:bg-[#040814] p-1.5 border border-slate-200 dark:border-slate-800 text-xs lg:text-sm font-bold">
               <button
                 onClick={() => setDisplayMode("3d")}
@@ -656,34 +865,50 @@ export default function ThreeDigitalTwin({
           <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-2xl h-[460px] lg:h-[540px]">
             <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
-            {/* Zone Status Pills Overlay */}
-            <div className="absolute top-4 left-4 z-20 flex items-center gap-2.5">
+            {/* Zone Status Pills Overlay & Highway Corridor Switcher */}
+            <div className="absolute top-4 left-4 z-20 flex flex-wrap items-center gap-2.5">
+              {/* Highway Sector Switcher */}
+              <div className="relative">
+                <select
+                  value={selectedHighwayId}
+                  onChange={(e) => setSelectedHighwayId(e.target.value)}
+                  className="rounded-xl bg-slate-900/90 text-white border border-sky-500/60 px-3.5 py-2 text-xs lg:text-sm font-black shadow-xl backdrop-blur cursor-pointer hover:border-sky-400 transition"
+                >
+                  <option value="nh6">🏔️ NH-6: Meghalaya ➔ Silchar</option>
+                  <option value="nh13">❄️ NH-13: Sela Pass ➔ Tawang</option>
+                  <option value="nh10">🌊 NH-10: Teesta Basin ➔ Gangtok</option>
+                  <option value="nh29">🌲 NH-29: Dimapur ➔ Kohima</option>
+                  <option value="nh306">🌄 NH-306: Silchar ➔ Aizawl</option>
+                  <option value="nh37">🦏 NH-37: Kaziranga Floodplain</option>
+                </select>
+              </div>
+
               <button
                 onClick={() => setActiveZone("breach")}
-                className={"px-3.5 py-2 rounded-xl text-xs lg:text-sm font-extrabold transition flex items-center gap-2 cursor-pointer " + (
+                className={"px-3.5 py-2 rounded-xl text-xs lg:text-sm font-extrabold transition flex items-center gap-1.5 cursor-pointer " + (
                   activeZone === "breach"
                     ? "bg-rose-600 text-white shadow-lg shadow-rose-600/40"
                     : "bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white backdrop-blur"
                 )}
               >
                 <AlertTriangle className="h-4 w-4" />
-                {t("dashboard.sectorBreach", "Sector 14 (Breach)")}
+                {currentHighway.breachSector}
               </button>
 
               <button
                 onClick={() => setActiveZone("corridor")}
-                className={"px-3.5 py-2 rounded-xl text-xs lg:text-sm font-extrabold transition flex items-center gap-2 cursor-pointer " + (
+                className={"px-3.5 py-2 rounded-xl text-xs lg:text-sm font-extrabold transition flex items-center gap-1.5 cursor-pointer " + (
                   activeZone === "corridor"
                     ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/40"
                     : "bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white backdrop-blur"
                 )}
               >
                 <Navigation className="h-4 w-4" />
-                {t("dashboard.sectorBypass", "Sector 9 (Bypass)")}
+                {currentHighway.bypassSector}
               </button>
 
-              <span className="rounded-xl bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-800 px-3.5 py-2 text-xs lg:text-sm text-sky-600 dark:text-sky-400 font-mono font-bold backdrop-blur">
-                {t("dashboard.nh6Active", "NH-6 Active")}
+              <span className="rounded-xl bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-800 px-3.5 py-2 text-xs lg:text-sm text-sky-600 dark:text-sky-400 font-mono font-bold backdrop-blur hidden sm:inline">
+                {currentHighway.shortCode}
               </span>
             </div>
 
@@ -698,20 +923,20 @@ export default function ThreeDigitalTwin({
                 {hudSlideIndex === 0 && (
                   <div className="rounded-2xl border border-rose-500/40 bg-white/95 dark:bg-rose-950/85 p-4 backdrop-blur shadow-xl space-y-1.5 animate-in fade-in zoom-in-95 duration-200 transition-all">
                     <div className="flex items-center justify-between text-xs lg:text-sm">
-                      <span className="font-extrabold text-rose-600 dark:text-rose-300">{t("dashboard.nh6Blocked", "NH-6 Blocked (Km 142)")}</span>
-                      <span className="text-xs text-rose-600 dark:text-rose-400 font-mono font-black">4h 30m</span>
+                      <span className="font-extrabold text-rose-600 dark:text-rose-300">{currentHighway.blockedTitle}</span>
+                      <span className="text-xs text-rose-600 dark:text-rose-400 font-mono font-black">{currentHighway.blockedEta}</span>
                     </div>
-                    <p className="text-xs lg:text-sm text-slate-800 dark:text-slate-200 font-medium">{t("dashboard.nh6BlockedDesc", "Landslide debris breach. Standard vehicles barred.")}</p>
+                    <p className="text-xs lg:text-sm text-slate-800 dark:text-slate-200 font-medium">{currentHighway.blockedDesc}</p>
                   </div>
                 )}
 
                 {hudSlideIndex === 1 && (
                   <div className="rounded-2xl border border-emerald-500/40 bg-white/95 dark:bg-emerald-950/85 p-4 backdrop-blur shadow-xl space-y-1.5 animate-in fade-in zoom-in-95 duration-200 transition-all">
                     <div className="flex items-center justify-between text-xs lg:text-sm">
-                      <span className="font-extrabold text-emerald-700 dark:text-emerald-300">{t("dashboard.greenCorridor", "Green Corridor (Jowai Bypass)")}</span>
-                      <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono font-black">{t("dashboard.hoursSaved", "-4.2 hours saved")}</span>
+                      <span className="font-extrabold text-emerald-700 dark:text-emerald-300">{currentHighway.bypassTitle}</span>
+                      <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono font-black">{currentHighway.bypassSavings}</span>
                     </div>
-                    <p className="text-xs lg:text-sm text-slate-800 dark:text-slate-200 font-medium">{t("dashboard.activeBypassClear", "Active AI bypass clear.")}</p>
+                    <p className="text-xs lg:text-sm text-slate-800 dark:text-slate-200 font-medium">{currentHighway.bypassDesc}</p>
                   </div>
                 )}
 
@@ -719,11 +944,11 @@ export default function ThreeDigitalTwin({
                   <div className="rounded-2xl border border-sky-500/40 bg-white/95 dark:bg-sky-950/85 p-4 backdrop-blur shadow-xl flex items-center justify-between text-xs lg:text-sm min-h-[92px] animate-in fade-in zoom-in-95 duration-200 transition-all">
                     <div>
                       <span className="text-sky-700 dark:text-sky-300 font-extrabold flex items-center gap-2">
-                        <Truck className="h-4 w-4" /> {t("dashboard.convoy1", "Convoy #01 (AS-01-AB-1234)")}
+                        <Truck className="h-4 w-4" /> {currentHighway.convoyName}
                       </span>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-mono">Guwahati ➔ Aizawl Route</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-mono">{currentHighway.convoyRoute}</p>
                     </div>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-mono font-black text-base">72%</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-mono font-black text-base">{currentHighway.convoyProgress}</span>
                   </div>
                 )}
               </div>
@@ -770,8 +995,12 @@ export default function ThreeDigitalTwin({
             </div>
           </div>
         ) : (
-          <div className="h-[460px] lg:h-[540px] rounded-2xl overflow-hidden">
-            <NERLiveMapModule />
+          <div className="h-[460px] lg:h-[540px] rounded-2xl overflow-hidden relative">
+            <NERLiveMapModule 
+              hideHeader={true}
+              focusedTarget={focusedMapTarget}
+              onNavigateTo3DSim={() => setDisplayMode("3d")} 
+            />
           </div>
         )}
       </section>

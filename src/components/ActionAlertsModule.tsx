@@ -55,6 +55,19 @@ export default function ActionAlertsModule({
 
   const defaultIncidentList = [
     {
+      id: "INC-100-BIHAR",
+      badge: "🚨 RED ALERT GLOF/SURGE",
+      badgeColor: "bg-rose-600/30 text-rose-300 border-rose-500 animate-pulse font-black",
+      title: "Transboundary Nepal Flash Flood Influx: 7 North Bihar Districts Placed on High Alert",
+      description:
+        "Massive cloudburst and glacial runoff released from Nepal into Gandak (Valmikinagar Barrage 4.5L+ cusecs) and Kosi (Birpur Barrage 5.2L+ cusecs). Red alert active across West Champaran, East Champaran, Sitamarhi, Madhubani, Supaul, Araria, Kishanganj.",
+      gps: "26.6500° N, 84.9000° E (North Bihar Flood Corridor)",
+      dispatched: "NDRF Battalion 9, SDRF Bihar & Flood Control Units",
+      timeAgo: "Live Critical Alert",
+      actionType: "track",
+      actionLabel: "View Bihar Map 📍"
+    },
+    {
       id: "INC-101",
       badge: "CRITICAL L1",
       badgeColor: "bg-rose-500/20 text-rose-400 border-rose-500/40",

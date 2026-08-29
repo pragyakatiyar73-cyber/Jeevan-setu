@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "../i18n";
 import MapComponent from "./MapComponent";
+import StateRiskMatrixSection from "./StateRiskMatrixSection";
 import {
   ShieldAlert,
   MapPin,

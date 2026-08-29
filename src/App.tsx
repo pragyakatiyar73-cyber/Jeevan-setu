@@ -63,6 +63,7 @@ import EmergencySOSModal from './components/EmergencySOSModal';
 import MDoNERCommandModule from './components/MDoNERCommandModule';
 import NERLiveMapModule from './components/NERLiveMapModule';
 import ActionAlertsModule from './components/ActionAlertsModule';
+import StateRiskMatrixSection from './components/StateRiskMatrixSection';
 import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 import { useTranslation } from './i18n';
@@ -104,6 +105,7 @@ export default function App() {
 
   const [sharedMonitoringLoc, setSharedMonitoringLoc] = useState<any>(null);
   const [selectedLayer, setSelectedLayer] = useState<string>('osm');
+  const [mapFocusedTarget, setMapFocusedTarget] = useState<{ coord: [number, number]; zoom: number } | null>(null);
 
   // Map state
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -558,6 +560,7 @@ export default function App() {
                 category: t('sidebar.catIntelligence', 'Intelligence & Monitoring'),
                 items: [
                   { id: 'hub', label: t('navigation.dashboard'), icon: Sparkles, iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
+                  { id: 'staterisk', label: t('navigation.staterisk', 'Regional State Risk'), icon: FileBarChart, badge: '9 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'smartmonitoring', label: t('navigation.smartmonitoring'), icon: Eye, badge: 'NEW', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact'), icon: Camera, badge: 'AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
                   { id: 'customdashboard', label: t('navigation.customdashboard'), icon: Gauge, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
@@ -786,6 +789,18 @@ export default function App() {
           </div>
         )}
 
+        {/* 📊 DEDICATED REGIONAL STATE RISK MATRIX SECTION */}
+        {activeModule === 'staterisk' && (
+          <div className="h-full overflow-y-auto p-4 lg:p-7 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+            <StateRiskMatrixSection
+              onFocusState={(coord, zoom) => {
+                setMapFocusedTarget({ coord, zoom });
+                setActiveModule('map');
+              }}
+            />
+          </div>
+        )}
+
         {/* 1. OPERATIONS HUB / 3D SIMULATION DIGITAL TWIN */}
         {activeModule === 'hub' && (
           <div className="h-full overflow-y-auto p-4 lg:p-6">
@@ -801,6 +816,7 @@ export default function App() {
         {/* 2. FULL EXPANDED MAP VIEW MATCHING SCREENSHOT media_1787754063833.png */}
         {activeModule === 'map' && (
           <NERLiveMapModule
+            focusedTarget={mapFocusedTarget}
             onNavigateTo3DSim={() => setActiveModule('hub')}
             onTriggerSOS={() => setIsSosModalOpen(true)}
           />
