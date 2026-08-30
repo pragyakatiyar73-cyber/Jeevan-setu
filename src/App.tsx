@@ -601,7 +601,6 @@ export default function App() {
               {
                 category: t('sidebar.catCommand', 'Executive Command'),
                 items: [
-                  { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, badge: 'ENGINE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'gov', label: t('navigation.gov', 'MDoNER Command Grid'), icon: Building2, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'weather', label: t('navigation.weather', 'Weather Intelligence'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' }
                 ]
