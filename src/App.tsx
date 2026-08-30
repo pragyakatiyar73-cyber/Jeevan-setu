@@ -35,7 +35,8 @@ import {
   Upload,
   Eye,
   ShieldAlert,
-  CheckSquare
+  CheckSquare,
+  X
 } from 'lucide-react';
 import L from 'leaflet';
 import {
@@ -129,6 +130,7 @@ export default function App() {
 
   // SOS Emergency Modal State
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
+  const [simModalOpen, setSimModalOpen] = useState(false);
   const [activeSosLocation, setActiveSosLocation] = useState<{
     lat: number;
     lon: number;
@@ -722,7 +724,7 @@ export default function App() {
               onClick={() => {
                 incidentStore.triggerHackathonSimulation();
                 setActiveModule('smartmonitoring');
-                alert('🎮 HACKATHON DISASTER SIMULATION INITIALIZED!\n\nIncident JS-2026-001 (East Khasi Hills Flash Flood & Mudslide) set to CRITICAL.\nFollowing 11-stage workflow: MONITOR → DETECT → ASSESS → PREDICT → ALERT → RESPOND → RESCUE → EVACUATE → RELIEF → REPORT → RECOVER.');
+                setSimModalOpen(true);
               }}
               className="rounded-full bg-gradient-to-r from-amber-500 via-rose-600 to-indigo-600 px-3.5 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1.5 border border-amber-400/40 cursor-pointer shrink-0"
             >
@@ -2044,6 +2046,47 @@ export default function App() {
             setActiveModule('map');
           }}
         />
+
+        {/* 🎮 11-STAGE HACKATHON DISASTER SIMULATION MODAL */}
+        {simModalOpen && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
+            <div className="relative w-full max-w-lg rounded-2xl border border-rose-500/50 bg-gradient-to-b from-slate-900 via-rose-950/40 to-slate-900 p-6 shadow-2xl space-y-4 animate-fadeIn text-white select-none">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🎮</span>
+                  <h3 className="text-sm font-black text-white uppercase tracking-wider">HACKATHON DISASTER SIMULATION INITIALIZED!</h3>
+                </div>
+                <button
+                  onClick={() => setSimModalOpen(false)}
+                  className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs leading-relaxed text-slate-200">
+                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 font-bold text-rose-300">
+                  Incident JS-2026-001 (East Khasi Hills Flash Flood & Mudslide) set to CRITICAL.
+                </div>
+                <div className="font-mono text-[11px] text-slate-300 bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-1">
+                  <div className="font-bold text-sky-400">11-Stage End-to-End Workflow:</div>
+                  <div className="text-[10px] leading-relaxed text-slate-300">
+                    MONITOR → DETECT → ASSESS → PREDICT → ALERT → RESPOND → RESCUE → EVACUATE → RELIEF → REPORT → RECOVER
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  onClick={() => setSimModalOpen(false)}
+                  className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-indigo-600 px-5 py-2 text-xs font-extrabold text-white shadow-lg hover:from-rose-500 hover:to-indigo-500 cursor-pointer border border-rose-400/40"
+                >
+                  Acknowledge & Proceed ➔
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </main>
     </div>
