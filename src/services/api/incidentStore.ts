@@ -605,6 +605,11 @@ class IncidentStoreService {
     return this.reliefCamps.filter(c => c.incidentId === targetId);
   }
 
+  public addReliefCamp(camp: ReliefCamp) {
+    this.reliefCamps.unshift(camp);
+    this.notify();
+  }
+
   public updateReliefCampCapacity(campId: string, occupied: number) {
     const c = this.reliefCamps.find(item => item.id === campId);
     if (c) {
