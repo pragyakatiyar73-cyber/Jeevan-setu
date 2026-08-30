@@ -1,5 +1,39 @@
 [
   {
+    "sosId": "SOS-2026-5814",
+    "distressType": "Flash Flood / River Breach",
+    "lat": 27.26,
+    "lon": 92.42,
+    "landmark": "Kanpur flood area",
+    "personsTrapped": "5 to 15 Persons (Full Convoy / Bus)",
+    "triageLevel": "LEVEL 1 (Immediate Rescue / Air-Drop)",
+    "status": "ACTIVE_DISPATCH",
+    "timestamp": "2026-08-30T16:44:30.342Z",
+    "respondersNotified": [
+      "NDRF 12th Bn",
+      "SDRF Arunachal",
+      "MDoNER Triage Center",
+      "IAF Helicopter Unit Tezpur"
+    ]
+  },
+  {
+    "sosId": "SOS-2026-5523",
+    "distressType": "Trapped in Landslide / Mudflow",
+    "lat": 27.26,
+    "lon": 92.42,
+    "landmark": "नौ दो फ्लोर आईएस नेपाल।",
+    "personsTrapped": "5 to 15 Persons (Full Convoy / Bus)",
+    "triageLevel": "LEVEL 1 (Immediate Rescue / Air-Drop)",
+    "status": "ACTIVE_DISPATCH",
+    "timestamp": "2026-08-30T16:27:53.294Z",
+    "respondersNotified": [
+      "NDRF 12th Bn",
+      "SDRF Arunachal",
+      "MDoNER Triage Center",
+      "IAF Helicopter Unit Tezpur"
+    ]
+  },
+  {
     "sosId": "SOS-2026-6841",
     "distressType": "Trapped in Landslide",
     "lat": 27.26,
