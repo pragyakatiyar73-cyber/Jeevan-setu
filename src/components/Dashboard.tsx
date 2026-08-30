@@ -24,6 +24,7 @@ import {
   Radio
 } from "lucide-react";
 import { incidentStore } from "../services/api/incidentStore";
+import { getSpellingSuggestions, getDidYouMeanSuggestion, LocationSuggestion } from "../utils/locationSpellCheck";
 
 interface LocationPreset {
   id: string;
@@ -61,6 +62,7 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
   const [lonInput, setLonInput] = useState<string>("91.8933");
   const [locationName, setLocationName] = useState<string>("Shillong & Sohra (East Khasi Hills)");
   const [elevation, setElevation] = useState<string>("1,525m MSL");
+  const [dashboardSearch, setDashboardSearch] = useState<string>("");
 
   // Telemetry Data State
   const [loading, setLoading] = useState<boolean>(false);
@@ -335,14 +337,78 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
 
         {/* LOCATION SELECTOR INPUTS ROW */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 pt-3 border-t border-slate-200 dark:border-slate-800/80">
-          <div className="md:col-span-5">
-            <label className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block mb-1.5">
-              {t("landslide.selectPreset", "📍 SELECT LOCATION PRESET")}
+          <div className="md:col-span-5 relative">
+            <label className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block mb-1.5 flex items-center justify-between">
+              <span>{t("landslide.selectPreset", "📍 SEARCH / SELECT LOCATION")}</span>
             </label>
+            <input
+              type="text"
+              placeholder="Type city or district (e.g., Shillong, Tawang)..."
+              value={dashboardSearch}
+              onChange={(e) => setDashboardSearch(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs lg:text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-sky-500 focus:outline-none mb-1.5"
+            />
+
+            {/* Did You Mean Suggestion */}
+            {dashboardSearch.trim().length >= 2 && (() => {
+              const dyM = getDidYouMeanSuggestion(dashboardSearch);
+              if (!dyM) return null;
+              return (
+                <div className="mb-2 flex items-center gap-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 px-2 py-1 text-[11px] text-amber-700 dark:text-amber-300">
+                  <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                  <span>Did you mean:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLatInput(dyM.lat.toString());
+                      setLonInput(dyM.lon.toString());
+                      setLocationName(`${dyM.name} (${dyM.state})`);
+                      fetchLandslideData(dyM.lat, dyM.lon);
+                      setDashboardSearch("");
+                    }}
+                    className="font-bold underline hover:text-amber-800 dark:hover:text-amber-200 transition"
+                  >
+                    {dyM.name} ({dyM.state})
+                  </button>
+                </div>
+              );
+            })()}
+
+            {/* Auto-Suggest Dropdown */}
+            {dashboardSearch.trim().length >= 2 && getSpellingSuggestions(dashboardSearch).length > 0 && (
+              <div className="absolute left-0 right-0 top-16 z-[2000] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 shadow-2xl max-h-48 overflow-y-auto">
+                <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase px-2 py-1 flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" />
+                  <span>Location Suggestions</span>
+                </div>
+                {getSpellingSuggestions(dashboardSearch).map((item, idx) => (
+                  <div
+                    key={`dash_sug_${idx}`}
+                    onClick={() => {
+                      setLatInput(item.lat.toString());
+                      setLonInput(item.lon.toString());
+                      setLocationName(`${item.name} (${item.state})`);
+                      fetchLandslideData(item.lat, item.lon);
+                      setDashboardSearch("");
+                    }}
+                    className="cursor-pointer rounded-lg p-2 text-xs hover:bg-amber-50 dark:hover:bg-amber-950/40 transition flex items-center justify-between"
+                  >
+                    <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-sky-500" />
+                      <span>{item.name} ({item.state})</span>
+                    </div>
+                    <span className="text-[9px] font-semibold bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 px-1.5 py-0.5 rounded">
+                      {item.type}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <select
               value={selectedPresetId}
               onChange={(e) => handleSelectPreset(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs lg:text-sm font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs lg:text-sm font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
             >
               {LOCATION_PRESETS.map((p) => (
                 <option key={p.id} value={p.id} className="bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 font-bold py-1">

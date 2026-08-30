@@ -54,6 +54,7 @@ import {
   Monitoring72hForecast,
   AISituationSummary
 } from '../services/api';
+import { getSpellingSuggestions, getDidYouMeanSuggestion, LocationSuggestion } from '../utils/locationSpellCheck';
 
 Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, ChartTooltip, ChartLegend);
 
@@ -622,20 +623,88 @@ export default function SmartDisasterMonitoring({
             </button>
           </form>
 
-          {/* Search Results Dropdown */}
-          {searchResults.length > 0 && (
-            <div className="absolute left-0 right-0 top-12 z-[2000] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 shadow-2xl max-h-56 overflow-y-auto">
-              <div className="text-[10px] font-bold text-slate-500 uppercase px-2 py-1">Nominatim OSM Match Results</div>
-              {searchResults.map((res, i) => (
-                <div
-                  key={i}
-                  onClick={() => handleSelectSearchResult(res)}
-                  className="cursor-pointer rounded-lg p-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          {/* Did You Mean Spelling Suggestion Banner */}
+          {searchQuery.trim().length >= 2 && (() => {
+            const dyM = getDidYouMeanSuggestion(searchQuery);
+            if (!dyM) return null;
+            return (
+              <div className="mt-1.5 flex items-center gap-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 text-[11px] text-amber-700 dark:text-amber-300">
+                <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                <span>Did you mean:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleSelectSearchResult({
+                      lat: dyM.lat,
+                      lon: dyM.lon,
+                      displayName: `${dyM.name}, ${dyM.state}, India`,
+                      city: dyM.name,
+                      state: dyM.state,
+                      country: "India"
+                    });
+                  }}
+                  className="font-bold underline hover:text-amber-800 dark:hover:text-amber-200 transition"
                 >
-                  <div className="font-semibold text-slate-900 dark:text-white">{res.displayName}</div>
-                  <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">Lat: {res.lat.toFixed(4)}, Lon: {res.lon.toFixed(4)}</div>
+                  {dyM.name} ({dyM.state})
+                </button>
+              </div>
+            );
+          })()}
+
+          {/* Auto-Suggest & Nominatim Search Results Dropdown */}
+          {(searchResults.length > 0 || (searchQuery.trim().length >= 2 && getSpellingSuggestions(searchQuery).length > 0)) && (
+            <div className="absolute left-0 right-0 top-12 z-[2000] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 shadow-2xl max-h-64 overflow-y-auto">
+              {/* Spelling / Dictionary Suggestions */}
+              {searchQuery.trim().length >= 2 && getSpellingSuggestions(searchQuery).length > 0 && (
+                <div className="mb-2 border-b border-slate-100 dark:border-slate-800 pb-1">
+                  <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase px-2 py-1 flex items-center gap-1">
+                    <Sparkles className="h-3 w-3" />
+                    <span>Suggested Locations / Auto-Correct</span>
+                  </div>
+                  {getSpellingSuggestions(searchQuery).map((item, idx) => (
+                    <div
+                      key={`sug_${idx}`}
+                      onClick={() => handleSelectSearchResult({
+                        lat: item.lat,
+                        lon: item.lon,
+                        displayName: `${item.name}, ${item.state}, India`,
+                        city: item.name,
+                        state: item.state,
+                        country: "India"
+                      })}
+                      className="cursor-pointer rounded-lg p-2 text-xs hover:bg-amber-50 dark:hover:bg-amber-950/40 transition flex items-center justify-between"
+                    >
+                      <div>
+                        <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                          <MapPin className="h-3.5 w-3.5 text-indigo-500" />
+                          <span>{item.name}</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400">{item.state}, India</div>
+                      </div>
+                      <span className="text-[9px] font-semibold bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded">
+                        {item.type}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+
+              {/* Nominatim OSM Match Results */}
+              {searchResults.length > 0 && (
+                <div>
+                  <div className="text-[10px] font-bold text-slate-500 uppercase px-2 py-1">OpenStreetMap Direct Results</div>
+                  {searchResults.map((res, i) => (
+                    <div
+                      key={`osm_${i}`}
+                      onClick={() => handleSelectSearchResult(res)}
+                      className="cursor-pointer rounded-lg p-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                    >
+                      <div className="font-semibold text-slate-900 dark:text-white">{res.displayName}</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">Lat: {res.lat.toFixed(4)}, Lon: {res.lon.toFixed(4)}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -17,8 +17,11 @@ import {
   Maximize2,
   Sun,
   Moon,
-  Volume2
+  Volume2,
+  Search,
+  Sparkles
 } from "lucide-react";
+import { getSpellingSuggestions, getDidYouMeanSuggestion } from "../utils/locationSpellCheck";
 
 export interface NERLiveMapModuleProps {
   hideHeader?: boolean;
@@ -59,6 +62,7 @@ export default function NERLiveMapModule({
   const [baseStyle, setBaseStyle] = useState<string>("esri");
   const [isLayersPanelOpen, setIsLayersPanelOpen] = useState<boolean>(true);
   const [showSosBroadcast, setShowSosBroadcast] = useState<boolean>(true);
+  const [mapSearchQuery, setMapSearchQuery] = useState<string>("");
 
   // Overlay Checkboxes State
   const [overlays, setOverlays] = useState({
@@ -766,6 +770,77 @@ export default function NERLiveMapModule({
               >
                 <X className="h-4 w-4" />
               </button>
+            </div>
+
+            {/* Location Search Bar with Auto-Suggest & Spelling Correction */}
+            <div className="relative">
+              <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
+                📍 Location Search & Auto-Suggest:
+              </label>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search sector, district, highway..."
+                  value={mapSearchQuery}
+                  onChange={(e) => setMapSearchQuery(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 pl-8 pr-2.5 py-1.5 text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Did You Mean Suggestion Banner */}
+              {mapSearchQuery.trim().length >= 2 && (() => {
+                const dyM = getDidYouMeanSuggestion(mapSearchQuery);
+                if (!dyM) return null;
+                return (
+                  <div className="mt-1 flex items-center gap-1 rounded-lg bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] text-amber-700 dark:text-amber-300">
+                    <Sparkles className="h-3 w-3 text-amber-500 shrink-0" />
+                    <span>Did you mean:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (mapInstanceRef.current) {
+                          mapInstanceRef.current.flyTo([dyM.lat, dyM.lon], 12, { duration: 1.5 });
+                        }
+                        setMapSearchQuery("");
+                      }}
+                      className="font-bold underline hover:text-amber-800 dark:hover:text-amber-200 transition"
+                    >
+                      {dyM.name} ({dyM.state})
+                    </button>
+                  </div>
+                );
+              })()}
+
+              {/* Auto-Suggest Dropdown */}
+              {mapSearchQuery.trim().length >= 2 && getSpellingSuggestions(mapSearchQuery).length > 0 && (
+                <div className="absolute left-0 right-0 top-14 z-[2500] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-1.5 shadow-2xl max-h-44 overflow-y-auto">
+                  <div className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase px-1.5 py-0.5 flex items-center gap-1">
+                    <Sparkles className="h-3 w-3" />
+                    <span>Suggestions / Auto-Correct</span>
+                  </div>
+                  {getSpellingSuggestions(mapSearchQuery).map((item, idx) => (
+                    <div
+                      key={`map_sug_${idx}`}
+                      onClick={() => {
+                        if (mapInstanceRef.current) {
+                          mapInstanceRef.current.flyTo([item.lat, item.lon], 12, { duration: 1.5 });
+                        }
+                        setMapSearchQuery("");
+                      }}
+                      className="cursor-pointer rounded-lg p-1.5 text-xs hover:bg-amber-50 dark:hover:bg-amber-950/40 transition flex items-center justify-between"
+                    >
+                      <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1">
+                        <MapPin className="h-3 w-3 text-sky-500" />
+                        <span>{item.name} ({item.state})</span>
+                      </div>
+                      <span className="text-[8px] font-semibold bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 px-1 py-0.5 rounded">
+                        {item.type}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Base Map Style Dropdown */}
