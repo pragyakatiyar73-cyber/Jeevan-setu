@@ -36,8 +36,12 @@ import {
   Eye,
   ShieldAlert,
   CheckSquare,
-  X
+  X,
+  Mic,
+  MicOff
 } from 'lucide-react';
+import { useVoiceRecognition } from './hooks/useVoiceRecognition';
+import VoiceAssistantModal from './components/common/VoiceAssistantModal';
 import L from 'leaflet';
 import {
   MAP_LAYERS,
@@ -131,6 +135,8 @@ export default function App() {
   // SOS Emergency Modal State
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
   const [simModalOpen, setSimModalOpen] = useState(false);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [voiceFeedbackMsg, setVoiceFeedbackMsg] = useState<string>('');
   const [activeSosLocation, setActiveSosLocation] = useState<{
     lat: number;
     lon: number;
@@ -730,6 +736,15 @@ export default function App() {
             >
               <span>⚡</span>
               <span>Run Hackathon Simulation</span>
+            </button>
+
+            {/* 🎙️ VOICE SOS & ASSISTANT HEADER BUTTON */}
+            <button
+              onClick={() => setIsVoiceModalOpen(true)}
+              className="rounded-full bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 px-3.5 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1.5 border border-sky-400/40 cursor-pointer shrink-0"
+            >
+              <span className="text-xs">🎙️</span>
+              <span>Voice Assistant</span>
             </button>
 
             {/* 🎮 3D SIM Pill Button */}
@@ -2045,6 +2060,14 @@ export default function App() {
             setIsSosModalOpen(false);
             setActiveModule('map');
           }}
+        />
+
+        {/* 🎙️ GLOBAL VOICE ASSISTANT MODAL */}
+        <VoiceAssistantModal
+          isOpen={isVoiceModalOpen}
+          onClose={() => setIsVoiceModalOpen(false)}
+          onNavigate={(targetModule) => setActiveModule(targetModule as any)}
+          onTriggerSOS={() => setIsSosModalOpen(true)}
         />
 
         {/* 🎮 11-STAGE HACKATHON DISASTER SIMULATION MODAL */}
