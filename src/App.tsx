@@ -883,7 +883,12 @@ export default function App() {
         {/* 0. DISASTER RISK DASHBOARD */}
         {activeModule === 'customdashboard' && (
           <div className="h-full overflow-y-auto">
-            <Dashboard />
+            <Dashboard
+              onNavigateToLiveMap={(loc) => {
+                setMapFocusedTarget({ coord: [loc.lat, loc.lon], zoom: 12 });
+                setActiveModule('map');
+              }}
+            />
           </div>
         )}
 
