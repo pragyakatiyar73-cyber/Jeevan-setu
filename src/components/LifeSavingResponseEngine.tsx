@@ -173,10 +173,12 @@ export default function LifeSavingResponseEngine() {
     setTimeout(() => setStatusMessage(null), 5000);
   };
 
-  const handleAssignTeam4 = () => {
-    incidentStore.assignRescueTeam('TEAM-01', 'SOS-2026-101', activeIncident.id);
-    incidentStore.updateIncidentResponseStatus(activeIncident.id, 'TEAM_ASSIGNED', 'NDRF Command Dispatcher');
-    setStatusMessage('DISPATCH SUCCESS: NDRF 10th Battalion Alpha assigned to Incident JS-2026-001 (ETA 28 mins)!');
+  const handleAssignTeam = (teamId: string, teamName: string) => {
+    const sos = sosList.find(s => s.status !== 'RESOLVED') || sosList[0];
+    const targetSosId = sos ? sos.id : 'SOS-2026-101';
+    incidentStore.assignRescueTeam(teamId, targetSosId, activeIncident.id);
+    incidentStore.updateIncidentResponseStatus(activeIncident.id, 'TEAM_ASSIGNED', `NDRF Command Dispatcher (${teamName})`);
+    setStatusMessage(`DISPATCH SUCCESS: ${teamName} assigned to Incident ${activeIncident.id}!`);
     setTimeout(() => setStatusMessage(null), 5000);
   };
 
@@ -424,16 +426,22 @@ export default function LifeSavingResponseEngine() {
                         </div>
                       </div>
 
-                      {isMatch ? (
+                      {team.status === 'AVAILABLE' ? (
                         <button
-                          onClick={handleAssignTeam4}
+                          onClick={() => handleAssignTeam(team.id, team.name)}
                           className="rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow hover:bg-emerald-500 flex items-center gap-1 cursor-pointer"
                         >
                           <UserCheck className="h-3.5 w-3.5" />
                           <span>ASSIGN SQUAD NOW</span>
                         </button>
                       ) : (
-                        <span className="text-[10px] text-slate-400 italic">Occupied on Task</span>
+                        <button
+                          onClick={() => handleAssignTeam(team.id, team.name)}
+                          className="rounded-xl bg-sky-600/20 text-sky-300 border border-sky-500/30 px-3 py-1.5 text-[11px] font-bold hover:bg-sky-600/30 transition flex items-center gap-1 cursor-pointer"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5 text-sky-400" />
+                          <span>DEPLOYED ({team.status.replace(/_/g, ' ')})</span>
+                        </button>
                       )}
                     </div>
                   );
@@ -558,22 +566,44 @@ export default function LifeSavingResponseEngine() {
                 Authorized Triage Status Controls:
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                <button
+                  onClick={() => {
+                    const nextIdx = Math.min(LIFECYCLE_STEPS.length - 1, currentStepIdx + 1);
+                    handleUpdateStatus(LIFECYCLE_STEPS[nextIdx].status);
+                  }}
+                  className="col-span-2 sm:col-span-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 py-2.5 px-3 font-extrabold text-white shadow hover:opacity-90 transition flex items-center justify-center gap-1.5 cursor-pointer mb-1"
+                >
+                  <span>ADVANCE NEXT STAGE ➔ ({LIFECYCLE_STEPS[Math.min(LIFECYCLE_STEPS.length - 1, currentStepIdx + 1)].label})</span>
+                </button>
+
+                <button
+                  onClick={() => handleUpdateStatus('EN_ROUTE')}
+                  className="rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 py-2 font-bold hover:bg-indigo-600/30 transition cursor-pointer"
+                >
+                  MARK EN ROUTE
+                </button>
                 <button
                   onClick={() => handleUpdateStatus('REACHED_LOCATION')}
                   className="rounded-xl bg-amber-600/20 text-amber-300 border border-amber-500/30 py-2 font-bold hover:bg-amber-600/30 transition cursor-pointer"
                 >
-                  MARK REACHED LOCATION
+                  MARK REACHED
+                </button>
+                <button
+                  onClick={() => handleUpdateStatus('RESCUE_IN_PROGRESS')}
+                  className="rounded-xl bg-rose-600/20 text-rose-300 border border-rose-500/30 py-2 font-bold hover:bg-rose-600/30 transition cursor-pointer"
+                >
+                  RESCUE ACTIVE
                 </button>
                 <button
                   onClick={() => handleUpdateStatus('RESCUED_SAFE')}
                   className="rounded-xl bg-sky-600/20 text-sky-300 border border-sky-500/30 py-2 font-bold hover:bg-sky-600/30 transition cursor-pointer"
                 >
-                  MARK RESCUED / SAFE
+                  RESCUED / SAFE
                 </button>
                 <button
                   onClick={() => handleUpdateStatus('RESOLVED')}
-                  className="rounded-xl bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 py-2 font-bold hover:bg-emerald-600/30 transition cursor-pointer"
+                  className="rounded-xl bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 py-2 font-bold hover:bg-emerald-600/30 transition cursor-pointer col-span-2 sm:col-span-1"
                 >
                   MARK RESOLVED
                 </button>
