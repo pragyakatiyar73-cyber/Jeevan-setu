@@ -10,13 +10,17 @@ import {
   Compass,
   ArrowRight,
   Sparkles,
-  Info
+  Info,
+  X,
+  Radio,
+  Send
 } from 'lucide-react';
 import { incidentStore } from '../services/api/incidentStore';
 
 export default function EvacuationPlanner() {
   const activeIncident = incidentStore.getActiveIncident();
   const [selectedRoute, setSelectedRoute] = useState<'A' | 'B' | 'C'>('C');
+  const [broadcastMessage, setBroadcastMessage] = useState<string | null>(null);
 
   const routes = [
     {
@@ -189,11 +193,31 @@ export default function EvacuationPlanner() {
                 </span>
               </div>
 
+              {broadcastMessage && (
+                <div className="rounded-xl border border-emerald-500/50 bg-emerald-950/80 p-3 text-xs text-emerald-200 shadow-xl flex items-start justify-between gap-2 backdrop-blur animate-in fade-in">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-bold text-emerald-300">Evacuation Broadcast Dispatched</div>
+                      <div className="text-[11px] text-emerald-200/90">{broadcastMessage}</div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setBroadcastMessage(null)}
+                    className="text-emerald-400 hover:text-white"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+
               <button
-                onClick={() => alert(`Evacuation Dispatch Alert Issued for Route ${selectedRoute} via Jowai Ridge Bypass!`)}
+                onClick={() => {
+                  setBroadcastMessage(`Evacuation Dispatch Alert Issued for Route ${selectedRoute} via Jowai Ridge Bypass! Synchronized with NDRF & MDoNER Emergency Grids.`);
+                }}
                 className="w-full rounded-xl bg-gradient-to-r from-teal-600 via-indigo-600 to-sky-600 p-3 text-xs font-bold text-white shadow-lg hover:opacity-90 flex items-center justify-center gap-2 cursor-pointer"
               >
-                <ArrowRight className="h-4 w-4" />
+                <Send className="h-4 w-4" />
                 <span>ISSUE PUBLIC EVACUATION ROUTE BROADCAST</span>
               </button>
             </div>

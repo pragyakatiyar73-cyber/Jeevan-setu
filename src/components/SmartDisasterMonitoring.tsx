@@ -140,6 +140,7 @@ export default function SmartDisasterMonitoring({
   const [mdonerAgency, setMdonerAgency] = useState<string>('NDRF 1078 Triage Command & MDoNER Emergency Dispatch');
   const [mdonerSending, setMdonerSending] = useState<boolean>(false);
   const [mdonerSuccess, setMdonerSuccess] = useState<boolean>(false);
+  const [geoToast, setGeoToast] = useState<string | null>(null);
 
   // Chart Reference
   const chartCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -267,11 +268,13 @@ export default function SmartDisasterMonitoring({
           setMonitoredLoc(geo);
         },
         err => {
-          alert(`Geolocation permission denied or unavailable: ${err.message}`);
+          setGeoToast(`Geolocation permission denied or unavailable: ${err.message}`);
+          setTimeout(() => setGeoToast(null), 5000);
         }
       );
     } else {
-      alert('Geolocation is not supported by your browser.');
+      setGeoToast('Geolocation is not supported by your browser.');
+      setTimeout(() => setGeoToast(null), 5000);
     }
   };
 

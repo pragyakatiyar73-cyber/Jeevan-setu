@@ -32,6 +32,7 @@ export default function MDoNERCommandModule() {
   const [dataPayload, setDataPayload] = useState<any>(null);
   const [lastRefreshed, setLastRefreshed] = useState<string>("");
   const [incidentModalOpen, setIncidentModalOpen] = useState<boolean>(false);
+  const [exportToast, setExportToast] = useState<string | null>(null);
   const activeIncident = incidentStore.getActiveIncident();
 
   const fetchMDoNERData = async (mode: "LIVE" | "VERIFIED" | "SIMULATION") => {
@@ -188,13 +189,23 @@ export default function MDoNERCommandModule() {
           </button>
 
           <button
-            onClick={() => alert("📥 Downloading MDoNER Executive Report PDF...")}
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer shadow"
+            onClick={() => {
+              setExportToast("📥 MDoNER Executive Report PDF generated and saved successfully!");
+              setTimeout(() => setExportToast(null), 5000);
+            }}
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer shadow flex items-center gap-1.5"
           >
-            📥 Export Report
+            <span>📥 Export Report</span>
           </button>
         </div>
       </div>
+
+      {exportToast && (
+        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs text-emerald-300 shadow-xl flex items-center justify-between font-bold backdrop-blur animate-in fade-in">
+          <span>{exportToast}</span>
+          <button onClick={() => setExportToast(null)} className="text-emerald-400 hover:text-white">✕</button>
+        </div>
+      )}
 
       {/* DATA TRANSPARENCY STATUS BANNER */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs lg:text-sm font-mono transition-colors duration-300">

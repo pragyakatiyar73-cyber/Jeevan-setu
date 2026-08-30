@@ -76,6 +76,7 @@ export default function AIDisasterImpactAssessment({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchResults, setSearchResults] = useState<GeocodedLocation[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [geoToast, setGeoToast] = useState<string | null>(null);
   const [latInput, setLatInput] = useState<string>(locationLoc.lat.toString());
   const [lonInput, setLonInput] = useState<string>(locationLoc.lon.toString());
 
@@ -230,11 +231,13 @@ export default function AIDisasterImpactAssessment({
           setLocationLoc(geo);
         },
         err => {
-          alert(`Geolocation unavailable: ${err.message}`);
+          setGeoToast(`Geolocation unavailable: ${err.message}`);
+          setTimeout(() => setGeoToast(null), 5000);
         }
       );
     } else {
-      alert('Geolocation is not supported by your browser.');
+      setGeoToast('Geolocation is not supported by your browser.');
+      setTimeout(() => setGeoToast(null), 5000);
     }
   };
 
