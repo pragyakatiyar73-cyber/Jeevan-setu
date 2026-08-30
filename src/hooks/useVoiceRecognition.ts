@@ -13,6 +13,32 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const onResultRef = useRef(onResult);
+  const onErrorRef = useRef(onError);
+
+  useEffect(() => {
+    onResultRef.current = onResult;
+    onErrorRef.current = onError;
+  }, [onResult, onError]);
+
+  const triggerSimulatedSpeech = useCallback(() => {
+    setIsListening(true);
+    const demoPhrases = [
+      "Kanpur flood area",
+      "Landslide near Shillong NH-6",
+      "Relief camp in East Khasi Hills",
+      "Road blocked near Tawang",
+      "Emergency ambulance needed aspataal"
+    ];
+    const randomPhrase = demoPhrases[Math.floor(Math.random() * demoPhrases.length)];
+    setTimeout(() => {
+      setTranscript(randomPhrase);
+      if (onResultRef.current) {
+        onResultRef.current(randomPhrase);
+      }
+      setIsListening(false);
+    }, 1500);
+  }, []);
 
   useEffect(() => {
     const SpeechRecognition =
@@ -31,16 +57,23 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
           currentTranscript += event.results[i][0].transcript;
         }
         setTranscript(currentTranscript);
-        if (onResult && currentTranscript.trim()) {
-          onResult(currentTranscript);
+        if (onResultRef.current && currentTranscript.trim()) {
+          onResultRef.current(currentTranscript);
         }
       };
 
       recognition.onerror = (event: any) => {
         const errStr = event.error || 'Speech recognition failed';
+        console.warn('Native speech recognition error (falling back to simulated voice mode):', errStr);
         setError(errStr);
-        setIsListening(false);
-        if (onError) onError(errStr);
+        if (onErrorRef.current) onErrorRef.current(errStr);
+
+        // Fallback to simulated mode if permission denied or mic unavailable
+        if (errStr === 'not-allowed' || errStr === 'no-speech' || errStr === 'audio-capture' || errStr === 'service-not-allowed') {
+          triggerSimulatedSpeech();
+        } else {
+          setIsListening(false);
+        }
       };
 
       recognition.onend = () => {
@@ -51,7 +84,7 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
     } else {
       setIsSupported(false);
     }
-  }, [language]);
+  }, [language, triggerSimulatedSpeech]);
 
   const startListening = useCallback(() => {
     setError(null);
@@ -61,27 +94,13 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
         recognitionRef.current.start();
         setIsListening(true);
       } catch (e: any) {
-        console.warn('Voice recognition start error:', e);
-        setIsListening(false);
+        console.warn('Voice recognition start error, running fallback:', e);
+        triggerSimulatedSpeech();
       }
     } else {
-      // Demo/Fallback Mode if browser lacks native Speech API
-      setIsListening(true);
-      const demoPhrases = [
-        "Kanpur flood area",
-        "Landslide near Shillong NH-6",
-        "Relief camp in East Khasi Hills",
-        "Road blocked near Tawang",
-        "Emergency ambulance needed aspataal"
-      ];
-      const randomPhrase = demoPhrases[Math.floor(Math.random() * demoPhrases.length)];
-      setTimeout(() => {
-        setTranscript(randomPhrase);
-        if (onResult) onResult(randomPhrase);
-        setIsListening(false);
-      }, 1800);
+      triggerSimulatedSpeech();
     }
-  }, [onResult]);
+  }, [triggerSimulatedSpeech]);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current && isListening) {
