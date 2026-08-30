@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SmartSearchInput from './common/SmartSearchInput';
 import {
   AlertTriangle,
   Send,
@@ -21,6 +22,7 @@ export default function CitizenSOSModule() {
   const [sosList, setSosList] = useState<CitizenSOS[]>(incidentStore.getAllSOSAlerts());
   const activeIncident = incidentStore.getActiveIncident();
   const [filterPriority, setFilterPriority] = useState<string>('ALL');
+  const [sosSearch, setSosSearch] = useState<string>('');
 
   // Form State
   const [reporterName, setReporterName] = useState('');
@@ -79,8 +81,17 @@ export default function CitizenSOSModule() {
   };
 
   const filteredSos = sosList.filter(s => {
-    if (filterPriority === 'ALL') return true;
-    return s.priority === filterPriority;
+    if (filterPriority !== 'ALL' && s.priority !== filterPriority) return false;
+    if (sosSearch) {
+      const q = sosSearch.toLowerCase();
+      return (
+        s.id.toLowerCase().includes(q) ||
+        s.locationName.toLowerCase().includes(q) ||
+        s.distressType.toLowerCase().includes(q) ||
+        s.description.toLowerCase().includes(q)
+      );
+    }
+    return true;
   });
 
   return (
@@ -259,21 +270,30 @@ export default function CitizenSOSModule() {
                 <span>Active SOS Emergency Triage Queue ({filteredSos.length})</span>
               </h2>
 
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-slate-500">Filter Priority:</span>
-                {['ALL', 'CRITICAL', 'HIGH', 'MEDIUM'].map(p => (
-                  <button
-                    key={p}
-                    onClick={() => setFilterPriority(p)}
-                    className={`rounded-lg px-2.5 py-1 text-[10px] font-bold ${
-                      filterPriority === p
-                        ? 'bg-indigo-600 text-white shadow'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="w-48 sm:w-56">
+                  <SmartSearchInput
+                    placeholder="Search SOS alerts..."
+                    value={sosSearch}
+                    onChange={setSosSearch}
+                  />
+                </div>
+
+                <div className="flex items-center gap-1">
+                  {['ALL', 'CRITICAL', 'HIGH', 'MEDIUM'].map(p => (
+                    <button
+                      key={p}
+                      onClick={() => setFilterPriority(p)}
+                      className={`rounded-lg px-2 py-1 text-[10px] font-bold ${
+                        filterPriority === p
+                          ? 'bg-indigo-600 text-white shadow'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 

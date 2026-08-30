@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "../i18n";
+import SmartSearchInput from "./common/SmartSearchInput";
 import MapComponent from "./MapComponent";
 import StateRiskMatrixSection from "./StateRiskMatrixSection";
 import {
@@ -341,12 +342,13 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
             <label className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block mb-1.5 flex items-center justify-between">
               <span>{t("landslide.selectPreset", "📍 SEARCH / SELECT LOCATION")}</span>
             </label>
-            <input
-              type="text"
-              placeholder="Type city or district (e.g., Shillong, Tawang)..."
+            <SmartSearchInput
+              placeholder="Type city, district or disaster query (e.g., Shillong, flood area)..."
               value={dashboardSearch}
-              onChange={(e) => setDashboardSearch(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs lg:text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-sky-500 focus:outline-none mb-1.5"
+              onChange={setDashboardSearch}
+              onSearch={q => setDashboardSearch(q)}
+              searchType="location"
+              className="mb-1.5"
             />
 
             {/* Did You Mean Suggestion */}

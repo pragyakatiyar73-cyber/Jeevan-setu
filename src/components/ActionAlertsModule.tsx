@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "../i18n";
+import SmartSearchInput from "./common/SmartSearchInput";
 import {
   AlertTriangle,
   Siren,
@@ -30,6 +31,7 @@ export default function ActionAlertsModule({
 }: ActionAlertsModuleProps) {
   const { t } = useTranslation();
   const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [alertSearch, setAlertSearch] = useState<string>("");
   const [liveSosAlerts, setLiveSosAlerts] = useState<any[]>([]);
 
   // Fetch live SOS alerts from backend central DB and poll every 3 seconds
@@ -230,7 +232,15 @@ export default function ActionAlertsModule({
           </div>
 
           {/* CONTROLS RIGHT */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="w-64">
+              <SmartSearchInput
+                placeholder="Search emergency broadcast feed..."
+                value={alertSearch}
+                onChange={setAlertSearch}
+              />
+            </div>
+
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
@@ -253,7 +263,17 @@ export default function ActionAlertsModule({
 
         {/* INCIDENT BROADCAST CARDS LIST */}
         <div className="space-y-4">
-          {incidentList.map((inc) => (
+          {incidentList
+            .filter(inc => {
+              if (!alertSearch) return true;
+              const q = alertSearch.toLowerCase();
+              return (
+                inc.title.toLowerCase().includes(q) ||
+                inc.description.toLowerCase().includes(q) ||
+                inc.badge.toLowerCase().includes(q)
+              );
+            })
+            .map((inc) => (
             <div
               key={inc.id}
               className="rounded-2xl border border-slate-200 dark:border-slate-800/90 bg-slate-50 dark:bg-slate-950/70 p-5 shadow-md hover:border-slate-400 dark:hover:border-slate-700 transition space-y-3"

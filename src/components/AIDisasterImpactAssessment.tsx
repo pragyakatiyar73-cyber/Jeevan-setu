@@ -1,5 +1,6 @@
 import { useTranslation } from "../i18n";
 import React, { useState, useEffect, useRef } from 'react';
+import SmartSearchInput from './common/SmartSearchInput';
 import {
   Camera,
   Upload,
@@ -485,16 +486,16 @@ export default function AIDisasterImpactAssessment({
               {/* Search Bar */}
               <div className="relative">
                 <form onSubmit={handleLocationSearch} className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                    <input
-                      type="text"
-                      placeholder="Search address, village, or landmark..."
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
-                    />
-                  </div>
+                  <SmartSearchInput
+                    placeholder="Search address, village, or landmark..."
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    onSearch={q => {
+                      setSearchQuery(q);
+                      handleLocationSearch(new Event('submit') as any);
+                    }}
+                    searchType="location"
+                  />
                   <button
                     type="submit"
                     disabled={isSearching}

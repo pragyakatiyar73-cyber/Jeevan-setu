@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useTranslation } from "../i18n";
+import SmartSearchInput from "./common/SmartSearchInput";
 import {
   Layers,
   CheckCircle2,
@@ -777,16 +778,13 @@ export default function NERLiveMapModule({
               <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
                 📍 Location Search & Auto-Suggest:
               </label>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search sector, district, highway..."
-                  value={mapSearchQuery}
-                  onChange={(e) => setMapSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 pl-8 pr-2.5 py-1.5 text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-sky-500 focus:outline-none"
-                />
-              </div>
+              <SmartSearchInput
+                placeholder="Search sector, district, highway..."
+                value={mapSearchQuery}
+                onChange={setMapSearchQuery}
+                onSearch={q => setMapSearchQuery(q)}
+                searchType="location"
+              />
 
               {/* Did You Mean Suggestion Banner */}
               {mapSearchQuery.trim().length >= 2 && (() => {

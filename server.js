@@ -127,8 +127,52 @@ app.post('/citizen/analyze', async (req, res) => {
       { day: "Wed", level: "Moderate", value: 55 },
       { day: "Thu", level: "High", value: 90 }
     ],
-    cutoff: 350,
-    rainfall: 115
+});
+
+// AI Search Correction Endpoint
+app.post('/api/search/correct', (req, res) => {
+  const { query } = req.body || {};
+  if (!query || typeof query !== 'string') {
+    return res.json({ correctedQuery: query, confidence: 1.0 });
+  }
+
+  let corrected = query;
+  const replacements = {
+    'kanpur flood are': 'Kanpur flood area',
+    'road blockd': 'road blocked',
+    'landslied risk': 'landslide risk',
+    'relif camp near kanpur': 'relief camp near Kanpur',
+    'baadh': 'flood',
+    'badh': 'flood',
+    'baarish': 'rainfall',
+    'aspataal': 'hospital',
+    'madad': 'rescue'
+  };
+
+  const lower = query.trim().toLowerCase();
+  if (replacements[lower]) {
+    corrected = replacements[lower];
+  } else {
+    corrected = query
+      .replace(/\bflod\b/gi, 'flood')
+      .replace(/\bfloood\b/gi, 'flood')
+      .replace(/\blandslied\b/gi, 'landslide')
+      .replace(/\blandsliede\b/gi, 'landslide')
+      .replace(/\brelif\b/gi, 'relief')
+      .replace(/\breleif\b/gi, 'relief')
+      .replace(/\bblockd\b/gi, 'blocked')
+      .replace(/\bbloked\b/gi, 'blocked')
+      .replace(/\bemergncy\b/gi, 'emergency')
+      .replace(/\bambulnce\b/gi, 'ambulance')
+      .replace(/\baizwal\b/gi, 'Aizawl')
+      .replace(/\bkanpurr\b/gi, 'Kanpur')
+      .replace(/\bshilong\b/gi, 'Shillong');
+  }
+
+  res.json({
+    originalQuery: query,
+    correctedQuery: corrected,
+    confidence: corrected !== query ? 0.95 : 1.0
   });
 });
 
