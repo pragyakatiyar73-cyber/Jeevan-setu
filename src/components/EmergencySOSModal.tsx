@@ -32,7 +32,7 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
   const [triageLevel, setTriageLevel] = useState<string>("LEVEL 1 (Immediate Rescue / Air-Drop)");
 
   // Voice SOS Assistant Hook
-  const { isListening, toggleListening, transcript } = useVoiceRecognition({
+  const { isListening, toggleListening, stopListening, transcript } = useVoiceRecognition({
     language: 'hi-IN',
     onResult: (spokenText) => {
       setLandmark(spokenText);
@@ -235,6 +235,7 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
           <button
             onClick={() => {
               stopSiren();
+              stopListening();
               onClose();
             }}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"

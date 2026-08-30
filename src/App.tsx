@@ -719,16 +719,6 @@ export default function App() {
               <span>{t('navigation.sos', 'Emergency SOS')}</span>
             </button>
 
-            {/* 🎙️ VOICE SOS / VOICE SEARCH HEADER BUTTON */}
-            <button
-              onClick={() => setIsSosModalOpen(true)}
-              className="rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-600 px-3 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1.5 border border-indigo-400/40 cursor-pointer shrink-0"
-              title="Speak Emergency SOS or Voice Search"
-            >
-              <span className="text-xs">🎙️</span>
-              <span>Voice SOS</span>
-            </button>
-
             {/* 🎮 11-STAGE DISASTER SIMULATION BUTTON */}
             <button
               onClick={() => {

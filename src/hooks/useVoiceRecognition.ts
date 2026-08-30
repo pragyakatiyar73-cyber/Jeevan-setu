@@ -21,7 +21,7 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
     onErrorRef.current = onError;
   }, [onResult, onError]);
 
-  const triggerSimulatedSpeech = useCallback(() => {
+  const runSimulatedVoiceDemo = useCallback(() => {
     setIsListening(true);
     const demoPhrases = [
       "Kanpur flood area",
@@ -37,7 +37,7 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
         onResultRef.current(randomPhrase);
       }
       setIsListening(false);
-    }, 1500);
+    }, 1200);
   }, []);
 
   useEffect(() => {
@@ -64,15 +64,24 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
 
       recognition.onerror = (event: any) => {
         const errStr = event.error || 'Speech recognition failed';
-        console.warn('Native speech recognition error (falling back to simulated voice mode):', errStr);
+        console.warn('Speech recognition error:', errStr);
         setError(errStr);
+        setIsListening(false);
         if (onErrorRef.current) onErrorRef.current(errStr);
 
-        // Fallback to simulated mode if permission denied or mic unavailable
-        if (errStr === 'not-allowed' || errStr === 'no-speech' || errStr === 'audio-capture' || errStr === 'service-not-allowed') {
-          triggerSimulatedSpeech();
-        } else {
-          setIsListening(false);
+        // Fallback gracefully to demo sample phrase when mic is blocked or unavailable
+        if (errStr === 'not-allowed' || errStr === 'audio-capture' || errStr === 'service-not-allowed' || errStr === 'no-speech') {
+          const samplePhrases = [
+            "East Khasi Hills Flash Flood & Mudslide near Shillong",
+            "Landslide blockage on NH-6 with 5 persons trapped",
+            "Urgent medical emergency oxygen needed near hospital",
+            "Relief camp emergency in Kanpur sector"
+          ];
+          const sample = samplePhrases[Math.floor(Math.random() * samplePhrases.length)];
+          setTranscript(sample);
+          if (onResultRef.current) {
+            onResultRef.current(sample);
+          }
         }
       };
 
@@ -84,7 +93,15 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
     } else {
       setIsSupported(false);
     }
-  }, [language, triggerSimulatedSpeech]);
+
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {}
+      }
+    };
+  }, [language]);
 
   const startListening = useCallback(() => {
     setError(null);
@@ -94,22 +111,22 @@ export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
         recognitionRef.current.start();
         setIsListening(true);
       } catch (e: any) {
-        console.warn('Voice recognition start error, running fallback:', e);
-        triggerSimulatedSpeech();
+        console.warn('Voice recognition start error, running simulated fallback:', e);
+        runSimulatedVoiceDemo();
       }
     } else {
-      triggerSimulatedSpeech();
+      runSimulatedVoiceDemo();
     }
-  }, [triggerSimulatedSpeech]);
+  }, [runSimulatedVoiceDemo]);
 
   const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListening) {
+    if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
       } catch (e) {}
     }
     setIsListening(false);
-  }, [isListening]);
+  }, []);
 
   const toggleListening = useCallback(() => {
     if (isListening) {
