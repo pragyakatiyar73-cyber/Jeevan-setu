@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "../i18n";
-import { X, MapPin, Radio, ShieldCheck, AlertTriangle, Send, CheckCircle2, Volume2, Smartphone, Copy, VolumeX } from "lucide-react";
+import { X, MapPin, Radio, ShieldCheck, AlertTriangle, Send, CheckCircle2, Volume2, Smartphone, Copy, VolumeX, Mic, MicOff } from "lucide-react";
+import { useVoiceRecognition } from "../hooks/useVoiceRecognition";
 
 interface EmergencySOSModalProps {
   isOpen: boolean;
@@ -29,6 +30,23 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
   const [landmark, setLandmark] = useState<string>("Bomdila High-Altitude Cache (Arunachal)");
   const [personsTrapped, setPersonsTrapped] = useState<string>("5 to 15 Persons (Full Convoy / Bus)");
   const [triageLevel, setTriageLevel] = useState<string>("LEVEL 1 (Immediate Rescue / Air-Drop)");
+
+  // Voice SOS Assistant Hook
+  const { isListening, toggleListening, transcript } = useVoiceRecognition({
+    language: 'hi-IN',
+    onResult: (spokenText) => {
+      setLandmark(spokenText);
+      const lower = spokenText.toLowerCase();
+      if (lower.includes('flood') || lower.includes('baadh') || lower.includes('badh')) {
+        setDistressType('Flash Flood / River Breach');
+      } else if (lower.includes('landslide') || lower.includes('slope')) {
+        setDistressType('Trapped in Landslide / Mudflow');
+      } else if (lower.includes('ambulance') || lower.includes('aspataal') || lower.includes('hospital')) {
+        setDistressType('Urgent Medical Evacuation (Oxygen Required)');
+      }
+      setTriageLevel('LEVEL 1 (Immediate Rescue / Air-Drop)');
+    }
+  });
 
   // Broadcast State
   const [isBroadcasting, setIsBroadcasting] = useState<boolean>(false);
@@ -265,6 +283,35 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
         {activeTab === "live" && (
           <div className="space-y-4">
             
+            {/* VOICE SOS ASSISTANT BANNER */}
+            <div className="rounded-xl border border-rose-500/40 bg-gradient-to-r from-rose-950/60 via-slate-900 to-indigo-950/60 p-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className={`p-2 rounded-xl border ${isListening ? 'bg-rose-600 text-white animate-pulse border-rose-400 shadow-lg shadow-rose-600/50' : 'bg-slate-800 text-rose-400 border-slate-700'}`}>
+                  {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                </div>
+                <div>
+                  <div className="text-xs font-black text-white flex items-center gap-1.5">
+                    <span>🎙️ Voice SOS Assistant (Hindi / English / Assamese)</span>
+                    {isListening && <span className="px-1.5 py-0.5 rounded bg-rose-500 text-[9px] text-white animate-pulse">LISTENING...</span>}
+                  </div>
+                  <div className="text-[11px] text-slate-300 font-mono">
+                    {isListening ? (transcript ? `"${transcript}"` : "Speak distress situation & location...") : "Click mic to speak emergency alert verbally"}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={toggleListening}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer border ${
+                  isListening
+                    ? "bg-rose-600 text-white border-rose-400 animate-pulse"
+                    : "bg-gradient-to-r from-rose-600 to-amber-600 text-white border-rose-400/40 hover:from-rose-500 hover:to-amber-500"
+                }`}
+              >
+                {isListening ? "Stop Listening" : "Speak Emergency Alert"}
+              </button>
+            </div>
+
             {/* DISTRESS CLASSIFICATION */}
             <div>
               <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1.5">

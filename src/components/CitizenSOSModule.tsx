@@ -14,9 +14,12 @@ import {
   Filter,
   Sparkles,
   ShieldAlert,
-  ChevronRight
+  ChevronRight,
+  Mic,
+  MicOff
 } from 'lucide-react';
 import { incidentStore, CitizenSOS, DataStatusTag } from '../services/api/incidentStore';
+import { useVoiceRecognition } from '../hooks/useVoiceRecognition';
 
 export default function CitizenSOSModule() {
   const [sosList, setSosList] = useState<CitizenSOS[]>(incidentStore.getAllSOSAlerts());
@@ -32,6 +35,24 @@ export default function CitizenSOSModule() {
   const [isMedicalEmergency, setIsMedicalEmergency] = useState(false);
   const [description, setDescription] = useState('');
   const [submittedMessage, setSubmittedMessage] = useState<string | null>(null);
+
+  const { isListening, toggleListening, transcript } = useVoiceRecognition({
+    language: 'hi-IN',
+    onResult: (spokenText) => {
+      setDescription(spokenText);
+      const lower = spokenText.toLowerCase();
+      if (lower.includes('flood') || lower.includes('baadh') || lower.includes('badh')) {
+        setDistressType('Flood');
+      } else if (lower.includes('landslide') || lower.includes('slope')) {
+        setDistressType('Landslide');
+      } else if (lower.includes('trapped')) {
+        setDistressType('Trapped Person');
+      } else if (lower.includes('medical') || lower.includes('aspataal') || lower.includes('hospital')) {
+        setDistressType('Medical Emergency');
+        setIsMedicalEmergency(true);
+      }
+    }
+  });
 
   useEffect(() => {
     const unsub = incidentStore.subscribe(() => {
@@ -215,15 +236,33 @@ export default function CitizenSOSModule() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Distress Situation Description
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Distress Situation Description
+                  </label>
+                  <button
+                    type="button"
+                    onClick={toggleListening}
+                    className={`px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1 transition cursor-pointer ${
+                      isListening
+                        ? 'bg-rose-600 text-white animate-pulse'
+                        : 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/30'
+                    }`}
+                  >
+                    {isListening ? <MicOff className="h-3 w-3" /> : <Mic className="h-3 w-3" />}
+                    <span>{isListening ? 'Stop' : '🎙️ Speak Alert'}</span>
+                  </button>
+                </div>
                 <textarea
                   rows={3}
-                  placeholder="Describe trapped status, water depth, slope movement, or urgent medical requirement..."
+                  placeholder={isListening ? "🎙️ Listening... Speak your distress description verbally..." : "Describe trapped status, water depth, slope movement, or urgent medical requirement..."}
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs text-slate-900 dark:text-white focus:border-rose-500 focus:outline-none"
+                  className={`w-full rounded-xl border p-2.5 text-xs text-slate-900 dark:text-white focus:outline-none transition ${
+                    isListening
+                      ? 'border-rose-500 ring-2 ring-rose-500/30 bg-rose-500/10'
+                      : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 focus:border-rose-500'
+                  }`}
                 />
               </div>
 

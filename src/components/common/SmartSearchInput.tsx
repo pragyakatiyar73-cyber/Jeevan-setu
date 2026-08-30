@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Sparkles, X, RotateCcw } from 'lucide-react';
+import { Search, Sparkles, X, RotateCcw, Mic, MicOff } from 'lucide-react';
 import { getLocalSmartCorrection, smartSearchCorrection, SearchCorrectionResult } from '../../services/search/smartSearchCorrection';
+import { useVoiceRecognition } from '../../hooks/useVoiceRecognition';
 
 export interface SmartSearchInputProps {
   placeholder?: string;
@@ -29,6 +30,17 @@ export default function SmartSearchInput({
   const [originalQueryOverride, setOriginalQueryOverride] = useState<string | null>(null);
   const [isDismissed, setIsDismissed] = useState<boolean>(false);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { isListening, startListening, stopListening, toggleListening } = useVoiceRecognition({
+    language: 'hi-IN',
+    onResult: (spokenText) => {
+      setOriginalQueryOverride(null);
+      onChange(spokenText);
+      if (onSearch && spokenText.trim()) {
+        onSearch(spokenText);
+      }
+    }
+  });
 
   // Debounced search correction calculation
   useEffect(() => {
@@ -111,23 +123,44 @@ export default function SmartSearchInput({
             onChange(e.target.value);
           }}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          className={`w-full pl-9 pr-8 py-2 text-xs lg:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition ${inputClassName}`}
+          placeholder={isListening ? '🎙️ Listening... Speak query now...' : placeholder}
+          className={`w-full pl-9 pr-14 py-2 text-xs lg:text-sm rounded-xl border ${
+            isListening
+              ? 'border-rose-500 ring-2 ring-rose-500/30 bg-rose-500/10 text-rose-300 placeholder-rose-400'
+              : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400'
+          } focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition ${inputClassName}`}
         />
-        {value && (
+
+        <div className="absolute right-2.5 flex items-center gap-1">
+          {/* Voice Search Mic Button */}
           <button
             type="button"
-            onClick={() => {
-              onChange('');
-              setSuggestion(null);
-              setOriginalQueryOverride(null);
-            }}
-            className="absolute right-2.5 p-1 text-slate-400 hover:text-slate-200 cursor-pointer"
-            title="Clear search"
+            onClick={toggleListening}
+            className={`p-1 rounded-lg transition cursor-pointer ${
+              isListening
+                ? 'bg-rose-600 text-white animate-pulse shadow-md shadow-rose-600/50'
+                : 'text-slate-400 hover:text-sky-400 hover:bg-slate-800/40'
+            }`}
+            title={isListening ? 'Stop listening' : 'Voice Search (Hindi / English)'}
           >
-            <X className="h-3.5 w-3.5" />
+            {isListening ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
           </button>
-        )}
+
+          {value && (
+            <button
+              type="button"
+              onClick={() => {
+                onChange('');
+                setSuggestion(null);
+                setOriginalQueryOverride(null);
+              }}
+              className="p-1 text-slate-400 hover:text-slate-200 cursor-pointer"
+              title="Clear search"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Google-Style "Did you mean: ..." Suggestion Banner */}
