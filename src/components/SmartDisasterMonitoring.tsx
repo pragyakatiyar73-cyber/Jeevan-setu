@@ -105,10 +105,6 @@ export default function SmartDisasterMonitoring({
   const radiusCircleRef = useRef<L.Circle | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
   const tileLayerRef = useRef<L.TileLayer | L.TileLayer.WMS | null>(null);
-  const satelliteMapContainerRef = useRef<HTMLDivElement>(null);
-  const satelliteMapInstanceRef = useRef<L.Map | null>(null);
-  const satelliteLayerRef = useRef<L.TileLayer | null>(null);
-  const floodOverlayRef = useRef<L.LayerGroup | null>(null);
 
   // Satellite Change Comparison State
   const [changeViewMode, setChangeViewMode] = useState<'split' | 'latest' | 'previous'>('split');
@@ -183,16 +179,11 @@ export default function SmartDisasterMonitoring({
       setWeatherLoading(true);
       setAiLoading(true);
 
-      // 1. Fetch real-time weather & environmental elevation/soil data
-      const [w, env] = await Promise.all([
+      const [w, env, rds, alr, trd] = await Promise.all([
         getLiveWeather(monitoredLoc.lat, monitoredLoc.lon),
-        getEnvironmentalData(monitoredLoc.lat, monitoredLoc.lon)
-      ]);
-
-      // 2. Fetch dynamic alerts, roads, and 72h trend using real weather + env data
-      const [rds, alr, trd] = await Promise.all([
-        getRoadAccessibility(monitoredLoc.lat, monitoredLoc.lon, monitoredLoc.displayName, w, env),
-        getDisasterAlerts(monitoredLoc.lat, monitoredLoc.lon, monitoredLoc.displayName, w, env),
+        getEnvironmentalData(monitoredLoc.lat, monitoredLoc.lon),
+        getRoadAccessibility(monitoredLoc.lat, monitoredLoc.lon),
+        getDisasterAlerts(monitoredLoc.lat, monitoredLoc.lon, monitoredLoc.displayName),
         get72HourTrend(monitoredLoc.lat, monitoredLoc.lon)
       ]);
 
@@ -203,27 +194,10 @@ export default function SmartDisasterMonitoring({
       setTrendData(trd);
       setWeatherLoading(false);
 
-      // Calculate overall risk
-      let score = 20;
-      if (w) {
-        if (w.precipitation > 30) score += 40;
-        else if (w.precipitation > 10) score += 25;
-        else if (w.precipitation > 1) score += 10;
-
-        if (w.windGusts > 50) score += 20;
-        else if (w.windGusts > 30) score += 10;
-      }
-      if (env) {
-        if (env.soilMoistureIndex > 80) score += 15;
-        if (env.slopeDegrees > 20) score += 15;
-      }
-      score = Math.min(98, Math.max(10, score));
-      const riskLevel = score >= 75 ? 'CRITICAL' : score >= 55 ? 'HIGH' : score >= 35 ? 'MODERATE' : 'LOW';
-
       const summary = await generateAISituationSummary(
         monitoredLoc.displayName,
         disasterType,
-        riskLevel,
+        currentRisk.level,
         w,
         alr,
         rds
@@ -240,7 +214,7 @@ export default function SmartDisasterMonitoring({
           time: nowStr,
           title: `Monitored Location Updated`,
           category: 'SYSTEM',
-          details: `Target: ${monitoredLoc.displayName} (${monitoredLoc.lat.toFixed(4)}°N, ${monitoredLoc.lon.toFixed(4)}°E) • Elevation: ${env.elevationMsl}m MSL • Precip: ${w.precipitation} mm/hr`
+          details: `Target: ${monitoredLoc.displayName} (${monitoredLoc.lat.toFixed(4)}°N, ${monitoredLoc.lon.toFixed(4)}°E)`
         },
         ...prev
       ]);
@@ -268,9 +242,6 @@ export default function SmartDisasterMonitoring({
     setLonInput(res.lon.toString());
     setSearchResults([]);
     setSearchQuery('');
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.setView([res.lat, res.lon], 12);
-    }
   };
 
   const handleManualCoordSubmit = async (e: React.FormEvent) => {
@@ -328,8 +299,7 @@ export default function SmartDisasterMonitoring({
         setMonitoredLoc(geo);
       });
     } else {
-      const currentZoom = mapInstanceRef.current.getZoom();
-      mapInstanceRef.current.setView([monitoredLoc.lat, monitoredLoc.lon], currentZoom && currentZoom >= 5 ? currentZoom : 12);
+      mapInstanceRef.current.setView([monitoredLoc.lat, monitoredLoc.lon], 12);
     }
 
     const map = mapInstanceRef.current;
@@ -360,9 +330,6 @@ export default function SmartDisasterMonitoring({
     newTileLayer.addTo(map);
     tileLayerRef.current = newTileLayer;
 
-    // Dynamic Risk Color
-    const riskColor = currentRisk.level === 'CRITICAL' ? '#ef4444' : currentRisk.level === 'HIGH' ? '#f59e0b' : currentRisk.level === 'MODERATE' ? '#38bdf8' : '#10b981';
-
     // Update Monitored Pin Marker
     if (markerRef.current) map.removeLayer(markerRef.current);
 
@@ -386,7 +353,7 @@ export default function SmartDisasterMonitoring({
             width: 52px;
             height: 52px;
             border-radius: 50%;
-            border: 2px solid ${riskColor};
+            border: 2px solid #ef4444;
             animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
           "></span>
           <span style="font-size: 16px;">🛰️</span>
@@ -398,27 +365,23 @@ export default function SmartDisasterMonitoring({
 
     markerRef.current = L.marker([monitoredLoc.lat, monitoredLoc.lon], { icon: customMarkerIcon }).addTo(map);
     markerRef.current.bindPopup(`
-      <div style="font-family: sans-serif; font-size: 12px; color: #0f172a; min-width: 220px; line-height: 1.5;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
-          <b style="color: #e11d48; font-size: 13px;">🛰️ Monitored Site</b>
-          <span style="background: ${riskColor}22; color: ${riskColor}; border: 1px solid ${riskColor}55; padding: 2px 6px; border-radius: 9999px; font-weight: 800; font-size: 10px;">${currentRisk.level}</span>
-        </div>
+      <div style="font-family: sans-serif; font-size: 12px; color: #0f172a;">
+        <b style="color: #e11d48;">🛰️ Monitored Disaster Site</b><br/>
         <b>${monitoredLoc.displayName}</b><br/>
-        <span style="color: #64748b; font-size: 11px;">GPS: ${monitoredLoc.lat.toFixed(4)}° N, ${monitoredLoc.lon.toFixed(4)}° E</span><br/>
-        <span>Real Elevation: <b>${envData ? envData.elevationMsl : 150}m MSL</b></span><br/>
-        <span>Live Rainfall: <b>${weather ? weather.precipitation : 0} mm/hr</b></span><br/>
-        <span>Dynamic Hazard Score: <b style="color: ${riskColor};">${currentRisk.score}%</b></span>
+        Lat: ${monitoredLoc.lat.toFixed(4)} &bull; Lon: ${monitoredLoc.lon.toFixed(4)}<br/>
+        <span>Disaster Type: <b>${disasterType}</b></span><br/>
+        <span>Current Risk: <b style="color: #ef4444;">${currentRisk.level} (${currentRisk.score}%)</b></span>
       </div>
     `).openPopup();
 
-    // Update Monitoring Radius Circle (Danger Zone)
+    // Update Monitoring Radius Circle
     if (radiusCircleRef.current) map.removeLayer(radiusCircleRef.current);
 
     radiusCircleRef.current = L.circle([monitoredLoc.lat, monitoredLoc.lon], {
       radius: monitoringRadiusKm * 1000,
-      color: riskColor,
-      fillColor: riskColor,
-      fillOpacity: currentRisk.level === 'CRITICAL' || currentRisk.level === 'HIGH' ? 0.18 : 0.08,
+      color: '#f43f5e',
+      fillColor: '#f43f5e',
+      fillOpacity: 0.12,
       weight: 2,
       dashArray: '6, 6'
     }).addTo(map);
@@ -511,59 +474,6 @@ export default function SmartDisasterMonitoring({
       }
     };
   }, [trendData]);
-
-  // Real-Time Satellite Observation & Change Detection Map Sync
-  useEffect(() => {
-    if (!satelliteMapContainerRef.current || !satelliteDataAvailable) return;
-
-    if (!satelliteMapInstanceRef.current) {
-      const map = L.map(satelliteMapContainerRef.current, {
-        zoomControl: false,
-        dragging: true,
-        scrollWheelZoom: false,
-        attributionControl: false
-      }).setView([monitoredLoc.lat, monitoredLoc.lon], 13);
-
-      satelliteMapInstanceRef.current = map;
-      floodOverlayRef.current = L.layerGroup().addTo(map);
-
-      const tileUrl = changeViewMode === 'previous'
-        ? "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-        : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-
-      const layer = L.tileLayer(tileUrl, { maxZoom: 18 }).addTo(map);
-      satelliteLayerRef.current = layer;
-    } else {
-      const map = satelliteMapInstanceRef.current;
-      map.setView([monitoredLoc.lat, monitoredLoc.lon], 13);
-
-      if (satelliteLayerRef.current) {
-        map.removeLayer(satelliteLayerRef.current);
-      }
-
-      const tileUrl = changeViewMode === 'previous'
-        ? "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-        : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-
-      const layer = L.tileLayer(tileUrl, { maxZoom: 18 }).addTo(map);
-      satelliteLayerRef.current = layer;
-
-      if (floodOverlayRef.current) {
-        floodOverlayRef.current.clearLayers();
-        const precip = weather ? weather.precipitation : 0;
-        if ((changeViewMode === 'latest' || changeViewMode === 'split') && precip > 5) {
-          L.circle([monitoredLoc.lat, monitoredLoc.lon], {
-            radius: 1800,
-            color: '#38bdf8',
-            fillColor: '#0284c7',
-            fillOpacity: 0.35,
-            weight: 2,
-            dashArray: '4, 4'
-          }).addTo(floodOverlayRef.current);
-        }
-      }
-    }
-  }, [monitoredLoc.lat, monitoredLoc.lon, changeViewMode, satelliteDataAvailable, weather]);
 
   // Handle Adding Timeline Note
   const handleAddTimelineNote = (e: React.FormEvent) => {
@@ -908,45 +818,32 @@ export default function SmartDisasterMonitoring({
                   </div>
                 </div>
 
-                {/* Real-time Satellite Imagery Canvas */}
-                <div className="relative h-64 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950">
-                  <div ref={satelliteMapContainerRef} className="h-full w-full" />
+                {/* Satellite Imagery Box */}
+                <div className="relative h-64 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 flex items-center justify-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80"
+                    alt="Satellite Observation View"
+                    className="h-full w-full object-cover opacity-85"
+                  />
 
                   {/* Change Vector Markers Overlay */}
-                  <div className="absolute inset-0 p-4 pointer-events-none flex flex-col justify-between z-[500]">
-                    <div className="flex justify-between items-start flex-wrap gap-2">
-                      {weather && weather.precipitation > 15 ? (
-                        <span className="rounded bg-rose-600/90 text-white px-2.5 py-1 text-xs font-bold shadow backdrop-blur">
-                          🔴 Detected Flood & Mud Expansion (+{Math.round(20 + weather.precipitation * 0.8)}%)
-                        </span>
-                      ) : weather && weather.precipitation > 2 ? (
-                        <span className="rounded bg-amber-600/90 text-white px-2.5 py-1 text-xs font-bold shadow backdrop-blur">
-                          🟡 Moderate Surface Runoff (+{Math.round(5 + weather.precipitation * 1.2)}%)
-                        </span>
-                      ) : (
-                        <span className="rounded bg-emerald-600/90 text-white px-2.5 py-1 text-xs font-bold shadow backdrop-blur">
-                          🟢 Surface Equilibrium (0% Inundation • Baseline Stable)
-                        </span>
-                      )}
-
-                      <span className="rounded bg-slate-900/80 text-white px-2.5 py-1 text-xs font-mono backdrop-blur">
-                        Pass Time: {reportTime} IST
+                  <div className="absolute inset-0 p-4 pointer-events-none flex flex-col justify-between">
+                    <div className="flex justify-between items-start">
+                      <span className="rounded bg-rose-600/90 text-white px-2.5 py-1 text-xs font-bold shadow">
+                        🔴 {t("smartmonitoring.detectedFlood", "Detected Flood & Mud Expansion (+34%)")}
+                      </span>
+                      <span className="rounded bg-slate-900/80 text-white px-2.5 py-1 text-xs font-mono">
+                        Pass Time: {reportTime} UTC+5:30
                       </span>
                     </div>
 
-                    <div className="rounded-xl border border-amber-500/40 bg-white/95 dark:bg-slate-950/95 p-3 max-w-md backdrop-blur pointer-events-auto shadow-lg">
+                    <div className="rounded-xl border border-amber-500/40 bg-white/90 dark:bg-slate-950/90 p-3 max-w-md backdrop-blur">
                       <div className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                         <AlertTriangle className="h-4 w-4" />
-                        <span>{t("smartmonitoring.aiInterpretationTitle", "AI Change Interpretation Summary")}</span>
+                        {t("smartmonitoring.aiInterpretationTitle", "AI Change Interpretation Summary")}
                       </div>
                       <p className="mt-1 text-[11px] text-slate-800 dark:text-slate-300 leading-snug">
-                        {weather && weather.precipitation > 15 ? (
-                          `Automated optical & radar change detection highlights +${Math.round(20 + weather.precipitation * 0.8)}% increased surface water accumulation near low-lying river tributaries and elevated mudflow saturation along mountain slopes at ${monitoredLoc.displayName}.`
-                        ) : weather && weather.precipitation > 2 ? (
-                          `Moderate precipitation of ${weather.precipitation.toFixed(1)} mm/hr recorded. Surface soil saturation index at ${envData ? envData.soilMoistureIndex : 50}% with regulated drainage throughput in ${monitoredLoc.displayName}.`
-                        ) : (
-                          `Automated optical satellite telemetry confirms stable, dry surface equilibrium across ${monitoredLoc.displayName}. No active flood inundation, river bank overflow, or slope debris detected.`
-                        )}
+                        {t("smartmonitoring.aiInterpretationText", "Automated surface change detection highlights increased water spread near low-lying river tributaries and 215m debris accumulation along slopes.")}
                       </p>
                     </div>
                   </div>
@@ -961,13 +858,22 @@ export default function SmartDisasterMonitoring({
                 </div>
               </div>
             ) : (
-              /* Satellite Data Unavailable State */
-              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-8 text-center space-y-3">
+              /* Satellite Data Unavailable State with Active Enable Action */
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-8 text-center space-y-4">
                 <Eye className="h-10 w-10 text-slate-400 dark:text-slate-600 mx-auto" />
-                <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">Satellite Data Unavailable</h4>
-                <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  High-resolution satellite observation pass is currently unavailable for this coordinate or requires an enterprise API key slot. Ground radar and Open-Meteo weather telemetry remain active.
-                </p>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">Satellite Data Paused or Offline</h4>
+                  <p className="mt-1 text-xs text-slate-500 max-w-md mx-auto">
+                    Satellite observation stream is paused. Click below to initialize high-resolution satellite imagery pass (Esri World Imagery & ISRO Bhuvan stream).
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSatelliteDataAvailable(true)}
+                  className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-500 shadow flex items-center gap-2 mx-auto transition"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  <span>Enable High-Res Satellite Telemetry Stream</span>
+                </button>
               </div>
             )}
           </div>

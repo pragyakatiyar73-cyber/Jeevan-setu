@@ -17,8 +17,13 @@ import {
   TrendingDown,
   Minus,
   Info,
-  ShieldCheck
+  ShieldCheck,
+  Sparkles,
+  ArrowRight,
+  Send,
+  Radio
 } from "lucide-react";
+import { incidentStore } from "../services/api/incidentStore";
 
 interface LocationPreset {
   id: string;
@@ -404,6 +409,74 @@ export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) 
             )}
             <span>{t("landslide.lastUpdated", "Last Updated:")} <b className="text-slate-800 dark:text-slate-200">{lastUpdated || "Just now"}</b></span>
           </div>
+        </div>
+      </div>
+
+      {/* 🚨 ACTIVE INCIDENTS & WORKFLOW COMMAND GRID */}
+      <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-r from-slate-900 via-rose-950/40 to-slate-900 p-6 shadow-2xl space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2">
+            <Radio className="h-5 w-5 text-rose-500 animate-pulse" />
+            <h2 className="text-base font-black text-white uppercase tracking-wider">
+              ACTIVE DISASTER INCIDENTS ({incidentStore.getIncidents().length})
+            </h2>
+            <span className="rounded bg-rose-500/20 text-rose-300 text-[10px] font-black px-2 py-0.5 border border-rose-500/40">
+              INCIDENT-CENTRIC DISPATCH GRID
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400 font-mono">Bound Incident:</span>
+            <span className="rounded bg-amber-500/20 text-amber-300 text-xs font-black px-2.5 py-1 border border-amber-500/40 font-mono">
+              {incidentStore.getActiveIncidentId()}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {incidentStore.getIncidents().map(inc => (
+            <div
+              key={inc.id}
+              onClick={() => incidentStore.setActiveIncidentId(inc.id)}
+              className={`cursor-pointer rounded-xl border p-4 space-y-3 transition-all ${
+                incidentStore.getActiveIncidentId() === inc.id
+                  ? 'border-rose-500 bg-rose-500/10 shadow-xl ring-2 ring-rose-500/30'
+                  : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-black text-amber-400">{inc.id}</span>
+                <span
+                  className={`rounded px-2 py-0.5 text-[10px] font-black border ${
+                    inc.severity === 'CRITICAL'
+                      ? 'bg-rose-500/20 text-rose-400 border-rose-500/40 animate-pulse'
+                      : inc.severity === 'HIGH'
+                      ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                      : 'bg-sky-500/20 text-sky-400 border-sky-500/30'
+                  }`}
+                >
+                  {inc.severity} SEVERITY
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-bold text-white line-clamp-1">{inc.title}</h3>
+                <div className="text-[11px] text-slate-400 font-mono mt-0.5">{inc.locationName}</div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-400">
+                <div>Pop: <b className="text-slate-200">{inc.affectedPopulation.toLocaleString()}</b></div>
+                <div>SOS Calls: <b className="text-rose-400">{inc.activeSosCount} Active</b></div>
+              </div>
+
+              <div className="flex justify-between items-center pt-2 border-t border-slate-800 text-[10px]">
+                <span className="text-sky-400 font-mono">{inc.dataStatus}</span>
+                <span className="text-slate-400 font-bold hover:text-white flex items-center gap-1">
+                  Inspect Incident <ArrowRight className="h-3 w-3" />
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

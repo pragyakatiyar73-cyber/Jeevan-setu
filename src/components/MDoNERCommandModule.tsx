@@ -1,6 +1,7 @@
 import { useTranslation } from "../i18n";
 import React, { useState, useEffect } from "react";
-import { Building2, RefreshCw, ExternalLink, CheckCircle2, AlertTriangle, ShieldCheck, Activity } from "lucide-react";
+import { Building2, RefreshCw, ExternalLink, CheckCircle2, AlertTriangle, ShieldCheck, Activity, Eye, X, Radio, ArrowRight } from "lucide-react";
+import { incidentStore } from "../services/api/incidentStore";
 
 interface Hub {
   id: string;
@@ -30,6 +31,8 @@ export default function MDoNERCommandModule() {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataPayload, setDataPayload] = useState<any>(null);
   const [lastRefreshed, setLastRefreshed] = useState<string>("");
+  const [incidentModalOpen, setIncidentModalOpen] = useState<boolean>(false);
+  const activeIncident = incidentStore.getActiveIncident();
 
   const fetchMDoNERData = async (mode: "LIVE" | "VERIFIED" | "SIMULATION") => {
     setLoading(true);
@@ -248,6 +251,32 @@ export default function MDoNERCommandModule() {
         </div>
       )}
 
+      {/* 🚨 ACTIVE INCIDENT OVERVIEW BANNER */}
+      <div className="rounded-2xl border border-rose-500/40 bg-gradient-to-r from-slate-900 via-rose-950/40 to-slate-900 p-5 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">
+              {activeIncident.id}
+            </span>
+            <span className="rounded bg-rose-500/20 px-2.5 py-0.5 text-[11px] font-black text-rose-300 border border-rose-500/40 uppercase">
+              {activeIncident.severity} SEVERITY DISASTER
+            </span>
+          </div>
+          <h2 className="text-base font-black text-white">{activeIncident.title}</h2>
+          <div className="text-xs text-slate-400 font-mono">
+            {activeIncident.locationName} &bull; Affected Pop: <b>{activeIncident.affectedPopulation.toLocaleString()}</b>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setIncidentModalOpen(true)}
+          className="rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg hover:from-rose-500 hover:to-indigo-500 flex items-center gap-2 cursor-pointer shrink-0"
+        >
+          <Eye className="h-4 w-4" />
+          <span>VIEW FULL INCIDENT TELEMETRY</span>
+        </button>
+      </div>
+
       {/* 4 TOP METRIC CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-2 transition-colors duration-300">
@@ -397,6 +426,82 @@ export default function MDoNERCommandModule() {
           ))}
         </div>
       </div>
+
+      {/* FULL INCIDENT TELEMETRY MODAL */}
+      {incidentModalOpen && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
+          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">
+                  {activeIncident.id}
+                </span>
+                <h3 className="text-base font-black text-white">{activeIncident.title}</h3>
+              </div>
+              <button
+                onClick={() => setIncidentModalOpen(false)}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs font-mono">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-xl bg-slate-950 p-3 border border-slate-800">
+                  <div className="text-[10px] text-slate-400">Severity</div>
+                  <div className="font-bold text-rose-400 text-sm">{activeIncident.severity}</div>
+                </div>
+                <div className="rounded-xl bg-slate-950 p-3 border border-slate-800">
+                  <div className="text-[10px] text-slate-400">Confidence</div>
+                  <div className="font-bold text-sky-400 text-sm">{activeIncident.confidenceScore}%</div>
+                </div>
+                <div className="rounded-xl bg-slate-950 p-3 border border-slate-800">
+                  <div className="text-[10px] text-slate-400">Affected Area</div>
+                  <div className="font-bold text-slate-200 text-sm">{activeIncident.affectedAreaSqKm} sq km</div>
+                </div>
+                <div className="rounded-xl bg-slate-950 p-3 border border-slate-800">
+                  <div className="text-[10px] text-slate-400">Affected Pop</div>
+                  <div className="font-bold text-amber-400 text-sm">{activeIncident.affectedPopulation.toLocaleString()}</div>
+                </div>
+              </div>
+
+              <div className="rounded-xl bg-slate-950 p-4 border border-slate-800 space-y-2 font-sans">
+                <h4 className="text-amber-400 font-mono font-bold uppercase text-xs">Infrastructure & Highway Risk Overview</h4>
+                <p className="text-xs text-slate-300"><b>Infrastructure Risk:</b> {activeIncident.infrastructureRisk}</p>
+                <p className="text-xs text-slate-300"><b>Highway Status:</b> {activeIncident.roadRiskStatus}</p>
+              </div>
+
+              <div className="rounded-xl bg-slate-950 p-4 border border-slate-800 space-y-2 font-sans">
+                <h4 className="text-sky-400 font-mono font-bold uppercase text-xs">72-Hour Disaster Risk Prediction</h4>
+                <div className="grid grid-cols-3 gap-2 text-xs font-mono">
+                  <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                    <div className="text-slate-400 text-[10px]">0-24h</div>
+                    <b className="text-rose-400">{activeIncident.forecast72h.period0_24h.risk}</b>
+                  </div>
+                  <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                    <div className="text-slate-400 text-[10px]">24-48h</div>
+                    <b className="text-amber-400">{activeIncident.forecast72h.period24_48h.risk}</b>
+                  </div>
+                  <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                    <div className="text-slate-400 text-[10px]">48-72h</div>
+                    <b className="text-emerald-400">{activeIncident.forecast72h.period48_72h.risk}</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end border-t border-slate-800 pt-3">
+              <button
+                onClick={() => setIncidentModalOpen(false)}
+                className="rounded-xl bg-slate-800 px-4 py-2 text-xs font-bold text-white hover:bg-slate-700"
+              >
+                Close Telemetry View
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

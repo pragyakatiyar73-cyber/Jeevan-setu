@@ -255,7 +255,7 @@ export async function getEnvironmentalData(lat: number, lon: number): Promise<Mo
 export async function getRoadAccessibility(
   lat: number,
   lon: number,
-  locationName: string,
+  locationName: string = 'Monitored Sector',
   weather?: WeatherData | null,
   env?: MonitoringEnvironmentData | null
 ): Promise<RoadStatusItem[]> {

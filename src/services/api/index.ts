@@ -11,6 +11,7 @@ export * from './hazardModels';
 export * from './routing';
 export * from './droneRouting';
 export * from './smartMonitoring';
+export * from './incidentStore';
 
 export interface APIRegistryStatus {
   category: string;
