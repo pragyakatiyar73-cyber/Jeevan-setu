@@ -2036,6 +2036,11 @@ export default function App() {
           />
         )}
 
+        {/* 8. LIVE RELIEF CAMP & SHELTER FINDER VIEW */}
+        {activeModule === 'reliefcamps' && (
+          <ReliefCampManagement onNavigateToMap={() => setActiveModule('map')} />
+        )}
+
         {/* Fallback for other quick tabs */}
         {(activeModule === 'vehicles' || activeModule === 'alerts' || activeModule === 'vehicleselect' || activeModule === 'analytics') && (
           <div className="h-full overflow-y-auto p-6 space-y-6">
