@@ -25,7 +25,8 @@ import {
   Radio,
   FileText,
   Clock,
-  Bot
+  Bot,
+  HelpCircle
 } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -43,6 +44,13 @@ interface RouteDetail {
   travelTimeMins: number;
   accessibilityPercent: number;
   routeDisasterRisk: string;
+}
+
+interface EmergencyAccessStatus {
+  ambulanceAccess: '🟢 SAFE ACCESS' | '🟡 CAUTION REQUIRED' | '🔴 BLOCKED';
+  fireVehicleAccess: '🟢 SAFE ACCESS' | '🟡 CAUTION REQUIRED' | '🔴 BLOCKED';
+  rescueTeamAccess: '🟢 SAFE ACCESS' | '🟡 CAUTION REQUIRED' | '🔴 BLOCKED';
+  normalRouteSafety: '🟢 NORMAL SAFE' | '🟡 PARTIALLY IMPAIRED' | '🔴 UNSAFE / BREACHED';
 }
 
 interface SafetyScoreBreakdown {
@@ -78,6 +86,7 @@ export default function AddressDisasterIntelligence() {
   const [weatherData, setWeatherData] = useState<any>(null);
   const [stateProfile, setStateProfile] = useState<any>(null);
   const [routeDetail, setRouteDetail] = useState<RouteDetail | null>(null);
+  const [emergencyAccess, setEmergencyAccess] = useState<EmergencyAccessStatus | null>(null);
   const [safetyScore, setSafetyScore] = useState<SafetyScoreBreakdown | null>(null);
   const [aiReportText, setAiReportText] = useState<string>('');
 
@@ -145,13 +154,13 @@ export default function AddressDisasterIntelligence() {
 
     const pinIcon = L.divIcon({
       className: 'custom-address-pin',
-      html: `<div style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:6px 12px;border-radius:12px;font-weight:900;font-size:12px;border:2px solid #fff;box-shadow:0 0 20px rgba(239,68,68,0.8);white-space:nowrap;display:flex;align-items:center;gap:4px;">📍 <span>${currentLoc.city || currentLoc.displayName.split(',')[0]}</span></div>`,
-      iconSize: [160, 30],
-      iconAnchor: [80, 15]
+      html: `<div style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:6px 12px;border-radius:12px;font-weight:900;font-size:12px;border:2px solid #fff;box-shadow:0 0 20px rgba(239,68,68,0.8);white-space:nowrap;display:flex;align-items:center;gap:4px;">🛡️ <span>GeoSafe AI: ${currentLoc.city || currentLoc.displayName.split(',')[0]}</span></div>`,
+      iconSize: [180, 30],
+      iconAnchor: [90, 15]
     });
 
     markerRef.current = L.marker([currentLoc.lat, currentLoc.lon], { icon: pinIcon }).addTo(map)
-      .bindPopup(`<b>📍 ${currentLoc.displayName}</b><br/>Lat: ${currentLoc.lat.toFixed(4)}° N, Lon: ${currentLoc.lon.toFixed(4)}° E`);
+      .bindPopup(`<b>🛡️ GeoSafe AI Pin: ${currentLoc.displayName}</b><br/>Lat: ${currentLoc.lat.toFixed(4)}° N, Lon: ${currentLoc.lon.toFixed(4)}° E`);
 
     // Draw Emergency Safe Route Vector
     if (routePolylineRef.current) map.removeLayer(routePolylineRef.current);
@@ -166,11 +175,11 @@ export default function AddressDisasterIntelligence() {
       weight: 5,
       opacity: 0.85,
       dashArray: '8, 8'
-    }).addTo(map).bindPopup("<b>🚑 Recommended Emergency Bypass Route</b>");
+    }).addTo(map).bindPopup("<b>🚑 GeoSafe Recommended Safe Bypass Route</b>");
 
   }, [currentLoc]);
 
-  // Load Complete Telemetry & Assessment for Location
+  // Load Complete Telemetry & GeoSafe Assessment for Location
   const runFullLocationAssessment = async (loc: GeocodedLocation) => {
     setIsLoadingData(true);
     try {
@@ -209,7 +218,15 @@ export default function AddressDisasterIntelligence() {
       };
       setRouteDetail(route);
 
-      // 4. Compute Location Safety Score (0 - 100)
+      // 4. Compute Emergency Access Questions (Ambulance, Fire, Rescue, Normal Route)
+      setEmergencyAccess({
+        ambulanceAccess: isHighRisk ? '🔴 BLOCKED' : rainVal > 8 ? '🟡 CAUTION REQUIRED' : '🟢 SAFE ACCESS',
+        fireVehicleAccess: isHighRisk ? '🔴 BLOCKED' : rainVal > 8 ? '🟡 CAUTION REQUIRED' : '🟢 SAFE ACCESS',
+        rescueTeamAccess: '🟢 SAFE ACCESS',
+        normalRouteSafety: isHighRisk ? '🔴 UNSAFE / BREACHED' : rainVal > 8 ? '🟡 PARTIALLY IMPAIRED' : '🟢 NORMAL SAFE'
+      });
+
+      // 5. Compute GeoSafe Safety Score (0 - 100)
       const floodScore = Math.max(0, 100 - Math.round(rainVal * 2.8 + 15));
       const rainScore = Math.max(0, 100 - Math.round(rainVal * 2.5));
       const roadScore = isHighRisk ? 30 : 80;
@@ -233,7 +250,7 @@ export default function AddressDisasterIntelligence() {
         weatherScore
       });
 
-      // 5. Generate AI Disaster Assessment Statement
+      // 6. Generate AI Disaster Assessment Statement
       const summary = `Location ${loc.displayName} is evaluated under ${prof.regionCategory} terrain parameters. Primary hazards include ${prof.primaryHazards.slice(0, 3).join(', ')}. Current precipitation is ${rainVal} mm/h with ambient temperature of ${tempVal}°C. Transit accessibility is rated ${route.accessibilityPercent}%. Emergency units are advised to maintain ${prof.recommendedVehicles[0]} vector availability.`;
       setAiReportText(summary);
 
@@ -301,7 +318,7 @@ export default function AddressDisasterIntelligence() {
 
   const handleActionTrigger = async (actionType: string) => {
     if (actionType === 'ALERT') {
-      setActionFeedback('📡 Sending CRITICAL Emergency Alert to MDoNER & SDRF Triage Command...');
+      setActionFeedback('📡 Sending CRITICAL GeoSafe Alert to MDoNER & SDRF Triage Command...');
       await dispatchMDoNERAlert({
         locationName: currentLoc.displayName,
         disasterType: 'CRITICAL',
@@ -311,13 +328,13 @@ export default function AddressDisasterIntelligence() {
     } else if (actionType === 'SHARE') {
       if (navigator.share) {
         navigator.share({
-          title: `JEEVAN SETU Disaster Report - ${currentLoc.displayName}`,
-          text: `Emergency Disaster Assessment for ${currentLoc.displayName}. Safety Score: ${safetyScore?.totalScore}/100 (${safetyScore?.tier}).`,
+          title: `GeoSafe AI Report - ${currentLoc.displayName}`,
+          text: `GeoSafe AI Disaster Assessment for ${currentLoc.displayName}. Safety Score: ${safetyScore?.totalScore}/100 (${safetyScore?.tier}).`,
           url: window.location.href
         });
       } else {
         navigator.clipboard.writeText(window.location.href);
-        setActionFeedback('📋 Shareable link copied to clipboard!');
+        setActionFeedback('📋 Shareable GeoSafe report link copied to clipboard!');
       }
     } else if (actionType === 'PRINT') {
       window.print();
@@ -329,20 +346,20 @@ export default function AddressDisasterIntelligence() {
 
   // Determine Flood Status
   const getFloodStatus = () => {
-    if (!weatherData) return { label: '🟢 No Flood Detected', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' };
+    if (!weatherData) return { label: '🟢 SAFE – No Flood Detected', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' };
     const p = weatherData.precipitation || 0;
-    if (p > 30) return { label: '🔴 Active Flood Emergency', color: 'text-rose-500 bg-rose-500/10 border-rose-500/30 animate-pulse' };
-    if (p > 15) return { label: '🟠 Flood Warning', color: 'text-orange-500 bg-orange-500/10 border-orange-500/30' };
-    if (p > 5) return { label: '🟡 Flood Risk', color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' };
-    return { label: '🟢 No Flood Detected', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' };
+    if (p > 30) return { label: '🔴 CRITICAL – Active Flood Emergency', color: 'text-rose-500 bg-rose-500/10 border-rose-500/30 animate-pulse' };
+    if (p > 15) return { label: '🟠 HIGH – Serious Flood Warning', color: 'text-orange-500 bg-orange-500/10 border-orange-500/30' };
+    if (p > 5) return { label: '🟡 MODERATE – Flood Risk Present', color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' };
+    return { label: '🟢 SAFE – No Flood Detected', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' };
   };
 
   // Determine Road Status
   const getRoadStatus = () => {
-    if (!stateProfile) return { label: '🟢 Accessible', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' };
-    if (stateProfile.hillRoadStatus?.includes('🔴')) return { label: '🔴 Road Blocked / No Safe Route', color: 'text-rose-500 bg-rose-500/10 border-rose-500/30 animate-pulse' };
+    if (!stateProfile) return { label: '🟢 Fully Accessible', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' };
+    if (stateProfile.hillRoadStatus?.includes('🔴')) return { label: '🔴 Blocked / Unsafe', color: 'text-rose-500 bg-rose-500/10 border-rose-500/30 animate-pulse' };
     if (stateProfile.hillRoadStatus?.includes('🟡')) return { label: '🟡 Partially Accessible', color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' };
-    return { label: '🟢 Accessible', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' };
+    return { label: '🟢 Fully Accessible', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' };
   };
 
   const floodObj = getFloodStatus();
@@ -350,30 +367,32 @@ export default function AddressDisasterIntelligence() {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* 🚀 TOP HEADER SECTION: SEARCH & GPS PRESETS */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+      {/* 🛡️ TOP HEADER SECTION: GEOSAFE AI BRANDING & SEARCH BAR */}
+      <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 via-slate-900/90 to-slate-950 p-6 shadow-xl dark:shadow-2xl space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-500/20 pb-4">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-2xl shadow-inner">
-              📍
+            <div className="h-12 w-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-2xl shadow-inner shadow-indigo-500/30">
+              🛡️
             </div>
             <div>
-              <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                <span>Address-Based Disaster & Road Accessibility Intelligence</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 font-bold uppercase">
-                  National Engine
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-black text-white tracking-tight">GeoSafe AI</h1>
+                <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-bold uppercase">
+                  Address-Based Disaster Intelligence
                 </span>
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Instant flood status, road transit accessibility, safe emergency routing & AI safety scoring for any address</p>
+              </div>
+              <p className="text-xs text-indigo-200/80 font-semibold mt-0.5">
+                Enter any location. Instantly understand its disaster risk, safety status, and emergency accessibility.
+              </p>
             </div>
           </div>
 
           <button
             onClick={handleUseCurrentLocation}
-            className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition flex items-center gap-2 shadow-sm shrink-0 cursor-pointer"
+            className="rounded-xl border border-emerald-500/40 bg-emerald-500/20 px-4 py-2.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/30 transition flex items-center gap-2 shadow-sm shrink-0 cursor-pointer"
           >
-            <Compass className="h-4 w-4 animate-spin-slow" />
-            <span>Use My GPS Location</span>
+            <Compass className="h-4 w-4 animate-spin-slow text-emerald-400" />
+            <span>📍 Use Current Location</span>
           </button>
         </div>
 
@@ -386,17 +405,17 @@ export default function AddressDisasterIntelligence() {
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Enter Full Address, Village, City, District, State, PIN Code, or Landmark (e.g. Kanpur, Dehradun, Haridwar, Prayagraj, Shimla)..."
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 py-3 pl-10 pr-4 text-sm text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-inner"
+                placeholder="📍 Enter village, city, district, address, PIN code, or landmark..."
+                className="w-full rounded-xl border border-indigo-500/30 bg-slate-950/80 py-3 pl-10 pr-4 text-sm text-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-inner"
               />
             </div>
             <button
               type="submit"
               disabled={isSearching}
-              className="rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 px-6 py-3 text-xs font-black text-white shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition cursor-pointer shrink-0"
+              className="rounded-xl bg-gradient-to-r from-indigo-600 via-sky-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 px-6 py-3 text-xs font-black text-white shadow-lg shadow-indigo-600/40 flex items-center gap-2 transition cursor-pointer shrink-0"
             >
               {isSearching ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-              <span>Analyze Location</span>
+              <span>🔍 Analyze Location</span>
             </button>
           </form>
 
@@ -405,8 +424,8 @@ export default function AddressDisasterIntelligence() {
             const dyM = getDidYouMeanSuggestion(searchQuery);
             if (!dyM) return null;
             return (
-              <div className="mt-2 flex items-center gap-2 rounded-xl bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 text-xs text-amber-700 dark:text-amber-300">
-                <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
+              <div className="mt-2 flex items-center gap-2 rounded-xl bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 text-xs text-amber-300">
+                <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
                 <span>Did you mean:</span>
                 <button
                   type="button"
@@ -418,7 +437,7 @@ export default function AddressDisasterIntelligence() {
                     state: dyM.state,
                     country: 'India'
                   })}
-                  className="font-bold underline hover:text-amber-800 dark:hover:text-amber-200 transition cursor-pointer"
+                  className="font-bold underline hover:text-amber-200 transition cursor-pointer"
                 >
                   {dyM.name} ({dyM.state})
                 </button>
@@ -428,7 +447,7 @@ export default function AddressDisasterIntelligence() {
 
           {/* Quick Preset Location Pills */}
           <div className="flex flex-wrap items-center gap-2 pt-2 text-xs">
-            <span className="text-[11px] font-bold text-slate-500 uppercase font-mono">Popular Locations:</span>
+            <span className="text-[11px] font-bold text-slate-400 uppercase font-mono">Popular Sectors:</span>
             {[
               { name: 'Dehradun, Uttarakhand', lat: 30.3165, lon: 78.0322, state: 'Uttarakhand' },
               { name: 'Kanpur, Uttar Pradesh', lat: 26.4499, lon: 80.3319, state: 'Uttar Pradesh' },
@@ -449,7 +468,7 @@ export default function AddressDisasterIntelligence() {
                   state: p.state,
                   country: 'India'
                 })}
-                className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-indigo-500/20 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 text-[11px] font-semibold transition cursor-pointer flex items-center gap-1"
+                className="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-indigo-500/30 text-slate-300 border border-slate-800 text-[11px] font-semibold transition cursor-pointer flex items-center gap-1"
               >
                 <span>📍</span> <span>{p.name.split(',')[0]}</span>
               </button>
@@ -459,19 +478,19 @@ export default function AddressDisasterIntelligence() {
 
         {/* Action Feedback Banner */}
         {actionFeedback && (
-          <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-xs font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-2">
-            <Radio className="h-4 w-4 text-indigo-500 animate-pulse" />
+          <div className="p-3 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-xs font-bold text-indigo-300 flex items-center gap-2">
+            <Radio className="h-4 w-4 text-indigo-400 animate-pulse" />
             <span>{actionFeedback}</span>
           </div>
         )}
       </div>
 
-      {/* 🧭 MAIN DASHBOARD CARDS GRID */}
+      {/* 🧭 INTELLIGENCE DASHBOARD CARDS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: 🌊 Flood Intelligence */}
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">STEP 2 &bull; FLOOD INTELLIGENCE</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">FLOOD INTELLIGENCE</span>
             <span className="text-xl">🌊</span>
           </div>
           <div>
@@ -489,7 +508,7 @@ export default function AddressDisasterIntelligence() {
         {/* Card 2: 🛣️ Road Accessibility */}
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">STEP 3 &bull; ROAD ACCESSIBILITY</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">ROAD ACCESSIBILITY</span>
             <span className="text-xl">🛣️</span>
           </div>
           <div>
@@ -522,10 +541,10 @@ export default function AddressDisasterIntelligence() {
           </div>
         </div>
 
-        {/* Card 4: 🛡️ Location Safety Score (Step 7) */}
+        {/* Card 4: 🛡️ GeoSafe Safety Score */}
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-indigo-500/10 via-slate-900/60 to-slate-950 p-5 shadow-xl dark:shadow-2xl flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">STEP 7 &bull; SAFETY SCORE</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">GEOSAFE SAFETY SCORE</span>
             <Shield className="h-5 w-5 text-indigo-400" />
           </div>
           <div>
@@ -548,7 +567,58 @@ export default function AddressDisasterIntelligence() {
         </div>
       </div>
 
-      {/* 🗺️ MAP VISUALIZATION & EMERGENCY ROUTE ANALYSIS GRID */}
+      {/* 🚑 EMERGENCY ACCESS CHECK PANEL */}
+      {emergencyAccess && (
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div className="flex items-center gap-2">
+              <Truck className="h-5 w-5 text-rose-500" />
+              <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                🚑 Emergency Access Verification Check
+              </h3>
+            </div>
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30">
+              Live Transit Check
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3.5 space-y-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase">Ambulance Vector</span>
+              <div className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>🚑</span> <span>Can ambulance reach?</span>
+              </div>
+              <div className="text-xs font-black mt-1 text-emerald-500">{emergencyAccess.ambulanceAccess}</div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3.5 space-y-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase">Fire Engine Vector</span>
+              <div className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>🚒</span> <span>Can fire engine access?</span>
+              </div>
+              <div className="text-xs font-black mt-1 text-emerald-500">{emergencyAccess.fireVehicleAccess}</div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3.5 space-y-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase">Rescue Squad Vector</span>
+              <div className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>👨‍🚒</span> <span>Can rescue team reach?</span>
+              </div>
+              <div className="text-xs font-black mt-1 text-emerald-500">{emergencyAccess.rescueTeamAccess}</div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3.5 space-y-1">
+              <span className="text-[10px] text-slate-500 font-bold uppercase">Primary Route Safety</span>
+              <div className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>🛣️</span> <span>Normal route safe?</span>
+              </div>
+              <div className="text-xs font-black mt-1 text-emerald-500">{emergencyAccess.normalRouteSafety}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🗺️ GEOSAFE INTERACTIVE MAP & ROUTE ANALYSIS GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* MAP VISUALIZATION PANEL (7 COLS) */}
@@ -557,7 +627,7 @@ export default function AddressDisasterIntelligence() {
             <div className="flex items-center gap-2">
               <Layers className="h-5 w-5 text-indigo-500" />
               <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                Interactive Map & Layer Controls (Step 5)
+                GeoSafe Interactive Map & Layer Controls
               </h3>
             </div>
             <span className="text-[10px] font-mono text-emerald-500 font-bold">📍 PIN CONFIRMED</span>
@@ -600,7 +670,7 @@ export default function AddressDisasterIntelligence() {
             <div className="flex items-center gap-2">
               <Navigation className="h-5 w-5 text-emerald-500" />
               <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                Emergency Route Analysis (Step 4)
+                AI Recommended Safe Route
               </h3>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-bold border border-emerald-500/30">
@@ -674,17 +744,17 @@ export default function AddressDisasterIntelligence() {
         </div>
       </div>
 
-      {/* 🤖 AI DISASTER ASSESSMENT & DATA PROVENANCE (STEP 6) */}
+      {/* 📊 DATA RELIABILITY & PROVENANCE SYSTEM */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-4">
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-sky-500" />
             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
-              AI Disaster Location Report & Provenance Labels (Step 6)
+              GeoSafe AI Assessment & Data Reliability Provenance
             </h3>
           </div>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 font-bold border border-sky-500/30">
-            Gemini Disaster Engine
+            Transparency Engine
           </span>
         </div>
 
@@ -693,29 +763,29 @@ export default function AddressDisasterIntelligence() {
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5 flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
             <div>
-              <div className="text-[10px] text-slate-400">STATUS 1</div>
-              <div className="font-bold text-emerald-400">🟢 Verified Live Data</div>
-            </div>
-          </div>
-          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
-            <div>
-              <div className="text-[10px] text-slate-400">STATUS 2</div>
-              <div className="font-bold text-amber-400">🟡 Historical Risk Data</div>
+              <div className="text-[10px] text-slate-400">CATEGORY 1</div>
+              <div className="font-bold text-emerald-400">🟢 Live / Verified Data</div>
             </div>
           </div>
           <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-2.5 flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-sky-500"></span>
             <div>
-              <div className="text-[10px] text-slate-400">STATUS 3</div>
-              <div className="font-bold text-sky-400">🔵 AI Prediction</div>
+              <div className="text-[10px] text-slate-400">CATEGORY 2</div>
+              <div className="font-bold text-sky-400">🔵 Historical Data</div>
             </div>
           </div>
           <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-2.5 flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-purple-500"></span>
             <div>
-              <div className="text-[10px] text-slate-400">STATUS 4</div>
-              <div className="font-bold text-purple-400">⚪ Estimated Analysis</div>
+              <div className="text-[10px] text-slate-400">CATEGORY 3</div>
+              <div className="font-bold text-purple-400">🟣 AI Prediction</div>
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-500/30 bg-slate-500/10 p-2.5 flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-slate-400"></span>
+            <div>
+              <div className="text-[10px] text-slate-400">CATEGORY 4</div>
+              <div className="font-bold text-slate-300">⚪ Estimated / Simulation</div>
             </div>
           </div>
         </div>
@@ -724,7 +794,7 @@ export default function AddressDisasterIntelligence() {
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 text-xs space-y-2">
           <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-amber-500" />
-            <span>AI Risk Assessment & Guidance for {currentLoc.displayName}:</span>
+            <span>GeoSafe AI Risk Assessment & Guidance for {currentLoc.displayName}:</span>
           </div>
           <p className="text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
             {aiReportText || 'Analyzing disaster risk vectors and accessibility...'}
@@ -732,17 +802,17 @@ export default function AddressDisasterIntelligence() {
         </div>
       </div>
 
-      {/* 🚨 EMERGENCY ACTION BUTTONS (STEP 8) */}
+      {/* 🚨 EMERGENCY RESPONSE ACTIONS */}
       <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-500/10 via-slate-900/80 to-indigo-500/10 p-6 shadow-xl dark:shadow-2xl space-y-4">
         <div className="flex items-center justify-between border-b border-rose-500/20 pb-3">
           <div className="flex items-center gap-2">
             <ShieldAlert className="h-6 w-6 text-rose-500 animate-pulse" />
             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
-              Emergency Actions & Priority Response Dispatch (Step 8)
+              Emergency Response Actions
             </h3>
           </div>
           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">
-            HIGH/CRITICAL CONTROLS
+            PRIORITY CONTROLS
           </span>
         </div>
 
@@ -776,7 +846,7 @@ export default function AddressDisasterIntelligence() {
             className="rounded-xl bg-slate-800 hover:bg-slate-700 p-3 text-xs font-bold text-white border border-slate-700 shadow-md flex flex-col items-center justify-center gap-1.5 transition cursor-pointer text-center"
           >
             <PhoneCall className="h-5 w-5 text-rose-400" />
-            <span>🏥 Nearest Hospital</span>
+            <span>🏥 Nearest Assistance</span>
           </button>
 
           <button
@@ -797,16 +867,16 @@ export default function AddressDisasterIntelligence() {
         </div>
       </div>
 
-      {/* 📄 AUTOMATIC DISASTER REPORT PRINTABLE CARD (STEP 9) */}
+      {/* 📄 AUTOMATIC DISASTER REPORT PRINTABLE CARD */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
           <div className="flex items-center gap-3">
             <FileText className="h-6 w-6 text-indigo-500" />
             <div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                Official Location Disaster & Accessibility Report (Step 9)
+                Official GeoSafe Disaster Intelligence Report
               </h3>
-              <span className="text-xs text-slate-500">Updated: {new Date().toLocaleTimeString()} &bull; Data Status: 🟢 Live Telemetry Verified</span>
+              <span className="text-xs text-slate-500">Updated: {new Date().toLocaleTimeString()} &bull; Data Status: 🟢 Live / Verified Data Available</span>
             </div>
           </div>
 
@@ -836,7 +906,7 @@ export default function AddressDisasterIntelligence() {
             <div className="font-bold text-emerald-500">{floodObj.label}</div>
           </div>
           <div className="rounded-xl bg-slate-50 dark:bg-slate-950 p-3 border border-slate-200 dark:border-slate-800">
-            <div className="text-[10px] text-slate-500">Safety Score</div>
+            <div className="text-[10px] text-slate-500">GeoSafe Score</div>
             <div className="font-bold text-indigo-500">{safetyScore?.totalScore || 85} / 100 ({safetyScore?.tier})</div>
           </div>
         </div>

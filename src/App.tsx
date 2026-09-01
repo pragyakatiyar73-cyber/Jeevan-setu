@@ -579,7 +579,7 @@ export default function App() {
                 category: t('sidebar.catIntelligence', 'Intelligence & Monitoring'),
                 items: [
                   { id: 'hub', label: t('navigation.dashboard', '3D Disaster Simulation'), icon: Sparkles, iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
-                  { id: 'address-intelligence', label: t('navigation.addressIntelligence', 'Address Intelligence'), icon: Compass, badge: 'NEW', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
+                  { id: 'geosafe-ai', label: t('navigation.geosafe', 'GeoSafe AI'), icon: Compass, badge: 'AI CORE', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
                   { id: 'staterisk', label: t('navigation.staterisk', 'Regional State Risk'), icon: FileBarChart, badge: '19 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'smartmonitoring', label: t('navigation.smartmonitoring', 'Smart Disaster Monitoring'), icon: Eye, badge: 'LIVE', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, badge: 'AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
@@ -817,8 +817,8 @@ export default function App() {
         {/* Main Workspace Render */}
         <main className="flex-1 overflow-hidden">
 
-          {/* 📍 ADDRESS-BASED DISASTER & ROAD ACCESSIBILITY INTELLIGENCE */}
-          {activeModule === 'address-intelligence' && (
+          {/* 🛡️ GEOSAFE AI – ADDRESS-BASED DISASTER INTELLIGENCE */}
+          {(activeModule === 'geosafe-ai' || activeModule === 'address-intelligence') && (
             <div className="h-full overflow-y-auto p-4 sm:p-6">
               <AddressDisasterIntelligence />
             </div>
