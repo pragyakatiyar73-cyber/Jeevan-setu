@@ -9,11 +9,18 @@ export interface SearchCorrectionResult {
 }
 
 const KNOWN_LOCATIONS = [
-  'Kanpur', 'Shillong', 'Sohra', 'Guwahati', 'Tawang', 'Sela Pass',
-  'Aizawl', 'Gangtok', 'Mangan', 'Imphal', 'Ukhrul', 'Kohima',
-  'Dimapur', 'Agartala', 'Silchar', 'Jowai', 'Itanagar', 'Dispur',
-  'Darjeeling', 'Patna', 'Muzaffarpur', 'Ranchi', 'Kolkata', 'New Delhi',
-  'Mumbai', 'Bengaluru', 'Chennai'
+  'Uttar Pradesh', 'Uttarakhand', 'Himachal Pradesh', 'Haryana', 'Punjab', 'Rajasthan',
+  'Jammu & Kashmir', 'Ladakh', 'Delhi', 'Chandigarh',
+  'Lucknow', 'Kanpur', 'Varanasi', 'Prayagraj', 'Gorakhpur', 'Ayodhya', 'Agra', 'Meerut',
+  'Dehradun', 'Mussoorie', 'Haridwar', 'Rishikesh', 'Nainital', 'Almora', 'Chamoli', 'Uttarkashi', 'Kedarnath', 'Badrinath',
+  'Shimla', 'Manali', 'Dharamshala', 'Kullu', 'Solan', 'Mandi', 'Spiti',
+  'Gurugram', 'Faridabad', 'Panipat', 'Ambala', 'Karnal', 'Hisar',
+  'Amritsar', 'Ludhiana', 'Jalandhar', 'Patiala', 'Bathinda', 'Mohali',
+  'Jaipur', 'Jodhpur', 'Udaipur', 'Jaisalmer', 'Bikaner', 'Kota', 'Ajmer', 'Barmer',
+  'Srinagar', 'Jammu', 'Anantnag', 'Baramulla', 'Gulmarg', 'Pahalgam', 'Katra',
+  'Leh', 'Kargil', 'Dras', 'Nubra',
+  'New Delhi', 'Chandigarh',
+  'Shillong', 'Sohra', 'Guwahati', 'Tawang', 'Aizawl', 'Gangtok', 'Imphal', 'Kohima', 'Agartala', 'Silchar', 'Patna'
 ];
 
 // Memory LRU Cache

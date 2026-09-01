@@ -879,6 +879,177 @@ export default function AIDisasterImpactAssessment({
             </div>
           </div>
 
+          {/* 🏔️ REGION-AWARE STATE DISASTER PROFILE & SMART VEHICLE SELECTION ENGINE */}
+          {assessment.stateProfile && (
+            <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/5 via-slate-900/40 to-slate-950 p-6 shadow-xl dark:shadow-2xl space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-500/20 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-lg shadow-inner">
+                    🇮🇳
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                      <span>{assessment.stateProfile.state} Region-Aware Disaster Profile</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 font-bold uppercase">
+                        {assessment.stateProfile.regionCategory} REGION
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Adaptive disaster risk evaluation tuned for {assessment.stateProfile.state} terrain and climate</p>
+                  </div>
+                </div>
+
+                {assessment.stateProfile.hillRoadStatus && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-400">Hill Road Accessibility:</span>
+                    <span className={`px-3 py-1 rounded-xl text-xs font-black uppercase border ${
+                      assessment.stateProfile.hillRoadStatus.includes('🔴') ? 'bg-rose-500/20 text-rose-400 border-rose-500/40' :
+                      assessment.stateProfile.hillRoadStatus.includes('🟡') ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' :
+                      'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                    }`}>
+                      {assessment.stateProfile.hillRoadStatus}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* State Specialized Sub-Systems Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                {/* Primary Hazards */}
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/60 p-4 space-y-2">
+                  <span className="text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">Primary Regional Threats</span>
+                  <div className="space-y-1">
+                    {assessment.stateProfile.primaryHazards?.map((h: string, idx: number) => (
+                      <div key={idx} className="font-semibold text-slate-800 dark:text-slate-200">{h}</div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Desert Water Priority System */}
+                {assessment.stateProfile.waterPriority && (
+                  <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 dark:bg-sky-950/40 p-4 space-y-2">
+                    <span className="text-[10px] font-extrabold text-sky-600 dark:text-sky-400 uppercase tracking-wider block">💧 Desert Emergency Water Priority</span>
+                    <div className="text-sm font-black text-rose-500 uppercase">{assessment.stateProfile.waterPriority.urgency} WATER NEED</div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300">Required: <b>{assessment.stateProfile.waterPriority.drinkingWaterRequiredLiters.toLocaleString()} Liters</b></div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300">Cooling Shelters: <b>{assessment.stateProfile.waterPriority.coolingSheltersNeeded} Sites</b></div>
+                  </div>
+                )}
+
+                {/* Agricultural Impact */}
+                {assessment.stateProfile.agriImpact && (
+                  <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/40 p-4 space-y-2">
+                    <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">🌾 Agricultural Flood Impact</span>
+                    <div className="text-sm font-black text-emerald-600 dark:text-emerald-400">{assessment.stateProfile.agriImpact.cropDamageRiskPercent}% Crop Damage Risk</div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300">Flooded Farms: <b>{assessment.stateProfile.agriImpact.floodedAgriHectares} Hectares</b></div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300">Affected Villages: <b>{assessment.stateProfile.agriImpact.affectedVillagesCount}</b> ({assessment.stateProfile.agriImpact.villageAccessStatus})</div>
+                  </div>
+                )}
+
+                {/* High Altitude Cold & Avalanche */}
+                {assessment.stateProfile.highAltitudeRisk && (
+                  <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 dark:bg-sky-950/40 p-4 space-y-2">
+                    <span className="text-[10px] font-extrabold text-sky-600 dark:text-sky-400 uppercase tracking-wider block">❄️ High Altitude Alpine Risk</span>
+                    <div className="text-sm font-black text-sky-400">{assessment.stateProfile.highAltitudeRisk.extremeColdRating} COLD ALERT</div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300">Avalanche Risk: <b>{assessment.stateProfile.highAltitudeRisk.avalancheRiskLevel}</b></div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300">Vehicle Mode: <b>{assessment.stateProfile.highAltitudeRisk.vehicleSuitability}</b></div>
+                  </div>
+                )}
+
+                {/* Urban Disruption */}
+                {assessment.stateProfile.urbanImpact && (
+                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-950/40 p-4 space-y-2">
+                    <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">🏙️ Urban Waterlogging & Traffic</span>
+                    <div className="text-sm font-black text-amber-500">{assessment.stateProfile.urbanImpact.waterloggingSeverity} WATERLOGGING</div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300">Traffic: <b>{assessment.stateProfile.urbanImpact.trafficDisruptionLevel}</b></div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300">Hospitals: <b>{assessment.stateProfile.urbanImpact.hospitalRouteStatus}</b></div>
+                  </div>
+                )}
+              </div>
+
+              {/* Recommended Emergency Response Vehicles & Supplies */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-indigo-500/20 pt-4 text-xs">
+                <div className="rounded-xl bg-slate-900/80 p-3.5 border border-slate-800 space-y-2">
+                  <span className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Truck className="h-3.5 w-3.5" />
+                    <span>AI Recommended Emergency Vehicles</span>
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {assessment.stateProfile.recommendedVehicles?.map((v: string, idx: number) => (
+                      <span key={idx} className="rounded-lg bg-indigo-500/20 px-2.5 py-1 text-[11px] font-bold text-indigo-300 border border-indigo-500/30">
+                        {v}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-xl bg-slate-900/80 p-3.5 border border-slate-800 space-y-2">
+                  <span className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Shield className="h-3.5 w-3.5" />
+                    <span>AI Allocated Relief Resources</span>
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {assessment.stateProfile.recommendedResources?.map((r: string, idx: number) => (
+                      <span key={idx} className="rounded-lg bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-300 border border-emerald-500/30">
+                        {r}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 📈 STEP 6: 72-HOUR RISK PREDICTION MATRIX TABLE */}
+          {assessment.riskPrediction72h && (
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">72-Hour AI Disaster Risk Prediction Matrix</h3>
+                    <p className="text-[11px] text-slate-500">Forecasting risk progression for +0h, +24h, +48h, and +72h time windows</p>
+                  </div>
+                </div>
+                <span className="text-[10px] uppercase font-mono px-2 py-1 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 font-bold">Step 6 Forecast</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {assessment.riskPrediction72h.map((row, idx) => (
+                  <div
+                    key={idx}
+                    className={`rounded-2xl p-4 border flex flex-col justify-between gap-2.5 ${
+                      row.riskLevel === 'CRITICAL' ? 'border-rose-500/40 bg-rose-500/5 dark:bg-rose-950/20' :
+                      row.riskLevel === 'HIGH' ? 'border-amber-500/40 bg-amber-500/5 dark:bg-amber-950/20' :
+                      row.riskLevel === 'MODERATE' ? 'border-sky-500/40 bg-sky-500/5 dark:bg-sky-950/20' :
+                      'border-emerald-500/40 bg-emerald-500/5 dark:bg-emerald-950/20'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black text-slate-900 dark:text-white uppercase">{row.timeframe}</span>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        row.riskLevel === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400' :
+                        row.riskLevel === 'HIGH' ? 'bg-amber-500/20 text-amber-400' :
+                        row.riskLevel === 'MODERATE' ? 'bg-sky-500/20 text-sky-400' :
+                        'bg-emerald-500/20 text-emerald-400'
+                      }`}>
+                        {row.riskLevel}
+                      </span>
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">{row.predictionTitle}</div>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-snug">{row.expectedImpact}</p>
+                    </div>
+
+                    <div className="text-[10px] font-mono font-bold text-slate-500 border-t border-slate-200 dark:border-slate-800/60 pt-2 flex items-center justify-between">
+                      <span>Trend:</span>
+                      <span className="text-slate-900 dark:text-white">{row.trend}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* 4. ASSESSMENT REPORT 📄 & MDONER ALERT DISPATCH ACTION BAR */}
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 flex-wrap gap-2">

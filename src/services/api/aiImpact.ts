@@ -5,6 +5,8 @@
  * 4-Category Impact Rating, Risk Factors classification, and MDoNER Alert Integration.
  */
 
+import { calculateStateSpecificDisasterProfile } from './hazardModels';
+
 export interface GeminiVisionResult {
   disasterType: string;
   visibleDamage: string[];
@@ -27,10 +29,19 @@ export interface IdentifiedRiskFactor {
   severity: 'RED' | 'ORANGE' | 'YELLOW' | 'GREEN';
 }
 
+export interface RiskPrediction72hRow {
+  timeframe: 'Current (0h)' | '+24 Hours' | '+48 Hours' | '+72 Hours';
+  riskLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+  predictionTitle: string;
+  expectedImpact: string;
+  trend: string;
+}
+
 export interface FullImpactAssessmentResult {
   assessmentId: string;
   disasterType: string;
   locationName: string;
+  stateName?: string;
   lat: number;
   lon: number;
   timestamp: string;
@@ -50,6 +61,12 @@ export interface FullImpactAssessmentResult {
     transportation: ImpactCategoryRating;
     environmental: ImpactCategoryRating;
   };
+
+  // State-Specific Region Aware Disaster Profile
+  stateProfile?: any;
+  
+  // 72-Hour Risk Matrix
+  riskPrediction72h?: RiskPrediction72hRow[];
   
   // Verified Environmental Context
   environmentalContext: {
@@ -137,6 +154,45 @@ export function calculateExplainableImpactScore(
 }
 
 /**
+ * Generates Step 6: 72-Hour Risk Prediction Matrix (+0h, +24h, +48h, +72h)
+ */
+export function generate72HourRiskMatrix(
+  severity: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW',
+  disasterType: string,
+  stateName: string
+): RiskPrediction72hRow[] {
+  if (severity === 'CRITICAL') {
+    return [
+      { timeframe: 'Current (0h)', riskLevel: 'CRITICAL', predictionTitle: 'Active Peak Crisis', expectedImpact: `Severe ${disasterType} disruption across ${stateName}. Immediate life-safety hazard.`, trend: '⚡ Escalating' },
+      { timeframe: '+24 Hours', riskLevel: 'CRITICAL', predictionTitle: 'Sustained High Surge', expectedImpact: 'Secondary slope/river instabilities; transit corridors blocked.', trend: '⚠️ Peak Hazard' },
+      { timeframe: '+48 Hours', riskLevel: 'HIGH', predictionTitle: 'Regulated Stabilization', expectedImpact: 'Precipitation tapering off; emergency clearance convoys entering.', trend: '📉 Slow Recovery' },
+      { timeframe: '+72 Hours', riskLevel: 'MODERATE', predictionTitle: 'Restoration Phase', expectedImpact: 'Temporary bypass routes operational; triage transition to relief camps.', trend: '🟢 Stabilizing' }
+    ];
+  } else if (severity === 'HIGH') {
+    return [
+      { timeframe: 'Current (0h)', riskLevel: 'HIGH', predictionTitle: 'Elevated Threat Level', expectedImpact: `High risk of ${disasterType} impacting road corridors and low-lying sectors in ${stateName}.`, trend: '⚡ Active Watch' },
+      { timeframe: '+24 Hours', riskLevel: 'HIGH', predictionTitle: 'Peak Weather Exposure', expectedImpact: 'Saturated sub-base & riverbank surge; localized evacuations active.', trend: '⚠️ High Alert' },
+      { timeframe: '+48 Hours', riskLevel: 'MODERATE', predictionTitle: 'Gradual Easing', expectedImpact: 'Weather system receding; infrastructure inspection underway.', trend: '📉 Receding' },
+      { timeframe: '+72 Hours', riskLevel: 'LOW', predictionTitle: 'Controlled Normalcy', expectedImpact: 'Transit clearance restored for heavy logistics convoys.', trend: '🟢 Clear' }
+    ];
+  } else if (severity === 'MODERATE') {
+    return [
+      { timeframe: 'Current (0h)', riskLevel: 'MODERATE', predictionTitle: 'Monitored Hazard Zone', expectedImpact: `Moderate ${disasterType} warnings active across ${stateName}. Regulated traffic.`, trend: '🟡 Monitoring' },
+      { timeframe: '+24 Hours', riskLevel: 'MODERATE', predictionTitle: 'Controlled Exposure', expectedImpact: 'Minor surface runoff & localized speed restrictions.', trend: '➡️ Steady' },
+      { timeframe: '+48 Hours', riskLevel: 'LOW', predictionTitle: 'Weather Tapering', expectedImpact: 'Precipitation clearing; no major road blockages observed.', trend: '📉 Improving' },
+      { timeframe: '+72 Hours', riskLevel: 'LOW', predictionTitle: 'Nominal Operations', expectedImpact: 'Standard logistics transit fully operational.', trend: '🟢 Nominal' }
+    ];
+  }
+
+  return [
+    { timeframe: 'Current (0h)', riskLevel: 'LOW', predictionTitle: 'Nominal Baseline', expectedImpact: `No immediate severe ${disasterType} threats detected in ${stateName}.`, trend: '🟢 Clear' },
+    { timeframe: '+24 Hours', riskLevel: 'LOW', predictionTitle: 'Stable Weather Window', expectedImpact: 'Favorable transit conditions across all primary highways.', trend: '🟢 Stable' },
+    { timeframe: '+48 Hours', riskLevel: 'LOW', predictionTitle: 'Clear Corridor Flow', expectedImpact: 'Optimal pavement traction & drainage performance.', trend: '🟢 Clear' },
+    { timeframe: '+72 Hours', riskLevel: 'LOW', predictionTitle: 'Normal State Operations', expectedImpact: 'Unrestricted travel and emergency readiness.', trend: '🟢 Nominal' }
+  ];
+}
+
+/**
  * Main API call: Analyzes disaster image via Express backend /api/assessment/analyze
  */
 export async function runAIDisasterImpactAnalysis(
@@ -149,13 +205,23 @@ export async function runAIDisasterImpactAnalysis(
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const dateStr = new Date().toLocaleDateString();
 
+  // Infer state name from location string
+  const locParts = locationName ? locationName.split(',') : [];
+  const inferredState = locParts.length > 1 ? locParts[locParts.length - 2].trim() : (locParts[0] || 'Regional Disaster Zone');
+  const targetLat = lat || 28.6139;
+  const targetLon = lon || 77.2090;
+
+  const stateProfile = calculateStateSpecificDisasterProfile(inferredState, targetLat, targetLon);
+
   if (isDemoMode) {
+    const demoSeverity: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW' = 'CRITICAL';
     return {
       assessmentId: `DEMO-ASM-${Date.now().toString().slice(-4)}`,
       disasterType: 'Landslide & Highway Breach',
       locationName: locationName || 'Sela Pass Corridor (NH-13), Arunachal Pradesh',
-      lat: lat || 27.0844,
-      lon: lon || 93.6053,
+      stateName: inferredState,
+      lat: targetLat,
+      lon: targetLon,
       timestamp: `${timestamp} (${dateStr})`,
       vision: {
         disasterType: 'Landslide',
@@ -171,8 +237,10 @@ export async function runAIDisasterImpactAnalysis(
         recommendedObservation: 'Field verification recommended before clearing heavy machinery'
       },
       impactScore: 84,
-      overallSeverity: 'CRITICAL',
+      overallSeverity: demoSeverity,
       confidencePercent: 89,
+      stateProfile,
+      riskPrediction72h: generate72HourRiskMatrix(demoSeverity, 'Landslide & Highway Breach', inferredState),
       impactCategories: {
         humanSafety: { rating: 'HIGH', evidence: 'Slope collapse near transport corridor; active evacuation zone.' },
         infrastructure: { rating: 'CRITICAL', evidence: 'NH-13 Highway retaining embankment collapsed.' },
@@ -199,8 +267,9 @@ export async function runAIDisasterImpactAnalysis(
       recommendations: [
         'Avoid entering visibly flooded or breached road sectors',
         'Prioritize emergency aerial drone supply vectors for isolated zones',
-        'Dispatch BRO JCB earthmovers under geofenced monitoring',
-        'Keep NDRF 1078 Triage Command updated on field status'
+        `Deploy recommended vehicles: ${stateProfile.recommendedVehicles.join(', ')}`,
+        `Dispatch emergency resources: ${stateProfile.recommendedResources.slice(0, 3).join(', ')}`,
+        'Keep NDRF & Central Emergency Command updated on field status'
       ],
       isDemoData: true,
       disclaimer: 'DEMO DATA — AI-ASSISTED ASSESSMENT & ESTIMATED FROM AVAILABLE EVIDENCE. Not an official government classification.'
@@ -258,13 +327,16 @@ export async function runAIDisasterImpactAnalysis(
     assessmentId: `ASM-${Date.now().toString().slice(-6)}`,
     disasterType: visionData.disasterType,
     locationName,
-    lat,
-    lon,
+    stateName: inferredState,
+    lat: targetLat,
+    lon: targetLon,
     timestamp: `${timestamp} (${dateStr})`,
     vision: visionData,
     impactScore: scoreCalc.score,
     overallSeverity: scoreCalc.severity,
     confidencePercent: Math.round(visionData.confidence * 100),
+    stateProfile,
+    riskPrediction72h: generate72HourRiskMatrix(scoreCalc.severity, visionData.disasterType, inferredState),
     impactCategories: {
       humanSafety: { rating: scoreCalc.severity === 'CRITICAL' ? 'CRITICAL' : 'HIGH', evidence: 'Visible disaster proximity near residential / transport link.' },
       infrastructure: { rating: visionData.affectedInfrastructure.length > 0 ? 'HIGH' : 'MODERATE', evidence: `Impact detected on ${visionData.affectedInfrastructure.join(', ')}.` },

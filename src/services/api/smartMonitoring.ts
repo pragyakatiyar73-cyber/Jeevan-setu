@@ -6,7 +6,7 @@
  * Road Accessibility Status, Gemini AI Situation Summarization, and MDoNER Alert Dispatch.
  */
 
-import { WeatherData } from './weather';
+import { WeatherData, getLiveWeather } from './weather';
 
 export interface GeocodedLocation {
   lat: number;
@@ -260,78 +260,129 @@ export async function getRoadAccessibility(
   env?: MonitoringEnvironmentData | null
 ): Promise<RoadStatusItem[]> {
   const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const precip = weather ? (weather.precipitation || 0) : 0;
-  const slope = env ? env.slopeDegrees : 10;
-  const isSevere = precip > 25 || (precip > 10 && slope > 25);
 
-  // Dynamic regional highway matching based on coordinates
-  let primaryHwy = 'NH-27 Arterial Highway Corridor';
+  // 1. Live Weather & Environment Telemetry Fallback Fetching
+  let liveWeather = weather;
+  let liveEnv = env;
+
+  if (!liveWeather) {
+    try {
+      liveWeather = await getLiveWeather(lat, lon);
+    } catch (e) {
+      console.warn("Live weather fetch in getRoadAccessibility fallback:", e);
+    }
+  }
+
+  if (!liveEnv) {
+    try {
+      liveEnv = await getEnvironmentalData(lat, lon);
+    } catch (e) {
+      console.warn("Live env fetch in getRoadAccessibility fallback:", e);
+    }
+  }
+
+  const precip = liveWeather ? (liveWeather.precipitation || 0) : 0;
+  const windGust = liveWeather ? (liveWeather.windGusts || 0) : 0;
+  const slope = liveEnv ? liveEnv.slopeDegrees : 10;
+  const soil = liveEnv ? liveEnv.soilMoistureIndex : 50;
+
+  // 2. High-precision coordinate & location matching for road names
+  let primaryHwy = 'NH-27 Primary Arterial Highway Corridor';
   let secondaryRoad = 'State Highway Arterial Connector';
+  let districtRoute = 'District Feeder & Relief Logistics Route';
+  let ruralRoad = 'Panchayat Rural Connector Pass';
 
-  if (lat > 25.0 && lat < 26.2 && lon > 91.0 && lon < 92.8) {
-    primaryHwy = 'NH-6 Meghalaya ➔ Silchar Corridor';
-    secondaryRoad = 'SH-12 Shillong-Jowai Link Road';
+  const cleanPlace = locationName.split(',')[0].trim();
+
+  // Location-based Highway Network Map
+  if (lat >= 30.0 && lat <= 30.6 && lon >= 77.8 && lon <= 78.3) {
+    // Dehradun / Mussoorie Himalayan Sector
+    primaryHwy = 'NH-707A Dehradun ➔ Rajpur ➔ Mussoorie Pass';
+    secondaryRoad = 'Chakrata Road & ISBT Arterial Bypass';
+    districtRoute = 'Sahastradhara-Maldevta Relief Corridor';
+    ruralRoad = 'Bhatta Falls-Kolhukhet Mountain Connector';
+  } else if (lat >= 31.0 && lat <= 32.5 && lon >= 76.5 && lon <= 78.5) {
+    // Himachal Sector
+    primaryHwy = 'NH-5 Kalka-Shimla Express Highway';
+    secondaryRoad = 'SH-22 Shimla Ridge Bypass';
+    districtRoute = 'Solan-Kandaghat Logistics Link';
+    ruralRoad = 'Kufri-Fagu Rural Access Route';
+  } else if (lat > 25.0 && lat < 26.2 && lon > 91.0 && lon < 92.8) {
+    // Meghalaya Sector
+    primaryHwy = 'NH-6 Meghalaya ➔ Silchar Highway';
+    secondaryRoad = 'SH-12 Shillong-Jowai Ridge Link';
+    districtRoute = 'Sohra (Cherrapunji) Relief Corridor';
+    ruralRoad = 'Dawki Border Pass Connector';
   } else if (lat > 26.5 && lat < 28.5 && lon > 88.0 && lon < 89.2) {
-    primaryHwy = 'NH-10 Siliguri ➔ Gangtok Teesta Route';
+    // Sikkim / Teesta Sector
+    primaryHwy = 'NH-10 Siliguri ➔ Gangtok Teesta Lifeline';
     secondaryRoad = 'NH-717A Lava-Algarah Mountain Bypass';
+    districtRoute = 'Mangan North Sikkim Logistics Route';
+    ruralRoad = 'Singtam Feeder Connector';
   } else if (lat > 25.0 && lat < 27.5 && lon > 84.0 && lon < 88.0) {
+    // Bihar Sector
     primaryHwy = 'NH-27 / NH-22 North Bihar Trans-Corridor';
     secondaryRoad = 'SH-74 Gandak Embankment Road';
-  } else if (lat > 25.8 && lat < 27.8 && lon > 90.0 && lon < 95.5) {
-    primaryHwy = 'NH-37 Brahmaputra Arterial Highway';
-    secondaryRoad = 'NH-127B Dhubri-Phulbari Route';
-  } else if (lat > 26.8 && lon > 92.0 && lon < 97.0) {
-    primaryHwy = 'NH-13 Trans-Arunachal Highway';
-    secondaryRoad = 'NH-415 Banderdewa-Itanagar Connector';
-  } else if (lat > 25.0 && lat < 27.0 && lon > 93.5 && lon < 95.5) {
-    primaryHwy = 'NH-29 Asian Highway 1 (AH-1)';
-    secondaryRoad = 'SH-1 Kohima-Wokha Connector';
-  } else if (lat > 23.5 && lat < 25.5 && lon > 93.0 && lon < 95.0) {
-    primaryHwy = 'NH-37 Imphal-Jiribam Lifeline';
-    secondaryRoad = 'NH-102 Imphal-Moreh International Link';
-  } else if (lat > 22.5 && lat < 24.5 && lon > 92.0 && lon < 93.5) {
-    primaryHwy = 'NH-306 Silchar-Aizawl Essential Pass';
-    secondaryRoad = 'SH-5 Aizawl-Thenzawl Corridor';
-  } else if (lat > 23.0 && lat < 24.5 && lon > 91.0 && lon < 92.5) {
-    primaryHwy = 'NH-8 Assam-Agartala Highway';
-    secondaryRoad = 'SH-4 Agartala-Sabroom Arterial';
+    districtRoute = 'Sitamarhi-Muzaffarpur Relief Connector';
+    ruralRoad = 'Birpur Barrage Access Road';
+  } else if (cleanPlace && cleanPlace !== 'Monitored Sector' && cleanPlace !== 'Target Zone') {
+    // General Indian / Global Cities
+    primaryHwy = `NH-Arterial Corridor (${cleanPlace} Main Highway)`;
+    secondaryRoad = `${cleanPlace} State Highway Connector`;
+    districtRoute = `${cleanPlace} District Logistics Route`;
+    ruralRoad = `${cleanPlace} Rural Feeder Connector`;
   }
+
+  // 3. Dynamic Road Condition Calculations based on Live Telemetry
+  const isPrimarySevere = precip > 25 || (precip > 12 && slope > 25) || soil > 85 || windGust > 60;
+  const isSecondarySevere = precip > 15 || (precip > 8 && slope > 20) || soil > 75;
+  const isRuralSevere = precip > 8 || soil > 65;
 
   return [
     {
       id: 'RD-01',
       name: primaryHwy,
-      status: isSevere ? 'BLOCKED' : precip > 5 ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
-      warning: isSevere ? `Severe Weather Disruption & Mudslip Risk (${precip} mm/hr rain)` : precip > 5 ? 'Wet surface conditions, regulated convoy transit' : 'Optimal pavement conditions, full two-way throughput',
-      detour: isSevere ? 'Bypass route operational via emergency feeder' : 'None required',
-      speedKmH: isSevere ? 0 : precip > 5 ? 30 : 60,
+      status: isPrimarySevere ? 'BLOCKED' : precip > 6 ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
+      warning: isPrimarySevere 
+        ? `🔴 DISRUPTED: Heavy Rainfall (${precip} mm/h) & Debris Slip Warning` 
+        : precip > 6 
+        ? `🟡 CAUTION: Wet pavement surface, regulated convoy transit (${precip} mm/h rain)` 
+        : `🟢 CLEAR: Optimal pavement conditions, full two-way throughput`,
+      detour: isPrimarySevere ? 'Emergency sector AI bypass active via ridge detour' : 'None required',
+      speedKmH: isPrimarySevere ? 0 : precip > 6 ? 30 : 60,
       lastUpdated: now
     },
     {
       id: 'RD-02',
       name: secondaryRoad,
-      status: precip > 15 ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
-      warning: precip > 15 ? 'Localized surface water runoff' : 'Normal traffic velocity',
-      detour: 'Speed regulation 35 km/h',
-      speedKmH: precip > 15 ? 25 : 50,
+      status: isSecondarySevere ? 'BLOCKED' : precip > 10 ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
+      warning: isSecondarySevere 
+        ? `🔴 DISRUPTED: Surface water runoff & slope erosion risk` 
+        : precip > 10 
+        ? `🟡 CAUTION: Saturated road shoulder, speed limit 25 km/h` 
+        : `🟢 CLEAR: Normal traffic velocity`,
+      detour: isSecondarySevere ? 'Speed restriction 15 km/h & 4x4 vehicles only' : 'Speed regulation 45 km/h',
+      speedKmH: isSecondarySevere ? 0 : precip > 10 ? 25 : 50,
       lastUpdated: now
     },
     {
       id: 'RD-03',
-      name: 'District Feeder & Relief Logistics Route',
-      status: 'OPEN',
-      warning: 'Clear road conditions; emergency supply access active',
-      detour: 'None',
-      speedKmH: 45,
+      name: districtRoute,
+      status: precip > 18 ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
+      warning: precip > 18 ? '🟡 CAUTION: Waterlogging in low-lying relief passage' : '🟢 CLEAR: Emergency supply access active',
+      detour: precip > 18 ? 'Heavy trucks divert via primary arterial' : 'None',
+      speedKmH: precip > 18 ? 20 : 45,
       lastUpdated: now
     },
     {
       id: 'RD-04',
-      name: 'Panchayat Rural Connector Road',
-      status: precip > 20 ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
-      warning: precip > 20 ? 'Saturated sub-base, unpaved shoulder caution' : 'Fully accessible for light and medium trucks',
-      detour: 'Use main arterial highway if heavy transport',
-      speedKmH: 30,
+      name: ruralRoad,
+      status: isRuralSevere ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
+      warning: isRuralSevere 
+        ? `🟡 CAUTION: Sub-base soil saturation (${soil}% moisture)` 
+        : `🟢 CLEAR: Fully accessible for light and medium relief vehicles`,
+      detour: isRuralSevere ? 'Restricted to light rescue vehicles only' : 'Use main arterial highway for heavy transport',
+      speedKmH: isRuralSevere ? 15 : 35,
       lastUpdated: now
     }
   ];

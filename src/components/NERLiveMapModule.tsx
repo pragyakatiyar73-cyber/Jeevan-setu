@@ -161,6 +161,96 @@ export default function NERLiveMapModule({
     L.polyline(orangeWaypoints, { color: "#ffffff", weight: 1.5, opacity: 0.75, dashArray: "6, 14" }).addTo(roadsGroupRef.current)
       .bindPopup("<div style='font-family:sans-serif;font-size:12px;color:#0f172a;padding:2px;'><b style='color:#ea580c;'>🟠 NH-6 Southern Mountain Artery</b><br/>Guwahati ➔ Shillong ➔ Silchar ➔ Aizawl<br/><span style='color:#16a34a;font-weight:800;'>⚡ Sector 9 Jowai Bypass Active</span></div>");
 
+    // Purple Route: Dehradun -> Rajpur -> Bhatta Falls / Kolhukhet -> Mussoorie (Himalayan Pass Corridor)
+    const dehradunMussoorieWaypoints: [number, number][] = [
+      [30.3165, 78.0322], // Dehradun City Center
+      [30.3667, 78.0900], // Rajpur Road
+      [30.3950, 78.0700], // Kolhukhet / Bhatta Falls Bypass
+      [30.4598, 78.0644]  // Mussoorie Hill Station
+    ];
+    L.polyline(dehradunMussoorieWaypoints, { color: "#a855f7", weight: 11, opacity: 0.35 }).addTo(roadsGroupRef.current);
+    L.polyline(dehradunMussoorieWaypoints, { color: "#c084fc", weight: 4.5, opacity: 0.95 }).addTo(roadsGroupRef.current);
+    L.polyline(dehradunMussoorieWaypoints, { color: "#ffffff", weight: 1.5, opacity: 0.75, dashArray: "6, 14" }).addTo(roadsGroupRef.current)
+      .bindPopup("<div style='font-family:sans-serif;font-size:12px;color:#0f172a;padding:2px;'><b style='color:#9333ea;'>🏔️ Dehradun-Mussoorie Mountain Corridor</b><br/>Dehradun (640m MSL) ➔ Rajpur ➔ Kolhukhet ➔ Mussoorie (2,005m MSL)<br/><span style='color:#16a34a;font-weight:800;'>✓ Active Himalayan Landslide Monitoring</span></div>");
+
+    // Dehradun & Mussoorie Location Badges
+    const dehradunIcon = L.divIcon({
+      className: "custom-dehradun-badge",
+      html: `<div style="background:linear-gradient(135deg, #7c3aed, #6d28d9);color:#fff;padding:4px 10px;border-radius:10px;font-weight:900;font-size:11px;border:1.5px solid #a78bfa;box-shadow:0 0 16px rgba(124,58,237,0.8);white-space:nowrap;display:flex;align-items:center;gap:4px;"><span>🏔️</span> <span>Dehradun Hub (640m)</span></div>`,
+      iconSize: [160, 26],
+      iconAnchor: [80, 13]
+    });
+    L.marker([30.3165, 78.0322], { icon: dehradunIcon }).addTo(depotsGroupRef.current)
+      .bindPopup("<b>🏔️ Dehradun Disaster Management Command</b><br/>Capital Base Station & Relief Staging Area");
+
+    const mussoorieIcon = L.divIcon({
+      className: "custom-mussoorie-badge",
+      html: `<div style="background:linear-gradient(135deg, #0284c7, #0369a1);color:#fff;padding:4px 10px;border-radius:10px;font-weight:900;font-size:11px;border:1.5px solid #38bdf8;box-shadow:0 0 16px rgba(2,132,199,0.8);white-space:nowrap;display:flex;align-items:center;gap:4px;"><span>⛰️</span> <span>Mussoorie Peak (2,005m)</span></div>`,
+      iconSize: [170, 26],
+      iconAnchor: [85, 13]
+    });
+    L.marker([30.4598, 78.0644], { icon: mussoorieIcon }).addTo(depotsGroupRef.current)
+      .bindPopup("<b>⛰️ Mussoorie Hill Station Observatory</b><br/>High-altitude sector monitoring point");
+
+    // 🏔️ HIMACHAL ROAD VECTOR: Kalka -> Solan -> Shimla -> Manali (NH-5 / NH-21)
+    const hpWaypoints: [number, number][] = [
+      [30.83, 76.93],   // Kalka
+      [30.9084, 77.0999], // Solan
+      [31.1048, 77.1734], // Shimla
+      [31.7087, 76.9320], // Mandi
+      [32.2432, 77.1892]  // Manali
+    ];
+    L.polyline(hpWaypoints, { color: "#8b5cf6", weight: 10, opacity: 0.35 }).addTo(roadsGroupRef.current);
+    L.polyline(hpWaypoints, { color: "#a78bfa", weight: 4, opacity: 0.95 }).addTo(roadsGroupRef.current)
+      .bindPopup("<b style='color:#7c3aed;'>🏔️ NH-5/NH-21 Himachal Mountain Lifeline</b><br/>Shimla ➔ Mandi ➔ Manali Sector<br/>Status: 🟢 Regulated Hill Transit");
+
+    // 🏔️ JAMMU & KASHMIR ROAD VECTOR: Jammu -> Katra -> Ramban -> Srinagar (NH-44)
+    const jkWaypoints: [number, number][] = [
+      [32.7266, 74.8570], // Jammu
+      [32.9924, 74.9317], // Katra
+      [33.24, 75.25],     // Ramban Slump Zone
+      [33.7311, 75.1487], // Anantnag
+      [34.0837, 74.7973]  // Srinagar
+    ];
+    L.polyline(jkWaypoints, { color: "#e11d48", weight: 10, opacity: 0.35 }).addTo(roadsGroupRef.current);
+    L.polyline(jkWaypoints, { color: "#fb7185", weight: 4, opacity: 0.95, dashArray: "8, 6" }).addTo(roadsGroupRef.current)
+      .bindPopup("<b style='color:#be123c;'>🏔️ NH-44 Jammu-Srinagar Arterial Pass</b><br/>Jammu ➔ Ramban ➔ Srinagar<br/>Status: 🔴 Landslide Watch at Ramban");
+
+    // 🏜️ RAJASTHAN DESERT VECTOR: Jaipur -> Jodhpur -> Jaisalmer -> Barmer
+    const rjWaypoints: [number, number][] = [
+      [26.9124, 75.7873], // Jaipur
+      [26.2389, 73.0243], // Jodhpur
+      [26.9157, 70.9083], // Jaisalmer
+      [25.7532, 71.4181]  // Barmer
+    ];
+    L.polyline(rjWaypoints, { color: "#d97706", weight: 10, opacity: 0.35 }).addTo(roadsGroupRef.current);
+    L.polyline(rjWaypoints, { color: "#fbbf24", weight: 4, opacity: 0.95 }).addTo(roadsGroupRef.current)
+      .bindPopup("<b style='color:#b45309;'>🏜️ Thar Desert Emergency Water & Heat Corridor</b><br/>Jaipur ➔ Jodhpur ➔ Jaisalmer ➔ Barmer<br/>Status: 💧 Emergency Water Tanker Convoys Active");
+
+    // 🌊 GANGA RIVER SYSTEM VECTOR (Rishikesh -> Haridwar -> Kanpur -> Prayagraj -> Varanasi -> Patna)
+    const gangaWaypoints: [number, number][] = [
+      [30.0869, 78.2676],
+      [29.9457, 78.1642],
+      [26.4499, 80.3319],
+      [25.4358, 81.8463],
+      [25.3176, 82.9739],
+      [25.5941, 85.1376]
+    ];
+    L.polyline(gangaWaypoints, { color: "#0284c7", weight: 11, opacity: 0.35 }).addTo(roadsGroupRef.current);
+    L.polyline(gangaWaypoints, { color: "#38bdf8", weight: 4.5, opacity: 0.95 }).addTo(roadsGroupRef.current)
+      .bindPopup("<b style='color:#0284c7;'>🌊 Ganga River Basin Surge Vector</b><br/>Origin: Himalayas ➔ UP ➔ Bihar Basin<br/>Status: High Water Monitoring Active");
+
+    // 🌊 YAMUNA RIVER SYSTEM VECTOR (Yamunotri -> Delhi -> Agra -> Prayagraj)
+    const yamunaWaypoints: [number, number][] = [
+      [31.01, 78.45],
+      [28.6139, 77.2090], // Delhi
+      [27.1767, 78.0081], // Agra
+      [25.4358, 81.8463]  // Prayagraj Sangam
+    ];
+    L.polyline(yamunaWaypoints, { color: "#0284c7", weight: 9, opacity: 0.35 }).addTo(roadsGroupRef.current);
+    L.polyline(yamunaWaypoints, { color: "#0ea5e9", weight: 3.5, opacity: 0.95, dashArray: "6, 6" }).addTo(roadsGroupRef.current)
+      .bindPopup("<b style='color:#0369a1;'>🌊 Yamuna River Flood Vector</b><br/>Delhi Urban Overflow Watch &bull; Level: 208.6m");
+
     // 🌊 NEPAL -> BIHAR TRANSBOUNDARY INFLUX RIVERS
     // 1. Gandak River (Nepal -> Valmikinagar -> West/East Champaran -> Gopalganj -> Saran)
     const gandakRiverWaypoints: [number, number][] = [
@@ -958,9 +1048,37 @@ export default function NERLiveMapModule({
               {baseStyle === "esri" ? "⛰️" : "🛰️"}
             </button>
             <button
-              onClick={() => mapInstanceRef.current?.setView([26.2000, 88.5000], 7)}
+              onClick={() => mapInstanceRef.current?.flyTo([30.3880, 78.0500], 11, { duration: 1.5 })}
+              className="h-8 w-8 rounded-lg bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-purple-500/30"
+              title="Focus Dehradun to Mussoorie Corridor"
+            >
+              🏔️
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.flyTo([26.9157, 70.9083], 8, { duration: 1.5 })}
+              className="h-8 w-8 rounded-lg bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-amber-500/30"
+              title="Focus Rajasthan Thar Desert Sector"
+            >
+              🏜️
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.flyTo([34.1526, 77.5771], 8, { duration: 1.5 })}
+              className="h-8 w-8 rounded-lg bg-sky-600 hover:bg-sky-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-sky-500/30"
+              title="Focus J&K & Ladakh High Altitude Pass"
+            >
+              ❄️
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.flyTo([28.6139, 77.2090], 11, { duration: 1.5 })}
+              className="h-8 w-8 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-emerald-500/30"
+              title="Focus Delhi (NCT) & Chandigarh Urban Grid"
+            >
+              🏙️
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.setView([27.5000, 81.5000], 6)}
               className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
-              title="Center Map Overview"
+              title="Center All-India National Map Overview"
             >
               🎯
             </button>

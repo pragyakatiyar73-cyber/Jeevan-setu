@@ -182,11 +182,12 @@ export default function SmartDisasterMonitoring({
       setWeatherLoading(true);
       setAiLoading(true);
 
-      const [w, env, rds, alr, trd] = await Promise.all([
-        getLiveWeather(monitoredLoc.lat, monitoredLoc.lon),
-        getEnvironmentalData(monitoredLoc.lat, monitoredLoc.lon),
-        getRoadAccessibility(monitoredLoc.lat, monitoredLoc.lon),
-        getDisasterAlerts(monitoredLoc.lat, monitoredLoc.lon, monitoredLoc.displayName),
+      const w = await getLiveWeather(monitoredLoc.lat, monitoredLoc.lon);
+      const env = await getEnvironmentalData(monitoredLoc.lat, monitoredLoc.lon);
+
+      const [rds, alr, trd] = await Promise.all([
+        getRoadAccessibility(monitoredLoc.lat, monitoredLoc.lon, monitoredLoc.displayName, w, env),
+        getDisasterAlerts(monitoredLoc.lat, monitoredLoc.lon, monitoredLoc.displayName, w, env),
         get72HourTrend(monitoredLoc.lat, monitoredLoc.lon)
       ]);
 

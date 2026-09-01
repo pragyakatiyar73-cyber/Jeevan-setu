@@ -126,7 +126,8 @@ app.post('/citizen/analyze', async (req, res) => {
       { day: "Tue", level: "Low", value: 20 },
       { day: "Wed", level: "Moderate", value: 55 },
       { day: "Thu", level: "High", value: 90 }
-    ],
+    ]
+  });
 });
 
 // AI Search Correction Endpoint

@@ -52,7 +52,7 @@ export const DISASTER_TERMS: DisasterTerm[] = [
 ];
 
 export const COMMON_TYPOS: Record<string, string> = {
-  // English Typos
+  // English Typos & Locations
   'flod': 'flood',
   'floood': 'flood',
   'flud': 'flood',
@@ -75,6 +75,30 @@ export const COMMON_TYPOS: Record<string, string> = {
   'gangtokk': 'Gangtok',
   'imphal': 'Imphal',
   'silchar': 'Silchar',
+  'haridward': 'Haridwar',
+  'haridwar': 'Haridwar',
+  'uttarakhandd': 'Uttarakhand',
+  'utrakhand': 'Uttarakhand',
+  'ukhand': 'Uttarakhand',
+  'dehradunn': 'Dehradun',
+  'mussorrie': 'Mussoorie',
+  'mussoori': 'Mussoorie',
+  'lukhnow': 'Lucknow',
+  'lucknoww': 'Lucknow',
+  'shimlaa': 'Shimla',
+  'simla': 'Shimla',
+  'jaipurr': 'Jaipur',
+  'jaisalmerr': 'Jaisalmer',
+  'ladakhh': 'Ladakh',
+  'ldakh': 'Ladakh',
+  'srinagarr': 'Srinagar',
+  'srinagr': 'Srinagar',
+  'delhii': 'Delhi',
+  'dilli': 'Delhi',
+  'kargill': 'Kargil',
+  'manalii': 'Manali',
+  'amritsarr': 'Amritsar',
+  'chandigarhh': 'Chandigarh',
 
   // Hinglish Normalizations
   'baadh': 'flood',
