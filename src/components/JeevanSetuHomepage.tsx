@@ -685,9 +685,19 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* Hero Right Script Accent Tagline */}
             <div className="hidden lg:flex flex-col items-end justify-center self-start pt-4 pr-12 z-20">
               <div className="relative font-serif italic text-2xl lg:text-3xl text-slate-100 font-normal tracking-wide transform -rotate-3 text-right drop-shadow-md">
-                <span>Together for a</span>
-                <br />
-                <span className="font-semibold text-white">safer tomorrow</span>
+                {language === 'hi' ? (
+                  <>
+                    <span>सुरक्षित कल के लिए</span>
+                    <br />
+                    <span className="font-semibold text-white">एक साथ</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Together for a</span>
+                    <br />
+                    <span className="font-semibold text-white">safer tomorrow</span>
+                  </>
+                )}
                 <svg className="w-48 h-4 text-[#38BDF8] mt-1 ml-auto" viewBox="0 0 200 20" fill="none">
                   <path d="M5 15 Q 100 0, 195 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                 </svg>
@@ -1348,18 +1358,18 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
             {/* Center Links */}
             <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-slate-300">
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-white transition">Privacy Policy</button>
+              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-white transition">{t('footer.privacyPolicy', 'Privacy Policy')}</button>
               <span className="text-slate-700">|</span>
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-white transition">Terms of Use</button>
+              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-white transition">{t('footer.termsOfUse', 'Terms of Use')}</button>
               <span className="text-slate-700">|</span>
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-white transition">Help</button>
+              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-white transition">{t('footer.help', 'Help')}</button>
               <span className="text-slate-700">|</span>
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-white transition">Contact</button>
+              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-white transition">{t('footer.contact', 'Contact')}</button>
             </div>
 
             {/* Right: Follow Us */}
             <div className="flex items-center gap-4 text-xs font-semibold text-slate-300">
-              <span>Follow Us</span>
+              <span>{t('footer.followUs', 'Follow Us')}</span>
               <div className="flex items-center gap-3">
                 <a
                   href="https://youtu.be/5GZvqN8GZw8"
@@ -1386,11 +1396,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           {/* Footer Bottom Row */}
           <div className="flex flex-col sm:flex-row items-center justify-between pt-6 text-[11px] font-semibold text-slate-400 gap-4">
             <div>
-              &copy; 2026 Jeevan Setu &bull; National Disaster Response &amp; GIS Intelligence Platform
+              {t('footer.copyright', '© 2026 Jeevan Setu • National Disaster Response & GIS Intelligence Platform')}
             </div>
             
             <div className="font-serif italic text-sm text-slate-200 tracking-wide">
-              Together we can build a safer tomorrow
+              {t('footer.saferTomorrow', 'Together we can build a safer tomorrow')}
             </div>
           </div>
 
@@ -1679,7 +1689,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               <Search className="h-5 w-5 text-sky-500" />
               <input
                 type="text"
-                placeholder="Search state, hazard, hospital, or disaster alert..."
+                placeholder={t('search.placeholder', 'Search state, hazard, hospital, or disaster alert...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
@@ -1688,12 +1698,12 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </div>
 
             <div className="py-4 space-y-2 text-xs font-medium text-slate-600 dark:text-slate-300">
-              <div className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 tracking-wider">Quick Suggestions</div>
+              <div className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 tracking-wider">{t('search.quickSuggestions', 'Quick Suggestions')}</div>
               {[
-                { label: 'Sikkim Landslide High-Risk Area', action: () => { setIsSearchOpen(false); onNavigateModule('staterisk'); } },
-                { label: 'Assam Kaziranga Flood Live Map', action: () => { setIsSearchOpen(false); onNavigateModule('map'); } },
-                { label: 'NDRF Relief Camps in Meghalaya', action: () => { setIsSearchOpen(false); onNavigateModule('reliefcamps'); } },
-                { label: 'UAV Drone Medical Supply Routes', action: () => { setIsSearchOpen(false); onNavigateModule('drone'); } }
+                { label: t('search.sikkimLandslide', 'Sikkim Landslide High-Risk Area'), action: () => { setIsSearchOpen(false); onNavigateModule('staterisk'); } },
+                { label: t('search.assamFlood', 'Assam Kaziranga Flood Live Map'), action: () => { setIsSearchOpen(false); onNavigateModule('map'); } },
+                { label: t('search.meghalayaNDRF', 'NDRF Relief Camps in Meghalaya'), action: () => { setIsSearchOpen(false); onNavigateModule('reliefcamps'); } },
+                { label: t('search.droneMedical', 'UAV Drone Medical Supply Routes'), action: () => { setIsSearchOpen(false); onNavigateModule('drone'); } }
               ].map((item, idx) => (
                 <button
                   key={idx}
