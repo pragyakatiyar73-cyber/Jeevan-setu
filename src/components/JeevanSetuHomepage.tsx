@@ -81,7 +81,7 @@ const getDisasterIconSvg = (type: string) => {
 };
 
 export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpenDashboard }: JeevanSetuHomepageProps) {
-  const { t } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
 
   const handleOpenDashboard = () => {
     if (onOpenDashboard) {
@@ -192,8 +192,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   const [liveTimeStr, setLiveTimeStr] = useState<string>('');
   const [cursorCoords, setCursorCoords] = useState<{ lat: string; lon: string } | null>(null);
 
-  // Language state
-  const [currentLang, setCurrentLang] = useState('English');
+  // Language state dropdown
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
   // Smooth Scroll / Tab highlight
@@ -515,23 +514,29 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700/60"
               >
                 <Globe className="h-3.5 w-3.5 text-sky-400" />
-                <span>{currentLang}</span>
+                <span>{language === 'hi' ? 'हिन्दी' : language === 'as' ? 'অসমীয়া' : language === 'bn' ? 'বাংলা' : language === 'ne' ? 'नेपाली' : 'English'}</span>
                 <ChevronDown className="h-3 w-3 text-slate-400" />
               </button>
 
               {isLangDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-36 bg-[#0B132B] dark:bg-[#070d1e] border border-slate-700 rounded-xl shadow-xl py-1 z-50 text-xs font-semibold text-slate-200">
-                  {['English', 'हिन्दी (Hindi)', 'অসমীয়া (Assamese)', 'বাংলা (Bengali)', 'নেपाली (Nepali)'].map((lang) => (
+                <div className="absolute right-0 mt-2 w-40 bg-[#0B132B] dark:bg-[#070d1e] border border-slate-700 rounded-xl shadow-xl py-1 z-50 text-xs font-semibold text-slate-200">
+                  {[
+                    { label: 'English', code: 'en' },
+                    { label: 'हिन्दी (Hindi)', code: 'hi' },
+                    { label: 'অসমীয়া (Assamese)', code: 'as' },
+                    { label: 'বাংলা (Bengali)', code: 'bn' },
+                    { label: 'नेपाली (Nepali)', code: 'ne' }
+                  ].map((lang) => (
                     <button
-                      key={lang}
+                      key={lang.code}
                       onClick={() => {
-                        setCurrentLang(lang.split(' ')[0]);
+                        setLanguage(lang.code as any);
                         setIsLangDropdownOpen(false);
                       }}
-                      className="w-full text-left px-3 py-2 hover:bg-sky-600/30 hover:text-white transition flex items-center justify-between"
+                      className="w-full text-left px-3 py-2 hover:bg-sky-600/30 hover:text-white transition flex items-center justify-between cursor-pointer"
                     >
-                      <span>{lang}</span>
-                      {currentLang === lang.split(' ')[0] && <CheckCircle2 className="h-3 w-3 text-sky-400" />}
+                      <span>{lang.label}</span>
+                      {language === lang.code && <CheckCircle2 className="h-3 w-3 text-sky-400" />}
                     </button>
                   ))}
                 </div>
@@ -611,7 +616,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               
               {/* Upper Small Label */}
               <div className="text-[11px] sm:text-xs font-black uppercase tracking-widest text-[#38BDF8] font-sans">
-                DISASTER RESPONSE &amp; GIS INTELLIGENCE
+                {t('home.badge', 'DISASTER RESPONSE & GIS INTELLIGENCE')}
               </div>
 
               {/* Title with "Jeevan" in White and "Setu" in Cyan */}
@@ -620,11 +625,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               </h1>
 
               <p className="text-lg sm:text-xl lg:text-2xl font-extrabold text-slate-100 tracking-tight leading-snug drop-shadow-sm">
-                AI Powered Disaster Response &amp; GIS Intelligence Platform
+                {t('home.heroSub', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </p>
 
               <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium max-w-xl drop-shadow-sm">
-                Jeevan Setu combines AI, GIS, satellite data, weather intelligence and real-time disaster information to help people understand risks, find emergency resources and respond faster.
+                {t('home.heroDesc', 'Jeevan Setu combines AI, GIS, satellite data, weather intelligence and real-time disaster information to help people understand risks, find emergency resources and respond faster.')}
               </p>
 
               {/* TWO REAL WORKING CALL TO ACTION BUTTONS */}
@@ -635,7 +640,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   className="bg-[#38BDF8] hover:bg-[#0284C7] text-slate-950 font-black px-6 py-3 rounded-full shadow-lg shadow-sky-500/30 flex items-center gap-2 text-sm transition transform hover:scale-105 cursor-pointer border border-sky-300/50"
                 >
                   <LayoutDashboard className="h-4 w-4 text-slate-950" />
-                  <span>Explore Dashboard</span>
+                  <span>{t('home.exploreDashboard', 'Explore Dashboard')}</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
 
@@ -645,7 +650,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   className="bg-[#0B152A]/80 hover:bg-[#0B152A] text-white font-extrabold px-6 py-3 rounded-full border border-[#38BDF8]/60 backdrop-blur flex items-center gap-2 text-sm transition hover:border-[#38BDF8] cursor-pointer shadow-md"
                 >
                   <MapPin className="h-4 w-4 text-[#38BDF8]" />
-                  <span>Explore Live Map</span>
+                  <span>{t('home.exploreLiveMap', 'Explore Live Map')}</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
@@ -698,10 +703,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           {/* Section Header */}
           <div className="mb-6">
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              What Jeevan Setu Does
+              {t('home.whatJeevanSetuDoes', 'What Jeevan Setu Does')}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
-              Smart tools for faster response, better preparedness and safer communities.
+              {t('home.whatJeevanSetuSub', 'Smart tools for faster response, better preparedness and safer communities.')}
             </p>
           </div>
 
