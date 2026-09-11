@@ -39,7 +39,8 @@ import {
   X,
   Mic,
   MicOff,
-  Home
+  Home,
+  BookOpen
 } from 'lucide-react';
 import L from 'leaflet';
 import {
@@ -661,7 +662,7 @@ export default function App() {
               {
                 category: t('sidebar.catRecovery', 'Recovery & Reporting'),
                 items: [
-                  { id: 'damageassessment', label: t('navigation.damageassessment', 'AI Damage Assessment'), icon: Camera, badge: 'AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
+                  { id: 'safetyguide', label: t('navigation.safetyguide', 'Disaster Safety Guide'), icon: BookOpen, badge: 'GUIDE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'sitrep', label: t('navigation.sitrep', 'AI Situation SITREP'), icon: FileBarChart, badge: '16 SEC', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'recovery', label: t('navigation.recovery', 'Recovery Tracker'), icon: TrendingUp, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' }
                 ]
