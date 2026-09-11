@@ -73,9 +73,7 @@ import EvacuationPlanner from './components/EvacuationPlanner';
 import ReliefCampManagement from './components/ReliefCampManagement';
 import AISituationReportModule from './components/AISituationReportModule';
 import LifeSavingResponseEngine from './components/LifeSavingResponseEngine';
-import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
-import AddressDisasterIntelligence from './components/AddressDisasterIntelligence';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
 import { useTranslation } from './i18n';
@@ -627,7 +625,6 @@ export default function App() {
               {
                 category: t('sidebar.catIntelligence', '2. AI & GIS Intelligence'),
                 items: [
-                  { id: 'geosafe-ai', label: t('navigation.geosafe', 'GeoSafe AI Search'), icon: Compass, badge: 'AI CORE', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, badge: 'VISION AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
                   { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, badge: '8 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
@@ -821,13 +818,6 @@ export default function App() {
           {activeModule === 'safetyguide' && (
             <div className="h-full overflow-y-auto p-4 sm:p-6">
               <DisasterSafetyGuide onTriggerSOS={() => setIsSosModalOpen(true)} />
-            </div>
-          )}
-
-          {/* 🛡️ GEOSAFE AI – ADDRESS-BASED DISASTER INTELLIGENCE */}
-          {(activeModule === 'geosafe-ai' || activeModule === 'address-intelligence') && (
-            <div className="h-full overflow-y-auto p-4 sm:p-6">
-              <AddressDisasterIntelligence />
             </div>
           )}
 
