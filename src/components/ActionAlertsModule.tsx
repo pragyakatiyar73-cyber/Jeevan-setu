@@ -80,7 +80,7 @@ export default function ActionAlertsModule({
       dispatched: "BRO Task Force 34 (2 JCBs)",
       timeAgo: "12 min ago",
       actionType: "reroute",
-      actionLabel: "Reroute 3D ➔"
+      actionLabel: "Reroute GIS ➔"
     },
     {
       id: "INC-102",
@@ -106,7 +106,7 @@ export default function ActionAlertsModule({
       dispatched: "Sikkim SDRF & Melli Flood Units",
       timeAgo: "45 min ago",
       actionType: "reroute",
-      actionLabel: "Reroute 3D ➔"
+      actionLabel: "Reroute GIS ➔"
     },
     {
       id: "INC-104",

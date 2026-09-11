@@ -764,15 +764,8 @@ export default function NERLiveMapModule({
 
           {/* TOP RIGHT MODE & LAYER PILLS */}
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={onNavigateTo3DSim}
-              className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer shadow shrink-0"
-            >
-              <span>🎮</span> <span>{t("dashboard.sim3d", "3D SIMULATION")}</span>
-            </button>
-
             <button className="rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-600/30 flex items-center gap-1.5 cursor-pointer border border-indigo-400/40 shrink-0">
-              <span>🗺️</span> <span>{t("dashboard.map2d", "2D Map")}</span>
+              <span>🗺️</span> <span>{t("dashboard.gisMap", "GIS Tactical Map")}</span>
             </button>
 
             {/* Map Style & Overview Switcher */}

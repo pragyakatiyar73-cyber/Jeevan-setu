@@ -555,7 +555,7 @@ export default function WeatherIntelligence({
                 🗺️ {t("weather.viewMap", "View Map")}
               </button>
               <button onClick={() => onNavigateToReroute && onNavigateToReroute("NH-13")} className="py-2.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-xs lg:text-sm font-extrabold text-white dark:text-slate-950 shadow-md transition text-center cursor-pointer">
-                🎯 {t("weather.reroute3d", "Reroute 3D")}
+                🎯 {t("weather.rerouteGis", "Reroute GIS")}
               </button>
               <button onClick={onTriggerSOS} className="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs lg:text-sm font-extrabold text-white shadow-md transition text-center cursor-pointer">
                 🚨 {t("weather.sosDistress", "SOS Distress")}
@@ -783,7 +783,7 @@ export default function WeatherIntelligence({
               <span>🗺️</span> 8-State North Eastern Meteorological Matrix (All States)
             </h2>
             <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium">
-              Click on any state card to inspect radar telemetry, view live highway clearance, or trigger 3D bypass reroute.
+              Click on any state card to inspect radar telemetry, view live highway clearance, or trigger GIS bypass reroute.
             </p>
           </div>
           <span className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-bold flex items-center gap-2 shrink-0">
@@ -869,11 +869,11 @@ export default function WeatherIntelligence({
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80 text-slate-800 dark:text-slate-200">
               {[
-                { corridor: "NH-6 Arterial Pass", route: "Meghalaya ➔ Assam (Km 142)", hazard: "16.4 mm/h Cloudburst Saturation", clearance: "IMPASSABLE AT KM 142", clearanceType: "CRITICAL", bypass: "Sector 9 Jowai Ridge Bypass", action: "Reroute 3D" },
-                { corridor: "NH-13 Trans-Arunachal", route: "Tezpur ➔ Tawang (Sela Pass)", hazard: "-1.2°C Freezing Snow Slurry", clearance: "4x4 CHAINS ONLY", clearanceType: "CHAINS", bypass: "Kalaktang Low-Altitude Bypass", action: "Reroute 3D" },
-                { corridor: "NH-10 Sikkim Artery", route: "Siliguri ➔ Gangtok (Melli)", hazard: "Teesta River Swell (4.2 m/s)", clearance: "LOW EMBANKMENT SEVERED", clearanceType: "CRITICAL", bypass: "Lava - Reshi Ridge Viaduct Link", action: "Reroute 3D" },
-                { corridor: "NH-29 Highland Pass", route: "Dimapur ➔ Kohima (Zubza)", hazard: "Soil Shear Subsidence", clearance: "REGULATED 15 KM/H", clearanceType: "REGULATED", bypass: "Pfutsero Highland Bedrock Link", action: "Reroute 3D" },
-                { corridor: "NH-37 Imphal Link", route: "Silchar ➔ Imphal Valley", hazard: "5.4 mm/h Light Valley Rain", clearance: "100% ALL CLEAR", clearanceType: "CLEAR", bypass: "Standard 4-Lane Valley Highway", action: "Track 3D" }
+                { corridor: "NH-6 Arterial Pass", route: "Meghalaya ➔ Assam (Km 142)", hazard: "16.4 mm/h Cloudburst Saturation", clearance: "IMPASSABLE AT KM 142", clearanceType: "CRITICAL", bypass: "Sector 9 Jowai Ridge Bypass", action: "Reroute GIS" },
+                { corridor: "NH-13 Trans-Arunachal", route: "Tezpur ➔ Tawang (Sela Pass)", hazard: "-1.2°C Freezing Snow Slurry", clearance: "4x4 CHAINS ONLY", clearanceType: "CHAINS", bypass: "Kalaktang Low-Altitude Bypass", action: "Reroute GIS" },
+                { corridor: "NH-10 Sikkim Artery", route: "Siliguri ➔ Gangtok (Melli)", hazard: "Teesta River Swell (4.2 m/s)", clearance: "LOW EMBANKMENT SEVERED", clearanceType: "CRITICAL", bypass: "Lava - Reshi Ridge Viaduct Link", action: "Reroute GIS" },
+                { corridor: "NH-29 Highland Pass", route: "Dimapur ➔ Kohima (Zubza)", hazard: "Soil Shear Subsidence", clearance: "REGULATED 15 KM/H", clearanceType: "REGULATED", bypass: "Pfutsero Highland Bedrock Link", action: "Reroute GIS" },
+                { corridor: "NH-37 Imphal Link", route: "Silchar ➔ Imphal Valley", hazard: "5.4 mm/h Light Valley Rain", clearance: "100% ALL CLEAR", clearanceType: "CLEAR", bypass: "Standard 4-Lane Valley Highway", action: "Track GIS" }
               ].map((row, idx) => (
                 <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors duration-200">
                   <td className="p-4 font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -901,7 +901,7 @@ export default function WeatherIntelligence({
                     <button
                       onClick={() => onNavigateToReroute && onNavigateToReroute(row.corridor)}
                       className={"px-3.5 py-2 rounded-xl font-extrabold text-xs lg:text-sm shadow transition cursor-pointer " + (
-                        row.action === "Track 3D" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "bg-sky-500 hover:bg-sky-400 text-white dark:text-slate-950"
+                        row.action === "Track GIS" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "bg-sky-500 hover:bg-sky-400 text-white dark:text-slate-950"
                       )}
                     >
                       {row.action}
