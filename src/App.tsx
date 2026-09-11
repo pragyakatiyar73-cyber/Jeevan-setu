@@ -73,6 +73,7 @@ import EvacuationPlanner from './components/EvacuationPlanner';
 import ReliefCampManagement from './components/ReliefCampManagement';
 import AISituationReportModule from './components/AISituationReportModule';
 import LifeSavingResponseEngine from './components/LifeSavingResponseEngine';
+import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
