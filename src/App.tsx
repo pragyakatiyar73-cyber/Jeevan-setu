@@ -616,54 +616,44 @@ export default function App() {
 
           <div className="h-[1px] bg-slate-200 dark:bg-slate-800/80 mx-1" />
 
-          {/* Navigation Items List (Sleek & Perfectly Proportioned) */}
+          {/* Navigation Items List (User-Friendly 4-Phase Command Workflow) */}
           <nav className="space-y-3 overflow-y-auto max-h-[calc(100vh-175px)] pr-0.5 custom-scrollbar">
             {[
               {
-                category: t('sidebar.catIntelligence', 'Intelligence & Monitoring'),
+                category: t('sidebar.catOverview', '1. Overview & Safety'),
                 items: [
                   { id: 'home', label: t('navigation.home', 'Jeevan Setu Homepage'), icon: Home, badge: 'MAIN', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
-                  { id: 'geosafe-ai', label: t('navigation.geosafe', 'GeoSafe AI'), icon: Compass, badge: 'AI CORE', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
-                  { id: 'staterisk', label: t('navigation.staterisk', 'Regional State Risk'), icon: FileBarChart, badge: '19 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'customdashboard', label: t('navigation.customdashboard', 'Command Center Dashboard'), icon: Gauge, badge: 'LIVE GIS', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
+                  { id: 'safetyguide', label: t('navigation.safetyguide', 'Disaster Safety Guide'), icon: BookOpen, badge: 'GUIDE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' }
+                ]
+              },
+              {
+                category: t('sidebar.catIntelligence', '2. AI & GIS Intelligence'),
+                items: [
+                  { id: 'geosafe-ai', label: t('navigation.geosafe', 'GeoSafe AI Search'), icon: Compass, badge: 'AI CORE', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
                   { id: 'smartmonitoring', label: t('navigation.smartmonitoring', 'Smart Disaster Monitoring'), icon: Eye, badge: 'LIVE', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
-                  { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, badge: 'AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
-                  { id: 'customdashboard', label: t('navigation.customdashboard', 'Disaster Risk Dashboard'), icon: Gauge, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'map', label: t('navigation.map', 'NER Live Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
+                  { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, badge: 'VISION AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
+                  { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, badge: '8 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
                 ]
               },
               {
-                category: t('sidebar.catLogistics', 'Tactical Logistics'),
+                category: t('sidebar.catResponse', '3. Emergency Rescue & Camps'),
                 items: [
-                  { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
-                  { id: 'road', label: t('navigation.road', 'Road Accessibility'), icon: Activity, iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
-                  { id: 'alerts', label: t('navigation.alerts', 'Active Alerts'), icon: AlertTriangle, badge: 'LIVE', iconColor: 'text-orange-500 dark:text-orange-400 bg-orange-500/10' },
-                  { id: 'vehicles', label: t('navigation.vehicles', 'Vehicle Logistics'), icon: Truck, iconColor: 'text-blue-500 dark:text-blue-400 bg-blue-500/10' },
-                  { id: 'rerouting', label: t('navigation.rerouting', 'Dynamic Rerouting'), icon: Navigation, iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
-                  { id: 'supplies', label: t('navigation.supplies', 'Essential Supplies'), icon: Sliders, iconColor: 'text-violet-500 dark:text-violet-400 bg-violet-500/10' }
-                ]
-              },
-              {
-                category: t('sidebar.catResponse', 'Emergency Response'),
-                items: [
-                  { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, badge: 'ENGINE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'citizensos', label: t('navigation.citizensos', 'Citizen SOS Triage'), icon: Zap, badge: 'SOS', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, badge: 'SOS CORE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'rescueteams', label: t('navigation.rescueteams', 'Rescue Team Command'), icon: ShieldCheck, badge: 'NDRF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'evacuation', label: t('navigation.evacuation', 'Evacuation & Safe Zone'), icon: Navigation, badge: 'ROUTE C', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
-                  { id: 'reliefcamps', label: t('navigation.reliefcamps', 'Relief Camp Grid'), icon: Building2, iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' }
+                  { id: 'reliefcamps', label: t('navigation.reliefcamps', 'Relief Camp Grid'), icon: Building2, iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
+                  { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
+                  { id: 'alerts', label: t('navigation.alerts', 'Active Emergency Alerts'), icon: AlertTriangle, badge: 'LIVE', iconColor: 'text-orange-500 dark:text-orange-400 bg-orange-500/10' }
                 ]
               },
               {
-                category: t('sidebar.catCommand', 'Executive Command'),
+                category: t('sidebar.catCommand', '4. Governance & SITREP'),
                 items: [
                   { id: 'gov', label: t('navigation.gov', 'MDoNER Command Grid'), icon: Building2, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'weather', label: t('navigation.weather', 'Weather Intelligence'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' }
-                ]
-              },
-              {
-                category: t('sidebar.catRecovery', 'Recovery & Reporting'),
-                items: [
-                  { id: 'safetyguide', label: t('navigation.safetyguide', 'Disaster Safety Guide'), icon: BookOpen, badge: 'GUIDE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'sitrep', label: t('navigation.sitrep', 'AI Situation SITREP'), icon: FileBarChart, badge: '16 SEC', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
+                  { id: 'weather', label: t('navigation.weather', 'Weather & Doppler Radar'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' },
+                  { id: 'sitrep', label: t('navigation.sitrep', 'AI Situation SITREP'), icon: FileBarChart, badge: 'PDF REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'recovery', label: t('navigation.recovery', 'Recovery Tracker'), icon: TrendingUp, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' }
                 ]
               }
