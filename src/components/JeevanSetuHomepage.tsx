@@ -714,8 +714,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {[
               {
-                title: 'Report a Disaster',
-                desc: 'Upload a photo and location to report and analyze a disaster.',
+                title: t('home.reportDisaster', 'Report a Disaster'),
+                desc: t('home.reportDisasterDesc', 'Upload a photo and location to report and analyze a disaster.'),
                 icon: Camera,
                 action: () => setActiveSidePanel('report'),
                 bgColor: 'bg-[#FFF5F5] dark:bg-red-950/25',
@@ -725,8 +725,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-red-700 dark:group-hover:text-red-300'
               },
               {
-                title: 'Check Disaster Risk',
-                desc: 'Check current disaster hazards and 72-hour risk information.',
+                title: t('home.checkRisk', 'Check Disaster Risk'),
+                desc: t('home.checkRiskDesc', 'Check current disaster hazards and 72-hour risk information.'),
                 icon: MapPin,
                 action: () => setActiveSidePanel('risk'),
                 bgColor: 'bg-[#F0F7FF] dark:bg-blue-950/25',
@@ -736,8 +736,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-blue-700 dark:group-hover:text-blue-300'
               },
               {
-                title: 'Disaster Safety Guide & Helplines',
-                desc: 'Official Do’s & Don’ts, 24/7 helplines, and 72-hour survival kit checklist.',
+                title: t('home.safetyGuide', 'Disaster Safety Guide & Helplines'),
+                desc: t('home.safetyGuideDesc', 'Official Do’s & Don’ts, 24/7 helplines, and 72-hour survival kit checklist.'),
                 icon: ShieldCheck,
                 action: () => onNavigateModule('safetyguide'),
                 bgColor: 'bg-[#F0FAF5] dark:bg-emerald-950/25',
@@ -747,8 +747,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-emerald-700 dark:group-hover:text-emerald-300'
               },
               {
-                title: 'Explore Live Situation',
-                desc: 'View live disaster activity, weather and affected areas.',
+                title: t('home.exploreSituation', 'Explore Live Situation'),
+                desc: t('home.exploreSituationDesc', 'View live disaster activity, weather and affected areas.'),
                 icon: MapIcon,
                 action: () => setActiveSidePanel('livesituation'),
                 bgColor: 'bg-[#F8F5FF] dark:bg-purple-950/25',
@@ -758,8 +758,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-purple-700 dark:group-hover:text-purple-300'
               },
               {
-                title: 'AI Disaster Impact Assessment',
-                desc: 'Analyze disaster images and estimate severity and impact.',
+                title: t('home.aiImpact', 'AI Disaster Impact Assessment'),
+                desc: t('home.aiImpactDesc', 'Analyze disaster images and estimate severity and impact.'),
                 icon: Cpu,
                 action: () => onNavigateModule('aiimpact'),
                 bgColor: 'bg-[#F5F3FF] dark:bg-indigo-950/25',
@@ -769,8 +769,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-indigo-700 dark:group-hover:text-indigo-300'
               },
               {
-                title: 'Risk Assessment',
-                desc: 'Analyze flood, landslide, rainfall and other disaster risks.',
+                title: t('home.stateRisk', 'Risk Assessment'),
+                desc: t('home.stateRiskDesc', 'Analyze flood, landslide, rainfall and other disaster risks.'),
                 icon: AlertTriangle,
                 action: () => onNavigateModule('staterisk'),
                 bgColor: 'bg-[#FFFBEB] dark:bg-amber-950/25',
@@ -780,8 +780,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-amber-700 dark:group-hover:text-amber-300'
               },
               {
-                title: 'Live Map',
-                desc: 'View disaster locations and geographic information.',
+                title: t('home.liveMap', 'Live Map'),
+                desc: t('home.liveMapDesc', 'View disaster locations and geographic information.'),
                 icon: Globe,
                 action: () => onNavigateModule('map'),
                 bgColor: 'bg-[#F0F9FF] dark:bg-sky-950/25',
@@ -791,8 +791,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-sky-700 dark:group-hover:text-sky-300'
               },
               {
-                title: 'Emergency Response',
-                desc: 'Get safer routes and nearby emergency resources.',
+                title: t('home.emergencyResponse', 'Emergency Response'),
+                desc: t('home.emergencyResponseDesc', 'Get safer routes and nearby emergency resources.'),
                 icon: Navigation,
                 action: () => onNavigateModule('lifesaving'),
                 bgColor: 'bg-[#FFF1F2] dark:bg-rose-950/25',
@@ -844,10 +844,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
         <div className="bg-white dark:bg-[#070d1e] p-6 sm:p-10 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-md">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              How Jeevan Setu Works
+              {t('home.howItWorksTitle', 'How Jeevan Setu Works')}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
-              From data to action — in just a few steps.
+              {t('home.howItWorksSub', 'From data to action — in just a few steps.')}
             </p>
           </div>
 
@@ -857,29 +857,29 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {[
               {
                 stepNum: '1',
-                title: 'Report',
-                desc: 'Share photos, location and details about the disaster.',
+                title: t('home.step1Title', 'Report'),
+                desc: t('home.step1Desc', 'Share photos, location and details about the disaster.'),
                 icon: Camera,
                 color: 'bg-sky-500/10 text-sky-500 border-sky-400/30'
               },
               {
                 stepNum: '2',
-                title: 'AI Analysis',
-                desc: 'Our AI processes data from satellites, weather and ground reports.',
+                title: t('home.step2Title', 'AI Analysis'),
+                desc: t('home.step2Desc', 'Our AI processes data from satellites, weather and ground reports.'),
                 icon: Cpu,
                 color: 'bg-cyan-500/10 text-cyan-500 border-cyan-400/30'
               },
               {
                 stepNum: '3',
-                title: 'Risk Assessment',
-                desc: 'Get instant risk levels, impact analysis and 72-hour forecast.',
+                title: t('home.step3Title', 'Risk Assessment'),
+                desc: t('home.step3Desc', 'Get instant risk levels, impact analysis and 72-hour forecast.'),
                 icon: AlertTriangle,
                 color: 'bg-amber-500/10 text-amber-500 border-amber-400/30'
               },
               {
                 stepNum: '4',
-                title: 'Get Help',
-                desc: 'Find nearby shelters, hospitals, routes and emergency services.',
+                title: t('home.step4Title', 'Get Help'),
+                desc: t('home.step4Desc', 'Find nearby shelters, hospitals, routes and emergency services.'),
                 icon: ShieldAlert,
                 color: 'bg-rose-500/10 text-rose-500 border-rose-400/30'
               }
@@ -931,10 +931,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               </div>
               <div>
                 <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white leading-tight">
-                  Live Situation
+                  {t('home.liveSituationTitle', 'Live Situation')}
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  Real-time updates from across India
+                  {t('home.liveSituationSub', 'Real-time updates from across India')}
                 </p>
               </div>
             </div>
@@ -944,7 +944,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 onClick={handleOpenDashboard}
                 className="bg-sky-500 hover:bg-sky-400 text-slate-950 px-4 py-1.5 rounded-full text-xs font-black transition flex items-center gap-1.5 shadow-sm cursor-pointer border border-sky-300/40"
               >
-                <span>View Full Dashboard</span>
+                <span>{t('home.viewFullDashboard', 'View Full Dashboard')}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
 
@@ -952,7 +952,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 onClick={() => onNavigateModule('map')}
                 className="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-400 border border-slate-300 dark:border-slate-700 rounded-full px-4 py-1.5 text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
               >
-                <span>View Full Map</span>
+                <span>{t('home.viewFullMap', 'View Full Map')}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -970,7 +970,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <ShieldAlert className="h-4 w-4" />
                   </div>
                   <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">12</span>
-                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">Active Incidents</span>
+                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">{t('home.activeIncidents', 'Active Incidents')}</span>
                 </div>
 
                 <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col items-start justify-center">
@@ -978,7 +978,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <AlertTriangle className="h-4 w-4" />
                   </div>
                   <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">04</span>
-                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">Critical Alerts</span>
+                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">{t('home.criticalAlerts', 'Critical Alerts')}</span>
                 </div>
 
                 <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col items-start justify-center">
@@ -986,7 +986,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <MapPin className="h-4 w-4" />
                   </div>
                   <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">18</span>
-                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">Affected Districts</span>
+                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">{t('home.affectedDistricts', 'Affected Districts')}</span>
                 </div>
 
                 <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col items-start justify-center">
@@ -994,14 +994,14 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <Users className="h-4 w-4" />
                   </div>
                   <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">27</span>
-                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">Rescue Teams Deployed</span>
+                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">{t('home.rescueTeamsDeployed', 'Rescue Teams Deployed')}</span>
                 </div>
               </div>
 
               {/* Recent Alerts List */}
               <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex-1 flex flex-col justify-between">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 mb-3">
-                  <span className="text-xs font-extrabold text-slate-900 dark:text-white">Recent Alerts</span>
+                  <span className="text-xs font-extrabold text-slate-900 dark:text-white">{t('home.recentAlerts', 'Recent Alerts')}</span>
                   <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
                 </div>
 
@@ -1185,15 +1185,15 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <div>
                   <div className="flex items-center justify-between text-slate-400 dark:text-slate-500 mb-2">
                     <CloudRain className="h-8 w-8 text-sky-500" />
-                    <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Live Weather</span>
+                    <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">{t('home.liveWeather', 'Live Weather')}</span>
                   </div>
 
-                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Current Weather</span>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">{t('home.currentWeather', 'Current Weather')}</span>
                   <h4 className="text-lg font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
-                    Heavy Rainfall
+                    {t('home.heavyRainfall', 'Heavy Rainfall')}
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    Sikkim, North East India
+                    {t('home.sikkimNer', 'Sikkim, North East India')}
                   </p>
                 </div>
 
@@ -1218,10 +1218,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   </div>
                   <div>
                     <span className="text-xs font-extrabold text-red-600 dark:text-red-400 block leading-tight">
-                      High Risk in next 72 hours
+                      {t('home.highRisk72', 'High Risk in next 72 hours')}
                     </span>
                     <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block mt-0.5">
-                      Landslide &amp; Flood Risk
+                      {t('home.landslideFloodRisk', 'Landslide & Flood Risk')}
                     </span>
                   </div>
                 </div>
@@ -1244,33 +1244,33 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           
           <div>
             <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">
-              Trusted Data Sources
+              {t('home.trustedSourcesTitle', 'Trusted Data Sources')}
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              Powered by reliable and verified sources for accurate information.
+              {t('home.trustedSourcesSub', 'Powered by reliable and verified sources for accurate information.')}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs font-bold text-slate-700 dark:text-slate-300">
             <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <Radio className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-              <span>ISRO / Satellite Data</span>
+              <span>{t('home.isroSatelliteData', 'ISRO / Satellite Data')}</span>
             </div>
             <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <CloudRain className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              <span>IMD Weather Data</span>
+              <span>{t('home.imdWeatherData', 'IMD Weather Data')}</span>
             </div>
             <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <Building2 className="h-4 w-4 text-slate-700 dark:text-slate-300" />
-              <span>Government Reports</span>
+              <span>{t('home.govReports', 'Government Reports')}</span>
             </div>
             <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Ground Reports</span>
+              <span>{t('home.groundReports', 'Ground Reports')}</span>
             </div>
             <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <MapPin className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-              <span>GIS &amp; Remote Sensing</span>
+              <span>{t('home.gisRemoteSensing', 'GIS & Remote Sensing')}</span>
             </div>
           </div>
 
@@ -1285,11 +1285,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           <div className="space-y-2 max-w-xl">
             <div className="inline-flex items-center gap-2 bg-red-500/20 border border-red-400/40 text-red-300 text-xs font-bold px-3 py-1 rounded-full">
               <ShieldAlert className="h-3.5 w-3.5 text-red-400 animate-pulse" />
-              <span>24x7 Emergency Coordination</span>
+              <span>{t('home.emergencyCoordination', '24x7 Emergency Coordination')}</span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">Need help during a disaster?</h3>
+            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">{t('home.needHelpTitle', 'Need help during a disaster?')}</h3>
             <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
-              Send distress signal, access live emergency maps, locate relief shelters, or connect with command teams.
+              {t('home.needHelpDesc', 'Send distress signal, access live emergency maps, locate relief shelters, or connect with command teams.')}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 shrink-0">
@@ -1298,14 +1298,14 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold shadow-lg shadow-red-600/40 hover:scale-105 transition flex items-center gap-2 cursor-pointer border border-red-400/50"
             >
               <PhoneCall className="h-4 w-4 animate-pulse" />
-              <span>Emergency Help</span>
+              <span>{t('home.emergencyHelp', 'Emergency Help')}</span>
             </button>
             <button
               onClick={() => onNavigateModule('reliefcamps')}
               className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center gap-2"
             >
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>Explore Resources</span>
+              <span>{t('home.exploreResources', 'Explore Resources')}</span>
             </button>
           </div>
         </div>
