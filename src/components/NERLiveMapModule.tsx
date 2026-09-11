@@ -105,7 +105,7 @@ export default function NERLiveMapModule({
 
     const getTileUrl = (style: string) => {
       if (style === "topo") return "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
-      if (style === "osm" || style === "voyager") return "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+      if (style === "osm" || style === "voyager") return "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
       return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
     };
 
@@ -720,7 +720,7 @@ export default function NERLiveMapModule({
     if (!currentTileLayerRef.current) return;
     let url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
     if (baseStyle === "topo") url = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
-    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     else url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
     currentTileLayerRef.current.setUrl(url);

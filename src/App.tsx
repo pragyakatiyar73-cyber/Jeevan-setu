@@ -38,10 +38,9 @@ import {
   CheckSquare,
   X,
   Mic,
-  MicOff
+  MicOff,
+  Home
 } from 'lucide-react';
-import { useVoiceRecognition } from './hooks/useVoiceRecognition';
-import VoiceAssistantModal from './components/common/VoiceAssistantModal';
 import L from 'leaflet';
 import {
   MAP_LAYERS,
@@ -62,7 +61,6 @@ import {
 import Dashboard from './components/Dashboard';
 import SmartDisasterMonitoring from './components/SmartDisasterMonitoring';
 import AIDisasterImpactAssessment from './components/AIDisasterImpactAssessment';
-import ThreeDigitalTwin from './components/ThreeDigitalTwin';
 import WeatherIntelligence from './components/WeatherIntelligence';
 import UAVDroneModule from './components/UAVDroneModule';
 import EmergencySOSModal from './components/EmergencySOSModal';
@@ -81,6 +79,7 @@ import LifeSavingResponseEngine from './components/LifeSavingResponseEngine';
 import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 import AddressDisasterIntelligence from './components/AddressDisasterIntelligence';
+import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import { useTranslation } from './i18n';
 import { incidentStore } from './services/api';
 
@@ -104,14 +103,39 @@ export default function App() {
     if (tab) return tab;
     const hash = window.location.hash.replace('#', '');
     if (hash) return hash;
-    return 'hub';
+
+    const path = window.location.pathname.toLowerCase();
+    if (path.includes('/dashboard')) return 'customdashboard';
+    if (path.includes('/live-map')) return 'map';
+    if (path.includes('/risk-assessment')) return 'staterisk';
+    if (path.includes('/resources')) return 'reliefcamps';
+
+    return 'home';
   });
 
   const setActiveModule = (mod: string) => {
     setActiveModuleState(mod);
     const url = new URL(window.location.href);
-    url.searchParams.set('tab', mod);
-    window.history.replaceState(null, '', url.toString());
+    if (mod === 'home') {
+      url.pathname = '/';
+      url.searchParams.delete('tab');
+      url.searchParams.delete('module');
+    } else if (mod === 'customdashboard') {
+      url.pathname = '/dashboard';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'map') {
+      url.pathname = '/live-map';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'staterisk') {
+      url.pathname = '/risk-assessment';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'reliefcamps') {
+      url.pathname = '/resources';
+      url.searchParams.set('tab', mod);
+    } else {
+      url.searchParams.set('tab', mod);
+    }
+    window.history.pushState(null, '', url.toString());
   };
 
   // Reset to 100% Native Pixel-Perfect Responsive Resolution
@@ -135,9 +159,6 @@ export default function App() {
 
   // SOS Emergency Modal State
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
-  const [simModalOpen, setSimModalOpen] = useState(false);
-  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
-  const [voiceFeedbackMsg, setVoiceFeedbackMsg] = useState<string>('');
   const [activeSosLocation, setActiveSosLocation] = useState<{
     lat: number;
     lon: number;
@@ -542,6 +563,29 @@ export default function App() {
     setCalculatedRoute(res);
   };
 
+  if (activeModule === 'home') {
+    return (
+      <div className="min-h-screen w-full bg-white dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
+        <JeevanSetuHomepage
+          onNavigateModule={(mod) => setActiveModule(mod)}
+          onOpenSos={() => setIsSosModalOpen(true)}
+          onOpenDashboard={() => setActiveModule('customdashboard')}
+        />
+
+        {/* Emergency SOS Modal */}
+        <EmergencySOSModal
+          isOpen={isSosModalOpen}
+          onClose={() => setIsSosModalOpen(false)}
+          onTransmitSOSLocation={(locationData) => {
+            setActiveSosLocation(locationData);
+            setIsSosModalOpen(false);
+            setActiveModule('map');
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen w-full max-w-full bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
       
@@ -552,7 +596,7 @@ export default function App() {
           {/* Logo & Brand Header (Sleek & Compact) */}
           <div
             className="flex items-center gap-2.5 px-2 py-1.5 cursor-pointer rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/60 transition group"
-            onClick={() => setActiveModule('hub')}
+            onClick={() => setActiveModule('home')}
           >
             <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full overflow-hidden shadow-md shadow-sky-500/20 ring-2 ring-sky-500/40 group-hover:ring-sky-400 transition">
               <img
@@ -578,7 +622,7 @@ export default function App() {
               {
                 category: t('sidebar.catIntelligence', 'Intelligence & Monitoring'),
                 items: [
-                  { id: 'hub', label: t('navigation.dashboard', '3D Disaster Simulation'), icon: Sparkles, iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
+                  { id: 'home', label: t('navigation.home', 'Jeevan Setu Homepage'), icon: Home, badge: 'MAIN', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'geosafe-ai', label: t('navigation.geosafe', 'GeoSafe AI'), icon: Compass, badge: 'AI CORE', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
                   { id: 'staterisk', label: t('navigation.staterisk', 'Regional State Risk'), icon: FileBarChart, badge: '19 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'smartmonitoring', label: t('navigation.smartmonitoring', 'Smart Disaster Monitoring'), icon: Eye, badge: 'LIVE', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
@@ -695,13 +739,6 @@ export default function App() {
         <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-3 sm:px-4 lg:px-6 flex items-center justify-between gap-3 backdrop-blur shadow-sm dark:shadow-md transition-colors duration-300 min-w-0">
           {/* MDoNER / Regional Title matching media_1787858147598.png */}
           <div className="flex items-center gap-3 shrink-0">
-            <img
-              src="/jeevan-setu-logo.jpg"
-              alt="Jeevan Setu Emblem"
-              className="h-10 w-10 shrink-0 object-cover rounded-full shadow ring-2 ring-sky-500/50 cursor-pointer hover:opacity-90 transition"
-              onClick={() => setActiveModule('hub')}
-              title="Jeevan Setu Home"
-            />
             <div className="flex items-center gap-3">
               <div className="text-[11px] font-black leading-tight text-emerald-600 dark:text-emerald-400">
                 <div>{t('header.titleLine1', 'Ministry of Development')}</div>
@@ -725,41 +762,6 @@ export default function App() {
             >
               <span className="text-xs">🚨</span>
               <span>{t('navigation.sos', 'Emergency SOS')}</span>
-            </button>
-
-            {/* 🎮 11-STAGE DISASTER SIMULATION BUTTON */}
-            <button
-              onClick={() => {
-                incidentStore.triggerHackathonSimulation();
-                setActiveModule('smartmonitoring');
-                setSimModalOpen(true);
-              }}
-              className="rounded-full bg-gradient-to-r from-amber-500 via-rose-600 to-indigo-600 px-3.5 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1.5 border border-amber-400/40 cursor-pointer shrink-0"
-            >
-              <span>⚡</span>
-              <span>Run Hackathon Simulation</span>
-            </button>
-
-            {/* 🎙️ VOICE SOS & ASSISTANT HEADER BUTTON */}
-            <button
-              onClick={() => setIsVoiceModalOpen(true)}
-              className="rounded-full bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 px-3.5 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1.5 border border-sky-400/40 cursor-pointer shrink-0"
-            >
-              <span className="text-xs">🎙️</span>
-              <span>Voice Assistant</span>
-            </button>
-
-            {/* 🎮 3D SIM Pill Button */}
-            <button
-              onClick={() => setActiveModule('hub')}
-              className={`rounded-full px-3 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                activeModule === 'hub'
-                  ? 'bg-sky-500 text-slate-950 shadow-md shadow-sky-500/40'
-                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <span className="text-xs">🎮</span>
-              <span>{t('header.sim', '3D SIM')}</span>
             </button>
 
             {/* 🤖 AI Pill Button */}
@@ -909,10 +911,7 @@ export default function App() {
         {activeModule === 'customdashboard' && (
           <div className="h-full overflow-y-auto">
             <Dashboard
-              onNavigateToLiveMap={(loc) => {
-                setMapFocusedTarget({ coord: [loc.lat, loc.lon], zoom: 12 });
-                setActiveModule('map');
-              }}
+              onNavigateModule={(mod) => setActiveModule(mod)}
             />
           </div>
         )}
@@ -929,14 +928,12 @@ export default function App() {
           </div>
         )}
 
-        {/* 1. OPERATIONS HUB / 3D SIMULATION DIGITAL TWIN */}
-        {activeModule === 'hub' && (
-          <div className="h-full overflow-y-auto p-4 lg:p-6">
-            <ThreeDigitalTwin
-              onNavigateToMonitoring={() => setActiveModule('smartmonitoring')}
-              onNavigateToImpact={() => setActiveModule('aiimpact')}
-              onNavigateToRerouting={() => setActiveModule('rerouting')}
-              onNavigateModule={(mod) => setActiveModule(mod as any)}
+        {/* 0. JEEVAN SETU REFERENCE HOMEPAGE */}
+        {activeModule === 'home' && (
+          <div className="h-full overflow-y-auto">
+            <JeevanSetuHomepage
+              onNavigateModule={(mod) => setActiveModule(mod)}
+              onOpenSos={() => setIsSosModalOpen(true)}
             />
           </div>
         )}
@@ -2075,55 +2072,6 @@ export default function App() {
             setActiveModule('map');
           }}
         />
-
-        {/* 🎙️ GLOBAL VOICE ASSISTANT MODAL */}
-        <VoiceAssistantModal
-          isOpen={isVoiceModalOpen}
-          onClose={() => setIsVoiceModalOpen(false)}
-          onNavigate={(targetModule) => setActiveModule(targetModule as any)}
-          onTriggerSOS={() => setIsSosModalOpen(true)}
-        />
-
-        {/* 🎮 11-STAGE HACKATHON DISASTER SIMULATION MODAL */}
-        {simModalOpen && (
-          <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
-            <div className="relative w-full max-w-lg rounded-2xl border border-rose-500/50 bg-gradient-to-b from-slate-900 via-rose-950/40 to-slate-900 p-6 shadow-2xl space-y-4 animate-fadeIn text-white select-none">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">🎮</span>
-                  <h3 className="text-sm font-black text-white uppercase tracking-wider">HACKATHON DISASTER SIMULATION INITIALIZED!</h3>
-                </div>
-                <button
-                  onClick={() => setSimModalOpen(false)}
-                  className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white cursor-pointer"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs leading-relaxed text-slate-200">
-                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 font-bold text-rose-300">
-                  Incident JS-2026-001 (East Khasi Hills Flash Flood & Mudslide) set to CRITICAL.
-                </div>
-                <div className="font-mono text-[11px] text-slate-300 bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-1">
-                  <div className="font-bold text-sky-400">11-Stage End-to-End Workflow:</div>
-                  <div className="text-[10px] leading-relaxed text-slate-300">
-                    MONITOR → DETECT → ASSESS → PREDICT → ALERT → RESPOND → RESCUE → EVACUATE → RELIEF → REPORT → RECOVER
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2 flex justify-end">
-                <button
-                  onClick={() => setSimModalOpen(false)}
-                  className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-indigo-600 px-5 py-2 text-xs font-extrabold text-white shadow-lg hover:from-rose-500 hover:to-indigo-500 cursor-pointer border border-rose-400/40"
-                >
-                  Acknowledge & Proceed ➔
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
       </main>
     </div>

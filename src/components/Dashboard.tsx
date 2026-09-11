@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "../i18n";
-import SmartSearchInput from "./common/SmartSearchInput";
-import MapComponent from "./MapComponent";
-import StateRiskMatrixSection from "./StateRiskMatrixSection";
+import L from "leaflet";
 import {
   ShieldAlert,
   MapPin,
@@ -22,852 +20,1246 @@ import {
   Sparkles,
   ArrowRight,
   Send,
-  Radio
+  Radio,
+  Truck,
+  Building2,
+  Camera,
+  Upload,
+  Globe,
+  Bell,
+  Sliders,
+  Maximize2,
+  Crosshair,
+  Plus,
+  Navigation,
+  Flame,
+  Home,
+  Gauge,
+  X,
+  PhoneCall,
+  Menu
 } from "lucide-react";
-import { incidentStore } from "../services/api/incidentStore";
-import { getSpellingSuggestions, getDidYouMeanSuggestion, LocationSuggestion } from "../utils/locationSpellCheck";
+import ThemeToggle from "./ThemeToggle";
+import LanguageSelector from "./LanguageSelector";
+import EmergencySOSModal from "./EmergencySOSModal";
 
-interface LocationPreset {
+// Interactive Map Marker Data
+interface DisasterIncident {
   id: string;
-  name: string;
-  state: string;
+  type: "Flood" | "Landslide" | "Earthquake" | "Rainfall" | "Hospital" | "Shelter" | "Rescue" | "Vehicle";
+  title: string;
+  location: string;
   lat: number;
   lon: number;
-  elevation: string;
-  defaultSlope: number;
-  soilSaturation: number;
-  faultDistKm: number;
+  riskLevel: "HIGH" | "MEDIUM" | "LOW" | "CRITICAL";
+  rainfallMm: number;
+  affectedDistricts: number;
+  roadStatus: "Blocked" | "Partially Blocked" | "Clear";
+  updatedTime: string;
+  color: string;
+  radiusMeters: number;
+  teams: string;
+  population: string;
 }
 
-const LOCATION_PRESETS: LocationPreset[] = [
-  { id: "shillong", name: "Shillong & Sohra (East Khasi Hills)", state: "Meghalaya", lat: 25.5788, lon: 91.8933, elevation: "1,525m MSL", defaultSlope: 34, soilSaturation: 68, faultDistKm: 18 },
-  { id: "tawang", name: "Tawang / Sela Pass Sector", state: "Arunachal Pradesh", lat: 27.5861, lon: 91.8504, elevation: "3,500m MSL", defaultSlope: 42, soilSaturation: 74, faultDistKm: 12 },
-  { id: "guwahati", name: "Guwahati Hub & Kamrup Slopes", state: "Assam", lat: 26.1445, lon: 91.7362, elevation: "55m MSL", defaultSlope: 14, soilSaturation: 45, faultDistKm: 45 },
-  { id: "gangtok", name: "Gangtok / Teesta Basin Sector", state: "Sikkim", lat: 27.3389, lon: 88.6065, elevation: "1,650m MSL", defaultSlope: 38, soilSaturation: 82, faultDistKm: 8 },
-  { id: "aizawl", name: "Aizawl Ridge Corridor", state: "Mizoram", lat: 23.7271, lon: 92.7176, elevation: "1,132m MSL", defaultSlope: 36, soilSaturation: 62, faultDistKm: 22 },
-  { id: "imphal", name: "Imphal Valley & Ukhrul Highway", state: "Manipur", lat: 24.8170, lon: 93.9368, elevation: "786m MSL", defaultSlope: 28, soilSaturation: 55, faultDistKm: 29 },
-  { id: "kohima", name: "Kohima / Zubza Hill Sector", state: "Nagaland", lat: 25.6751, lon: 94.1086, elevation: "1,444m MSL", defaultSlope: 35, soilSaturation: 71, faultDistKm: 15 },
-  { id: "agartala", name: "Agartala Foothill Depot", state: "Tripura", lat: 23.8315, lon: 91.2868, elevation: "128m MSL", defaultSlope: 12, soilSaturation: 40, faultDistKm: 60 }
+const DASHBOARD_INCIDENTS: DisasterIncident[] = [
+  {
+    id: "INC-101",
+    type: "Flood",
+    title: "Sikkim Teesta Flood Alert",
+    location: "North Sikkim (Chungthang Sector)",
+    lat: 27.58,
+    lon: 88.62,
+    riskLevel: "HIGH",
+    rainfallMm: 82,
+    affectedDistricts: 4,
+    roadStatus: "Partially Blocked",
+    updatedTime: "8 min ago",
+    color: "#EF4444",
+    radiusMeters: 35000,
+    teams: "NDRF Battalion 2 & SDRF",
+    population: "14,200"
+  },
+  {
+    id: "INC-102",
+    type: "Landslide",
+    title: "Gangtok Hillside Debris Shift",
+    location: "Gangtok / Mangan Corridor",
+    lat: 27.3389,
+    lon: 88.6065,
+    riskLevel: "CRITICAL",
+    rainfallMm: 114,
+    affectedDistricts: 2,
+    roadStatus: "Blocked",
+    updatedTime: "12 min ago",
+    color: "#F97316",
+    radiusMeters: 28000,
+    teams: "Army Engineers & BRO",
+    population: "8,900"
+  },
+  {
+    id: "INC-103",
+    type: "Flood",
+    title: "Assam Brahmaputra Swelling",
+    location: "Kaziranga / Lakhimpur Basin",
+    lat: 26.58,
+    lon: 93.17,
+    riskLevel: "HIGH",
+    rainfallMm: 95,
+    affectedDistricts: 6,
+    roadStatus: "Partially Blocked",
+    updatedTime: "24 min ago",
+    color: "#EF4444",
+    radiusMeters: 45000,
+    teams: "SDRF Squad 8 & Boats",
+    population: "42,000"
+  },
+  {
+    id: "INC-104",
+    type: "Rainfall",
+    title: "Sohra Flash Downpour Watch",
+    location: "East Khasi Hills, Meghalaya",
+    lat: 25.27,
+    lon: 91.73,
+    riskLevel: "MEDIUM",
+    rainfallMm: 140,
+    affectedDistricts: 3,
+    roadStatus: "Clear",
+    updatedTime: "30 min ago",
+    color: "#38BDF8",
+    radiusMeters: 30000,
+    teams: "IMD Weather Station 4",
+    population: "12,500"
+  },
+  {
+    id: "INC-105",
+    type: "Hospital",
+    title: "Gangtok Central Referral Hospital",
+    location: "Gangtok City Center",
+    lat: 27.32,
+    lon: 88.61,
+    riskLevel: "LOW",
+    rainfallMm: 45,
+    affectedDistricts: 1,
+    roadStatus: "Clear",
+    updatedTime: "5 min ago",
+    color: "#10B981",
+    radiusMeters: 5000,
+    teams: "24x7 Emergency Ward",
+    population: "450 Beds"
+  },
+  {
+    id: "INC-106",
+    type: "Shelter",
+    title: "Mangan District Relief Camp",
+    location: "Mangan High School Campus",
+    lat: 27.50,
+    lon: 88.53,
+    riskLevel: "LOW",
+    rainfallMm: 60,
+    affectedDistricts: 1,
+    roadStatus: "Partially Blocked",
+    updatedTime: "15 min ago",
+    color: "#8B5CF6",
+    radiusMeters: 8000,
+    teams: "Red Cross & Local Auth",
+    population: "620 Capacity"
+  },
+  {
+    id: "INC-107",
+    type: "Vehicle",
+    title: "Relief Convoy JS-104 (Tata LPTA)",
+    location: "En Route Gangtok ➔ Mangan",
+    lat: 27.42,
+    lon: 88.58,
+    riskLevel: "MEDIUM",
+    rainfallMm: 70,
+    affectedDistricts: 2,
+    roadStatus: "Partially Blocked",
+    updatedTime: "2 min ago",
+    color: "#F59E0B",
+    radiusMeters: 10000,
+    teams: "NDRF Supply Logistics",
+    population: "Oxygen & Rations"
+  }
 ];
 
 interface DashboardProps {
-  onNavigateToLiveMap?: (locationData: { lat: number; lon: number; name: string; riskLevel: string }) => void;
+  onNavigateModule?: (module: string) => void;
 }
 
-export default function Dashboard({ onNavigateToLiveMap }: DashboardProps = {}) {
+export default function Dashboard({ onNavigateModule }: DashboardProps) {
   const { t } = useTranslation();
 
-  // Location State
-  const [selectedPresetId, setSelectedPresetId] = useState<string>("shillong");
-  const [latInput, setLatInput] = useState<string>("25.5788");
-  const [lonInput, setLonInput] = useState<string>("91.8933");
-  const [locationName, setLocationName] = useState<string>("Shillong & Sohra (East Khasi Hills)");
-  const [elevation, setElevation] = useState<string>("1,525m MSL");
-  const [dashboardSearch, setDashboardSearch] = useState<string>("");
+  // Active Navigation Tab
+  const [activeTab, setActiveTab] = useState<string>("overview");
 
-  // Telemetry Data State
-  const [loading, setLoading] = useState<boolean>(false);
-  const [isLocating, setIsLocating] = useState<boolean>(false);
-  const [dataAvailable, setDataAvailable] = useState<boolean>(true);
-  const [lastUpdated, setLastUpdated] = useState<string>("");
+  // Selected Area Intelligence Panel State
+  const [selectedIncident, setSelectedIncident] = useState<DisasterIncident>(DASHBOARD_INCIDENTS[0]);
 
-  // Weather Metrics
-  const [rain24h, setRain24h] = useState<number>(42.5);
-  const [rain72h, setRain72h] = useState<number>(186.0);
-  const [currentRainRate, setCurrentRainRate] = useState<number>(8.2);
-  const [temp, setTemp] = useState<number>(18.5);
-  const [humidity, setHumidity] = useState<number>(88);
+  // Map Filterable Layer State
+  const [activeLayerFilter, setActiveLayerFilter] = useState<string>("All");
 
-  // Terrain & Soil Metrics
-  const [slopeAngle, setSlopeAngle] = useState<number>(34);
-  const [soilSatPercent, setSoilSatPercent] = useState<number>(68);
-  const [faultDistanceKm, setFaultDistanceKm] = useState<number>(18);
+  // Map Controls State
+  const [mapTileType, setMapTileType] = useState<"satellite" | "dark" | "topo">("satellite");
+  const [showRadarOverlay, setShowRadarOverlay] = useState<boolean>(true);
+  const [showHazardCircles, setShowHazardCircles] = useState<boolean>(true);
 
-  // 72-Hour Forecast Array
-  const [forecast72h, setForecast72h] = useState<any[]>([]);
+  // Map Refs
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
+  const radarLayerRef = useRef<L.TileLayer | null>(null);
+  const markersLayerRef = useRef<L.LayerGroup | null>(null);
+  const circlesLayerRef = useRef<L.LayerGroup | null>(null);
 
-  // Fetch Live Weather & Rainfall from Open-Meteo API
-  const fetchLandslideData = async (lat: number, lon: number) => {
-    setLoading(true);
-    try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,rain,wind_speed_10m&hourly=precipitation&forecast_days=3`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Open-Meteo HTTP Error");
-      const json = await res.json();
+  // Emergency SOS Modal
+  const [isSosOpen, setIsSosOpen] = useState(false);
 
-      const current = json?.current;
-      const hourlyRain = json?.hourly?.precipitation || [];
+  // AI Demo Image Upload State
+  const [aiImagePreview, setAiImagePreview] = useState<string | null>(null);
+  const [isAiAnalyzing, setIsAiAnalyzing] = useState<boolean>(false);
+  const [aiResult, setAiResult] = useState<any | null>(null);
 
-      // Calculate 24h and 72h totals from hourly array
-      const r24 = hourlyRain.slice(0, 24).reduce((a: number, b: number) => a + b, 0);
-      const r72 = hourlyRain.slice(0, 72).reduce((a: number, b: number) => a + b, 0);
+  // Tracked Vehicles State
+  const [vehicles, setVehicles] = useState([
+    {
+      id: "JS-104",
+      name: "Relief Truck JS-104",
+      type: "4x4 Heavy All-Terrain (Tata LPTA)",
+      route: "Gangtok ➔ Mangan",
+      eta: "42 min",
+      status: "En Route",
+      risk: "WARNING",
+      cargo: "Life-Saving Oxygen & Rations"
+    },
+    {
+      id: "JS-108",
+      name: "Emergency Supply Van JS-108",
+      type: "High-Altitude Medical Transport",
+      route: "Mangan ➔ Chungthang",
+      eta: "28 min",
+      status: "En Route",
+      risk: "CLEAR",
+      cargo: "Blood Plasma & Dialysis Kits"
+    }
+  ]);
 
-      setRain24h(parseFloat(r24.toFixed(1)) || 38.4);
-      setRain72h(parseFloat(r72.toFixed(1)) || 142.8);
-      setCurrentRainRate(current?.precipitation || 6.5);
-      setTemp(current?.temperature_2m || 21.2);
-      setHumidity(current?.relative_humidity_2m || 84);
-
-      // Build 72-hour forecast sequence
-      const fNow = parseFloat(r24.toFixed(1)) || 38;
-      const f24 = (fNow * 1.15).toFixed(1);
-      const f48 = (fNow * 1.3).toFixed(1);
-      const f72 = (fNow * 1.1).toFixed(1);
-
-      setForecast72h([
-        { time: "NOW", rain: fNow, riskScore: calculateScore(fNow * 3, slopeAngle, soilSatPercent).score, level: calculateScore(fNow * 3, slopeAngle, soilSatPercent).level },
-        { time: "+24 Hours", rain: f24, riskScore: calculateScore(parseFloat(f24) * 3, slopeAngle, soilSatPercent + 5).score, level: calculateScore(parseFloat(f24) * 3, slopeAngle, soilSatPercent + 5).level },
-        { time: "+48 Hours", rain: f48, riskScore: calculateScore(parseFloat(f48) * 3, slopeAngle, soilSatPercent + 10).score, level: calculateScore(parseFloat(f48) * 3, slopeAngle, soilSatPercent + 10).level },
-        { time: "+72 Hours", rain: f72, riskScore: calculateScore(parseFloat(f72) * 3, slopeAngle, soilSatPercent + 4).score, level: calculateScore(parseFloat(f72) * 3, slopeAngle, soilSatPercent + 4).level }
-      ]);
-
-      setDataAvailable(true);
-    } catch (err) {
-      console.warn("Live Open-Meteo API unavailable, setting status to UNAVAILABLE.");
-      setDataAvailable(false);
-    } finally {
-      setLastUpdated(new Date().toLocaleTimeString("en-US", { hour12: true }));
-      setLoading(false);
+  // Helper tile provider URLs
+  const getTileUrl = (type: "satellite" | "dark" | "topo") => {
+    switch (type) {
+      case "dark":
+        return "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+      case "topo":
+        return "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
+      case "satellite":
+      default:
+        return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
     }
   };
 
-  // Preset Selection Handler
-  const handleSelectPreset = (presetId: string) => {
-    const found = LOCATION_PRESETS.find((p) => p.id === presetId);
-    if (found) {
-      setSelectedPresetId(found.id);
-      setLocationName(found.name);
-      setLatInput(found.lat.toString());
-      setLonInput(found.lon.toString());
-      setElevation(found.elevation);
-      setSlopeAngle(found.defaultSlope);
-      setSoilSatPercent(found.soilSaturation);
-      setFaultDistanceKm(found.faultDistKm);
-      fetchLandslideData(found.lat, found.lon);
-    }
-  };
-
-  // Manual Coordinates Inspect with reverse geocoding
-  const handleInspectManualCoords = async () => {
-    const parsedLat = parseFloat(latInput);
-    const parsedLon = parseFloat(lonInput);
-    if (!isNaN(parsedLat) && !isNaN(parsedLon)) {
-      const presetMatch = LOCATION_PRESETS.find(p => Math.abs(p.lat - parsedLat) < 0.05 && Math.abs(p.lon - parsedLon) < 0.05);
-      if (presetMatch) {
-        setSelectedPresetId(presetMatch.id);
-        setLocationName(presetMatch.name);
-        setElevation(presetMatch.elevation);
-        setSlopeAngle(presetMatch.defaultSlope);
-        setSoilSatPercent(presetMatch.soilSaturation);
-        setFaultDistanceKm(presetMatch.faultDistKm);
-      } else {
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${parsedLat}&lon=${parsedLon}`);
-          const json = await res.json();
-          setLocationName(json.display_name || `Custom Sector (${parsedLat.toFixed(4)}°N, ${parsedLon.toFixed(4)}°E)`);
-        } catch {
-          setLocationName(`Custom Sector (${parsedLat.toFixed(4)}°N, ${parsedLon.toFixed(4)}°E)`);
-        }
-        setElevation("1,200m MSL (Est.)");
-      }
-      fetchLandslideData(parsedLat, parsedLon);
-    }
-  };
-
-  // Robust Live GPS Fetch Handler
-  const handleFetchLiveGPS = () => {
-    setIsLocating(true);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          setLatInput(lat.toFixed(4));
-          setLonInput(lon.toFixed(4));
-          setLocationName(`Live GPS Sector (${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E)`);
-          setElevation("Current Ground Level");
-          setIsLocating(false);
-          fetchLandslideData(lat, lon);
-        },
-        (error) => {
-          console.warn("GPS Geolocation position unavailable or timed out, using active sector coordinates:", error.message);
-          // Fallback to active coordinates
-          const fallbackLat = parseFloat(latInput) || 25.5788;
-          const fallbackLon = parseFloat(lonInput) || 91.8933;
-          setLocationName(`Live GPS Sector (${fallbackLat.toFixed(4)}° N, ${fallbackLon.toFixed(4)}° E)`);
-          setIsLocating(false);
-          fetchLandslideData(fallbackLat, fallbackLon);
-        },
-        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
-      );
-    } else {
-      setIsLocating(false);
-      const fallbackLat = parseFloat(latInput) || 25.5788;
-      const fallbackLon = parseFloat(lonInput) || 91.8933;
-      fetchLandslideData(fallbackLat, fallbackLon);
-    }
-  };
-
+  // Initialize GIS Leaflet Command Map
   useEffect(() => {
-    handleSelectPreset("shillong");
-  }, []);
+    if (!mapContainerRef.current) return;
 
-  // ----------------------------------------------------
-  // RISK SCORE CALCULATION ALGORITHM (0 - 100)
-  // ----------------------------------------------------
-  function calculateScore(r72: number, slope: number, soilSat: number) {
-    // 1. Rainfall Score (max 30 pts)
-    const rainPts = Math.min(30, (r72 / 200) * 30);
-    // 2. Slope {t("landslide.gradient", "Gradient")} Score (max 25 pts)
-    const slopePts = Math.min(25, (slope / 45) * 25);
-    // 3. Soil Saturation Score (max 20 pts)
-    const soilPts = Math.min(20, (soilSat / 100) * 20);
-    // 4. Fault Proximity Score (max 10 pts)
-    const faultPts = Math.max(0, 10 - faultDistanceKm * 0.15);
-    // 5. Weather & Stream Surge Score (max 15 pts)
-    const weatherPts = Math.min(15, currentRainRate * 1.2 + 3);
-
-    const total = Math.min(100, Math.round(rainPts + slopePts + soilPts + faultPts + weatherPts));
-
-    let level = "VERY LOW";
-    let colorClass = "text-emerald-400";
-    let bgClass = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
-
-    if (total >= 81) {
-      level = "VERY HIGH / CRITICAL";
-      colorClass = "text-rose-500 animate-pulse";
-      bgClass = "bg-rose-500/20 text-rose-300 border-rose-500/40";
-    } else if (total >= 61) {
-      level = "HIGH";
-      colorClass = "text-orange-400";
-      bgClass = "bg-orange-500/20 text-orange-300 border-orange-500/40";
-    } else if (total >= 41) {
-      level = "MODERATE";
-      colorClass = "text-amber-400";
-      bgClass = "bg-amber-500/20 text-amber-300 border-amber-500/40";
-    } else if (total >= 21) {
-      level = "LOW";
-      colorClass = "text-emerald-400";
-      bgClass = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
     }
 
-    return {
-      score: total,
-      level,
-      colorClass,
-      bgClass,
-      breakdown: {
-        rainPts: Math.round(rainPts),
-        slopePts: Math.round(slopePts),
-        soilPts: Math.round(soilPts),
-        faultPts: Math.round(faultPts),
-        weatherPts: Math.round(weatherPts)
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+      iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+      shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png"
+    });
+
+    const map = L.map(mapContainerRef.current, {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([selectedIncident.lat, selectedIncident.lon], 8);
+
+    const baseTile = L.tileLayer(getTileUrl(mapTileType), {
+      maxZoom: 18,
+      subdomains: ["a", "b", "c", "d"]
+    }).addTo(map);
+    tileLayerRef.current = baseTile;
+
+    const radarTile = L.tileLayer("https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913/{z}/{x}/{y}.png", {
+      opacity: showRadarOverlay ? 0.45 : 0,
+      maxZoom: 18
+    }).addTo(map);
+    radarLayerRef.current = radarTile;
+
+    markersLayerRef.current = L.layerGroup().addTo(map);
+    circlesLayerRef.current = L.layerGroup().addTo(map);
+
+    mapInstanceRef.current = map;
+
+    // Force Leaflet to recalculate container dimensions & fetch tiles
+    const resizeTimer = setTimeout(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    }, 250);
+
+    return () => {
+      clearTimeout(resizeTimer);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
       }
     };
-  }
+  }, []);
 
-  const currentScoreObj = calculateScore(rain72h, slopeAngle, soilSatPercent);
+  // Update Markers & Buffer Rings on Filter / State Change
+  useEffect(() => {
+    if (!mapInstanceRef.current || !markersLayerRef.current || !circlesLayerRef.current) return;
 
-  // Risk Trend Calculation
-  const trend = forecast72h.length >= 2
-    ? forecast72h[forecast72h.length - 1].riskScore > currentScoreObj.score
-      ? "INCREASING"
-      : forecast72h[forecast72h.length - 1].riskScore < currentScoreObj.score
-      ? "DECREASING"
-      : "STABLE"
-    : "STABLE";
+    markersLayerRef.current.clearLayers();
+    circlesLayerRef.current.clearLayers();
+
+    const filtered = activeLayerFilter === "All"
+      ? DASHBOARD_INCIDENTS
+      : activeLayerFilter === "Flood"
+      ? DASHBOARD_INCIDENTS.filter(i => i.type === "Flood")
+      : activeLayerFilter === "Landslide"
+      ? DASHBOARD_INCIDENTS.filter(i => i.type === "Landslide")
+      : activeLayerFilter === "Rainfall"
+      ? DASHBOARD_INCIDENTS.filter(i => i.type === "Rainfall")
+      : activeLayerFilter === "Emergency Resources"
+      ? DASHBOARD_INCIDENTS.filter(i => i.type === "Hospital" || i.type === "Shelter")
+      : activeLayerFilter === "Vehicles"
+      ? DASHBOARD_INCIDENTS.filter(i => i.type === "Vehicle")
+      : DASHBOARD_INCIDENTS;
+
+    filtered.forEach(inc => {
+      const customIcon = L.divIcon({
+        className: "custom-gis-marker",
+        html: `
+          <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; cursor: pointer;">
+            <div style="position: absolute; width: 32px; height: 32px; border-radius: 50%; border: 2px solid ${inc.color}; opacity: 0.8; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            <div style="position: relative; width: 22px; height: 22px; border-radius: 50%; background-color: ${inc.color}; border: 2px solid #ffffff; box-shadow: 0 0 12px ${inc.color}; z-index: 10; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 11px;">
+              ${inc.type === "Flood" ? "🌊" : inc.type === "Landslide" ? "⛰️" : inc.type === "Hospital" ? "🏥" : inc.type === "Shelter" ? "🏠" : inc.type === "Vehicle" ? "🚚" : "🌧️"}
+            </div>
+          </div>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+      });
+
+      const marker = L.marker([inc.lat, inc.lon], { icon: customIcon });
+
+      marker.on("click", () => {
+        setSelectedIncident(inc);
+      });
+
+      marker.bindPopup(`
+        <div style="font-family: sans-serif; background: #070d1e; color: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.4); min-width: 220px; box-shadow: 0 12px 30px rgba(0,0,0,0.8);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="display: inline-block; padding: 2px 7px; border-radius: 9999px; font-size: 9px; font-weight: 900; text-transform: uppercase; background: ${inc.color}; color: white;">
+              ${inc.type} &bull; Risk ${inc.riskLevel}
+            </span>
+            <span style="font-size: 10px; color: #94a3b8;">${inc.updatedTime}</span>
+          </div>
+          <div style="font-weight: 800; font-size: 13px; color: #ffffff; line-height: 1.3; margin-bottom: 4px;">${inc.title}</div>
+          <div style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">📍 ${inc.location}</div>
+          
+          <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 8px; font-size: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 8px;">
+            <div><span style="color: #64748b;">Rainfall:</span> <br/><strong style="color: #38bdf8;">${inc.rainfallMm} mm</strong></div>
+            <div><span style="color: #64748b;">Road Status:</span> <br/><strong style="color: #f59e0b;">${inc.roadStatus}</strong></div>
+          </div>
+
+          <div style="display: flex; gap: 6px; margin-top: 6px;">
+            <button id="btn-inspect-${inc.id}" style="flex: 1; background: #0284c7; color: white; border: none; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">
+              View Risk Details
+            </button>
+          </div>
+        </div>
+      `);
+
+      markersLayerRef.current.addLayer(marker);
+
+      if (showHazardCircles && inc.radiusMeters) {
+        const circle = L.circle([inc.lat, inc.lon], {
+          radius: inc.radiusMeters,
+          color: inc.color,
+          fillColor: inc.color,
+          fillOpacity: 0.15,
+          weight: 1.5,
+          dashArray: "6, 6"
+        });
+        circlesLayerRef.current.addLayer(circle);
+      }
+    });
+  }, [activeLayerFilter, showHazardCircles]);
+
+  // Handle Basemap Switch
+  const switchBasemap = (type: "satellite" | "dark" | "topo") => {
+    setMapTileType(type);
+    if (mapInstanceRef.current && tileLayerRef.current) {
+      mapInstanceRef.current.removeLayer(tileLayerRef.current);
+      const newLayer = L.tileLayer(getTileUrl(type), { maxZoom: 18 }).addTo(mapInstanceRef.current);
+      tileLayerRef.current = newLayer;
+    }
+  };
+
+  // Focus map on specific incident or location
+  const focusLocationOnMap = (lat: number, lon: number, zoomLevel: number = 10) => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setView([lat, lon], zoomLevel, { animate: true });
+    }
+  };
+
+  // AI Image Drag & Drop / Photo Handler
+  const handleAiPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        setAiImagePreview(evt.target?.result as string);
+        setAiResult(null);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Execute Demo AI Analysis
+  const runAiDemoAnalysis = () => {
+    setIsAiAnalyzing(true);
+    setTimeout(() => {
+      setIsAiAnalyzing(false);
+      setAiResult({
+        disasterType: "Landslide & Road Collapse",
+        severity: "CRITICAL 🔴",
+        impact: "HIGH",
+        roadStatus: "BLOCKED 🚫",
+        affectedArea: "2.8 km²",
+        recommendation: "Immediate emergency route diversion via Jowai Bypass corridor required. Dispatched warning signal to Gangtok Command.",
+        confidence: "94%",
+        lat: 27.3389,
+        lon: 88.6065,
+        locationName: "Gangtok / Teesta Highway (Km 142)"
+      });
+    }, 1200);
+  };
 
   return (
-    <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+    <div className="min-h-screen w-full bg-[#040814] text-slate-100 font-sans flex flex-col pb-24 lg:pb-12 selection:bg-sky-500 selection:text-white transition-colors duration-300">
       
-      {/* 📍 1. TOP HEADER & LOCATION SELECTION BAR */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-5 transition-colors duration-300">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-rose-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-rose-700 dark:text-rose-400 border border-rose-500/30 flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping"></span>
-                EXECUTIVE LANDSLIDE & GEOTECHNICAL DISASTER RISK TELEMETRY
-              </span>
+      {/* ==================================================
+          TOP NAVIGATION COMMAND BAR
+         ================================================== */}
+      <header className="sticky top-0 z-[100] w-full bg-[#070d1e] border-b border-slate-800 shadow-xl px-3 sm:px-6 py-3 flex items-center justify-between gap-4 backdrop-blur-md">
+        
+        {/* LEFT: Branding & Navigation Tabs */}
+        <div className="flex items-center gap-4 lg:gap-6">
+          <div
+            onClick={() => onNavigateModule ? onNavigateModule("home") : (window.location.href = "/")}
+            className="flex items-center gap-2.5 cursor-pointer group"
+          >
+            <div className="h-9 w-9 rounded-full ring-2 ring-sky-400/60 overflow-hidden bg-slate-900 flex items-center justify-center shadow-md">
+              <img src="/jeevan-setu-logo.jpg" alt="Logo" className="h-full w-full object-cover" onError={(e) => ((e.target as HTMLElement).style.display = "none")} />
+              <span className="text-sky-400 font-black text-sm">JS</span>
             </div>
-            <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-3">
-              <ShieldAlert className="h-7 w-7 text-rose-500" />
-              <span>{t("landslide.title", "🏔️ LANDSLIDE RISK ASSESSMENT")}</span>
-            </h1>
-            <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium max-w-4xl leading-relaxed">
-              {t("landslide.subtitle", "Location-specific geotechnical & meteorological slope failure evaluation grid for North East India.")}
-            </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-black tracking-tight text-white group-hover:text-sky-300 transition">
+                  Jeevan Setu <span className="text-sky-400">Command Center</span>
+                </h1>
+                <span className="bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider hidden sm:inline-block">
+                  LIVE GRID
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400 font-semibold hidden md:block">
+                Real-time Disaster Intelligence &amp; Emergency Response
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0 flex-wrap">
-            <button
-              onClick={() => fetchLandslideData(parseFloat(latInput), parseFloat(lonInput))}
-              disabled={loading}
-              className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs lg:text-sm font-extrabold text-slate-800 dark:text-slate-200 transition flex items-center gap-2 cursor-pointer shadow"
-            >
-              <RefreshCw className={`h-4 w-4 text-sky-500 dark:text-sky-400 ${loading ? "animate-spin" : ""}`} />
-              <span>{t("mdoner.refreshData", "↻ Refresh Data")}</span>
-            </button>
-
-            <button
-              onClick={handleFetchLiveGPS}
-              disabled={isLocating || loading}
-              className="px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 font-extrabold text-slate-950 text-xs lg:text-sm shadow-lg shadow-sky-500/20 transition flex items-center gap-2 cursor-pointer disabled:opacity-75"
-            >
-              <MapPin className={`h-4 w-4 ${isLocating ? "animate-bounce" : ""}`} />
-              <span>{isLocating ? t("landslide.locating", "⏳ Locating...") : t("landslide.fetchGps", "📍 Fetch My Live GPS")}</span>
-            </button>
-
-            <button
-              onClick={() => {
-                if (onNavigateToLiveMap) {
-                  onNavigateToLiveMap({
-                    lat: parseFloat(latInput) || 25.5788,
-                    lon: parseFloat(lonInput) || 91.8933,
-                    name: locationName,
-                    riskLevel: currentScoreObj.level
-                  });
-                }
-              }}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 font-extrabold text-white text-xs lg:text-sm shadow-lg shadow-rose-600/30 transition flex items-center gap-2 cursor-pointer border border-rose-400/40"
-            >
-              <span>{t("landslide.trackOnMap", "📍 Track Disaster Sector on Live Map ➔")}</span>
-            </button>
-          </div>
+          {/* Desktop Dashboard Navigation Links */}
+          <nav className="hidden xl:flex items-center gap-1 border-l border-slate-800 pl-4">
+            {[
+              { id: "overview", label: "Overview" },
+              { id: "map", label: "Live Map" },
+              { id: "risk", label: "Risk Assessment" },
+              { id: "ai", label: "AI Analysis" },
+              { id: "alerts", label: "Alerts" },
+              { id: "resources", label: "Resources" }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  const targetEl = document.getElementById(`section-${tab.id}`);
+                  targetEl?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+                  activeTab === tab.id
+                    ? "bg-sky-500/20 text-sky-300 border border-sky-500/40"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
 
-        {/* LOCATION SELECTOR INPUTS ROW */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 pt-3 border-t border-slate-200 dark:border-slate-800/80">
-          <div className="md:col-span-5 relative">
-            <label className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block mb-1.5 flex items-center justify-between">
-              <span>{t("landslide.selectPreset", "📍 SEARCH / SELECT LOCATION")}</span>
-            </label>
-            <SmartSearchInput
-              placeholder="Type city, district or disaster query (e.g., Shillong, flood area)..."
-              value={dashboardSearch}
-              onChange={setDashboardSearch}
-              onSearch={q => setDashboardSearch(q)}
-              searchType="location"
-              className="mb-1.5"
-            />
+        {/* RIGHT: Notifications, Language, Theme, SOS */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <button className="relative p-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer">
+            <Bell className="h-4 sm:h-5 w-4 sm:w-5 text-slate-300" />
+            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping" />
+            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
+          </button>
 
-            {/* Did You Mean Suggestion */}
-            {dashboardSearch.trim().length >= 2 && (() => {
-              const dyM = getDidYouMeanSuggestion(dashboardSearch);
-              if (!dyM) return null;
-              return (
-                <div className="mb-2 flex items-center gap-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 px-2 py-1 text-[11px] text-amber-700 dark:text-amber-300">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                  <span>Did you mean:</span>
+          <div className="hidden sm:block">
+            <LanguageSelector />
+          </div>
+
+          <ThemeToggle />
+
+          <button
+            onClick={() => setIsSosOpen(true)}
+            className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-rose-500 text-white px-3.5 py-1.5 rounded-full text-xs font-black shadow-lg shadow-red-600/30 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-red-400/40 animate-pulse"
+          >
+            <span>🚨</span>
+            <span>Emergency SOS</span>
+          </button>
+        </div>
+
+      </header>
+
+      <div className="w-full px-3 sm:px-6 lg:px-8 pt-6 space-y-8">
+        
+        {/* ==================================================
+            1. TOP SITUATION SUMMARY (5 Compact Cards)
+           ================================================== */}
+        <section id="section-overview" className="w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+            
+            {/* Card 1: Active Disasters */}
+            <div className="bg-[#070d1e] border border-red-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-red-500/60 transition">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Disasters</span>
+                <div className="h-8 w-8 rounded-xl bg-red-500/20 border border-red-500/40 text-red-400 flex items-center justify-center font-bold">
+                  <ShieldAlert className="h-4 w-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-3xl font-black text-white font-mono tracking-tight">12</div>
+                <div className="text-[11px] font-bold text-red-400 mt-0.5 flex items-center gap-1">
+                  <span>+3 today</span> &bull; <span>High Risk</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Critical Alerts */}
+            <div className="bg-[#070d1e] border border-amber-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-amber-500/60 transition">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Critical Alerts</span>
+                <div className="h-8 w-8 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center font-bold">
+                  <AlertTriangle className="h-4 w-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-3xl font-black text-white font-mono tracking-tight">04</div>
+                <div className="text-[11px] font-bold text-amber-400 mt-0.5">
+                  Requires attention
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Affected Districts */}
+            <div className="bg-[#070d1e] border border-sky-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-sky-500/60 transition">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Affected Districts</span>
+                <div className="h-8 w-8 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-400 flex items-center justify-center font-bold">
+                  <MapPin className="h-4 w-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-3xl font-black text-white font-mono tracking-tight">18</div>
+                <div className="text-[11px] font-bold text-sky-400 mt-0.5">
+                  Currently affected
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: Rescue Teams */}
+            <div className="bg-[#070d1e] border border-emerald-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-emerald-500/60 transition">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Rescue Teams</span>
+                <div className="h-8 w-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center font-bold">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-3xl font-black text-white font-mono tracking-tight">27</div>
+                <div className="text-[11px] font-bold text-emerald-400 mt-0.5">
+                  Deployed (NDRF/SDRF)
+                </div>
+              </div>
+            </div>
+
+            {/* Card 5: Relief Vehicles */}
+            <div className="bg-[#070d1e] border border-indigo-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-indigo-500/60 transition">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Relief Vehicles</span>
+                <div className="h-8 w-8 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center font-bold">
+                  <Truck className="h-4 w-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-3xl font-black text-white font-mono tracking-tight">09</div>
+                <div className="text-[11px] font-bold text-indigo-400 mt-0.5">
+                  Active in field
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ==================================================
+            2 & 3. MAIN LIVE GIS COMMAND MAP & SELECTED AREA INTELLIGENCE PANEL
+           ================================================== */}
+        <section id="section-map" className="w-full">
+          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4">
+            
+            {/* Header & Layer Filters */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div>
+                <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                  <Radio className="h-5 w-5 text-red-500 animate-pulse" />
+                  <span>Live GIS Disaster Command Grid</span>
+                </h2>
+                <p className="text-xs text-slate-400 font-semibold">
+                  Real-time telemetry, Doppler radar overlays &amp; asset locations
+                </p>
+              </div>
+
+              {/* Map Layer Filter Pills */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-400 mr-1">Layer Filter:</span>
+                {["All", "Flood", "Landslide", "Rainfall", "Emergency Resources", "Vehicles"].map(filter => (
                   <button
-                    type="button"
-                    onClick={() => {
-                      setLatInput(dyM.lat.toString());
-                      setLonInput(dyM.lon.toString());
-                      setLocationName(`${dyM.name} (${dyM.state})`);
-                      fetchLandslideData(dyM.lat, dyM.lon);
-                      setDashboardSearch("");
-                    }}
-                    className="font-bold underline hover:text-amber-800 dark:hover:text-amber-200 transition"
+                    key={filter}
+                    onClick={() => setActiveLayerFilter(filter)}
+                    className={`px-3 py-1 rounded-full text-xs font-extrabold transition cursor-pointer ${
+                      activeLayerFilter === filter
+                        ? "bg-sky-500 text-slate-950 shadow-md shadow-sky-500/30"
+                        : "bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-700"
+                    }`}
                   >
-                    {dyM.name} ({dyM.state})
+                    {filter}
                   </button>
-                </div>
-              );
-            })()}
-
-            {/* Auto-Suggest Dropdown */}
-            {dashboardSearch.trim().length >= 2 && getSpellingSuggestions(dashboardSearch).length > 0 && (
-              <div className="absolute left-0 right-0 top-16 z-[2000] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 shadow-2xl max-h-48 overflow-y-auto">
-                <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase px-2 py-1 flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" />
-                  <span>Location Suggestions</span>
-                </div>
-                {getSpellingSuggestions(dashboardSearch).map((item, idx) => (
-                  <div
-                    key={`dash_sug_${idx}`}
-                    onClick={() => {
-                      setLatInput(item.lat.toString());
-                      setLonInput(item.lon.toString());
-                      setLocationName(`${item.name} (${item.state})`);
-                      fetchLandslideData(item.lat, item.lon);
-                      setDashboardSearch("");
-                    }}
-                    className="cursor-pointer rounded-lg p-2 text-xs hover:bg-amber-50 dark:hover:bg-amber-950/40 transition flex items-center justify-between"
-                  >
-                    <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-sky-500" />
-                      <span>{item.name} ({item.state})</span>
-                    </div>
-                    <span className="text-[9px] font-semibold bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 px-1.5 py-0.5 rounded">
-                      {item.type}
-                    </span>
-                  </div>
                 ))}
               </div>
-            )}
+            </div>
 
-            <select
-              value={selectedPresetId}
-              onChange={(e) => handleSelectPreset(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs lg:text-sm font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
-            >
-              {LOCATION_PRESETS.map((p) => (
-                <option key={p.id} value={p.id} className="bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 font-bold py-1">
-                  {p.name} ({p.state})
-                </option>
+            {/* Desktop Layout: GIS Map (8 cols) + Selected Area Intelligence Panel (4 cols) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              
+              {/* GIS MAP CONTAINER (8 Columns) */}
+              <div className="lg:col-span-8 relative min-h-[460px] lg:min-h-[520px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
+                
+                {/* Radar Sweep Animation Overlay */}
+                <div className="radar-sweep-line" />
+
+                {/* Leaflet Map Canvas */}
+                <div ref={mapContainerRef} className="w-full h-full min-h-[460px] lg:min-h-[520px] z-0" />
+
+                {/* Top Controls: Basemaps & Doppler Toggle */}
+                <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2">
+                  <div className="bg-slate-900/90 backdrop-blur p-1 rounded-xl border border-slate-700 flex items-center gap-1">
+                    <button
+                      onClick={() => switchBasemap("satellite")}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer ${
+                        mapTileType === "satellite" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      🛰️ Satellite
+                    </button>
+                    <button
+                      onClick={() => switchBasemap("dark")}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer ${
+                        mapTileType === "dark" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      🌑 Dark GIS
+                    </button>
+                    <button
+                      onClick={() => switchBasemap("topo")}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer ${
+                        mapTileType === "topo" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      ⛰️ Terrain
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => setShowRadarOverlay(!showRadarOverlay)}
+                    className={`px-2.5 py-1.5 rounded-xl text-[10px] font-bold border cursor-pointer ${
+                      showRadarOverlay
+                        ? "bg-emerald-600 text-white border-emerald-400"
+                        : "bg-slate-900/90 text-slate-400 border-slate-700"
+                    }`}
+                  >
+                    📡 Doppler Radar
+                  </button>
+                </div>
+
+                {/* Bottom Right Map Tools (+, -, Locate Me, Recenter) */}
+                <div className="absolute bottom-3 right-3 z-10 flex flex-col gap-1.5">
+                  <button
+                    onClick={() => mapInstanceRef.current?.zoomIn()}
+                    className="h-8 w-8 bg-slate-900/90 hover:bg-slate-800 text-white rounded-xl border border-slate-700 font-bold flex items-center justify-center shadow-lg cursor-pointer"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => mapInstanceRef.current?.zoomOut()}
+                    className="h-8 w-8 bg-slate-900/90 hover:bg-slate-800 text-white rounded-xl border border-slate-700 font-bold flex items-center justify-center shadow-lg cursor-pointer"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => focusLocationOnMap(selectedIncident.lat, selectedIncident.lon, 9)}
+                    className="h-8 w-8 bg-slate-900/90 hover:bg-slate-800 text-sky-400 rounded-xl border border-slate-700 font-bold flex items-center justify-center shadow-lg cursor-pointer"
+                    title="Focus Selected Area"
+                  >
+                    <Crosshair className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* SELECTED AREA INTELLIGENCE PANEL (4 Columns) */}
+              <div className="lg:col-span-4 bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
+                <div>
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Selected Area Intelligence</span>
+                      <h3 className="text-lg font-black text-white mt-0.5">{selectedIncident.location}</h3>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full font-black text-xs uppercase border ${
+                        selectedIncident.riskLevel === "CRITICAL" || selectedIncident.riskLevel === "HIGH"
+                          ? "bg-red-500/20 text-red-400 border-red-500/40 animate-pulse"
+                          : "bg-amber-500/20 text-amber-400 border-amber-500/40"
+                      }`}
+                    >
+                      Risk: {selectedIncident.riskLevel}
+                    </span>
+                  </div>
+
+                  {/* Telemetry Metrics List */}
+                  <div className="py-4 space-y-3 text-xs font-medium">
+                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                      <span className="text-slate-400 font-bold">Weather Condition:</span>
+                      <span className="font-extrabold text-white flex items-center gap-1">
+                        <CloudRain className="h-3.5 w-3.5 text-sky-400" />
+                        <span>Heavy Downpour (22°C)</span>
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                      <span className="text-slate-400 font-bold">Accumulated Rainfall:</span>
+                      <span className="font-extrabold text-sky-400 font-mono">{selectedIncident.rainfallMm} mm (24h)</span>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                      <span className="text-slate-400 font-bold">Road Accessibility:</span>
+                      <span className={`font-extrabold ${selectedIncident.roadStatus === "Clear" ? "text-emerald-400" : "text-amber-400"}`}>
+                        ⚠️ {selectedIncident.roadStatus}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                      <span className="text-slate-400 font-bold">Nearest Shelter:</span>
+                      <span className="font-extrabold text-purple-400">🏠 4.2 km (Mangan High School)</span>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                      <span className="text-slate-400 font-bold">Nearest Hospital:</span>
+                      <span className="font-extrabold text-emerald-400">🏥 7.1 km (STNM Referral)</span>
+                    </div>
+                  </div>
+
+                  {/* AI Advisory Box */}
+                  <div className="p-3.5 bg-sky-950/40 border border-sky-500/30 rounded-xl space-y-1">
+                    <div className="text-xs font-black text-sky-300 flex items-center gap-1">
+                      <Sparkles className="h-3.5 w-3.5 text-sky-400" />
+                      <span>AI Tactical Recommendation</span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                      "Avoid affected mountain corridors over next 48 hours. Evacuate toward designated safe zone shelters."
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const aiSection = document.getElementById("section-ai");
+                    aiSection?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-black py-3 rounded-xl shadow-lg transition cursor-pointer flex items-center justify-center gap-2 text-xs"
+                >
+                  <span>View Full AI Analysis</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        {/* ==================================================
+            4. AI DISASTER INTELLIGENCE (Image Upload + Demo Result & Map Connection)
+           ================================================== */}
+        <section id="section-ai" className="w-full">
+          <div className="bg-[#070d1e] border border-indigo-900/40 rounded-3xl p-6 shadow-2xl space-y-6">
+            
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase">
+                  AI VISION MODEL
+                </span>
+                <h2 className="text-xl font-black text-white">AI Disaster Intelligence</h2>
+              </div>
+              <p className="text-xs text-slate-400 font-semibold mt-1">
+                AI-powered analysis of disaster images, location and environmental data.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              
+              {/* UPLOAD BOX (5 Cols) */}
+              <div className="lg:col-span-5 border-2 border-dashed border-slate-700 hover:border-indigo-400 bg-slate-950 p-6 rounded-2xl text-center relative cursor-pointer transition group">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAiPhotoUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                />
+
+                {aiImagePreview ? (
+                  <div className="relative h-48 w-full rounded-xl overflow-hidden shadow-lg border border-slate-700">
+                    <img src={aiImagePreview} alt="Ground site" className="w-full h-full object-cover" />
+                    <span className="absolute bottom-2 right-2 bg-slate-900/90 text-white text-[10px] px-2 py-1 rounded font-bold border border-slate-700">
+                      Photo Loaded
+                    </span>
+                  </div>
+                ) : (
+                  <div className="space-y-3 py-4">
+                    <div className="h-12 w-12 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 mx-auto flex items-center justify-center group-hover:scale-110 transition">
+                      <Camera className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-white">Drag &amp; Drop Disaster Photo</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Click to browse ground images (JPG, PNG)</p>
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={runAiDemoAnalysis}
+                  disabled={isAiAnalyzing}
+                  className="mt-4 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer text-xs"
+                >
+                  {isAiAnalyzing ? (
+                    <>
+                      <Activity className="h-4 w-4 animate-spin text-white" />
+                      <span>Processing AI Vision Neural Net...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 text-indigo-200" />
+                      <span>[ Analyze with AI ]</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* DEMO RESULT CARD (7 Cols) */}
+              <div className="lg:col-span-7 bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div>
+                    <span className="text-xs font-black text-white">AI Analysis Result</span>
+                    <p className="text-[10px] text-slate-400">Multimodal Neural Net Landslide &amp; Flood Assessment</p>
+                  </div>
+                  <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-black px-2.5 py-1 rounded-full uppercase">
+                    DEMO ANALYSIS
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div className="bg-[#070d1e] p-3 rounded-xl border border-slate-800">
+                    <span className="text-slate-400 text-[10px] font-bold block">Disaster Type</span>
+                    <span className="font-extrabold text-white mt-0.5 block">{aiResult ? aiResult.disasterType : "Landslide"}</span>
+                  </div>
+                  <div className="bg-[#070d1e] p-3 rounded-xl border border-slate-800">
+                    <span className="text-slate-400 text-[10px] font-bold block">Severity</span>
+                    <span className="font-extrabold text-red-400 mt-0.5 block">{aiResult ? aiResult.severity : "CRITICAL 🔴"}</span>
+                  </div>
+                  <div className="bg-[#070d1e] p-3 rounded-xl border border-slate-800">
+                    <span className="text-slate-400 text-[10px] font-bold block">Road Status</span>
+                    <span className="font-extrabold text-amber-400 mt-0.5 block">{aiResult ? aiResult.roadStatus : "BLOCKED 🚫"}</span>
+                  </div>
+                  <div className="bg-[#070d1e] p-3 rounded-xl border border-slate-800">
+                    <span className="text-slate-400 text-[10px] font-bold block">Confidence</span>
+                    <span className="font-extrabold text-emerald-400 mt-0.5 block">{aiResult ? aiResult.confidence : "94%"}</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-indigo-950/40 border border-indigo-500/30 rounded-xl space-y-1">
+                  <div className="text-xs font-extrabold text-indigo-300">AI Recommendation</div>
+                  <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                    {aiResult ? aiResult.recommendation : '"Immediate route diversion via Jowai Bypass corridor required. Dispatched warning signal to Gangtok Emergency Command."'}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 pt-1">
+                  <button
+                    onClick={() => focusLocationOnMap(27.3389, 88.6065, 11)}
+                    className="flex-1 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black py-2.5 rounded-xl shadow cursor-pointer text-xs flex items-center justify-center gap-1.5"
+                  >
+                    <MapPin className="h-3.5 w-3.5" />
+                    <span>Show on Map</span>
+                  </button>
+                  <button
+                    onClick={() => alert("Full AI SITREP PDF report generated.")}
+                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl border border-slate-700 cursor-pointer text-xs"
+                  >
+                    View Full AI Report
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        {/* ==================================================
+            5. 72-HOUR RISK INTELLIGENCE FORECAST
+           ================================================== */}
+        <section id="section-risk" className="w-full">
+          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6">
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-black text-white">72-Hour Risk Forecast</h2>
+                <p className="text-xs text-slate-400 font-semibold">Predicted environmental risk trajectory across timeline</p>
+              </div>
+              <span className="bg-sky-500/20 text-sky-300 border border-sky-400/30 px-3 py-1 rounded-full text-xs font-extrabold">
+                IMD &bull; ISRO TELEMETRY
+              </span>
+            </div>
+
+            {/* Timeline Bars */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              {[
+                { time: "Now", rain: "82 mm", floodProb: "75%", landslideProb: "84%", riskClass: "border-red-500/50 bg-red-950/20" },
+                { time: "+12 Hours", rain: "105 mm", floodProb: "88%", landslideProb: "92%", riskClass: "border-red-500/50 bg-red-950/30" },
+                { time: "+24 Hours", rain: "120 mm", floodProb: "90%", landslideProb: "95%", riskClass: "border-red-500/60 bg-red-950/40" },
+                { time: "+48 Hours", rain: "65 mm", floodProb: "60%", landslideProb: "70%", riskClass: "border-amber-500/50 bg-amber-950/20" },
+                { time: "+72 Hours", rain: "30 mm", floodProb: "35%", landslideProb: "40%", riskClass: "border-emerald-500/50 bg-emerald-950/20" }
+              ].map((step, idx) => (
+                <div key={idx} className={`p-4 rounded-2xl border ${step.riskClass} text-center space-y-2`}>
+                  <div className="text-xs font-black text-white">{step.time}</div>
+                  <div className="text-sm font-black text-sky-400 font-mono">{step.rain}</div>
+                  <div className="text-[10px] font-bold text-slate-300">
+                    Flood: <strong className="text-red-400">{step.floodProb}</strong>
+                  </div>
+                  <div className="text-[10px] font-bold text-slate-300">
+                    Landslide: <strong className="text-amber-400">{step.landslideProb}</strong>
+                  </div>
+                </div>
               ))}
-            </select>
-          </div>
+            </div>
 
-          <div className="md:col-span-3">
-            <label className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block mb-1.5">
-              {t("landslide.latitude", "LATITUDE (°N)")}
-            </label>
-            <input
-              type="text"
-              value={latInput}
-              onChange={(e) => setLatInput(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs lg:text-sm font-mono font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
-            />
-          </div>
+            {/* Risk Category Summary Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+              <div className="bg-slate-950 p-4 rounded-2xl border border-red-900/40 flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-slate-400 block">Flood Risk</span>
+                  <span className="text-lg font-black text-red-400">HIGH 🔴</span>
+                </div>
+                <div className="h-8 w-8 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold">🌊</div>
+              </div>
 
-          <div className="md:col-span-3">
-            <label className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block mb-1.5">
-              {t("landslide.longitude", "LONGITUDE (°E)")}
-            </label>
-            <input
-              type="text"
-              value={lonInput}
-              onChange={(e) => setLonInput(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs lg:text-sm font-mono font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none"
-            />
-          </div>
+              <div className="bg-slate-950 p-4 rounded-2xl border border-orange-900/40 flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-slate-400 block">Landslide Risk</span>
+                  <span className="text-lg font-black text-orange-400">HIGH 🟠</span>
+                </div>
+                <div className="h-8 w-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold">⛰️</div>
+              </div>
 
-          <div className="md:col-span-1 flex items-end">
-            <button
-              onClick={handleInspectManualCoords}
-              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs lg:text-sm transition shadow cursor-pointer"
-            >
-              Inspect
-            </button>
-          </div>
-        </div>
+              <div className="bg-slate-950 p-4 rounded-2xl border border-amber-900/40 flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-slate-400 block">Earthquake Risk</span>
+                  <span className="text-lg font-black text-amber-400">MEDIUM 🟡</span>
+                </div>
+                <div className="h-8 w-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">📊</div>
+              </div>
 
-        {/* SELECTED LOCATION AUDIT BANNER */}
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 flex flex-wrap items-center justify-between gap-3 text-xs lg:text-sm font-mono">
-          <div className="flex items-center gap-2.5">
-            <span className="text-slate-500 dark:text-slate-400 font-sans font-bold">{t("landslide.selected", "Selected:")}</span>
-            <b className="text-slate-900 dark:text-white font-sans text-sm lg:text-base font-black">{locationName}</b>
-            <span className="text-slate-400 dark:text-slate-500">|</span>
-            <span className="text-sky-600 dark:text-sky-400 font-bold">{latInput}° N, {lonInput}° E</span>
-            <span className="text-slate-400 dark:text-slate-500">|</span>
-            <span className="text-slate-700 dark:text-slate-300 font-bold">{elevation}</span>
-          </div>
+              <div className="bg-slate-950 p-4 rounded-2xl border border-sky-900/40 flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-slate-400 block">Heavy Rainfall</span>
+                  <span className="text-lg font-black text-sky-400">HIGH 🔵</span>
+                </div>
+                <div className="h-8 w-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">🌧️</div>
+              </div>
+            </div>
 
-          <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 text-xs font-bold">
-            {dataAvailable ? (
-              <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-black flex items-center gap-1">
-                {t("landslide.liveDataActive", "🟢 LIVE DATA ACTIVE")}
+          </div>
+        </section>
+
+        {/* ==================================================
+            6. CRITICAL ALERTS SECTION
+           ================================================== */}
+        <section id="section-alerts" className="w-full">
+          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
+            
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-black text-white flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-amber-400" />
+                <span>Critical Alerts</span>
+              </h2>
+              <span className="text-xs font-bold text-slate-400">Real-time Emergency Feed</span>
+            </div>
+
+            <div className="space-y-3">
+              {[
+                { id: "A-1", severity: "🔴", title: "NH-10 Road Blocked", desc: "Severe landslide reported near Km 142. Highway traffic halted.", location: "North Sikkim", time: "2 hours ago", lat: 27.3389, lon: 88.6065 },
+                { id: "A-2", severity: "🟠", title: "Flood Risk Increased", desc: "Teesta river basin water level breached caution line.", location: "Chungthang Sector", time: "35 minutes ago", lat: 27.58, lon: 88.62 },
+                { id: "A-3", severity: "🟡", title: "Heavy Rainfall Warning", desc: "Downpour expected over next 12 hours across East Khasi Hills.", location: "Sohra, Meghalaya", time: "1 hour ago", lat: 25.27, lon: 91.73 }
+              ].map(alert => (
+                <div key={alert.id} className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl">{alert.severity}</span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-black text-white">{alert.title}</h4>
+                        <span className="text-[10px] text-slate-400">&bull; {alert.location}</span>
+                        <span className="text-[10px] text-slate-500 font-mono">({alert.time})</span>
+                      </div>
+                      <p className="text-xs text-slate-300 mt-0.5 font-medium">{alert.desc}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => focusLocationOnMap(alert.lat, alert.lon, 11)}
+                      className="bg-sky-500/20 text-sky-300 border border-sky-500/40 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-sky-500/30 cursor-pointer"
+                    >
+                      View on Map
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </section>
+
+        {/* ==================================================
+            7. EMERGENCY RESOURCES GRID
+           ================================================== */}
+        <section id="section-resources" className="w-full">
+          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
+            
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-black text-white flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-emerald-400" />
+                <span>Emergency Resources</span>
+              </h2>
+              <span className="text-xs font-bold text-slate-400">Nearest Assets Grid</span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+              {[
+                { icon: "🏥", name: "Hospitals", count: "24", status: "24 Nearby", layer: "Emergency Resources", lat: 27.32, lon: 88.61 },
+                { icon: "🏠", name: "Shelters", count: "18", status: "18 Active", layer: "Emergency Resources", lat: 27.50, lon: 88.53 },
+                { icon: "🚑", name: "Ambulances", count: "11", status: "Available", layer: "Vehicles", lat: 27.33, lon: 88.60 },
+                { icon: "🚒", name: "Rescue Teams", count: "27", status: "Deployed", layer: "All", lat: 27.58, lon: 88.62 },
+                { icon: "🍱", name: "Relief Centers", count: "13", status: "Active", layer: "Emergency Resources", lat: 26.58, lon: 93.17 },
+                { icon: "⛽", name: "Fuel Stations", count: "09", status: "Available", layer: "Emergency Resources", lat: 25.57, lon: 91.89 }
+              ].map((res, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => {
+                    setActiveLayerFilter(res.layer);
+                    focusLocationOnMap(res.lat, res.lon, 10);
+                  }}
+                  className="bg-slate-950 p-4 rounded-2xl border border-slate-800 hover:border-emerald-500/50 transition cursor-pointer flex flex-col justify-between"
+                >
+                  <div className="text-2xl mb-1">{res.icon}</div>
+                  <div className="text-xl font-black text-white font-mono">{res.count}</div>
+                  <div className="text-xs font-bold text-slate-300 mt-0.5">{res.name}</div>
+                  <span className="text-[10px] text-emerald-400 font-bold mt-1">{res.status}</span>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </section>
+
+        {/* ==================================================
+            8. RELIEF & LOGISTICS OPERATIONS
+           ================================================== */}
+        <section className="w-full">
+          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6">
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-black text-white flex items-center gap-2">
+                  <Truck className="h-5 w-5 text-indigo-400" />
+                  <span>Relief Operations &amp; Fleet Logistics</span>
+                </h2>
+                <p className="text-xs text-slate-400 font-semibold">Active supply convoys and dispatch routes</p>
+              </div>
+              <div className="flex items-center gap-4 text-xs font-extrabold text-slate-300">
+                <span>Vehicles: <strong className="text-indigo-400 font-mono">09</strong></span>
+                <span>Deliveries: <strong className="text-emerald-400 font-mono">14</strong></span>
+              </div>
+            </div>
+
+            {/* Logistics Vehicle Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {vehicles.map(v => (
+                <div key={v.id} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-black text-white">{v.name}</h4>
+                      <span className="text-[10px] text-slate-400 font-semibold">{v.type}</span>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${
+                      v.risk === "WARNING" ? "bg-amber-500/20 text-amber-400 border border-amber-500/40" : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                    }`}>
+                      Route: {v.risk}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs font-medium bg-[#070d1e] p-2.5 rounded-xl border border-slate-800">
+                    <div><span className="text-slate-400">Corridor:</span> <strong className="text-white block">{v.route}</strong></div>
+                    <div><span className="text-slate-400">ETA:</span> <strong className="text-sky-400 block font-mono">{v.eta}</strong></div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <span className="text-slate-400">Cargo: <strong className="text-slate-200">{v.cargo}</strong></span>
+                    <button
+                      onClick={() => focusLocationOnMap(27.42, 88.58, 11)}
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl font-extrabold cursor-pointer text-xs"
+                    >
+                      Track Vehicle →
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </section>
+
+        {/* ==================================================
+            10. TRUSTED DATA SOURCES STATUS
+           ================================================== */}
+        <section className="w-full">
+          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 className="text-xs font-black text-white">Trusted Data Sources Grid</h4>
+              <p className="text-[11px] text-slate-400">Verified feeds from satellite &amp; meteorological networks</p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-300">
+              <span className="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800">ISRO / Bhuvan</span>
+              <span className="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800">IMD Weather</span>
+              <span className="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800">Govt Reports</span>
+              <span className="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800">OpenStreetMap</span>
+              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded font-mono font-black">
+                DEMO / SIMULATED DATA
               </span>
-            ) : (
-              <span className="px-3 py-1 rounded-full bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 font-black flex items-center gap-1">
-                {t("landslide.dataUnavailable", "🔴 DATA UNAVAILABLE")}
-              </span>
-            )}
-            <span>{t("landslide.lastUpdated", "Last Updated:")} <b className="text-slate-800 dark:text-slate-200">{lastUpdated || "Just now"}</b></span>
+            </div>
           </div>
-        </div>
+        </section>
+
       </div>
 
-      {/* 🚨 ACTIVE INCIDENTS & WORKFLOW COMMAND GRID */}
-      <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-r from-slate-900 via-rose-950/40 to-slate-900 p-6 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
-          <div className="flex items-center gap-2">
-            <Radio className="h-5 w-5 text-rose-500 animate-pulse" />
-            <h2 className="text-base font-black text-white uppercase tracking-wider">
-              ACTIVE DISASTER INCIDENTS ({incidentStore.getIncidents().length})
-            </h2>
-            <span className="rounded bg-rose-500/20 text-rose-300 text-[10px] font-black px-2 py-0.5 border border-rose-500/40">
-              INCIDENT-CENTRIC DISPATCH GRID
-            </span>
-          </div>
+      {/* ==================================================
+          11. PERSISTENT EMERGENCY ACTION BAR
+         ================================================== */}
+      <div className="fixed bottom-16 lg:bottom-4 left-1/2 -translate-x-1/2 z-[90] bg-[#070d1e]/90 backdrop-blur-md border border-slate-700/80 rounded-full px-4 py-2 shadow-2xl flex items-center gap-2">
+        <span className="text-xs font-black text-white hidden sm:block pl-2">Need Emergency Help?</span>
+        
+        <button
+          onClick={() => setIsSosOpen(true)}
+          className="bg-red-600 hover:bg-red-500 text-white px-3.5 py-1.5 rounded-full text-xs font-black shadow flex items-center gap-1 cursor-pointer"
+        >
+          <span>🚨</span>
+          <span>Emergency SOS</span>
+        </button>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 font-mono">Bound Incident:</span>
-            <span className="rounded bg-amber-500/20 text-amber-300 text-xs font-black px-2.5 py-1 border border-amber-500/40 font-mono">
-              {incidentStore.getActiveIncidentId()}
-            </span>
-          </div>
-        </div>
+        <button
+          onClick={() => {
+            setActiveLayerFilter("Emergency Resources");
+            const mapSection = document.getElementById("section-map");
+            mapSection?.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="bg-purple-600/80 hover:bg-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow cursor-pointer hidden sm:flex items-center gap-1"
+        >
+          <span>🏠</span>
+          <span>Find Shelter</span>
+        </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {incidentStore.getIncidents().map(inc => (
-            <div
-              key={inc.id}
-              onClick={() => incidentStore.setActiveIncidentId(inc.id)}
-              className={`cursor-pointer rounded-xl border p-4 space-y-3 transition-all ${
-                incidentStore.getActiveIncidentId() === inc.id
-                  ? 'border-rose-500 bg-rose-500/10 shadow-xl ring-2 ring-rose-500/30'
-                  : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+        <button
+          onClick={() => {
+            setActiveLayerFilter("Emergency Resources");
+            const mapSection = document.getElementById("section-map");
+            mapSection?.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="bg-blue-600/80 hover:bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow cursor-pointer hidden sm:flex items-center gap-1"
+        >
+          <span>🏥</span>
+          <span>Find Hospital</span>
+        </button>
+      </div>
+
+      {/* ==================================================
+          12. MOBILE FIXED BOTTOM NAVIGATION (Dashboard Only)
+         ================================================== */}
+      <div className="xl:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#070d1e] border-t border-slate-800 px-2 py-2 flex items-center justify-around shadow-2xl">
+        {[
+          { id: "home", label: "Home", icon: Home, action: () => onNavigateModule ? onNavigateModule("home") : (window.location.href = "/") },
+          { id: "map", label: "Map", icon: MapPin, action: () => focusLocationOnMap(27.3389, 88.6065, 8) },
+          { id: "dashboard", label: "Dashboard", icon: Gauge, active: true, action: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
+          { id: "risk", label: "Risk", icon: AlertTriangle, action: () => document.getElementById("section-risk")?.scrollIntoView({ behavior: "smooth" }) },
+          { id: "more", label: "More", icon: Menu, action: () => document.getElementById("section-ai")?.scrollIntoView({ behavior: "smooth" }) }
+        ].map(item => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              onClick={item.action}
+              className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition cursor-pointer ${
+                item.active ? "text-sky-400 font-extrabold" : "text-slate-400 hover:text-white"
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-black text-amber-400">{inc.id}</span>
-                <span
-                  className={`rounded px-2 py-0.5 text-[10px] font-black border ${
-                    inc.severity === 'CRITICAL'
-                      ? 'bg-rose-500/20 text-rose-400 border-rose-500/40 animate-pulse'
-                      : inc.severity === 'HIGH'
-                      ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
-                      : 'bg-sky-500/20 text-sky-400 border-sky-500/30'
-                  }`}
-                >
-                  {inc.severity} SEVERITY
-                </span>
-              </div>
-
-              <div>
-                <h3 className="text-xs font-bold text-white line-clamp-1">{inc.title}</h3>
-                <div className="text-[11px] text-slate-400 font-mono mt-0.5">{inc.locationName}</div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-400">
-                <div>Pop: <b className="text-slate-200">{inc.affectedPopulation.toLocaleString()}</b></div>
-                <div>SOS Calls: <b className="text-rose-400">{inc.activeSosCount} Active</b></div>
-              </div>
-
-              <div className="flex justify-between items-center pt-2 border-t border-slate-800 text-[10px]">
-                <span className="text-sky-400 font-mono">{inc.dataStatus}</span>
-                <span className="text-slate-400 font-bold hover:text-white flex items-center gap-1">
-                  Inspect Incident <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+              <Icon className="h-4 w-4" />
+              <span className="text-[10px] font-bold mt-0.5">{item.label}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* 🏔️ 2. LANDSLIDE RISK SCORE HERO CARDS */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Hero Risk Score Gauge Card */}
-        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col justify-between space-y-4 relative overflow-hidden transition-colors duration-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs lg:text-sm font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-              {t("landslide.riskScore", "🏔️ LANDSLIDE RISK SCORE")}
-            </span>
-            <span className={`px-3.5 py-1 rounded-full text-xs lg:text-sm font-black border uppercase ${currentScoreObj.bgClass}`}>
-              {currentScoreObj.level}
-            </span>
-          </div>
-
-          <div className="flex items-baseline gap-3 my-2">
-            <span className={`text-5xl lg:text-6xl font-black font-mono tracking-tight ${currentScoreObj.colorClass}`}>
-              {currentScoreObj.score}
-            </span>
-            <span className="text-2xl font-bold text-slate-500">/ 100</span>
-          </div>
-
-          {/* Risk Confidence Indicator */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 space-y-1.5">
-            <div className="flex items-center justify-between text-xs lg:text-sm">
-              <span className="text-slate-600 dark:text-slate-400 font-bold">{t("landslide.confidence", "Risk Assessment Confidence:")}</span>
-              <span className={`font-black text-xs lg:text-sm ${dataAvailable ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
-                {dataAvailable ? t("landslide.highConfidence", "HIGH CONFIDENCE") : t("landslide.mediumConfidence", "MEDIUM (PARTIAL DATA)")}
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-              {t("landslide.confidenceNote", "Score derived from Open-Meteo precipitation telemetry, DEM slope gradient & ISRO Bhuvan soil saturation.")}
-            </p>
-          </div>
-
-          {/* Trend Banner */}
-          <div className="flex items-center justify-between text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800 pt-3.5">
-            <span className="text-slate-600 dark:text-slate-400 font-medium">{t("landslide.trend", "72-Hour Risk Trend:")}</span>
-            <span className="font-extrabold flex items-center gap-1.5 text-amber-600 dark:text-orange-400">
-              {trend === "INCREASING" && <TrendingUp className="h-4 w-4 text-amber-600 dark:text-orange-400" />}
-              {trend === "DECREASING" && <TrendingDown className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
-              {trend === "STABLE" && <Minus className="h-4 w-4 text-sky-600 dark:text-sky-400" />}
-              <span>{trend === "INCREASING" ? t("landslide.increasingRisk", "INCREASING RISK") : trend === "DECREASING" ? t("landslide.decreasingRisk", "DECREASING RISK") : t("landslide.stableRisk", "STABLE RISK")}</span>
-            </span>
-          </div>
-        </div>
-
-        {/* Right 4 Factor Metric Cards */}
-        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Card 1: 72h Rain */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-              <span>{t("landslide.rain72h", "RAIN (72h)")}</span>
-              <CloudRain className="h-4 w-4 text-sky-500 dark:text-sky-400" />
-            </div>
-            <div>
-              <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">{rain72h} mm</div>
-              <span className="text-xs text-sky-600 dark:text-sky-400 font-bold block mt-1">{rain24h} mm (Last 24h)</span>
-            </div>
-            <div className="text-xs text-slate-500 pt-2 border-t border-slate-200 dark:border-slate-800/80 font-medium">
-              Source: <b className="text-slate-700 dark:text-slate-300">Open-Meteo IMD Grid</b>
-            </div>
-          </div>
-
-          {/* Card 2: Terrain Slope */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-              <span>{t("landslide.terrainSlope", "TERRAIN SLOPE")}</span>
-              <Compass className="h-4 w-4 text-amber-500 dark:text-amber-400" />
-            </div>
-            <div>
-              <div className="text-2xl lg:text-3xl font-black text-amber-600 dark:text-amber-400">{slopeAngle}° Gradient</div>
-              <span className="text-xs text-amber-700 dark:text-amber-300 font-bold block mt-1">{t("landslide.highIncline", "High Mountain Incline")}</span>
-            </div>
-            <div className="text-xs text-slate-500 pt-2 border-t border-slate-200 dark:border-slate-800/80 font-medium">
-              Source: <b className="text-slate-700 dark:text-slate-300">SRTM 30m DEM</b>
-            </div>
-          </div>
-
-          {/* Card 3: Soil Saturation */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-              <span>{t("landslide.soilSaturation", "SOIL SATURATION")}</span>
-              <Activity className="h-4 w-4 text-rose-500 dark:text-rose-400" />
-            </div>
-            <div>
-              <div className="text-2xl lg:text-3xl font-black text-rose-600 dark:text-rose-400">{soilSatPercent}%</div>
-              <span className="text-xs text-rose-700 dark:text-rose-300 font-bold block mt-1">{t("landslide.poreWater", "Pore Water Saturation")}</span>
-            </div>
-            <div className="text-xs text-slate-500 pt-2 border-t border-slate-200 dark:border-slate-800/80 font-medium">
-              Source: <b className="text-slate-700 dark:text-slate-300">ISRO Bhuvan Hydro Grid</b>
-            </div>
-          </div>
-
-          {/* Card 4: Geological Fault */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-              <span>{t("landslide.faultProximity", "FAULT PROXIMITY")}</span>
-              <Layers className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{faultDistanceKm} km</div>
-              <span className="text-[10px] text-indigo-700 dark:text-indigo-300 font-semibold">{t("landslide.activeFault", "Active Tectonic Fault")}</span>
-            </div>
-            <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-200 dark:border-slate-800/80">
-              Source: <b className="text-slate-700 dark:text-slate-300">GSI Tectonic Grid</b>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 📊 3. TRANSPARENT FACTOR CONTRIBUTION BREAKDOWN */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
-            {t("landslide.breakdownTitle", "📊 RISK FACTOR CONTRIBUTION BREAKDOWN")}
-          </h2>
-          <span className="text-xs font-mono text-slate-600 dark:text-slate-400 font-bold">
-            Total Score: <b className="text-slate-900 dark:text-white">{currentScoreObj.score} / 100</b>
-          </span>
-        </div>
-
-        <div className="space-y-3">
-          {/* Factor 1: Rainfall */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-800 dark:text-slate-300 font-bold flex items-center gap-1.5">
-                🌧️ 72-Hour Cumulative Rainfall Intensity
-              </span>
-              <span className="font-mono font-bold text-sky-600 dark:text-sky-400">{currentScoreObj.breakdown.rainPts} / 30 pts</span>
-            </div>
-            <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-              <div className="h-full bg-sky-500 rounded-full" style={{ width: `${(currentScoreObj.breakdown.rainPts / 30) * 100}%` }}></div>
-            </div>
-          </div>
-
-          {/* Factor 2: Slope */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-800 dark:text-slate-300 font-bold flex items-center gap-1.5">
-                ⛰️ Mountain Terrain Slope Gradient ({slopeAngle}°)
-              </span>
-              <span className="font-mono font-bold text-amber-600 dark:text-amber-400">{currentScoreObj.breakdown.slopePts} / 25 pts</span>
-            </div>
-            <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-              <div className="h-full bg-amber-500 rounded-full" style={{ width: `${(currentScoreObj.breakdown.slopePts / 25) * 100}%` }}></div>
-            </div>
-          </div>
-
-          {/* Factor 3: Soil */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-800 dark:text-slate-300 font-bold flex items-center gap-1.5">
-                🌱 Geotechnical Soil Saturation & Liquefaction Index
-              </span>
-              <span className="font-mono font-bold text-rose-600 dark:text-rose-400">{currentScoreObj.breakdown.soilPts} / 20 pts</span>
-            </div>
-            <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-              <div className="h-full bg-rose-500 rounded-full" style={{ width: `${(currentScoreObj.breakdown.soilPts / 20) * 100}%` }}></div>
-            </div>
-          </div>
-
-          {/* Factor 4: Fault */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-800 dark:text-slate-300 font-bold flex items-center gap-1.5">
-                📍 Fault Line & Seismicity Proximity ({faultDistanceKm} km)
-              </span>
-              <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">{currentScoreObj.breakdown.faultPts} / 10 pts</span>
-            </div>
-            <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-              <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${(currentScoreObj.breakdown.faultPts / 10) * 100}%` }}></div>
-            </div>
-          </div>
-
-          {/* Factor 5: Weather */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-800 dark:text-slate-300 font-bold flex items-center gap-1.5">
-                🌦️ Storm Cell Severity & Surface Runoff Speed
-              </span>
-              <span className="font-mono font-bold text-purple-600 dark:text-purple-400">{currentScoreObj.breakdown.weatherPts} / 15 pts</span>
-            </div>
-            <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-              <div className="h-full bg-purple-500 rounded-full" style={{ width: `${(currentScoreObj.breakdown.weatherPts / 15) * 100}%` }}></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 🔎 4. WHY IS THE RISK HIGH? (EXPLANATION BOX) */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-2 transition-colors duration-300">
-        <h2 className="text-xs font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider flex items-center gap-2">
-          <Info className="h-4 w-4" />
-          <span>{t("landslide.whyRiskTitle", "🔎 WHY IS THE LANDSLIDE RISK")} {currentScoreObj.level}?</span>
-        </h2>
-        <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-          The landslide risk score at <b className="text-slate-900 dark:text-white">{locationName}</b> is assessed at{" "}
-          <b className="text-amber-600 dark:text-amber-400">{currentScoreObj.score} / 100 ({currentScoreObj.level})</b> due to heavy cumulative precipitation (
-          <b className="text-sky-600 dark:text-sky-400">{rain72h} mm / 72h</b>) falling over steep terrain (<b className="text-amber-600 dark:text-amber-300">{slopeAngle}° gradient</b>).
-          Geotechnical soil pore water saturation is elevated at <b className="text-rose-600 dark:text-rose-400">{soilSatPercent}%</b>, reducing shear strength along hill cuts. Proximity to a tectonic fault line ({faultDistanceKm} km) contributes regional geological context.
-        </p>
-      </div>
-
-      {/* ⏱️ 5. 72-HOUR OUTLOOK & INTERACTIVE GIS MAP */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left 72h Forecast Outlook Table */}
-        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-            <Activity className="h-4 w-4 text-sky-500 dark:text-sky-400" />
-            <span>{t("landslide.outlook72hTitle", "⏱️ 72-HOUR LANDSLIDE RISK OUTLOOK")}</span>
-          </h2>
-
-          <div className="space-y-2.5">
-            {forecast72h.map((f, idx) => (
-              <div key={idx} className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 text-xs">
-                <div>
-                  <div className="font-bold text-slate-900 dark:text-white">{f.time}</div>
-                  <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Est. Rain: {f.rain} mm</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-mono font-bold text-sky-600 dark:text-sky-400 text-sm">{f.riskScore} / 100</div>
-                  <div className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase">{f.level}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Embedded Interactive Map */}
-        <div className="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-3 transition-colors duration-300">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-sky-500 dark:text-sky-400" />
-              <span>{t("landslide.gisRiskMapTitle", "🗺️ GIS SECTOR RISK MAP VISUALIZATION")}</span>
-            </h2>
-            <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">100% Free / Sovereign</span>
-          </div>
-
-          <MapComponent center={[parseFloat(latInput) || 25.5788, parseFloat(lonInput) || 91.8933]} />
-        </div>
-      </div>
-
-      {/* 🛡️ 6. RECOMMENDED ACTIONS & WARNING SIGNS */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Recommended Actions */}
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-3 transition-colors duration-300">
-          <h2 className="text-xs font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4" />
-            <span>{t("landslide.recommendedActionsTitle", "🛡️ RECOMMENDED ACTION ADVISORY")}</span>
-          </h2>
-          <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-              <span>{t("landslide.action1", "Avoid unnecessary transit along steep mountain slopes during heavy rain spells.")}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-              <span>{t("landslide.action2", "Monitor regional BRO and PWD road clearance advisories before launching convoys.")}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-              <span>{t("landslide.action3", "Ensure emergency survival rations, trauma kits, and satellite radios are pre-staged.")}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-              <span>{t("landslide.action4", "Follow official local disaster authority (NDRF / SDRF) advisory alerts continuously.")}</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* Right Landslide Warning Signs */}
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-3 transition-colors duration-300">
-          <h2 className="text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4" />
-            <span>{t("landslide.warningSignsTitle", "⚠️ PHYSICAL LANDSLIDE WARNING SIGNS")}</span>
-          </h2>
-          <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
-            <li className="flex items-start gap-2">
-              <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
-              <span>{t("landslide.sign1", "New ground cracks or road asphalt displacement along hill edges.")}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
-              <span>{t("landslide.sign2", "Tilting trees, utility poles, or retaining wall bulges.")}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
-              <span>{t("landslide.sign3", "Sudden muddy water runoff or brown stream discharge from slopes.")}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
-              <span>{t("landslide.sign4", "Unusual rumbling sounds or small falling rock debris.")}</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      {/* 📚 7. DATA SOURCES & TRANSPARENCY AUDIT */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl dark:shadow-2xl space-y-3 transition-colors duration-300">
-        <h2 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
-          {t("landslide.dataSourcesTitle", "📚 AUTHORITATIVE DATA SOURCES & TRANSPARENCY AUDIT")}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-          <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-1">
-            <div className="font-bold text-sky-600 dark:text-sky-400">{t("landslide.source1Title", "🌧️ Open-Meteo IMD Grid")}</div>
-            <div className="text-[10px] text-slate-500 dark:text-slate-400">{t("landslide.source1Sub", "Live Satellite Precipitation Telemetry")}</div>
-          </div>
-          <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-1">
-            <div className="font-bold text-amber-600 dark:text-amber-400">{t("landslide.source2Title", "⛰️ SRTM 30m DEM")}</div>
-            <div className="text-[10px] text-slate-500 dark:text-slate-400">{t("landslide.source2Sub", "High-Resolution Digital Elevation Slope Model")}</div>
-          </div>
-          <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-1">
-            <div className="font-bold text-rose-600 dark:text-rose-400">{t("landslide.source3Title", "🌱 ISRO Bhuvan Hydro")}</div>
-            <div className="text-[10px] text-slate-500 dark:text-slate-400">{t("landslide.source3Sub", "Geotechnical Soil Pore Water Saturation")}</div>
-          </div>
-          <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-1">
-            <div className="font-bold text-indigo-600 dark:text-indigo-400">{t("landslide.source4Title", "📍 GSI Tectonic Grid")}</div>
-            <div className="text-[10px] text-slate-500 dark:text-slate-400">{t("landslide.source4Sub", "Geological Fault & Seismicity Database")}</div>
-          </div>
-        </div>
-      </div>
+      {/* Emergency SOS Modal Component */}
+      <EmergencySOSModal isOpen={isSosOpen} onClose={() => setIsSosOpen(false)} />
 
     </div>
   );

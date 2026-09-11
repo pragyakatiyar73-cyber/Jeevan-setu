@@ -38,25 +38,53 @@ html, body, #root {
   width: 100%;
   height: 100%;
   border-radius: 0.75rem;
-  background-color: #e2e8f0;
+  background-color: #040814;
   transition: background-color 0.25s ease;
 }
 
 .dark .leaflet-container {
-  background-color: #0f172a;
+  background-color: #040814;
 }
 
 /* Leaflet Popup Light/Dark Adjustments */
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-  background: #ffffff !important;
-  color: #0f172a !important;
-  border-radius: 0.5rem;
+  background: #0b1329 !important;
+  color: #f8fafc !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8) !important;
 }
 
-.dark .leaflet-popup-content-wrapper, .dark .leaflet-popup-tip {
-  background: #0f172a !important;
-  color: #f8fafc !important;
-  border: 1px solid #334155;
+.leaflet-popup-content {
+  margin: 0 !important;
+}
+
+/* Radar Scanning Line Overlay Animation */
+@keyframes radarSweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0.1;
+  }
+}
+
+.radar-sweep-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0) 0%, rgba(6, 182, 212, 0.12) 80%, rgba(6, 182, 212, 0.35) 100%);
+  border-bottom: 1.5px solid rgba(56, 189, 248, 0.7);
+  pointer-events: none;
+  animation: radarSweep 5s linear infinite;
+  z-index: 5;
 }
 
 /* Custom Scrollbars */

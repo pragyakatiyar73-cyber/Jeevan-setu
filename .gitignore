@@ -24,3 +24,9 @@ dist-isolation
 *.njsproj
 *.sln
 *.sw?
+
+# Media & Demo Recordings
+*.mp4
+*.mp3
+*.webm
+
