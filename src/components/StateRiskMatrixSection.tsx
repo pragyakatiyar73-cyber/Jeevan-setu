@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '../i18n';
 
 export interface StateRiskData {
   name: string;
@@ -101,29 +102,29 @@ export const STATE_RISK_DATA: StateRiskData[] = [
     detail: "Connaught Place & ITO waterlogging • Green Hospital Emergency Corridors active",
     highway: "Ring Road & Delhi Expressway Grid",
     focusCoord: [28.6139, 77.2090],
-    zoom: 11
+    zoom: 9
   },
   {
     name: "Chandigarh",
     flag: "🏙️",
-    severity: "yellow",
+    severity: "orange",
     hazard: "Smart City Sector Underpass Waterlogging & Fog",
     detail: "PGI / GMCH emergency route priority • Regulated municipal drainage pumps",
     highway: "Chandigarh-Mohali Arterial Grid",
     focusCoord: [30.7333, 76.7794],
-    zoom: 11.5
+    zoom: 9.5
   },
 
   // 🌿 NORTH-EAST REGION & BIHAR (PRESERVED & INTEGRATED)
   {
     name: "Bihar",
-    flag: "🚨",
+    flag: "🌊",
     severity: "red",
     hazard: "Nepal Influx & Barrage Flood Surge",
     detail: "Valmikinagar (4.5L+ Cusecs) & Birpur (5.2L+ Cusecs) • 7 Red & 11 Orange Districts",
     highway: "NH-27 / NH-22 East-West Corridor",
-    focusCoord: [26.40, 85.90],
-    zoom: 8
+    focusCoord: [25.5941, 85.1376],
+    zoom: 7.5
   },
   {
     name: "Sikkim",
@@ -132,8 +133,8 @@ export const STATE_RISK_DATA: StateRiskData[] = [
     hazard: "South Lhonak GLOF & NH-10 Teesta Washout",
     detail: "Moraine displacement 14.6 mm/day • Chungthang Dam spillway surge",
     highway: "NH-10 Siliguri-Gangtok (Diverting via Lava)",
-    focusCoord: [27.55, 88.55],
-    zoom: 8.5
+    focusCoord: [27.3389, 88.6065],
+    zoom: 8
   },
   {
     name: "Assam",
@@ -142,8 +143,8 @@ export const STATE_RISK_DATA: StateRiskData[] = [
     hazard: "Majuli Island Erosion & Silchar Barak Surge",
     detail: "Brahmaputra bank failure • Dima Hasao rail mudslips • Kaziranga backflow",
     highway: "NH-37 / NH-27 Brahmaputra Artery",
-    focusCoord: [26.40, 93.00],
-    zoom: 7.8
+    focusCoord: [26.1445, 91.7362],
+    zoom: 7.5
   },
   {
     name: "Meghalaya",
@@ -212,6 +213,7 @@ interface StateRiskMatrixSectionProps {
 }
 
 export default function StateRiskMatrixSection({ onFocusState }: StateRiskMatrixSectionProps) {
+  const { t } = useTranslation();
   const [regionFilter, setRegionFilter] = React.useState<'ALL' | 'NORTH' | 'NER'>('ALL');
 
   const filteredData = STATE_RISK_DATA.filter(st => {
@@ -234,10 +236,10 @@ export default function StateRiskMatrixSection({ onFocusState }: StateRiskMatrix
           </div>
           <div>
             <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-              <span>National & North India State Risk Matrix</span>
+              <span>{t('staterisk.title', 'National & North India State Risk Matrix')}</span>
               <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold">Live Grid</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Real-time disaster vulnerability matrix across 19 States & UTs in North India, North-East & Bihar</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('staterisk.sub', 'Real-time disaster vulnerability matrix across 19 States & UTs in North India, North-East & Bihar')}</p>
           </div>
         </div>
         
@@ -247,19 +249,19 @@ export default function StateRiskMatrixSection({ onFocusState }: StateRiskMatrix
             onClick={() => setRegionFilter('ALL')}
             className={`px-3 py-1 text-xs font-bold rounded-lg transition ${regionFilter === 'ALL' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
           >
-            🇮🇳 All 19 Regions
+            {t('staterisk.filterAll', '🇮🇳 All 19 Regions')}
           </button>
           <button
             onClick={() => setRegionFilter('NORTH')}
             className={`px-3 py-1 text-xs font-bold rounded-lg transition ${regionFilter === 'NORTH' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
           >
-            🏔️ North India (10 UT/States)
+            {t('staterisk.filterNorth', '🏔️ North India (10 UT/States)')}
           </button>
           <button
             onClick={() => setRegionFilter('NER')}
             className={`px-3 py-1 text-xs font-bold rounded-lg transition ${regionFilter === 'NER' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
           >
-            🌿 North East & Bihar (9 States)
+            {t('staterisk.filterNER', '🌿 North East & Bihar (9 States)')}
           </button>
         </div>
       </div>
@@ -267,23 +269,23 @@ export default function StateRiskMatrixSection({ onFocusState }: StateRiskMatrix
       {/* Live High-Level Metric Tiles */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 dark:bg-rose-500/10 p-3.5 flex flex-col justify-between shadow-sm">
-          <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 uppercase tracking-wider">🚨 Red Alert States</span>
-          <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">11 States</span>
+          <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 uppercase tracking-wider">{t('staterisk.redAlertStates', '🚨 Red Alert States')}</span>
+          <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">{t('staterisk.count11States', '11 States')}</span>
           <span className="text-[11px] text-rose-600/80 dark:text-rose-300/80 font-medium">Uttarakhand, HP, UP, Punjab, Rajasthan, J&K, Bihar, Sikkim, Assam, Meghalaya, Nagaland</span>
         </div>
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 p-3.5 flex flex-col justify-between shadow-sm">
-          <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">🟡 Orange Alert States</span>
-          <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">7 Regions</span>
+          <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">{t('staterisk.orangeAlertStates', '🟡 Orange Alert States')}</span>
+          <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">{t('staterisk.count7Regions', '7 Regions')}</span>
           <span className="text-[11px] text-amber-600/80 dark:text-amber-300/80 font-medium">Ladakh, Haryana, Delhi, Arunachal, Manipur, Mizoram, Tripura</span>
         </div>
         <div className="rounded-2xl border border-sky-500/30 bg-sky-500/5 dark:bg-sky-500/10 p-3.5 flex flex-col justify-between shadow-sm">
-          <span className="text-[10px] font-extrabold text-sky-600 dark:text-sky-400 uppercase tracking-wider">🌊 Major Rivers Monitored</span>
-          <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">9 River Basins</span>
+          <span className="text-[10px] font-extrabold text-sky-600 dark:text-sky-400 uppercase tracking-wider">{t('staterisk.majorRivers', '🌊 Major Rivers Monitored')}</span>
+          <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">{t('staterisk.count9Basins', '9 River Basins')}</span>
           <span className="text-[11px] text-sky-600/80 dark:text-sky-300/80 font-medium">Ganga, Yamuna, Sutlej, Beas, Jhelum, Gandak, Kosi, Teesta, Brahmaputra</span>
         </div>
         <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10 p-3.5 flex flex-col justify-between shadow-sm">
-          <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">⚡ Specialized Systems</span>
-          <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">5 AI Modules</span>
+          <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{t('staterisk.specializedSystems', '⚡ Specialized Systems')}</span>
+          <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">{t('staterisk.count5Modules', '5 AI Modules')}</span>
           <span className="text-[11px] text-emerald-600/80 dark:text-emerald-300/80 font-medium">Hill Road, Desert Water, Agri Impact, Cold Wave, Urban Inundation</span>
         </div>
       </div>
@@ -302,7 +304,7 @@ export default function StateRiskMatrixSection({ onFocusState }: StateRiskMatrix
                   <span className="font-extrabold text-slate-900 dark:text-white text-sm">{st.name}</span>
                 </div>
                 <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${st.severity === "red" ? "bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30" : "bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30"}`}>
-                  {st.severity === "red" ? "🚨 Red Alert" : "🟡 Orange Alert"}
+                  {st.severity === "red" ? t('staterisk.redAlert', '🚨 Red Alert') : t('staterisk.orangeAlert', '🟡 Orange Alert')}
                 </span>
               </div>
               <div className="text-xs text-sky-600 dark:text-sky-400 font-bold">{st.hazard}</div>
@@ -315,7 +317,7 @@ export default function StateRiskMatrixSection({ onFocusState }: StateRiskMatrix
                 onClick={() => onFocusState(st.focusCoord, st.zoom)}
                 className="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 cursor-pointer mt-1"
               >
-                <span>🎯</span> <span>Focus on Map</span>
+                <span>🎯</span> <span>{t('staterisk.focusOnMap', 'Focus on Map')}</span>
               </button>
             )}
           </div>

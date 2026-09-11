@@ -48,10 +48,10 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
   };
 
   const emergencyContacts = [
-    { name: 'NDRF National Helpline', number: '1078', desc: 'National Disaster Response Force Dispatch', icon: ShieldAlert, color: 'text-rose-500 bg-rose-500/10 border-rose-500/30' },
-    { name: 'National Emergency Number', number: '112', desc: 'All-in-One Emergency Services (Police/Fire/Ambulance)', icon: PhoneCall, color: 'text-sky-500 bg-sky-500/10 border-sky-500/30' },
-    { name: 'State Disaster Management (SDMA)', number: '1070', desc: 'State Control Room & Flood Triage', icon: Info, color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' },
-    { name: 'Medical Emergency Ambulance', number: '108', desc: '24/7 Advanced Life Support Ambulance', icon: Zap, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' }
+    { name: t('safety.ndrfHelpline', 'NDRF National Helpline'), number: '1078', desc: t('safety.ndrfDesc', 'National Disaster Response Force Dispatch'), icon: ShieldAlert, color: 'text-rose-500 bg-rose-500/10 border-rose-500/30' },
+    { name: t('safety.nationalEmergency', 'National Emergency Number'), number: '112', desc: t('safety.nationalEmergencyDesc', 'All-in-One Emergency Services (Police/Fire/Ambulance)'), icon: PhoneCall, color: 'text-sky-500 bg-sky-500/10 border-sky-500/30' },
+    { name: t('safety.sdma', 'State Disaster Management (SDMA)'), number: '1070', desc: t('safety.sdmaDesc', 'State Control Room & Flood Triage'), icon: Info, color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' },
+    { name: t('safety.ambulance', 'Medical Emergency Ambulance'), number: '108', desc: t('safety.ambulanceDesc', '24/7 Advanced Life Support Ambulance'), icon: Zap, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' }
   ];
 
   const safetyData = {
@@ -173,15 +173,15 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
           <div className="space-y-3 max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-500/40 text-sky-300 text-xs font-black uppercase tracking-wider">
               <BookOpen className="w-3.5 h-3.5" />
-              <span>OFFICIAL DISASTER SURVIVAL GUIDE</span>
+              <span>{t('safety.badge', 'OFFICIAL DISASTER SURVIVAL GUIDE')}</span>
             </div>
             
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
-              Disaster Preparedness & Safety Guidelines
+              {t('safety.title', 'Disaster Preparedness & Safety Guidelines')}
             </h1>
             
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
-              Actionable survival protocols, emergency checklists, do’s and don’ts, and 24/7 toll-free helpline numbers approved for flood, landslide, earthquake, and cyclone emergencies.
+              {t('safety.subtitle', 'Actionable survival protocols, emergency checklists, do’s and don’ts, and 24/7 toll-free helpline numbers approved for flood, landslide, earthquake, and cyclone emergencies.')}
             </p>
           </div>
 
@@ -193,7 +193,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                 className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-xs sm:text-sm shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2 border border-rose-400/30 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
               >
                 <ShieldAlert className="w-4 h-4" />
-                <span>TRIGGER SOS DISTRESS 🚨</span>
+                <span>{t('safety.triggerSos', 'TRIGGER SOS DISTRESS 🚨')}</span>
               </button>
             )}
           </div>
@@ -204,7 +204,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
       <div className="space-y-3">
         <h2 className="text-sm font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
           <PhoneCall className="w-4 h-4 text-sky-500" />
-          <span>24/7 Emergency Toll-Free Helplines</span>
+          <span>{t('safety.helplinesTitle', '24/7 Emergency Toll-Free Helplines')}</span>
         </h2>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -242,7 +242,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                   className="mt-3 w-full py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition cursor-pointer"
                 >
                   <PhoneCall className="w-3.5 h-3.5" />
-                  <span>Call {contact.number} Now</span>
+                  <span>{t('safety.callNow', 'Call')} {contact.number} {t('safety.now', 'Now')}</span>
                 </a>
               </div>
             );
@@ -253,11 +253,11 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
       {/* 3. DISASTER CATEGORY SELECTOR TABS */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
         {[
-          { id: 'flood', label: '🌊 Flood Safety', color: 'from-blue-600 to-cyan-600' },
-          { id: 'landslide', label: '⛰️ Landslide Safety', color: 'from-amber-600 to-orange-600' },
-          { id: 'earthquake', label: '🌋 Earthquake Safety', color: 'from-rose-600 to-red-600' },
-          { id: 'cyclone', label: '⚡ Cyclone & Lightning', color: 'from-purple-600 to-indigo-600' },
-          { id: 'kit', label: '🎒 72-Hour Survival Kit', color: 'from-emerald-600 to-teal-600' }
+          { id: 'flood', label: t('safety.tabFlood', '🌊 Flood Safety'), color: 'from-blue-600 to-cyan-600' },
+          { id: 'landslide', label: t('safety.tabLandslide', '⛰️ Landslide Safety'), color: 'from-amber-600 to-orange-600' },
+          { id: 'earthquake', label: t('safety.tabEarthquake', '🌋 Earthquake Safety'), color: 'from-rose-600 to-red-600' },
+          { id: 'cyclone', label: t('safety.tabCyclone', '⚡ Cyclone & Lightning'), color: 'from-purple-600 to-indigo-600' },
+          { id: 'kit', label: t('safety.tabKit', '🎒 72-Hour Survival Kit'), color: 'from-emerald-600 to-teal-600' }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -321,7 +321,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-black text-sm uppercase tracking-wide">
                       <CheckCircle2 className="w-5 h-5" />
-                      <span>RECOMMENDED DO'S (Kya Karein)</span>
+                      <span>{t('safety.recommendedDos', "RECOMMENDED DO'S (KYA KAREIN)")}</span>
                     </div>
 
                     <div className="space-y-2.5">
@@ -338,7 +338,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-black text-sm uppercase tracking-wide">
                       <XCircle className="w-5 h-5" />
-                      <span>CRITICAL DONT'S (Kya Na Karein)</span>
+                      <span>{t('safety.criticalDonts', "CRITICAL DONT'S (KYA NA KAREIN)")}</span>
                     </div>
 
                     <div className="space-y-2.5">
