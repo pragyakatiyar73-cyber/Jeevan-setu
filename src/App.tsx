@@ -68,11 +68,9 @@ import MDoNERCommandModule from './components/MDoNERCommandModule';
 import NERLiveMapModule from './components/NERLiveMapModule';
 import ActionAlertsModule from './components/ActionAlertsModule';
 import StateRiskMatrixSection from './components/StateRiskMatrixSection';
-import CitizenSOSModule from './components/CitizenSOSModule';
 import RescueTeamCommand from './components/RescueTeamCommand';
 import EvacuationPlanner from './components/EvacuationPlanner';
 import ReliefCampManagement from './components/ReliefCampManagement';
-import AIDamageAssessment from './components/AIDamageAssessment';
 import AISituationReportModule from './components/AISituationReportModule';
 import RecoveryTracker from './components/RecoveryTracker';
 import LifeSavingResponseEngine from './components/LifeSavingResponseEngine';
@@ -861,7 +859,7 @@ export default function App() {
         {/* 🚨 CITIZEN SOS TRIAGE */}
         {activeModule === 'citizensos' && (
           <div className="h-full overflow-y-auto">
-            <CitizenSOSModule />
+            <LifeSavingResponseEngine />
           </div>
         )}
 
@@ -889,7 +887,7 @@ export default function App() {
         {/* 📷 AI DAMAGE ASSESSMENT */}
         {activeModule === 'damageassessment' && (
           <div className="h-full overflow-y-auto">
-            <AIDamageAssessment />
+            <AIDisasterImpactAssessment />
           </div>
         )}
 
