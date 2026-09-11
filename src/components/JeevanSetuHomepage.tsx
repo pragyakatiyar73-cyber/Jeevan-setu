@@ -731,10 +731,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-blue-700 dark:group-hover:text-blue-300'
               },
               {
-                title: 'Get Emergency Information',
-                desc: 'Find nearby shelters, hospitals, routes and resources.',
+                title: 'Disaster Safety Guide & Helplines',
+                desc: 'Official Do’s & Don’ts, 24/7 helplines, and 72-hour survival kit checklist.',
                 icon: ShieldCheck,
-                action: () => setIsInfoModalOpen(true),
+                action: () => onNavigateModule('safetyguide'),
                 bgColor: 'bg-[#F0FAF5] dark:bg-emerald-950/25',
                 hoverBg: 'hover:bg-[#E0F7EB] dark:hover:bg-emerald-900/40',
                 borderColor: 'border-emerald-200/80 dark:border-emerald-900/40',

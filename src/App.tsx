@@ -78,6 +78,7 @@ import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 import AddressDisasterIntelligence from './components/AddressDisasterIntelligence';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
+import DisasterSafetyGuide from './components/DisasterSafetyGuide';
 import { useTranslation } from './i18n';
 import { incidentStore } from './services/api';
 
@@ -775,6 +776,19 @@ export default function App() {
               <span>{t('header.ai', 'AI')}</span>
             </button>
 
+            {/* 📖 Safety Guide Pill Button */}
+            <button
+              onClick={() => setActiveModule('safetyguide')}
+              className={`rounded-full px-3 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                activeModule === 'safetyguide'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-teal-600/40'
+                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <span className="text-xs">📖</span>
+              <span>{t('header.safety', 'Safety Guide')}</span>
+            </button>
+
             {/* Live IST Clock */}
             <div className="flex flex-col text-right font-mono px-1.5 shrink-0">
               <span className="text-xs lg:text-sm font-black text-slate-900 dark:text-slate-100 tracking-wider">
@@ -816,6 +830,13 @@ export default function App() {
 
         {/* Main Workspace Render */}
         <main className="flex-1 overflow-hidden">
+
+          {/* 📖 DISASTER SAFETY GUIDE */}
+          {activeModule === 'safetyguide' && (
+            <div className="h-full overflow-y-auto p-4 sm:p-6">
+              <DisasterSafetyGuide onTriggerSOS={() => setIsSosModalOpen(true)} />
+            </div>
+          )}
 
           {/* 🛡️ GEOSAFE AI – ADDRESS-BASED DISASTER INTELLIGENCE */}
           {(activeModule === 'geosafe-ai' || activeModule === 'address-intelligence') && (
