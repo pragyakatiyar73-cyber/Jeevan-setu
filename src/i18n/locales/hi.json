@@ -1,4 +1,17 @@
 {
+  "nav": {
+    "brandTitle": "जीवन सेतु",
+    "brandSubtitle": "एआई संचालित आपदा प्रतिक्रिया एवं जीआईएस इंटेलिजेंस प्लेटफॉर्म",
+    "homeNav": "होम",
+    "liveMapNav": "लाइव मानचित्र",
+    "riskAssessmentNav": "जोखिम आकलन",
+    "resourcesNav": "संसाधन",
+    "aboutNav": "हमारे बारे में",
+    "contactNav": "संपर्क करें",
+    "emergencySos": "आपातकालीन SOS",
+    "adminOfficer": "प्रशासनिक अधिकारी (OSDMA)",
+    "ner": "NER"
+  },
   "navigation": {
     "dashboard": "डैशबोर्ड (3D सिमुलेशन)",
     "smartmonitoring": "स्मार्ट आपदा निगरानी",

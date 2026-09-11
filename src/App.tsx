@@ -94,7 +94,7 @@ const NER_HUBS = [
 ];
 
 export default function App() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [activeModule, setActiveModuleState] = useState<string>(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab') || params.get('module');
@@ -605,8 +605,12 @@ export default function App() {
             </div>
             <div className="hidden md:block overflow-hidden">
               <div className="flex items-center gap-1.5">
-                <h1 className="text-base font-black tracking-tight text-slate-900 dark:text-white">Jeevan Setu</h1>
-                <span className="rounded bg-indigo-500/20 px-1.5 py-0.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-300 border border-indigo-500/30">जीवन सेतु</span>
+                <h1 className="text-base font-black tracking-tight text-slate-900 dark:text-white">
+                  {language === 'hi' ? 'जीवन सेतु' : 'Jeevan Setu'}
+                </h1>
+                <span className="rounded bg-indigo-500/20 px-1.5 py-0.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-300 border border-indigo-500/30">
+                  {language === 'hi' ? 'जीवन सेतु' : 'Jeevan Setu'}
+                </span>
               </div>
               <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">MoDoNER / NEC Logistics Grid</p>
             </div>

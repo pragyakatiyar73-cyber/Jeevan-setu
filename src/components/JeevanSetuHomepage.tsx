@@ -442,11 +442,15 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <div className="flex flex-col">
               <div className="flex items-center gap-1">
                 <span className="text-lg font-black tracking-wider text-white leading-none font-sans group-hover:text-sky-300 transition">
-                  Jeevan <span className="text-sky-400">Setu</span>
+                  {language === 'hi' ? (
+                    <>जीवन <span className="text-sky-400">सेतु</span></>
+                  ) : (
+                    <>Jeevan <span className="text-sky-400">Setu</span></>
+                  )}
                 </span>
               </div>
               <span className="text-[10px] font-semibold text-sky-400/90 tracking-wide leading-tight mt-0.5 hidden sm:block">
-                AI Powered Disaster Response &amp; GIS Intelligence Platform
+                {t('nav.brandSubtitle', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </span>
             </div>
           </div>
@@ -454,17 +458,17 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           {/* CENTER: Navigation Links */}
           <nav className="hidden xl:flex items-center gap-1 lg:gap-2">
             {[
-              { name: 'Home', action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
-              { name: 'Live Map', action: () => { setActiveTab('Live Map'); onNavigateModule('map'); } },
-              { name: 'Risk Assessment', action: () => { setActiveTab('Risk Assessment'); onNavigateModule('staterisk'); } },
-              { name: 'Resources', action: () => { setActiveTab('Resources'); onNavigateModule('reliefcamps'); } },
-              { name: 'About', action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
-              { name: 'Contact', action: () => { setActiveTab('Contact'); setIsInfoModalOpen(true); } }
+              { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+              { id: 'Live Map', name: t('nav.liveMapNav', 'Live Map'), action: () => { setActiveTab('Live Map'); onNavigateModule('map'); } },
+              { id: 'Risk Assessment', name: t('nav.riskAssessmentNav', 'Risk Assessment'), action: () => { setActiveTab('Risk Assessment'); onNavigateModule('staterisk'); } },
+              { id: 'Resources', name: t('nav.resourcesNav', 'Resources'), action: () => { setActiveTab('Resources'); onNavigateModule('reliefcamps'); } },
+              { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
+              { id: 'Contact', name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setIsInfoModalOpen(true); } }
             ].map((nav) => {
-              const isActive = activeTab === nav.name;
+              const isActive = activeTab === nav.id;
               return (
                 <button
-                  key={nav.name}
+                  key={nav.id}
                   onClick={nav.action}
                   className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all relative cursor-pointer ${
                     isActive
@@ -498,13 +502,13 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-extrabold shadow-lg shadow-red-600/30 hover:shadow-red-600/50 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-red-400/40"
             >
               <PhoneCall className="h-3.5 sm:h-4 w-3.5 sm:w-4 animate-pulse" />
-              <span>Emergency SOS</span>
+              <span>{t('nav.emergencySos', 'Emergency SOS')}</span>
             </button>
 
             {/* Admin Officer Pill Badge */}
             <div className="hidden md:flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Admin Officer (OSDMA)</span>
+              <span>{t('nav.adminOfficer', 'Admin Officer (OSDMA)')}</span>
             </div>
 
             {/* Language Selector */}
@@ -1334,10 +1338,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               </div>
               <div>
                 <span className="text-lg font-black tracking-wider text-white block leading-none">
-                  JEEVAN SETU
+                  {language === 'hi' ? 'जीवन सेतु' : 'JEEVAN SETU'}
                 </span>
                 <span className="text-[10px] font-semibold text-sky-400 block mt-0.5">
-                  AI Powered Disaster Response
+                  {t('nav.brandSubtitle', 'AI Powered Disaster Response & GIS Intelligence Platform')}
                 </span>
               </div>
             </div>
