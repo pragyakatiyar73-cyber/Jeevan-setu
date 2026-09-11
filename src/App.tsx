@@ -60,7 +60,6 @@ import {
   EmergencyLZ
 } from './services/api';
 import Dashboard from './components/Dashboard';
-import SmartDisasterMonitoring from './components/SmartDisasterMonitoring';
 import AIDisasterImpactAssessment from './components/AIDisasterImpactAssessment';
 import WeatherIntelligence from './components/WeatherIntelligence';
 import UAVDroneModule from './components/UAVDroneModule';
@@ -73,7 +72,6 @@ import RescueTeamCommand from './components/RescueTeamCommand';
 import EvacuationPlanner from './components/EvacuationPlanner';
 import ReliefCampManagement from './components/ReliefCampManagement';
 import AISituationReportModule from './components/AISituationReportModule';
-import RecoveryTracker from './components/RecoveryTracker';
 import LifeSavingResponseEngine from './components/LifeSavingResponseEngine';
 import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
@@ -631,7 +629,6 @@ export default function App() {
                 category: t('sidebar.catIntelligence', '2. AI & GIS Intelligence'),
                 items: [
                   { id: 'geosafe-ai', label: t('navigation.geosafe', 'GeoSafe AI Search'), icon: Compass, badge: 'AI CORE', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
-                  { id: 'smartmonitoring', label: t('navigation.smartmonitoring', 'Smart Disaster Monitoring'), icon: Eye, badge: 'LIVE', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, badge: 'VISION AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
                   { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, badge: '8 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
@@ -653,8 +650,7 @@ export default function App() {
                 items: [
                   { id: 'gov', label: t('navigation.gov', 'MDoNER Command Grid'), icon: Building2, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'weather', label: t('navigation.weather', 'Weather & Doppler Radar'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' },
-                  { id: 'sitrep', label: t('navigation.sitrep', 'AI Situation SITREP'), icon: FileBarChart, badge: 'PDF REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
-                  { id: 'recovery', label: t('navigation.recovery', 'Recovery Tracker'), icon: TrendingUp, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' }
+                  { id: 'sitrep', label: t('navigation.sitrep', 'AI Situation SITREP'), icon: FileBarChart, badge: 'PDF REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' }
                 ]
               }
             ].map((section, sIdx) => (
@@ -836,19 +832,6 @@ export default function App() {
             </div>
           )}
 
-          {/* 🛰️ SMART DISASTER MONITORING */}
-          {activeModule === 'smartmonitoring' && (
-            <div className="h-full overflow-y-auto">
-              <SmartDisasterMonitoring
-                initialLoc={sharedMonitoringLoc}
-                onNavigateToImpactAssessment={(loc) => {
-                  setSharedMonitoringLoc({ lat: loc.lat, lon: loc.lon, displayName: loc.name });
-                  setActiveModule('aiimpact');
-                }}
-              />
-            </div>
-          )}
-
         {/* 🤖 AI DISASTER IMPACT ASSESSMENT */}
         {activeModule === 'aiimpact' && (
           <div className="h-full overflow-y-auto">
@@ -907,13 +890,6 @@ export default function App() {
         {activeModule === 'sitrep' && (
           <div className="h-full overflow-y-auto">
             <AISituationReportModule />
-          </div>
-        )}
-
-        {/* 📈 RECOVERY TRACKER */}
-        {activeModule === 'recovery' && (
-          <div className="h-full overflow-y-auto">
-            <RecoveryTracker />
           </div>
         )}
 
