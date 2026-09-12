@@ -91,8 +91,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     }
   };
 
-  // Side Panel Drawer state (report, risk, livesituation)
-  const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'risk' | 'livesituation' | null>(null);
+  // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation)
+  const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | null>(null);
+
+  // AI Analysis Panel simulation state
+  const [isAnalyzingAi, setIsAnalyzingAi] = useState(false);
 
   // Instruction Guide Modal State for "How Jeevan Setu Works" steps
   const [selectedInstructionStep, setSelectedInstructionStep] = useState<{
@@ -768,7 +771,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 title: t('home.aiImpact', 'AI Disaster Impact Assessment'),
                 desc: t('home.aiImpactDesc', 'Analyze disaster images and estimate severity and impact.'),
                 icon: Cpu,
-                action: () => onNavigateModule('aiimpact'),
+                action: () => setActiveSidePanel('aianalysis'),
                 bgColor: 'bg-[#F5F3FF] dark:bg-indigo-950/25',
                 hoverBg: 'hover:bg-[#EDE9FE] dark:hover:bg-indigo-900/40',
                 borderColor: 'border-indigo-200/80 dark:border-indigo-900/40',
@@ -801,7 +804,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 title: t('home.emergencyResponse', 'Emergency Response'),
                 desc: t('home.emergencyResponseDesc', 'Get safer routes and nearby emergency resources.'),
                 icon: Navigation,
-                action: () => onNavigateModule('lifesaving'),
+                action: () => setActiveSidePanel('gethelp'),
                 bgColor: 'bg-[#FFF1F2] dark:bg-rose-950/25',
                 hoverBg: 'hover:bg-[#FFE4E6] dark:hover:bg-rose-900/40',
                 borderColor: 'border-rose-200/80 dark:border-rose-900/40',
@@ -1183,95 +1186,41 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {
                 stepNum: '1',
                 title: t('home.step1Title', 'Report'),
-                subtitle: 'How to report disaster incidents and upload real-time ground photos',
                 desc: t('home.step1Desc', 'Share photos, location and details about the disaster.'),
                 icon: Camera,
                 color: 'bg-sky-500/15 text-sky-500 border-sky-400/40',
-                gradient: 'from-sky-500 to-blue-600',
-                instructions: [
-                  'Click "Report a Disaster" on the homepage or quick tools bar.',
-                  'Snap or upload a photo showing ground damage, flood levels, or blocked roads.',
-                  'Allow GPS location access or drop a pinpoint marker on the interactive map.',
-                  'Submit the report to immediately notify regional emergency command centers.'
-                ],
-                tips: 'Photos with clear visual damage help AI calculate severity rating faster.',
-                actionText: 'Try Reporting Now',
-                action: () => setActiveSidePanel('report')
+                panel: 'report' as const
               },
               {
                 stepNum: '2',
                 title: t('home.step2Title', 'AI Analysis'),
-                subtitle: 'How automated AI scans satellite imagery, weather data & ground reports',
                 desc: t('home.step2Desc', 'Our AI processes data from satellites, weather and ground reports.'),
                 icon: Cpu,
                 color: 'bg-cyan-500/15 text-cyan-500 border-cyan-400/40',
-                gradient: 'from-cyan-500 to-blue-600',
-                instructions: [
-                  'Open the "AI Disaster Impact Assessment" module from the menu.',
-                  'Upload satellite, aerial drone, or field responder images.',
-                  'AI automatically detects structural damage, water inundation, and road blockages.',
-                  'Review the generated risk report, damage score, and recommended rescue protocols.'
-                ],
-                tips: 'You can upload high-resolution photos for granular structural damage assessments.',
-                actionText: 'Open AI Analysis Tool',
-                action: () => onNavigateModule('aiimpact')
+                panel: 'aianalysis' as const
               },
               {
                 stepNum: '3',
                 title: t('home.step3Title', 'Risk Assessment'),
-                subtitle: 'How to check current hazard levels and 72-hour predictive risk maps',
                 desc: t('home.step3Desc', 'Get instant risk levels, impact analysis and 72-hour forecast.'),
                 icon: AlertTriangle,
                 color: 'bg-amber-500/15 text-amber-500 border-amber-400/40',
-                gradient: 'from-amber-500 to-orange-600',
-                instructions: [
-                  'Click "Check Disaster Risk" or open the "State Risk Matrix" module.',
-                  'Select your state, district, or zoom into your local region on the GIS map.',
-                  'Inspect live slope stability, soil saturation, and heavy rainfall alerts.',
-                  'View the 72-hour predictive risk trend to take early precautionary measures.'
-                ],
-                tips: 'Green indicates low risk, yellow caution, and red highlights critical danger zones.',
-                actionText: 'Check Risk Matrix',
-                action: () => setActiveSidePanel('risk')
+                panel: 'risk' as const
               },
               {
                 stepNum: '4',
                 title: t('home.step4Title', 'Get Help'),
-                subtitle: 'How to find nearby shelters, safe routes, and trigger emergency SOS',
                 desc: t('home.step4Desc', 'Find nearby shelters, hospitals, routes and emergency services.'),
                 icon: ShieldAlert,
                 color: 'bg-rose-500/15 text-rose-500 border-rose-400/40',
-                gradient: 'from-rose-500 to-red-600',
-                instructions: [
-                  'Tap the "Emergency Help" button for immediate 1-click SOS location transmission.',
-                  'Open "Relief Camps & Supplies" to check nearby open shelters and available beds.',
-                  'Use "Emergency Response" for AI-guided safe evacuation routes avoiding hazard points.',
-                  'Directly dial 24/7 state and national disaster helpline numbers provided.'
-                ],
-                tips: 'Keep your mobile GPS enabled for instant distance calculations to nearby relief camps.',
-                actionText: 'Access Emergency Help',
-                action: () => onOpenSos()
+                panel: 'gethelp' as const
               }
             ].map((item, idx) => {
               const Icon = item.icon;
               return (
                 <div
                   key={item.stepNum}
-                  onClick={() => setSelectedInstructionStep({
-                    stepNum: item.stepNum,
-                    title: item.title,
-                    subtitle: item.subtitle,
-                    desc: item.desc,
-                    icon: item.icon,
-                    color: item.gradient,
-                    instructions: item.instructions,
-                    tips: item.tips,
-                    actionText: item.actionText,
-                    action: () => {
-                      setSelectedInstructionStep(null);
-                      item.action();
-                    }
-                  })}
+                  onClick={() => setActiveSidePanel(item.panel)}
                   className="flex flex-col items-center text-center group relative p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl hover:border-sky-400/80 transition duration-300 min-h-[260px] sm:min-h-[290px] justify-between cursor-pointer transform hover:-translate-y-1"
                 >
                   {/* Arrow Connector between steps (visible on desktop) */}
@@ -1296,7 +1245,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       {item.desc}
                     </p>
                     <span className="inline-flex items-center gap-1 text-xs font-bold text-sky-400 group-hover:underline">
-                      <span>Click to view guide</span>
+                      <span>Open feature panel</span>
                       <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition" />
                     </span>
                   </div>
@@ -1783,7 +1732,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       )}
 
       {/* ==================================================
-          RIGHT-SIDE SLIDING DRAWER / PANEL
+          LEFT-SIDE SLIDING DRAWER / PANEL (Opens directly on Homepage)
          ================================================== */}
       {activeSidePanel && (
         <>
@@ -1793,8 +1742,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[190] animate-in fade-in duration-200"
           />
 
-          {/* Side Drawer Container */}
-          <div className="fixed top-0 right-0 h-full z-[200] w-full sm:w-[480px] lg:w-[520px] bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-800 animate-in slide-in-from-right duration-300">
+          {/* Left-Side Drawer Container */}
+          <div className="fixed top-0 left-0 h-full z-[200] w-full sm:w-[480px] lg:w-[540px] bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 shadow-2xl flex flex-col border-r border-slate-200 dark:border-slate-800 animate-in slide-in-from-left duration-300">
             
             {/* Drawer Header */}
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-[#0b132b]">
@@ -1804,8 +1753,18 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <Camera className="h-5 w-5" />
                   </div>
                 )}
+                {activeSidePanel === 'aianalysis' && (
+                  <div className="h-9 w-9 rounded-xl bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+                    <Cpu className="h-5 w-5" />
+                  </div>
+                )}
                 {activeSidePanel === 'risk' && (
-                  <div className="h-9 w-9 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <div className="h-9 w-9 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <AlertTriangle className="h-5 w-5" />
+                  </div>
+                )}
+                {activeSidePanel === 'gethelp' && (
+                  <div className="h-9 w-9 rounded-xl bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 flex items-center justify-center">
                     <ShieldAlert className="h-5 w-5" />
                   </div>
                 )}
@@ -1816,13 +1775,17 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 )}
                 <div>
                   <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                    {activeSidePanel === 'report' && 'Report a Disaster'}
-                    {activeSidePanel === 'risk' && 'Check Disaster Risk'}
+                    {activeSidePanel === 'report' && '1. Report a Disaster'}
+                    {activeSidePanel === 'aianalysis' && '2. AI Analysis & Triage'}
+                    {activeSidePanel === 'risk' && '3. Check Disaster Risk'}
+                    {activeSidePanel === 'gethelp' && '4. Emergency Help & Rescue'}
                     {activeSidePanel === 'livesituation' && 'Explore Live Situation'}
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                    {activeSidePanel === 'report' && 'AI Incident Submission & Triage'}
-                    {activeSidePanel === 'risk' && '72-Hour Environmental Risk Radar'}
+                    {activeSidePanel === 'report' && 'AI Incident Submission & Ground Photo Triage'}
+                    {activeSidePanel === 'aianalysis' && 'Automated Gemini AI Structural Damage Assessment'}
+                    {activeSidePanel === 'risk' && '72-Hour Environmental Hazard Radar'}
+                    {activeSidePanel === 'gethelp' && '24/7 SOS Rescue Signals & Relief Shelters'}
                     {activeSidePanel === 'livesituation' && 'Real-time Operations & Field Intelligence'}
                   </p>
                 </div>
@@ -1950,7 +1913,83 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 </div>
               )}
 
-              {/* PANEL 2: CHECK DISASTER RISK */}
+              {/* PANEL 2: AI ANALYSIS & TRIAGE */}
+              {activeSidePanel === 'aianalysis' && (
+                <div className="space-y-5 text-xs font-medium">
+                  <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm">
+                      <Cpu className="h-5 w-5 text-cyan-400" />
+                      <span>Gemini AI Structural Damage Triage Engine</span>
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed">
+                      Upload aerial, drone, satellite or ground photos to estimate disaster severity, structural collapse, and water inundation levels.
+                    </p>
+                  </div>
+
+                  <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-cyan-400 bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-6 text-center space-y-3">
+                    <Upload className="h-8 w-8 text-cyan-500 mx-auto animate-bounce" />
+                    <div>
+                      <div className="font-extrabold text-slate-900 dark:text-white text-sm">Upload Image for Real-time AI Triage</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Supports JPG, PNG, Satellite TIFF up to 15MB</div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsAnalyzingAi(true)}
+                      className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black px-6 py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"
+                    >
+                      {isAnalyzingAi ? 'Scanning Image with AI...' : 'Run Live AI Triage Scan'}
+                    </button>
+                  </div>
+
+                  {isAnalyzingAi && (
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-cyan-500/40 rounded-2xl p-5 space-y-4 animate-fade-in">
+                      <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
+                        <span className="font-extrabold text-slate-900 dark:text-white">AI Damage Severity Rating</span>
+                        <span className="px-2.5 py-1 bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/40 rounded-full font-black text-[11px]">CRITICAL (88/100)</span>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-slate-500 dark:text-slate-400">Structural Damage Score</span>
+                            <span className="text-slate-900 dark:text-white font-bold">84% Heavy Collapse</span>
+                          </div>
+                          <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-red-500 w-[84%]" />
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-slate-500 dark:text-slate-400">Flood Inundation Depth</span>
+                            <span className="text-slate-900 dark:text-white font-bold">1.8 Meters</span>
+                          </div>
+                          <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-500 w-[72%]" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-700 dark:text-red-300 text-xs">
+                        <strong>AI Recommended Protocol:</strong> Dispatch NDRF Heavy Rescue &amp; deploy UAV Drone Reconnaissance immediately.
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      setActiveSidePanel(null);
+                      onNavigateModule('aiimpact');
+                    }}
+                    className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition cursor-pointer text-xs"
+                  >
+                    <span>Open Full AI Impact Module</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* PANEL 3: CHECK DISASTER RISK */}
               {activeSidePanel === 'risk' && (
                 <div className="space-y-5 text-xs font-medium">
                   <div>
@@ -2016,10 +2055,86 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       }}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-extrabold shadow-md flex items-center justify-center gap-2 cursor-pointer text-xs"
                     >
-                      <span>View Full Regional Risk Matrix</span>
+                      <span>Open State Risk Matrix</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
+                </div>
+              )}
+
+              {/* PANEL 4: GET HELP & EMERGENCY RESPONSE */}
+              {activeSidePanel === 'gethelp' && (
+                <div className="space-y-5 text-xs font-medium">
+                  {/* Big Red SOS Button */}
+                  <div className="p-5 bg-gradient-to-br from-red-950/90 to-rose-950/80 border border-red-500/40 rounded-2xl space-y-3 text-center shadow-lg">
+                    <ShieldAlert className="h-10 w-10 text-red-400 mx-auto animate-pulse" />
+                    <div>
+                      <h4 className="text-base font-black text-white">Emergency SOS Signal Dispatch</h4>
+                      <p className="text-xs text-red-200 mt-0.5">Transmit live GPS coordinates to nearest NDRF &amp; SDMA command hub</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setActiveSidePanel(null);
+                        onOpenSos();
+                      }}
+                      className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black py-3.5 rounded-xl shadow-lg shadow-red-600/40 transition cursor-pointer text-xs flex items-center justify-center gap-2"
+                    >
+                      <PhoneCall className="h-4 w-4 animate-bounce" />
+                      <span>Transmit Emergency SOS Now</span>
+                    </button>
+                  </div>
+
+                  {/* 24/7 Helplines */}
+                  <div className="space-y-2">
+                    <div className="font-extrabold text-slate-800 dark:text-slate-200">24/7 Emergency Helplines</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <a href="tel:1078" className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <div>
+                          <div className="font-bold text-slate-900 dark:text-white">NDRF Control</div>
+                          <div className="text-[11px] text-sky-500 font-extrabold">1078</div>
+                        </div>
+                        <PhoneCall className="h-4 w-4 text-emerald-500" />
+                      </a>
+                      <a href="tel:1070" className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <div>
+                          <div className="font-bold text-slate-900 dark:text-white">State SDMA</div>
+                          <div className="text-[11px] text-sky-500 font-extrabold">1070</div>
+                        </div>
+                        <PhoneCall className="h-4 w-4 text-emerald-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Nearby Relief Camps */}
+                  <div className="space-y-2">
+                    <div className="font-extrabold text-slate-800 dark:text-slate-200">Nearby Operational Relief Camps</div>
+                    {[
+                      { name: 'Guwahati Stadium Relief Camp', dist: '2.4 km', cap: '340 / 500 Beds', status: 'OPEN' },
+                      { name: 'Shillong Sports Complex Shelter', dist: '5.1 km', cap: '180 / 300 Beds', status: 'OPEN' }
+                    ].map((camp, idx) => (
+                      <div key={idx} className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-slate-900 dark:text-white">{camp.name}</span>
+                          <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-full">{camp.status}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                          <span>Distance: {camp.dist}</span>
+                          <span>Capacity: {camp.cap}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setActiveSidePanel(null);
+                      onNavigateModule('reliefcamps');
+                    }}
+                    className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl border border-slate-700 transition cursor-pointer text-xs flex items-center justify-center gap-2"
+                  >
+                    <span>View All Relief Camps &amp; Supplies</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
                 </div>
               )}
 
