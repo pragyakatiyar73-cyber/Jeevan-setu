@@ -48,7 +48,7 @@ import {
   Eye
 } from 'lucide-react';
 import L from 'leaflet';
-import { useTranslation } from '../i18n';
+import { useTranslation, SUPPORTED_LANGUAGES } from '../i18n';
 import ThemeToggle from './ThemeToggle';
 import TrustedDataSourcesModal from './TrustedDataSourcesModal';
 
@@ -1945,11 +1945,12 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1">
                 <span className="text-lg sm:text-xl font-black tracking-tight text-white leading-none font-sans group-hover:text-sky-300 transition">
-                  {language === 'hi' ? (
-                    <>जीवन <span className="text-sky-400">सेतु</span></>
-                  ) : (
-                    <>Jeevan <span className="text-sky-400">Setu</span></>
-                  )}
+                  {(() => {
+                    const parts = t('nav.brandTitle', 'Jeevan Setu').split(' ');
+                    return (
+                      <>{parts[0]} <span className="text-sky-400">{parts.slice(1).join(' ') || ''}</span></>
+                    );
+                  })()}
                 </span>
               </div>
               <span className="text-[11px] font-semibold text-sky-400/85 tracking-wide leading-tight mt-0.5 hidden xl:block truncate max-w-[280px] 2xl:max-w-none">
@@ -1996,40 +1997,101 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               <Search className="h-5 w-5" />
             </button>
 
-            {/* Language Selector (Enlarged) */}
+            {/* Language Selector (Comprehensive 16 North East & National Languages) */}
             <div className="relative hidden sm:block shrink-0">
-              <button
-                onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-100 hover:text-white hover:bg-slate-800 hover:border-sky-400/80 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.04] hover:shadow-md cursor-pointer border border-slate-700/70 shadow-sm"
-              >
-                <Globe className="h-4 w-4 text-sky-400" />
-                <span>{language === 'hi' ? 'हिन्दी' : language === 'as' ? 'অসমীয়া' : language === 'bn' ? 'বাংলা' : language === 'ne' ? 'नेपाली' : 'English'}</span>
-                <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
-              </button>
-
-              {isLangDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-[#0B132B] dark:bg-[#070d1e] border border-slate-700 rounded-xl shadow-2xl py-1 z-50 text-sm font-semibold text-slate-200">
-                  {[
-                    { label: 'English', code: 'en' },
-                    { label: 'हिन्दी (Hindi)', code: 'hi' },
-                    { label: 'অসমীয়া (Assamese)', code: 'as' },
-                    { label: 'বাংলা (Bengali)', code: 'bn' },
-                    { label: 'नेपाली (Nepali)', code: 'ne' }
-                  ].map((lang) => (
+              {(() => {
+                const currentLangMeta = SUPPORTED_LANGUAGES.find((l) => l.code === language) || SUPPORTED_LANGUAGES[0];
+                return (
+                  <>
                     <button
-                      key={lang.code}
-                      onClick={() => {
-                        setLanguage(lang.code as any);
-                        setIsLangDropdownOpen(false);
-                      }}
-                      className="w-full text-left px-3.5 py-2.5 hover:bg-sky-600/30 hover:text-white transition flex items-center justify-between cursor-pointer"
+                      onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+                      className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-100 hover:text-white hover:bg-slate-800 hover:border-sky-400/80 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.04] hover:shadow-md cursor-pointer border border-slate-700/70 shadow-sm"
+                      title="Select Language / Regional Dialect"
                     >
-                      <span>{lang.label}</span>
-                      {language === lang.code && <CheckCircle2 className="h-4 w-4 text-sky-400" />}
+                      <span className="text-sm leading-none">{currentLangMeta.flag}</span>
+                      <span>{currentLangMeta.nativeLabel}</span>
+                      <ChevronDown className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
-                  ))}
-                </div>
-              )}
+
+                    {isLangDropdownOpen && (
+                      <>
+                        <div 
+                          className="fixed inset-0 z-40" 
+                          onClick={() => setIsLangDropdownOpen(false)} 
+                        />
+                        <div className="absolute right-0 mt-2 w-80 max-h-[460px] overflow-y-auto bg-[#0B132B] dark:bg-[#070d1e] border border-slate-700/80 rounded-2xl shadow-2xl py-2 z-50 text-xs font-medium text-slate-200 divide-y divide-slate-800/80 backdrop-blur-xl">
+                          {/* Header */}
+                          <div className="px-3.5 py-2 bg-slate-900/80 flex items-center justify-between">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+                              <Globe className="h-3.5 w-3.5" />
+                              Select Language
+                            </span>
+                            <span className="text-[10px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full font-bold border border-sky-500/30">
+                              {SUPPORTED_LANGUAGES.length} Languages
+                            </span>
+                          </div>
+
+                          {/* National Languages */}
+                          <div className="py-1">
+                            <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                              National
+                            </div>
+                            {SUPPORTED_LANGUAGES.filter((l) => !l.isNorthEast).map((lang) => (
+                              <button
+                                key={lang.code}
+                                onClick={() => {
+                                  setLanguage(lang.code);
+                                  setIsLangDropdownOpen(false);
+                                }}
+                                className={`w-full text-left px-3.5 py-2 hover:bg-sky-600/25 hover:text-white transition flex items-center justify-between cursor-pointer ${
+                                  language === lang.code ? 'bg-sky-500/20 text-sky-300 font-bold' : ''
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="text-sm">{lang.flag}</span>
+                                  <span className="truncate">{lang.nativeLabel} <span className="text-slate-400 text-[11px] font-normal">({lang.label})</span></span>
+                                </div>
+                                {language === lang.code && <CheckCircle2 className="h-4 w-4 text-sky-400 shrink-0" />}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* North Eastern Languages */}
+                          <div className="py-1">
+                            <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-sky-400 flex items-center justify-between bg-slate-900/40">
+                              <span>North East India (8 States)</span>
+                              <span className="text-[9px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">14 Languages</span>
+                            </div>
+                            {SUPPORTED_LANGUAGES.filter((l) => l.isNorthEast).map((lang) => (
+                              <button
+                                key={lang.code}
+                                onClick={() => {
+                                  setLanguage(lang.code);
+                                  setIsLangDropdownOpen(false);
+                                }}
+                                className={`w-full text-left px-3.5 py-2 hover:bg-sky-600/25 hover:text-white transition flex items-center justify-between cursor-pointer ${
+                                  language === lang.code ? 'bg-sky-500/20 text-sky-300 font-bold' : ''
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="text-sm">{lang.flag}</span>
+                                  <div className="min-w-0">
+                                    <div className="truncate text-slate-100 font-semibold">
+                                      {lang.nativeLabel} <span className="text-slate-400 text-[10px] font-normal">({lang.label})</span>
+                                    </div>
+                                    <div className="text-[10px] text-slate-400 truncate">{lang.region}</div>
+                                  </div>
+                                </div>
+                                {language === lang.code && <CheckCircle2 className="h-4 w-4 text-sky-400 shrink-0" />}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </>
+                );
+              })()}
             </div>
 
             {/* NER Coverage Badge */}
@@ -2061,21 +2123,54 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-[#070d1e] border-t border-slate-800 px-4 py-4 space-y-2 text-sm font-semibold text-slate-200 shadow-2xl">
-            {[
-              { name: 'Home', action: () => { setActiveTab('Home'); setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
-              { name: 'About', action: () => { setActiveTab('About'); setIsMobileMenuOpen(false); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
-              { name: 'Contact', action: () => { setActiveTab('Contact'); setIsMobileMenuOpen(false); setInfoModalTab('contact'); setIsInfoModalOpen(true); } }
-            ].map((nav) => (
-              <button
-                key={nav.name}
-                onClick={nav.action}
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition flex items-center justify-between"
-              >
-                <span>{nav.name}</span>
-                <ArrowRight className="h-4 w-4 text-sky-400" />
-              </button>
-            ))}
+          <div className="md:hidden bg-[#070d1e] border-t border-slate-800 px-4 py-4 space-y-3 text-sm font-semibold text-slate-200 shadow-2xl max-h-[85vh] overflow-y-auto">
+            {/* Nav links */}
+            <div className="space-y-1">
+              {[
+                { name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+                { name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); setIsMobileMenuOpen(false); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
+                { name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setIsMobileMenuOpen(false); setInfoModalTab('contact'); setIsInfoModalOpen(true); } }
+              ].map((nav) => (
+                <button
+                  key={nav.name}
+                  onClick={nav.action}
+                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition flex items-center justify-between"
+                >
+                  <span>{nav.name}</span>
+                  <ArrowRight className="h-4 w-4 text-sky-400" />
+                </button>
+              ))}
+            </div>
+
+            {/* Mobile Language Selector */}
+            <div className="pt-2 border-t border-slate-800">
+              <div className="text-xs font-bold text-sky-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Globe className="h-3.5 w-3.5" />
+                  Select Language
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">16 Languages</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto pr-1">
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      setLanguage(lang.code);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`text-left px-2.5 py-1.5 rounded-lg text-xs transition flex items-center justify-between border ${
+                      language === lang.code
+                        ? 'bg-sky-500/20 text-sky-300 border-sky-400/60 font-bold'
+                        : 'bg-slate-800/60 text-slate-300 border-slate-700/50 hover:bg-slate-800'
+                    }`}
+                  >
+                    <span className="truncate">{lang.flag} {lang.nativeLabel}</span>
+                    {language === lang.code && <CheckCircle2 className="h-3.5 w-3.5 text-sky-400 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </header>
@@ -2109,7 +2204,12 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
               {/* Title with "Jeevan" in White and "Setu" in Cyan */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white font-sans leading-tight drop-shadow-[0_3px_12px_rgba(0,0,0,0.8)]">
-                Jeevan <span className="text-[#38BDF8] drop-shadow-[0_0_20px_rgba(56,189,248,0.5)]">Setu</span>
+                {(() => {
+                  const parts = t('nav.brandTitle', 'Jeevan Setu').split(' ');
+                  return (
+                    <>{parts[0]} <span className="text-[#38BDF8] drop-shadow-[0_0_20px_rgba(56,189,248,0.5)]">{parts.slice(1).join(' ') || ''}</span></>
+                  );
+                })()}
               </h1>
 
               <p className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
