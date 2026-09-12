@@ -656,23 +656,27 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 </button>
               </div>
 
-              {/* 4 Feature Indicator Pills */}
+              {/* 4 Feature Indicator Pills (100% Functional & Clickable) */}
               <div className="pt-3 flex flex-wrap items-center gap-2 sm:gap-3">
                 {[
-                  { label: 'AI Analysis', icon: Cpu },
-                  { label: 'Live Data', icon: CloudRain },
-                  { label: 'GIS Mapping', icon: MapPin },
-                  { label: '72-hour Risk', icon: Clock }
+                  { label: 'AI Analysis', icon: Cpu, action: () => onNavigateModule('aiimpact') },
+                  { label: 'Live Data', icon: CloudRain, action: () => onNavigateModule('weather') },
+                  { label: 'GIS Mapping', icon: MapPin, action: () => onNavigateModule('map') },
+                  { label: '72-hour Risk', icon: Clock, action: () => onNavigateModule('staterisk') }
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
-                    <div
+                    <button
                       key={item.label}
-                      className="bg-[#0B152A]/80 backdrop-blur-md border border-slate-700/80 hover:border-sky-400 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-200 hover:text-white flex items-center gap-2 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] cursor-pointer group"
+                      type="button"
+                      onClick={item.action}
+                      title={`Click to open ${item.label}`}
+                      aria-label={`Open ${item.label}`}
+                      className="bg-[#0B152A]/80 backdrop-blur-md border border-slate-700/80 hover:border-sky-400 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-200 hover:text-white flex items-center gap-2 shadow-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.1] active:scale-95 cursor-pointer group"
                     >
                       <Icon className="h-3.5 w-3.5 text-[#38BDF8] group-hover:scale-125 transition duration-300" />
                       <span>{item.label}</span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
