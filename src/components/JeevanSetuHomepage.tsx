@@ -868,10 +868,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <Radio className="h-5 w-5 animate-pulse" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white leading-tight">
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   {t('home.liveSituationTitle', 'Live Situation')}
                 </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
                   {t('home.liveSituationSub', 'Real-time updates from across India')}
                 </p>
               </div>
@@ -1179,10 +1179,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       <section id="how-it-works" className="w-full py-16 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
         <div className="w-full px-4 sm:px-8 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               {t('home.howItWorksTitle', 'How Jeevan Setu Works')}
             </h2>
-            <p className="text-sm sm:text-base lg:text-lg text-slate-500 dark:text-slate-400 font-semibold mt-2">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
               {t('home.howItWorksSub', 'From data to action — in just a few steps.')}
             </p>
           </div>
@@ -1300,10 +1300,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   </div>
 
                   <div>
-                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-2 group-hover:text-sky-400 transition">
+                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mb-1.5 group-hover:text-sky-400 transition">
                       {item.stepNum}. {item.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 font-medium leading-relaxed mb-3">
+                    <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed mb-3">
                       {item.desc}
                     </p>
                     <span className="inline-flex items-center gap-1 text-xs font-bold text-sky-400 group-hover:underline">
@@ -1365,10 +1365,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
         <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
           
           <div className="space-y-1">
-            <h4 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               {t('home.trustedSourcesTitle', 'Trusted Data Sources')}
-            </h4>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold">
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
               {t('home.trustedSourcesSub', 'Powered by reliable and verified sources for accurate information.')}
             </p>
           </div>
