@@ -662,10 +662,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       onClick={item.action}
                       title={`Click to preview ${item.label}`}
                       aria-label={`Preview ${item.label}`}
-                      className="bg-slate-950/85 backdrop-blur-xl border border-[#38BDF8]/50 hover:border-[#38BDF8] px-4.5 py-2.5 rounded-full text-xs sm:text-sm font-extrabold text-white flex items-center gap-2 shadow-lg shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] active:scale-95 cursor-pointer group"
+                      className="bg-slate-950/90 backdrop-blur-xl border border-[#38BDF8]/60 hover:border-[#38BDF8] px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold text-white flex items-center gap-2.5 shadow-lg shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 active:scale-95 cursor-pointer group whitespace-nowrap"
                     >
-                      <Icon className="h-4.5 w-4.5 text-[#38BDF8] group-hover:scale-125 transition duration-300 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]" />
-                      <span className="font-black tracking-wide">{item.label}</span>
+                      <Icon className="h-4 w-4 shrink-0 text-[#38BDF8] group-hover:scale-110 transition duration-300 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]" />
+                      <span className="font-extrabold tracking-wide">{item.label}</span>
                     </button>
                   );
                 })}
