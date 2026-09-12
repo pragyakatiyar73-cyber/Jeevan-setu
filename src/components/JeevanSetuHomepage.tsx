@@ -94,6 +94,20 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   // Side Panel Drawer state (report, risk, livesituation)
   const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'risk' | 'livesituation' | null>(null);
 
+  // Instruction Guide Modal State for "How Jeevan Setu Works" steps
+  const [selectedInstructionStep, setSelectedInstructionStep] = useState<{
+    stepNum: string;
+    title: string;
+    subtitle: string;
+    desc: string;
+    icon: any;
+    color: string;
+    instructions: string[];
+    tips: string;
+    actionText: string;
+    action: () => void;
+  } | null>(null);
+
   // Side Panel Map Refs & Effect
   const sidePanelMapContainerRef = useRef<HTMLDivElement>(null);
   const sidePanelMapInstanceRef = useRef<L.Map | null>(null);
@@ -1169,37 +1183,96 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {
                 stepNum: '1',
                 title: t('home.step1Title', 'Report'),
+                subtitle: 'How to report disaster incidents and upload real-time ground photos',
                 desc: t('home.step1Desc', 'Share photos, location and details about the disaster.'),
                 icon: Camera,
-                color: 'bg-sky-500/15 text-sky-500 border-sky-400/40'
+                color: 'bg-sky-500/15 text-sky-500 border-sky-400/40',
+                gradient: 'from-sky-500 to-blue-600',
+                instructions: [
+                  'Click "Report a Disaster" on the homepage or quick tools bar.',
+                  'Snap or upload a photo showing ground damage, flood levels, or blocked roads.',
+                  'Allow GPS location access or drop a pinpoint marker on the interactive map.',
+                  'Submit the report to immediately notify regional emergency command centers.'
+                ],
+                tips: 'Photos with clear visual damage help AI calculate severity rating faster.',
+                actionText: 'Try Reporting Now',
+                action: () => setActiveSidePanel('report')
               },
               {
                 stepNum: '2',
                 title: t('home.step2Title', 'AI Analysis'),
+                subtitle: 'How automated AI scans satellite imagery, weather data & ground reports',
                 desc: t('home.step2Desc', 'Our AI processes data from satellites, weather and ground reports.'),
                 icon: Cpu,
-                color: 'bg-cyan-500/15 text-cyan-500 border-cyan-400/40'
+                color: 'bg-cyan-500/15 text-cyan-500 border-cyan-400/40',
+                gradient: 'from-cyan-500 to-blue-600',
+                instructions: [
+                  'Open the "AI Disaster Impact Assessment" module from the menu.',
+                  'Upload satellite, aerial drone, or field responder images.',
+                  'AI automatically detects structural damage, water inundation, and road blockages.',
+                  'Review the generated risk report, damage score, and recommended rescue protocols.'
+                ],
+                tips: 'You can upload high-resolution photos for granular structural damage assessments.',
+                actionText: 'Open AI Analysis Tool',
+                action: () => onNavigateModule('aiimpact')
               },
               {
                 stepNum: '3',
                 title: t('home.step3Title', 'Risk Assessment'),
+                subtitle: 'How to check current hazard levels and 72-hour predictive risk maps',
                 desc: t('home.step3Desc', 'Get instant risk levels, impact analysis and 72-hour forecast.'),
                 icon: AlertTriangle,
-                color: 'bg-amber-500/15 text-amber-500 border-amber-400/40'
+                color: 'bg-amber-500/15 text-amber-500 border-amber-400/40',
+                gradient: 'from-amber-500 to-orange-600',
+                instructions: [
+                  'Click "Check Disaster Risk" or open the "State Risk Matrix" module.',
+                  'Select your state, district, or zoom into your local region on the GIS map.',
+                  'Inspect live slope stability, soil saturation, and heavy rainfall alerts.',
+                  'View the 72-hour predictive risk trend to take early precautionary measures.'
+                ],
+                tips: 'Green indicates low risk, yellow caution, and red highlights critical danger zones.',
+                actionText: 'Check Risk Matrix',
+                action: () => setActiveSidePanel('risk')
               },
               {
                 stepNum: '4',
                 title: t('home.step4Title', 'Get Help'),
+                subtitle: 'How to find nearby shelters, safe routes, and trigger emergency SOS',
                 desc: t('home.step4Desc', 'Find nearby shelters, hospitals, routes and emergency services.'),
                 icon: ShieldAlert,
-                color: 'bg-rose-500/15 text-rose-500 border-rose-400/40'
+                color: 'bg-rose-500/15 text-rose-500 border-rose-400/40',
+                gradient: 'from-rose-500 to-red-600',
+                instructions: [
+                  'Tap the "Emergency Help" button for immediate 1-click SOS location transmission.',
+                  'Open "Relief Camps & Supplies" to check nearby open shelters and available beds.',
+                  'Use "Emergency Response" for AI-guided safe evacuation routes avoiding hazard points.',
+                  'Directly dial 24/7 state and national disaster helpline numbers provided.'
+                ],
+                tips: 'Keep your mobile GPS enabled for instant distance calculations to nearby relief camps.',
+                actionText: 'Access Emergency Help',
+                action: () => onOpenSos()
               }
             ].map((item, idx) => {
               const Icon = item.icon;
               return (
                 <div
                   key={item.stepNum}
-                  className="flex flex-col items-center text-center group relative p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl transition duration-300 min-h-[260px] sm:min-h-[290px] justify-between"
+                  onClick={() => setSelectedInstructionStep({
+                    stepNum: item.stepNum,
+                    title: item.title,
+                    subtitle: item.subtitle,
+                    desc: item.desc,
+                    icon: item.icon,
+                    color: item.gradient,
+                    instructions: item.instructions,
+                    tips: item.tips,
+                    actionText: item.actionText,
+                    action: () => {
+                      setSelectedInstructionStep(null);
+                      item.action();
+                    }
+                  })}
+                  className="flex flex-col items-center text-center group relative p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl hover:border-sky-400/80 transition duration-300 min-h-[260px] sm:min-h-[290px] justify-between cursor-pointer transform hover:-translate-y-1"
                 >
                   {/* Arrow Connector between steps (visible on desktop) */}
                   {idx < 3 && (
@@ -1216,12 +1289,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   </div>
 
                   <div>
-                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-2">
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-2 group-hover:text-sky-400 transition">
                       {item.stepNum}. {item.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                    <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 font-medium leading-relaxed mb-3">
                       {item.desc}
                     </p>
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-sky-400 group-hover:underline">
+                      <span>Click to view guide</span>
+                      <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition" />
+                    </span>
                   </div>
                 </div>
               );
@@ -2008,6 +2085,91 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
           </div>
         </>
+      )}
+
+      {/* ==================================================
+          INSTRUCTION GUIDE MODAL (How Jeevan Setu Works Steps)
+         ================================================== */}
+      {selectedInstructionStep && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-xl bg-white dark:bg-[#0B132B] border border-slate-200 dark:border-slate-700 rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6">
+            
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+              <div className="flex items-center gap-4">
+                <div className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${selectedInstructionStep.color} text-white flex items-center justify-center shadow-lg shrink-0`}>
+                  <selectedInstructionStep.icon className="h-7 w-7" />
+                </div>
+                <div>
+                  <div className="text-xs font-black uppercase tracking-widest text-sky-500">
+                    Feature Guide • Step {selectedInstructionStep.stepNum}
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
+                    {selectedInstructionStep.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                    {selectedInstructionStep.subtitle}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedInstructionStep(null)}
+                className="p-2 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Description */}
+            <p className="text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800">
+              {selectedInstructionStep.desc}
+            </p>
+
+            {/* Step-by-Step Instructions */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                <span>📋</span>
+                <span>Step-by-Step Instructions:</span>
+              </h4>
+              <div className="space-y-2.5">
+                {selectedInstructionStep.instructions.map((stepText, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/80">
+                    <span className="h-6 w-6 rounded-full bg-sky-500/20 text-sky-400 font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 leading-snug">
+                      {stepText}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Useful Tip Box */}
+            <div className="flex items-center gap-3 p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-600 dark:text-amber-300 text-xs font-bold">
+              <Info className="h-5 w-5 shrink-0 text-amber-500" />
+              <span>{selectedInstructionStep.tips}</span>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => setSelectedInstructionStep(null)}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              >
+                Close Guide
+              </button>
+              <button
+                onClick={selectedInstructionStep.action}
+                className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 font-black px-6 py-2.5 rounded-xl shadow-lg shadow-sky-500/25 flex items-center gap-2 text-xs transition transform hover:scale-105 cursor-pointer"
+              >
+                <span>{selectedInstructionStep.actionText}</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+
+          </div>
+        </div>
       )}
 
     </div>
