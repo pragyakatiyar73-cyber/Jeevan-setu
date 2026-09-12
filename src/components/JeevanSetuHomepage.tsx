@@ -452,7 +452,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1">
-                <span className="text-xl sm:text-2xl font-black tracking-wider text-white leading-none font-sans group-hover:text-sky-300 transition">
+                <span className="text-base sm:text-lg font-black tracking-wider text-white leading-none font-sans group-hover:text-sky-300 transition">
                   {language === 'hi' ? (
                     <>जीवन <span className="text-sky-400">सेतु</span></>
                   ) : (
@@ -460,16 +460,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   )}
                 </span>
               </div>
-              <span className="text-xs font-bold text-sky-400/90 tracking-wide leading-tight mt-1 hidden sm:block">
+              <span className="text-[10px] font-bold text-sky-400/90 tracking-wide leading-tight mt-0.5 hidden sm:block">
                 {t('nav.brandSubtitle', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </span>
             </div>
           </div>
 
-          {/* RIGHT: Navigation Links & Action Tools (Enlarged) */}
-          <div className="flex items-center gap-3 sm:gap-5 shrink-0">
-            {/* Navigation Links (Larger Text & Spacing) */}
-            <nav className="hidden md:flex items-center gap-2 lg:gap-3 mr-2 sm:mr-3">
+          {/* RIGHT: Navigation Links & Action Tools */}
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            {/* Navigation Links */}
+            <nav className="hidden md:flex items-center gap-2 mr-2">
               {[
                 { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
                 { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
@@ -480,7 +480,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   <button
                     key={nav.id}
                     onClick={nav.action}
-                    className={`px-4 py-2 rounded-xl text-base sm:text-lg font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] relative cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all duration-300 transform hover:-translate-y-0.5 relative cursor-pointer ${
                       isActive
                         ? 'text-sky-300 font-extrabold'
                         : 'text-slate-200 hover:text-white hover:bg-slate-800/70'
@@ -488,35 +488,35 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   >
                     {nav.name}
                     {isActive && (
-                      <span className="absolute bottom-0 left-4 right-4 h-[3.5px] bg-sky-400 rounded-full shadow-md shadow-sky-400" />
+                      <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-sky-400 rounded-full shadow-md shadow-sky-400" />
                     )}
                   </button>
                 );
               })}
             </nav>
 
-            {/* Search Icon (Enlarged) */}
+            {/* Search Icon */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2.5 rounded-full text-slate-200 hover:text-white hover:bg-slate-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer"
+              className="p-1.5 rounded-full text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer"
               title="Search"
             >
-              <Search className="h-5 sm:h-6 w-5 sm:w-6" />
+              <Search className="h-4.5 w-4.5" />
             </button>
 
-            {/* Language Selector (Enlarged) */}
+            {/* Language Selector */}
             <div className="relative hidden sm:block">
               <button
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-bold text-slate-100 hover:text-white hover:bg-slate-800 hover:border-sky-400/80 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.06] hover:shadow-md cursor-pointer border border-slate-700/70 shadow-sm"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-100 hover:text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700/70"
               >
-                <Globe className="h-4 w-4 text-sky-400" />
+                <Globe className="h-3.5 w-3.5 text-sky-400" />
                 <span>{language === 'hi' ? 'हिन्दी' : language === 'as' ? 'অসমীয়া' : language === 'bn' ? 'বাংলা' : language === 'ne' ? 'नेपाली' : 'English'}</span>
-                <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                <ChevronDown className="h-3 w-3 text-slate-400" />
               </button>
 
               {isLangDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-[#0B132B] dark:bg-[#070d1e] border border-slate-700 rounded-xl shadow-2xl py-1 z-50 text-sm font-semibold text-slate-200">
+                <div className="absolute right-0 mt-2 w-44 bg-[#0B132B] dark:bg-[#070d1e] border border-slate-700 rounded-xl shadow-2xl py-1 z-50 text-xs font-semibold text-slate-200">
                   {[
                     { label: 'English', code: 'en' },
                     { label: 'हिन्दी (Hindi)', code: 'hi' },
@@ -530,10 +530,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                         setLanguage(lang.code as any);
                         setIsLangDropdownOpen(false);
                       }}
-                      className="w-full text-left px-3.5 py-2.5 hover:bg-sky-600/30 hover:text-white transition flex items-center justify-between cursor-pointer"
+                      className="w-full text-left px-3 py-2 hover:bg-sky-600/30 hover:text-white transition flex items-center justify-between cursor-pointer"
                     >
                       <span>{lang.label}</span>
-                      {language === lang.code && <CheckCircle2 className="h-4 w-4 text-sky-400" />}
+                      {language === lang.code && <CheckCircle2 className="h-3.5 w-3.5 text-sky-400" />}
                     </button>
                   ))}
                 </div>
@@ -543,10 +543,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* NER Coverage Badge */}
             <button
               onClick={() => onNavigateModule('gov')}
-              className="px-3 py-1 rounded-full text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-400/40 hover:bg-sky-500/30 hover:border-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.05] hover:shadow-lg cursor-pointer hidden lg:flex items-center gap-1.5 shadow-sm"
+              className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400/40 hover:bg-sky-500/30 transition cursor-pointer hidden lg:flex items-center gap-1"
             >
               <span>🏛️</span>
-              <span>Data Coverage: North Eastern Region — 8 States</span>
+              <span>Data Coverage: 8 NER States</span>
             </button>
 
             {/* Theme Toggle Switch */}
@@ -555,9 +555,9 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="xl:hidden p-2.5 rounded-lg text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+              className="xl:hidden p-2 rounded-lg text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer"
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
 
@@ -565,7 +565,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="xl:hidden bg-[#070d1e] border-t border-slate-800 px-4 py-4 space-y-2 text-sm font-semibold text-slate-200 shadow-2xl">
+          <div className="xl:hidden bg-[#070d1e] border-t border-slate-800 px-4 py-3 space-y-1.5 text-xs font-semibold text-slate-200 shadow-2xl">
             {[
               { name: 'Home', action: () => { setActiveTab('Home'); setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
               { name: 'About', action: () => { setActiveTab('About'); setIsMobileMenuOpen(false); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
@@ -574,10 +574,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               <button
                 key={nav.name}
                 onClick={nav.action}
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition flex items-center justify-between"
+                className="w-full text-left px-3 py-1.5 rounded-lg hover:bg-slate-800 hover:text-white transition flex items-center justify-between"
               >
                 <span>{nav.name}</span>
-                <ArrowRight className="h-4 w-4 text-sky-400" />
+                <ArrowRight className="h-3.5 w-3.5 text-sky-400" />
               </button>
             ))}
           </div>
@@ -585,65 +585,64 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       </header>
 
       {/* ==================================================
-          3. HERO SECTION (100% Clean High-Res Landscape + Real React HTML Elements)
+          3. HERO SECTION (Compact & Compact Font Sizes)
           ================================================== */}
-      <section className="relative w-full min-h-[60vh] sm:min-h-[65vh] lg:min-h-[700px] bg-[#040814] text-white overflow-hidden flex items-center border-b border-slate-800">
-        {/* 100% Clean Photographic Background with Rich Dark Gradient Overlay for Maximum Readability */}
+      <section className="relative w-full min-h-[45vh] sm:min-h-[50vh] lg:min-h-[480px] bg-[#040814] text-white overflow-hidden flex items-center border-b border-slate-800">
+        {/* 100% Clean Photographic Background */}
         <div className="absolute inset-0 z-0">
           <img
             src="/disaster-response-hero.jpg"
             alt="Jeevan Setu Disaster Response & Rescue Operations"
             className="w-full h-full object-cover object-right filter brightness-95 contrast-105 saturate-105"
           />
-          {/* Deep Navy Dark Gradient Overlay for Crisp Text & Button Contrast */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#040814]/95 via-[#040814]/75 to-[#040814]/35" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#040814]/90 via-transparent to-[#040814]/40" />
         </div>
 
-        <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 py-16 sm:py-24 lg:py-32 flex flex-col justify-between">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+        <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 py-10 sm:py-14 lg:py-16 flex flex-col justify-between">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             
-            {/* Hero Left Content with High-Contrast Typography & Glassmorphic Buttons */}
-            <div className="max-w-3xl space-y-5">
+            {/* Hero Left Content */}
+            <div className="max-w-2xl space-y-3.5">
               
               {/* Upper Label */}
-              <div className="text-sm sm:text-base font-black uppercase tracking-widest text-[#38BDF8] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <div className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#38BDF8] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                 {t('home.badge', 'DISASTER RESPONSE & GIS INTELLIGENCE')}
               </div>
 
-              {/* Title with "Jeevan" in White and "Setu" in Cyan */}
-              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white font-sans leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
-                Jeevan <span className="text-[#38BDF8] drop-shadow-[0_0_25px_rgba(56,189,248,0.6)]">Setu</span>
+              {/* Title */}
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white font-sans leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+                Jeevan <span className="text-[#38BDF8] drop-shadow-[0_0_20px_rgba(56,189,248,0.6)]">Setu</span>
               </h1>
 
-              <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+              <p className="text-lg sm:text-xl lg:text-2xl font-extrabold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                 {t('home.heroSub', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </p>
 
-              <p className="text-base sm:text-lg text-slate-200 leading-relaxed font-medium max-w-2xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium max-w-xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
                 {t('home.heroDesc', 'Jeevan Setu combines AI, GIS, satellite data, weather intelligence and real-time disaster information to help people understand risks, find emergency resources and respond faster.')}
               </p>
 
               {/* TWO REAL WORKING CALL TO ACTION BUTTONS */}
-              <div className="pt-3 flex flex-wrap items-center gap-4 z-30">
+              <div className="pt-2 flex flex-wrap items-center gap-3 z-30">
                 <button
                   type="button"
                   onClick={() => onNavigateModule('customdashboard')}
-                  className="bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369a1] hover:from-[#7dd3fc] hover:to-[#38BDF8] text-slate-950 font-black px-8 py-4 rounded-full shadow-2xl shadow-sky-500/40 flex items-center gap-2.5 text-base sm:text-lg transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-sky-500/60 cursor-pointer border border-sky-200/60 group"
+                  className="bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369a1] hover:from-[#7dd3fc] hover:to-[#38BDF8] text-slate-950 font-extrabold px-5 py-2.5 rounded-full shadow-xl flex items-center gap-2 text-xs sm:text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.04] cursor-pointer border border-sky-200/60 group"
                 >
-                  <LayoutDashboard className="h-6 w-6 text-slate-950 group-hover:scale-110 transition duration-300" />
+                  <LayoutDashboard className="h-4.5 w-4.5 text-slate-950 group-hover:scale-110 transition duration-300" />
                   <span>{t('home.exploreDashboard', 'Explore Dashboard')}</span>
-                  <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition duration-300" />
+                  <ArrowRight className="h-4.5 w-4.5 group-hover:translate-x-1 transition duration-300" />
                 </button>
 
                 <button
                   type="button"
                   onClick={() => onNavigateModule('map')}
-                  className="bg-slate-950/85 hover:bg-slate-900 text-white font-extrabold px-8 py-4 rounded-full border border-[#38BDF8]/70 hover:border-[#38BDF8] backdrop-blur-xl flex items-center gap-2.5 text-base sm:text-lg transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-2xl hover:shadow-sky-500/30 cursor-pointer shadow-xl group"
+                  className="bg-slate-950/85 hover:bg-slate-900 text-white font-extrabold px-5 py-2.5 rounded-full border border-[#38BDF8]/70 hover:border-[#38BDF8] backdrop-blur-xl flex items-center gap-2 text-xs sm:text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.04] cursor-pointer shadow-lg group"
                 >
-                  <MapPin className="h-6 w-6 text-[#38BDF8] group-hover:scale-110 transition duration-300" />
+                  <MapPin className="h-4.5 w-4.5 text-[#38BDF8] group-hover:scale-110 transition duration-300" />
                   <span>{t('home.exploreLiveMap', 'Explore Live Map')}</span>
-                  <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition duration-300" />
+                  <ArrowRight className="h-4.5 w-4.5 group-hover:translate-x-1 transition duration-300" />
                 </button>
               </div>
 
