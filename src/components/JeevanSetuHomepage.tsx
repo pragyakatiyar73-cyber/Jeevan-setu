@@ -1186,33 +1186,73 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {
                 stepNum: '1',
                 title: t('home.step1Title', 'Report'),
+                subtitle: 'How to report a disaster or request emergency aid',
                 desc: t('home.step1Desc', 'Share photos, location and details about the disaster.'),
                 icon: Camera,
-                color: 'bg-sky-500/15 text-sky-500 border-sky-400/40',
+                cardColor: 'bg-sky-500/15 text-sky-500 border-sky-400/40',
+                gradientColor: 'from-sky-500 to-blue-600',
+                instructions: [
+                  'Click on "Report Incident" or "Emergency SOS" button on home page.',
+                  'Capture or upload high-resolution photos of the disaster area.',
+                  'Enable GPS location to pinpoint exact coordinates for rescue teams.',
+                  'Submit the report to broadcast instant alerts to local emergency response teams.'
+                ],
+                tips: '💡 Pro Tip: Works offline! Reports will automatically sync once cellular network reconnects.',
+                actionText: 'Try Feature Now',
                 panel: 'report' as const
               },
               {
                 stepNum: '2',
                 title: t('home.step2Title', 'AI Analysis'),
+                subtitle: 'How satellite & computer vision AI processes real-time data',
                 desc: t('home.step2Desc', 'Our AI processes data from satellites, weather and ground reports.'),
                 icon: Cpu,
-                color: 'bg-cyan-500/15 text-cyan-500 border-cyan-400/40',
+                cardColor: 'bg-cyan-500/15 text-cyan-500 border-cyan-400/40',
+                gradientColor: 'from-cyan-500 to-blue-600',
+                instructions: [
+                  'View real-time satellite radar imagery and computer vision damage scores.',
+                  'Track automated risk severity classification (Low, Medium, Severe, Critical).',
+                  'Compare pre-disaster baseline imagery with post-disaster satellite scans.',
+                  'Access multi-hazard predictive analytics and structural damage estimates.'
+                ],
+                tips: '💡 Pro Tip: Satellite radar feeds update automatically every 15 minutes.',
+                actionText: 'Try Feature Now',
                 panel: 'aianalysis' as const
               },
               {
                 stepNum: '3',
                 title: t('home.step3Title', 'Risk Assessment'),
+                subtitle: 'How regional hazard index & rainfall predictions are evaluated',
                 desc: t('home.step3Desc', 'Get instant risk levels, impact analysis and 72-hour forecast.'),
                 icon: AlertTriangle,
-                color: 'bg-amber-500/15 text-amber-500 border-amber-400/40',
+                cardColor: 'bg-amber-500/15 text-amber-500 border-amber-400/40',
+                gradientColor: 'from-amber-500 to-orange-600',
+                instructions: [
+                  'Select target vulnerable region (e.g., Sikkim, Uttarakhand, Kerala).',
+                  'Check real-time Landslide Hazard Index (LHI) and soil saturation levels.',
+                  'Review 72-hour IMD weather forecasts and heavy rainfall projections.',
+                  'View active flash warnings and evacuation advisories.'
+                ],
+                tips: '💡 Pro Tip: Enable SMS hazard alerts for automatic emergency warning broadcasts.',
+                actionText: 'Try Feature Now',
                 panel: 'risk' as const
               },
               {
                 stepNum: '4',
                 title: t('home.step4Title', 'Get Help'),
+                subtitle: 'How to locate nearest shelters, medical camps & emergency numbers',
                 desc: t('home.step4Desc', 'Find nearby shelters, hospitals, routes and emergency services.'),
                 icon: ShieldAlert,
-                color: 'bg-rose-500/15 text-rose-500 border-rose-400/40',
+                cardColor: 'bg-rose-500/15 text-rose-500 border-rose-400/40',
+                gradientColor: 'from-rose-500 to-red-600',
+                instructions: [
+                  'Tap "Transmit Emergency SOS" for immediate 1-click location sharing.',
+                  'Call 24/7 National/State emergency helplines directly (NDRF 1078, SDMA 1070).',
+                  'Search nearby open relief camps, distances, and live bed capacities.',
+                  'Get real-time safe route navigation avoiding flood and blocked roads.'
+                ],
+                tips: '💡 Pro Tip: Emergency helplines are available 24/7 with toll-free access.',
+                actionText: 'Try Feature Now',
                 panel: 'gethelp' as const
               }
             ].map((item, idx) => {
@@ -1220,7 +1260,21 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               return (
                 <div
                   key={item.stepNum}
-                  onClick={() => setActiveSidePanel(item.panel)}
+                  onClick={() => setSelectedInstructionStep({
+                    stepNum: item.stepNum,
+                    title: item.title,
+                    subtitle: item.subtitle,
+                    desc: item.desc,
+                    icon: item.icon,
+                    color: item.gradientColor,
+                    instructions: item.instructions,
+                    tips: item.tips,
+                    actionText: item.actionText,
+                    action: () => {
+                      setSelectedInstructionStep(null);
+                      setActiveSidePanel(item.panel);
+                    }
+                  })}
                   className="flex flex-col items-center text-center group relative p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl hover:border-sky-400/80 transition duration-300 min-h-[260px] sm:min-h-[290px] justify-between cursor-pointer transform hover:-translate-y-1"
                 >
                   {/* Arrow Connector between steps (visible on desktop) */}
@@ -1230,7 +1284,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     </div>
                   )}
 
-                  <div className={`h-16 w-16 sm:h-20 sm:w-20 rounded-3xl ${item.color} border flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300 mb-5 relative`}>
+                  <div className={`h-16 w-16 sm:h-20 sm:w-20 rounded-3xl ${item.cardColor} border flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300 mb-5 relative`}>
                     <Icon className="h-8 w-8 sm:h-10 sm:w-10" />
                     <span className="absolute -top-3 -right-3 h-8 w-8 rounded-full bg-slate-900 text-white dark:bg-sky-400 dark:text-slate-950 font-black text-sm flex items-center justify-center shadow-lg ring-4 ring-white dark:ring-slate-900">
                       {item.stepNum}
@@ -1245,7 +1299,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       {item.desc}
                     </p>
                     <span className="inline-flex items-center gap-1 text-xs font-bold text-sky-400 group-hover:underline">
-                      <span>Open feature panel</span>
+                      <span>View Step-by-Step Guide</span>
                       <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition" />
                     </span>
                   </div>
