@@ -649,44 +649,44 @@ export default function App() {
           <nav className="space-y-3 overflow-y-auto max-h-[calc(100vh-175px)] pr-0.5 custom-scrollbar">
             {[
               {
-                category: t('sidebar.catOverview', '1. Overview & Safety'),
+                category: t('sidebar.catOverview', 'Overview'),
                 items: [
-                  { id: 'home', label: t('navigation.home', 'Jeevan Setu Homepage'), icon: Home, badge: 'MAIN', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
-                  { id: 'customdashboard', label: t('navigation.customdashboard', 'Command Center Dashboard'), icon: Gauge, badge: 'LIVE GIS', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'safetyguide', label: t('navigation.safetyguide', 'Disaster Safety Guide'), icon: BookOpen, badge: 'GUIDE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' }
+                  { id: 'home', label: t('navigation.home', 'Jeevan Setu Homepage'), icon: Home, iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
+                  { id: 'customdashboard', label: t('navigation.customdashboard', 'Command Center Dashboard'), icon: Gauge, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
+                  { id: 'safetyguide', label: t('navigation.safetyguide', 'Disaster Safety Guide'), icon: BookOpen, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' }
                 ]
               },
               {
-                category: t('sidebar.catIntelligence', '2. AI & GIS Intelligence'),
+                category: t('sidebar.catIntelligence', 'AI & GIS Intelligence'),
                 items: [
-                  { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, badge: 'VISION AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
-                  { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, badge: '8 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
+                  { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
                 ]
               },
               {
-                category: t('sidebar.catResponse', '3. Emergency Rescue & Camps'),
+                category: t('sidebar.catResponse', 'Crisis Response'),
                 items: [
-                  { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue Points'), icon: HeartPulse, badge: 'OSM LIVE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, badge: 'SOS CORE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue'), icon: HeartPulse, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'rescueteams', label: t('navigation.rescueteams', 'Rescue Team Command'), icon: ShieldCheck, badge: 'NDRF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
-                  { id: 'evacuation', label: t('navigation.evacuation', 'Evacuation & Safe Zone'), icon: Navigation, badge: 'ROUTE C', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
+                  { id: 'evacuation', label: t('navigation.evacuation', 'Evacuation & Safe Zone'), icon: Navigation, iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
                   { id: 'reliefcamps', label: t('navigation.reliefcamps', 'Relief Camp Grid'), icon: Building2, iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
                   { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
                   { id: 'alerts', label: t('navigation.alerts', 'Active Emergency Alerts'), icon: AlertTriangle, badge: 'LIVE', iconColor: 'text-orange-500 dark:text-orange-400 bg-orange-500/10' }
                 ]
               },
               {
-                category: t('sidebar.catCommand', '4. Governance & SITREP'),
+                category: t('sidebar.catCommand', 'Governance & SITREP'),
                 items: [
                   { id: 'gov', label: t('navigation.gov', 'MDoNER Command Grid'), icon: Building2, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'weather', label: t('navigation.weather', 'Weather & Doppler Radar'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' },
-                  { id: 'sitrep', label: t('navigation.sitrep', 'AI Situation SITREP'), icon: FileBarChart, badge: 'PDF REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' }
+                  { id: 'sitrep', label: t('navigation.sitrep', 'AI Situation SITREP'), icon: FileBarChart, badge: 'REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' }
                 ]
               }
             ].map((section, sIdx) => (
               <div key={sIdx} className="space-y-1">
-                <div className="hidden md:block px-2.5 pt-1 pb-1 text-[10px] font-black tracking-wider uppercase text-sky-600 dark:text-sky-400 select-none">
+                <div className="hidden md:block px-2.5 pt-2 pb-1 text-[10px] font-extrabold tracking-wider uppercase text-slate-400 select-none">
                   {section.category}
                 </div>
 
@@ -702,38 +702,40 @@ export default function App() {
                         aria-label={tab.label}
                         className={`w-full flex items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-all duration-200 group relative min-h-[42px] cursor-pointer ${
                           active
-                            ? 'bg-gradient-to-r from-indigo-600 via-indigo-600 to-sky-600 text-white shadow-md shadow-indigo-600/25 border border-indigo-500/30'
+                            ? 'bg-sky-500/15 dark:bg-sky-500/20 text-sky-900 dark:text-sky-300 font-bold border border-sky-500/30 dark:border-sky-500/40 shadow-sm shadow-sky-500/10'
                             : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white border border-transparent'
                         }`}
                       >
-                        {/* Active Pill Indicator Bar */}
+                        {/* Active Indicator Bar */}
                         {active && (
-                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.2 h-5 bg-sky-300 rounded-r-full shadow-sm shadow-sky-300" />
+                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-sky-500 rounded-r-full shadow-sm shadow-sky-400" />
                         )}
 
-                        {/* Professional Icon Badge Container */}
+                        {/* Icon Container */}
                         <div
                           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
                             active
-                              ? 'bg-white/20 text-white border border-white/30 backdrop-blur-sm'
+                              ? 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30'
                               : `border border-slate-200/80 dark:border-slate-700/50 ${tab.iconColor} group-hover:border-sky-500/40 group-hover:scale-105`
                           }`}
                         >
                           <Icon className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
                         </div>
 
-                        {/* Complete Readable Feature Label */}
-                        <span className="hidden md:block flex-1 text-left text-xs font-bold leading-snug whitespace-normal tracking-tight">
+                        {/* Feature Label */}
+                        <span className="hidden md:block flex-1 text-left text-xs font-semibold leading-snug whitespace-normal tracking-tight">
                           {tab.label}
                         </span>
 
-                        {/* Aligned Status Badge */}
+                        {/* Aligned Status Badge (Only for live conditions) */}
                         {tab.badge && (
                           <span
                             className={`hidden md:inline-flex shrink-0 items-center justify-center rounded-md px-1.5 py-0.5 text-[9px] font-black leading-none ml-auto border transition-colors ${
-                              active
-                                ? 'bg-white/20 text-white border-white/40'
-                                : 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30 group-hover:bg-sky-500/20'
+                              tab.badge === 'LIVE'
+                                ? 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/40 animate-pulse'
+                                : active
+                                ? 'bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-500/30'
+                                : 'bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
                             }`}
                           >
                             {tab.badge}
@@ -752,89 +754,112 @@ export default function App() {
       {/* 2. RIGHT MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
 
-        {/* Top Header Command Bar Matching media_1787858147598.png */}
-        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-3 sm:px-4 lg:px-6 flex items-center justify-between gap-3 backdrop-blur shadow-sm dark:shadow-md transition-colors duration-300 min-w-0">
-          {/* MDoNER / Regional Title matching media_1787858147598.png */}
+        {/* Top Header Command Bar — Clean, Aesthetic & Functional */}
+        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-3 sm:px-4 lg:px-6 flex items-center justify-between gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0">
+          
+          {/* Left: Breadcrumbs & Regional Network Status Beacon */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="text-[11px] font-black leading-tight text-emerald-600 dark:text-emerald-400">
-                <div>{t('header.titleLine1', 'Ministry of Development')}</div>
-                <div>{t('header.titleLine2', 'of North Eastern Region')}</div>
-                <div>{t('header.titleLine3', '(MDoNER)')}</div>
+            <div className="flex items-center gap-2.5">
+              <div className="hidden xl:flex items-center gap-2">
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                  MDoNER
+                </span>
+                <span className="text-slate-400 dark:text-slate-600">/</span>
               </div>
-              <div className="hidden sm:block text-[11px] font-bold leading-tight text-slate-600 dark:text-slate-300 border-l border-slate-200 dark:border-slate-800 pl-3">
-                <div>{t('header.councilLine1', 'North Eastern')}</div>
-                <div>{t('header.councilLine2', 'Council (NEC)')}</div>
-                <div>{t('header.councilLine3', 'Command Grid')}</div>
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <span className="hidden sm:inline">NER Command Grid</span>
+                <span className="hidden sm:inline text-slate-400 dark:text-slate-600">/</span>
+                <span className="text-slate-900 dark:text-white font-bold truncate max-w-[200px] sm:max-w-none">
+                  {activeModule === 'customdashboard' ? 'Risk Dashboard' :
+                   activeModule === 'map' ? 'Live GIS Map' :
+                   activeModule === 'staterisk' ? 'Regional Hazard Matrix' :
+                   activeModule === 'aiimpact' ? 'AI Impact Assessment' :
+                   activeModule === 'facilities' ? 'Emergency Facilities' :
+                   activeModule === 'weather' ? 'Weather & Radar' :
+                   activeModule === 'safetyguide' ? 'Disaster Safety Guide' :
+                   activeModule === 'drone' ? 'Drone Rescue' :
+                   activeModule === 'rescueteams' ? 'Rescue Teams' :
+                   activeModule === 'reliefcamps' ? 'Relief Camps' :
+                   activeModule === 'alerts' ? 'Emergency Alerts' :
+                   activeModule === 'gov' ? 'MDoNER Governance' :
+                   activeModule === 'sitrep' ? 'SITREP' : 'Command Center'}
+                </span>
               </div>
+              <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 ml-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span>8 States Live</span>
+              </span>
             </div>
           </div>
 
-          {/* Glowing Header Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 z-50">
-            {/* 🚨 EMERGENCY SOS Glowing Pill Button */}
+          {/* Right: Quick Action Controls */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 z-50">
+            {/* 🚨 Emergency SOS Refined Pill */}
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="rounded-full bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 px-3.5 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1.5 border border-rose-400/40 cursor-pointer animate-pulse shrink-0"
+              className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-rose-400 px-3.5 py-2 text-xs font-black text-white shadow-lg shadow-rose-600/25 flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+              title="Trigger Emergency SOS"
             >
-              <span className="text-xs">🚨</span>
+              <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
               <span>{t('navigation.sos', 'Emergency SOS')}</span>
             </button>
 
-            {/* 🤖 AI Pill Button */}
+            {/* 🤖 AI Impact Pill */}
             <button
               onClick={() => setActiveModule('aiimpact')}
-              className={`rounded-full px-3 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+              className={`rounded-xl px-3 py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border ${
                 activeModule === 'aiimpact'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-purple-600/40'
-                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-600/25'
+                  : 'bg-slate-100 dark:bg-slate-900/80 border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
+              title="AI Disaster Damage Assessment"
             >
-              <span className="text-xs">🤖</span>
-              <span>{t('header.ai', 'AI')}</span>
+              <span>🤖</span>
+              <span className="hidden sm:inline">{t('header.ai', 'AI Triage')}</span>
             </button>
 
-            {/* 📖 Safety Guide Pill Button */}
+            {/* 📖 Safety Guide Pill */}
             <button
               onClick={() => setActiveModule('safetyguide')}
-              className={`rounded-full px-3 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+              className={`rounded-xl px-3 py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border ${
                 activeModule === 'safetyguide'
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-teal-600/40'
-                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-600/25'
+                  : 'bg-slate-100 dark:bg-slate-900/80 border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
+              title="View Disaster Safety Guidelines"
             >
-              <span className="text-xs">📖</span>
-              <span>{t('header.safety', 'Safety Guide')}</span>
+              <span>📖</span>
+              <span className="hidden md:inline">{t('header.safety', 'Guide')}</span>
             </button>
 
             {/* Live IST Clock */}
-            <div className="flex flex-col text-right font-mono px-1.5 shrink-0">
-              <span className="text-xs lg:text-sm font-black text-slate-900 dark:text-slate-100 tracking-wider">
-                {currentTime || '23:45:11'} IST
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 font-mono text-xs shrink-0">
+              <span className="text-[11px] text-slate-400">IST</span>
+              <span className="font-bold text-slate-900 dark:text-sky-400">
+                {currentTime || '23:45:11'}
               </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">2026 NER Grid</span>
             </div>
 
             {/* User Profile Badge: Admin Officer MDoNER L3 */}
             <button
               onClick={() => setActiveModule('gov')}
-              title="Click to Open MDoNER Command / Executive Oversight"
-              className={`flex items-center gap-2 rounded-full border transition cursor-pointer px-3 py-1.5 text-xs shrink-0 ${
+              title="MDoNER Executive Oversight & Command Grid"
+              className={`flex items-center gap-2 rounded-xl border transition cursor-pointer px-2.5 py-1.5 text-xs shrink-0 ${
                 activeModule === 'gov'
-                  ? 'border-emerald-400 bg-emerald-900/80 text-white shadow-md shadow-emerald-500/30'
-                  : 'border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                  ? 'border-emerald-500 bg-emerald-500/20 text-white shadow-md'
+                  : 'border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900/60 hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
-              <div className="h-6 w-6 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center shrink-0">
+              <div className="h-6 w-6 rounded-lg bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center shrink-0">
                 AO
               </div>
-              <div className="text-left">
-                <div className="font-extrabold text-slate-900 dark:text-white leading-none text-xs">{t('header.adminOfficer', 'Admin Officer')}</div>
-                <div className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5">MDONER L3</div>
+              <div className="text-left hidden lg:block">
+                <div className="font-bold text-slate-900 dark:text-white leading-none text-xs">{t('header.adminOfficer', 'Admin Officer')}</div>
+                <div className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5">MDoNER L3</div>
               </div>
             </button>
 
-            {/* 🌐 Language Switcher (EN <-> हिन्दी Toggle) */}
+            {/* 🌐 Language Switcher */}
             <div className="shrink-0">
               <LanguageSelector />
             </div>
