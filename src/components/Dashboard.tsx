@@ -445,20 +445,20 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#040814] text-slate-100 font-sans flex flex-col pb-24 lg:pb-12 selection:bg-sky-500 selection:text-white transition-colors duration-300">
+    <div className="min-h-screen w-full bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans flex flex-col pb-24 lg:pb-12 selection:bg-sky-500 selection:text-white transition-colors duration-300">
       
       {/* ==================================================
           TOP SLEEK SUB-HEADER COMMAND BAR
          ================================================== */}
-      <div className="sticky top-0 z-[80] w-full bg-[#070d1e]/90 backdrop-blur-md border-b border-slate-800/80 shadow-lg px-4 lg:px-6 py-2.5 flex items-center justify-between gap-4 transition-colors duration-300">
+      <div className="sticky top-0 z-[80] w-full bg-white/90 dark:bg-[#070d1e]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 shadow-md px-4 lg:px-6 py-2.5 flex items-center justify-between gap-4 transition-colors duration-300">
         
         {/* LEFT: Dashboard Section Title */}
         <div className="flex items-center gap-3 shrink-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-sm lg:text-base font-black tracking-tight text-white">
-              Jeevan Setu <span className="text-sky-400">Command Center</span>
+            <h1 className="text-sm lg:text-base font-black tracking-tight text-slate-900 dark:text-white">
+              Jeevan Setu <span className="text-sky-600 dark:text-sky-400">Command Center</span>
             </h1>
-            <span className="bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider hidden sm:inline-block">
+            <span className="bg-sky-500/10 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider hidden sm:inline-block">
               LIVE GRID
             </span>
           </div>
@@ -483,8 +483,8 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               }}
               className={`px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                  ? "bg-sky-500/20 text-sky-600 dark:text-sky-300 border border-sky-500/40 shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800/60"
               }`}
             >
               {tab.label}
@@ -494,13 +494,13 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
 
         {/* RIGHT: Live Grid Synchronized Status & Bell */}
         <div className="hidden md:flex items-center gap-3 shrink-0">
-          <span className="inline-flex items-center gap-1.5 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+          <span className="inline-flex items-center gap-1.5 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
             <span>Grid Synchronized</span>
           </span>
 
-          <button className="relative p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-slate-800/80 transition cursor-pointer">
-            <Bell className="h-4 w-4 text-slate-300" />
+          <button className="relative p-1.5 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800/80 transition cursor-pointer">
+            <Bell className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             <span className="absolute top-0.5 right-0.5 h-2 w-2 rounded-full bg-red-500 animate-ping" />
             <span className="absolute top-0.5 right-0.5 h-2 w-2 rounded-full bg-red-500" />
           </button>
@@ -517,80 +517,80 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
             
             {/* Card 1: Active Disasters */}
-            <div className="bg-[#070d1e] border border-red-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-red-500/60 transition">
+            <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-red-900/40 p-4 rounded-2xl shadow-md relative overflow-hidden flex flex-col justify-between group hover:border-red-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.activeDisasters', 'Active Disasters')}</span>
-                <div className="h-8 w-8 rounded-xl bg-red-500/20 border border-red-500/40 text-red-400 flex items-center justify-center font-bold">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('cmdDashboard.activeDisasters', 'Active Disasters')}</span>
+                <div className="h-8 w-8 rounded-xl bg-red-500/10 dark:bg-red-500/20 border border-red-500/30 dark:border-red-500/40 text-red-600 dark:text-red-400 flex items-center justify-center font-bold">
                   <ShieldAlert className="h-4 w-4" />
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-3xl font-black text-white font-mono tracking-tight">12</div>
-                <div className="text-[11px] font-bold text-red-400 mt-0.5 flex items-center gap-1">
+                <div className="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight">12</div>
+                <div className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-0.5 flex items-center gap-1">
                   <span>+3 today</span> &bull; <span>{t('landslide.highRisk', 'High Risk')}</span>
                 </div>
               </div>
             </div>
 
             {/* Card 2: Critical Alerts */}
-            <div className="bg-[#070d1e] border border-amber-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-amber-500/60 transition">
+            <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-amber-900/40 p-4 rounded-2xl shadow-md relative overflow-hidden flex flex-col justify-between group hover:border-amber-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.criticalAlerts', 'Critical Alerts')}</span>
-                <div className="h-8 w-8 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center font-bold">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('cmdDashboard.criticalAlerts', 'Critical Alerts')}</span>
+                <div className="h-8 w-8 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 dark:border-amber-500/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
                   <AlertTriangle className="h-4 w-4" />
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-3xl font-black text-white font-mono tracking-tight">04</div>
-                <div className="text-[11px] font-bold text-amber-400 mt-0.5">
+                <div className="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight">04</div>
+                <div className="text-[11px] font-bold text-amber-600 dark:text-amber-400 mt-0.5">
                   {t('cmdDashboard.requiresAttention', 'Requires attention')}
                 </div>
               </div>
             </div>
 
             {/* Card 3: Affected Districts */}
-            <div className="bg-[#070d1e] border border-sky-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-sky-500/60 transition">
+            <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-sky-900/40 p-4 rounded-2xl shadow-md relative overflow-hidden flex flex-col justify-between group hover:border-sky-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.affectedDistricts', 'Affected Districts')}</span>
-                <div className="h-8 w-8 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-400 flex items-center justify-center font-bold">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('cmdDashboard.affectedDistricts', 'Affected Districts')}</span>
+                <div className="h-8 w-8 rounded-xl bg-sky-500/10 dark:bg-sky-500/20 border border-sky-500/30 dark:border-sky-500/40 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
                   <MapPin className="h-4 w-4" />
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-3xl font-black text-white font-mono tracking-tight">18</div>
-                <div className="text-[11px] font-bold text-sky-400 mt-0.5">
+                <div className="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight">18</div>
+                <div className="text-[11px] font-bold text-sky-600 dark:text-sky-400 mt-0.5">
                   {t('cmdDashboard.currentlyAffected', 'Currently affected')}
                 </div>
               </div>
             </div>
 
             {/* Card 4: Rescue Teams */}
-            <div className="bg-[#070d1e] border border-emerald-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-emerald-500/60 transition">
+            <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-emerald-900/40 p-4 rounded-2xl shadow-md relative overflow-hidden flex flex-col justify-between group hover:border-emerald-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.rescueTeams', 'Rescue Teams')}</span>
-                <div className="h-8 w-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center font-bold">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('cmdDashboard.rescueTeams', 'Rescue Teams')}</span>
+                <div className="h-8 w-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 dark:border-emerald-500/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                   <ShieldCheck className="h-4 w-4" />
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-3xl font-black text-white font-mono tracking-tight">27</div>
-                <div className="text-[11px] font-bold text-emerald-400 mt-0.5">
+                <div className="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight">27</div>
+                <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
                   {t('lifeSavingEngine.deployed', 'Deployed')} (NDRF/SDRF)
                 </div>
               </div>
             </div>
 
             {/* Card 5: Relief Vehicles */}
-            <div className="bg-[#070d1e] border border-indigo-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-indigo-500/60 transition">
+            <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-indigo-900/40 p-4 rounded-2xl shadow-md relative overflow-hidden flex flex-col justify-between group hover:border-indigo-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.reliefVehicles', 'Relief Vehicles')}</span>
-                <div className="h-8 w-8 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center font-bold">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('cmdDashboard.reliefVehicles', 'Relief Vehicles')}</span>
+                <div className="h-8 w-8 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 dark:border-indigo-500/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
                   <Truck className="h-4 w-4" />
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-3xl font-black text-white font-mono tracking-tight">09</div>
-                <div className="text-[11px] font-bold text-indigo-400 mt-0.5">
+                <div className="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight">09</div>
+                <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 mt-0.5">
                   {t('cmdDashboard.activeInField', 'Active in field')}
                 </div>
               </div>
@@ -603,23 +603,23 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             2 & 3. MAIN LIVE GIS COMMAND MAP & SELECTED AREA INTELLIGENCE PANEL
            ================================================== */}
         <section id="section-map" className="w-full">
-          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4">
+          <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-xl dark:shadow-2xl space-y-4">
             
             {/* Header & Layer Filters */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
               <div>
-                <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <Radio className="h-5 w-5 text-red-500 animate-pulse" />
                   <span>{t('cmdDashboard.liveGisTitle', 'Live GIS Disaster Command Grid')}</span>
                 </h2>
-                <p className="text-xs text-slate-400 font-semibold">
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">
                   {t('cmdDashboard.liveGisSubtitle', 'Real-time telemetry, Doppler radar overlays & asset locations')}
                 </p>
               </div>
 
               {/* Map Layer Filter Pills */}
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-xs font-bold text-slate-400 mr-1">Layer Filter:</span>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 mr-1">Layer Filter:</span>
                 {["All", "Flood", "Landslide", "Rainfall", "Emergency Resources", "Vehicles"].map(filter => (
                   <button
                     key={filter}
@@ -627,7 +627,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                     className={`px-3 py-1 rounded-full text-xs font-extrabold transition cursor-pointer ${
                       activeLayerFilter === filter
                         ? "bg-sky-500 text-slate-950 shadow-md shadow-sky-500/30"
-                        : "bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-700"
+                        : "bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700"
                     }`}
                   >
                     {filter === "All" ? t('cmdDashboard.filterAll', 'All') : filter === "Flood" ? t('cmdDashboard.filterFlood', 'Flood') : filter === "Landslide" ? t('cmdDashboard.filterLandslide', 'Landslide') : filter === "Rainfall" ? t('cmdDashboard.filterRainfall', 'Rainfall') : filter === "Emergency Resources" ? t('cmdDashboard.filterResources', 'Emergency Resources') : t('cmdDashboard.filterVehicles', 'Vehicles')}
@@ -640,7 +640,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
               {/* GIS MAP CONTAINER (8 Columns) */}
-              <div className="lg:col-span-8 relative min-h-[460px] lg:min-h-[520px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
+              <div className="lg:col-span-8 relative min-h-[460px] lg:min-h-[520px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-xl bg-slate-100 dark:bg-slate-950">
                 
                 {/* Radar Sweep Animation Overlay */}
                 <div className="radar-sweep-line" />
@@ -650,11 +650,11 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
 
                 {/* Top Controls: Basemaps & Doppler Toggle */}
                 <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2">
-                  <div className="bg-slate-900/90 backdrop-blur p-1 rounded-xl border border-slate-700 flex items-center gap-1">
+                  <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur p-1 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-1 shadow-md">
                     <button
                       onClick={() => switchBasemap("satellite")}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer ${
-                        mapTileType === "satellite" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                        mapTileType === "satellite" ? "bg-sky-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       }`}
                     >
                       {t('cmdDashboard.btnSatellite', '🛰️ Satellite')}
@@ -662,15 +662,15 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                     <button
                       onClick={() => switchBasemap("dark")}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer ${
-                        mapTileType === "dark" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                        mapTileType === "dark" ? "bg-sky-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       }`}
                     >
-                      {t('cmdDashboard.btnDarkGis', '🌑 Dark GIS')}
+                      {t('cmdDashboard.btnDarkGis', 'MB Dark GIS')}
                     </button>
                     <button
                       onClick={() => switchBasemap("topo")}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer ${
-                        mapTileType === "topo" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                        mapTileType === "topo" ? "bg-sky-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       }`}
                     >
                       {t('cmdDashboard.btnTerrain', '⛰️ Terrain')}
@@ -682,7 +682,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                     className={`px-2.5 py-1.5 rounded-xl text-[10px] font-bold border cursor-pointer ${
                       showRadarOverlay
                         ? "bg-emerald-600 text-white border-emerald-400"
-                        : "bg-slate-900/90 text-slate-400 border-slate-700"
+                        : "bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700"
                     }`}
                   >
                     {t('cmdDashboard.btnDoppler', '📡 Doppler Radar')}
@@ -693,19 +693,19 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                 <div className="absolute bottom-3 right-3 z-10 flex flex-col gap-1.5">
                   <button
                     onClick={() => mapInstanceRef.current?.zoomIn()}
-                    className="h-8 w-8 bg-slate-900/90 hover:bg-slate-800 text-white rounded-xl border border-slate-700 font-bold flex items-center justify-center shadow-lg cursor-pointer"
+                    className="h-8 w-8 bg-white/90 dark:bg-slate-900/90 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 font-bold flex items-center justify-center shadow-lg cursor-pointer"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => mapInstanceRef.current?.zoomOut()}
-                    className="h-8 w-8 bg-slate-900/90 hover:bg-slate-800 text-white rounded-xl border border-slate-700 font-bold flex items-center justify-center shadow-lg cursor-pointer"
+                    className="h-8 w-8 bg-white/90 dark:bg-slate-900/90 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 font-bold flex items-center justify-center shadow-lg cursor-pointer"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => focusLocationOnMap(selectedIncident.lat, selectedIncident.lon, 9)}
-                    className="h-8 w-8 bg-slate-900/90 hover:bg-slate-800 text-sky-400 rounded-xl border border-slate-700 font-bold flex items-center justify-center shadow-lg cursor-pointer"
+                    className="h-8 w-8 bg-white/90 dark:bg-slate-900/90 hover:bg-slate-100 dark:hover:bg-slate-800 text-sky-600 dark:text-sky-400 rounded-xl border border-slate-200 dark:border-slate-700 font-bold flex items-center justify-center shadow-lg cursor-pointer"
                     title="Focus Selected Area"
                   >
                     <Crosshair className="h-4 w-4" />
@@ -714,18 +714,18 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               </div>
 
               {/* SELECTED AREA INTELLIGENCE PANEL (4 Columns) */}
-              <div className="lg:col-span-4 bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
+              <div className="lg:col-span-4 bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
                 <div>
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                     <div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">{t('cmdDashboard.selectedAreaIntel', 'Selected Area Intelligence')}</span>
-                      <h3 className="text-lg font-black text-white mt-0.5">{selectedIncident.location}</h3>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('cmdDashboard.selectedAreaIntel', 'Selected Area Intelligence')}</span>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white mt-0.5">{selectedIncident.location}</h3>
                     </div>
                     <span
                       className={`px-3 py-1 rounded-full font-black text-xs uppercase border ${
                         selectedIncident.riskLevel === "CRITICAL" || selectedIncident.riskLevel === "HIGH"
-                          ? "bg-red-500/20 text-red-400 border-red-500/40 animate-pulse"
-                          : "bg-amber-500/20 text-amber-400 border-amber-500/40"
+                          ? "bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/40 animate-pulse"
+                          : "bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40"
                       }`}
                     >
                       {t('cmdDashboard.riskHigh', 'Risk')}: {selectedIncident.riskLevel}
@@ -734,44 +734,44 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
 
                   {/* Telemetry Metrics List */}
                   <div className="py-4 space-y-3 text-xs font-medium">
-                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">{t('cmdDashboard.weatherCondition', 'Weather Condition:')}</span>
-                      <span className="font-extrabold text-white flex items-center gap-1">
-                        <CloudRain className="h-3.5 w-3.5 text-sky-400" />
+                    <div className="flex items-center justify-between bg-white dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <span className="text-slate-600 dark:text-slate-400 font-bold">{t('cmdDashboard.weatherCondition', 'Weather Condition:')}</span>
+                      <span className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1">
+                        <CloudRain className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" />
                         <span>{t('cmdDashboard.heavyDownpour', 'Heavy Downpour (22°C)')}</span>
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">{t('cmdDashboard.accumulatedRainfall', 'Accumulated Rainfall:')}</span>
-                      <span className="font-extrabold text-sky-400 font-mono">{selectedIncident.rainfallMm} mm (24h)</span>
+                    <div className="flex items-center justify-between bg-white dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <span className="text-slate-600 dark:text-slate-400 font-bold">{t('cmdDashboard.accumulatedRainfall', 'Accumulated Rainfall:')}</span>
+                      <span className="font-extrabold text-sky-600 dark:text-sky-400 font-mono">{selectedIncident.rainfallMm} mm (24h)</span>
                     </div>
 
-                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">{t('cmdDashboard.roadAccessibility', 'Road Accessibility:')}</span>
-                      <span className={`font-extrabold ${selectedIncident.roadStatus === "Clear" ? "text-emerald-400" : "text-amber-400"}`}>
+                    <div className="flex items-center justify-between bg-white dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <span className="text-slate-600 dark:text-slate-400 font-bold">{t('cmdDashboard.roadAccessibility', 'Road Accessibility:')}</span>
+                      <span className={`font-extrabold ${selectedIncident.roadStatus === "Clear" ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
                         ⚠️ {selectedIncident.roadStatus === "Partially Blocked" ? t('cmdDashboard.partiallyBlocked', 'Partially Blocked') : selectedIncident.roadStatus}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">{t('cmdDashboard.nearestShelter', 'Nearest Shelter:')}</span>
-                      <span className="font-extrabold text-purple-400">🏠 4.2 km (Mangan High School)</span>
+                    <div className="flex items-center justify-between bg-white dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <span className="text-slate-600 dark:text-slate-400 font-bold">{t('cmdDashboard.nearestShelter', 'Nearest Shelter:')}</span>
+                      <span className="font-extrabold text-purple-600 dark:text-purple-400">🏠 4.2 km (Mangan High School)</span>
                     </div>
 
-                    <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">{t('cmdDashboard.nearestHospital', 'Nearest Hospital:')}</span>
-                      <span className="font-extrabold text-emerald-400">🏥 7.1 km (STNM Referral)</span>
+                    <div className="flex items-center justify-between bg-white dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <span className="text-slate-600 dark:text-slate-400 font-bold">{t('cmdDashboard.nearestHospital', 'Nearest Hospital:')}</span>
+                      <span className="font-extrabold text-emerald-600 dark:text-emerald-400">🏥 7.1 km (STNM Referral)</span>
                     </div>
                   </div>
 
                   {/* AI Advisory Box */}
-                  <div className="p-3.5 bg-sky-950/40 border border-sky-500/30 rounded-xl space-y-1">
-                    <div className="text-xs font-black text-sky-300 flex items-center gap-1">
-                      <Sparkles className="h-3.5 w-3.5 text-sky-400" />
+                  <div className="p-3.5 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-500/30 rounded-xl space-y-1">
+                    <div className="text-xs font-black text-sky-700 dark:text-sky-300 flex items-center gap-1">
+                      <Sparkles className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" />
                       <span>{t('cmdDashboard.aiTacticalRec', 'AI Tactical Recommendation')}</span>
                     </div>
-                    <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                    <p className="text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
                       "{t('cmdDashboard.aiTacticalDesc', 'Avoid affected mountain corridors over next 48 hours. Evacuate toward designated safe zone shelters.')}"
                     </p>
                   </div>
@@ -782,7 +782,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                     const aiSection = document.getElementById("section-ai");
                     aiSection?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-black py-3 rounded-xl shadow-lg transition cursor-pointer flex items-center justify-center gap-2 text-xs"
+                  className="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-3 rounded-xl shadow-lg transition cursor-pointer flex items-center justify-center gap-2 text-xs"
                 >
                   <span>View Full AI Analysis</span>
                   <ArrowRight className="h-4 w-4" />
@@ -798,16 +798,16 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             4. AI DISASTER INTELLIGENCE (Image Upload + Demo Result & Map Connection)
            ================================================== */}
         <section id="section-ai" className="w-full">
-          <div className="bg-[#070d1e] border border-indigo-900/40 rounded-3xl p-6 shadow-2xl space-y-6">
+          <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-indigo-900/40 rounded-3xl p-6 shadow-xl dark:shadow-2xl space-y-6">
             
             <div>
               <div className="flex items-center gap-2">
-                <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase">
+                <span className="bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase">
                   AI VISION MODEL
                 </span>
-                <h2 className="text-xl font-black text-white">AI Disaster Intelligence</h2>
+                <h2 className="text-xl font-black text-slate-900 dark:text-white">AI Disaster Intelligence</h2>
               </div>
-              <p className="text-xs text-slate-400 font-semibold mt-1">
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1">
                 AI-powered analysis of disaster images, location and environmental data.
               </p>
             </div>
@@ -815,7 +815,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
               
               {/* UPLOAD BOX (5 Cols) */}
-              <div className="lg:col-span-5 border-2 border-dashed border-slate-700 hover:border-indigo-400 bg-slate-950 p-6 rounded-2xl text-center relative cursor-pointer transition group">
+              <div className="lg:col-span-5 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl text-center relative cursor-pointer transition group">
                 <input
                   type="file"
                   accept="image/*"
@@ -824,7 +824,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                 />
 
                 {aiImagePreview ? (
-                  <div className="relative h-48 w-full rounded-xl overflow-hidden shadow-lg border border-slate-700">
+                  <div className="relative h-48 w-full rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700">
                     <img src={aiImagePreview} alt="Ground site" className="w-full h-full object-cover" />
                     <span className="absolute bottom-2 right-2 bg-slate-900/90 text-white text-[10px] px-2 py-1 rounded font-bold border border-slate-700">
                       Photo Loaded
@@ -832,12 +832,12 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                   </div>
                 ) : (
                   <div className="space-y-3 py-4">
-                    <div className="h-12 w-12 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 mx-auto flex items-center justify-center group-hover:scale-110 transition">
+                    <div className="h-12 w-12 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 mx-auto flex items-center justify-center group-hover:scale-110 transition">
                       <Camera className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-xs font-black text-white">Drag &amp; Drop Disaster Photo</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">Click to browse ground images (JPG, PNG)</p>
+                      <p className="text-xs font-black text-slate-900 dark:text-white">Drag &amp; Drop Disaster Photo</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Click to browse ground images (JPG, PNG)</p>
                     </div>
                   </div>
                 )}
@@ -863,39 +863,39 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               </div>
 
               {/* DEMO RESULT CARD (7 Cols) */}
-              <div className="lg:col-span-7 bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="lg:col-span-7 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                   <div>
-                    <span className="text-xs font-black text-white">AI Analysis Result</span>
-                    <p className="text-[10px] text-slate-400">Multimodal Neural Net Landslide &amp; Flood Assessment</p>
+                    <span className="text-xs font-black text-slate-900 dark:text-white">AI Analysis Result</span>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">Multimodal Neural Net Landslide &amp; Flood Assessment</p>
                   </div>
-                  <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-black px-2.5 py-1 rounded-full uppercase">
+                  <span className="bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 text-[9px] font-black px-2.5 py-1 rounded-full uppercase">
                     DEMO ANALYSIS
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                  <div className="bg-[#070d1e] p-3 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 text-[10px] font-bold block">Disaster Type</span>
-                    <span className="font-extrabold text-white mt-0.5 block">{aiResult ? aiResult.disasterType : "Landslide"}</span>
+                  <div className="bg-white dark:bg-[#070d1e] p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold block">Disaster Type</span>
+                    <span className="font-extrabold text-slate-900 dark:text-white mt-0.5 block">{aiResult ? aiResult.disasterType : "Landslide"}</span>
                   </div>
-                  <div className="bg-[#070d1e] p-3 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 text-[10px] font-bold block">Severity</span>
-                    <span className="font-extrabold text-red-400 mt-0.5 block">{aiResult ? aiResult.severity : "CRITICAL 🔴"}</span>
+                  <div className="bg-white dark:bg-[#070d1e] p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold block">Severity</span>
+                    <span className="font-extrabold text-red-600 dark:text-red-400 mt-0.5 block">{aiResult ? aiResult.severity : "CRITICAL 🔴"}</span>
                   </div>
-                  <div className="bg-[#070d1e] p-3 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 text-[10px] font-bold block">Road Status</span>
-                    <span className="font-extrabold text-amber-400 mt-0.5 block">{aiResult ? aiResult.roadStatus : "BLOCKED 🚫"}</span>
+                  <div className="bg-white dark:bg-[#070d1e] p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold block">Road Status</span>
+                    <span className="font-extrabold text-amber-600 dark:text-amber-400 mt-0.5 block">{aiResult ? aiResult.roadStatus : "BLOCKED 🚫"}</span>
                   </div>
-                  <div className="bg-[#070d1e] p-3 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 text-[10px] font-bold block">Confidence</span>
-                    <span className="font-extrabold text-emerald-400 mt-0.5 block">{aiResult ? aiResult.confidence : "94%"}</span>
+                  <div className="bg-white dark:bg-[#070d1e] p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold block">Confidence</span>
+                    <span className="font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 block">{aiResult ? aiResult.confidence : "94%"}</span>
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-indigo-950/40 border border-indigo-500/30 rounded-xl space-y-1">
-                  <div className="text-xs font-extrabold text-indigo-300">AI Recommendation</div>
-                  <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                <div className="p-3.5 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-500/30 rounded-xl space-y-1">
+                  <div className="text-xs font-extrabold text-indigo-700 dark:text-indigo-300">AI Recommendation</div>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                     {aiResult ? aiResult.recommendation : '"Immediate route diversion via Jowai Bypass corridor required. Dispatched warning signal to Gangtok Emergency Command."'}
                   </p>
                 </div>
@@ -903,14 +903,14 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                 <div className="flex items-center gap-3 pt-1">
                   <button
                     onClick={() => focusLocationOnMap(27.3389, 88.6065, 11)}
-                    className="flex-1 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black py-2.5 rounded-xl shadow cursor-pointer text-xs flex items-center justify-center gap-1.5"
+                    className="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl shadow cursor-pointer text-xs flex items-center justify-center gap-1.5"
                   >
                     <MapPin className="h-3.5 w-3.5" />
                     <span>Show on Map</span>
                   </button>
                   <button
                     onClick={() => alert("Full AI SITREP PDF report generated.")}
-                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl border border-slate-700 cursor-pointer text-xs"
+                    className="flex-1 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 cursor-pointer text-xs"
                   >
                     View Full AI Report
                   </button>
@@ -926,14 +926,14 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             5. 72-HOUR RISK INTELLIGENCE FORECAST
            ================================================== */}
         <section id="section-risk" className="w-full">
-          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6">
+          <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xl dark:shadow-2xl space-y-6">
             
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-black text-white">72-Hour Risk Forecast</h2>
-                <p className="text-xs text-slate-400 font-semibold">Predicted environmental risk trajectory across timeline</p>
+                <h2 className="text-xl font-black text-slate-900 dark:text-white">72-Hour Risk Forecast</h2>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Predicted environmental risk trajectory across timeline</p>
               </div>
-              <span className="bg-sky-500/20 text-sky-300 border border-sky-400/30 px-3 py-1 rounded-full text-xs font-extrabold">
+              <span className="bg-sky-500/10 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-400/30 px-3 py-1 rounded-full text-xs font-extrabold">
                 IMD &bull; ISRO TELEMETRY
               </span>
             </div>
@@ -941,20 +941,20 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             {/* Timeline Bars */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               {[
-                { time: "Now", rain: "82 mm", floodProb: "75%", landslideProb: "84%", riskClass: "border-red-500/50 bg-red-950/20" },
-                { time: "+12 Hours", rain: "105 mm", floodProb: "88%", landslideProb: "92%", riskClass: "border-red-500/50 bg-red-950/30" },
-                { time: "+24 Hours", rain: "120 mm", floodProb: "90%", landslideProb: "95%", riskClass: "border-red-500/60 bg-red-950/40" },
-                { time: "+48 Hours", rain: "65 mm", floodProb: "60%", landslideProb: "70%", riskClass: "border-amber-500/50 bg-amber-950/20" },
-                { time: "+72 Hours", rain: "30 mm", floodProb: "35%", landslideProb: "40%", riskClass: "border-emerald-500/50 bg-emerald-950/20" }
+                { time: "Now", rain: "82 mm", floodProb: "75%", landslideProb: "84%", riskClass: "border-red-300 dark:border-red-500/50 bg-red-50 dark:bg-red-950/20" },
+                { time: "+12 Hours", rain: "105 mm", floodProb: "88%", landslideProb: "92%", riskClass: "border-red-300 dark:border-red-500/50 bg-red-50 dark:bg-red-950/30" },
+                { time: "+24 Hours", rain: "120 mm", floodProb: "90%", landslideProb: "95%", riskClass: "border-red-400 dark:border-red-500/60 bg-red-100 dark:bg-red-950/40" },
+                { time: "+48 Hours", rain: "65 mm", floodProb: "60%", landslideProb: "70%", riskClass: "border-amber-300 dark:border-amber-500/50 bg-amber-50 dark:bg-amber-950/20" },
+                { time: "+72 Hours", rain: "30 mm", floodProb: "35%", landslideProb: "40%", riskClass: "border-emerald-300 dark:border-emerald-500/50 bg-emerald-50 dark:bg-emerald-950/20" }
               ].map((step, idx) => (
                 <div key={idx} className={`p-4 rounded-2xl border ${step.riskClass} text-center space-y-2`}>
-                  <div className="text-xs font-black text-white">{step.time}</div>
-                  <div className="text-sm font-black text-sky-400 font-mono">{step.rain}</div>
-                  <div className="text-[10px] font-bold text-slate-300">
-                    Flood: <strong className="text-red-400">{step.floodProb}</strong>
+                  <div className="text-xs font-black text-slate-900 dark:text-white">{step.time}</div>
+                  <div className="text-sm font-black text-sky-600 dark:text-sky-400 font-mono">{step.rain}</div>
+                  <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                    Flood: <strong className="text-red-600 dark:text-red-400">{step.floodProb}</strong>
                   </div>
-                  <div className="text-[10px] font-bold text-slate-300">
-                    Landslide: <strong className="text-amber-400">{step.landslideProb}</strong>
+                  <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                    Landslide: <strong className="text-amber-600 dark:text-amber-400">{step.landslideProb}</strong>
                   </div>
                 </div>
               ))}
@@ -962,36 +962,36 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
 
             {/* Risk Category Summary Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-              <div className="bg-slate-950 p-4 rounded-2xl border border-red-900/40 flex items-center justify-between">
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-red-200 dark:border-red-900/40 flex items-center justify-between shadow-sm">
                 <div>
-                  <span className="text-xs font-bold text-slate-400 block">Flood Risk</span>
-                  <span className="text-lg font-black text-red-400">HIGH 🔴</span>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Flood Risk</span>
+                  <span className="text-lg font-black text-red-600 dark:text-red-400">HIGH 🔴</span>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold">🌊</div>
+                <div className="h-8 w-8 rounded-full bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center font-bold">🌊</div>
               </div>
 
-              <div className="bg-slate-950 p-4 rounded-2xl border border-orange-900/40 flex items-center justify-between">
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-orange-200 dark:border-orange-900/40 flex items-center justify-between shadow-sm">
                 <div>
-                  <span className="text-xs font-bold text-slate-400 block">Landslide Risk</span>
-                  <span className="text-lg font-black text-orange-400">HIGH 🟠</span>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Landslide Risk</span>
+                  <span className="text-lg font-black text-orange-600 dark:text-orange-400">HIGH 🟠</span>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold">⛰️</div>
+                <div className="h-8 w-8 rounded-full bg-orange-500/10 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold">⛰️</div>
               </div>
 
-              <div className="bg-slate-950 p-4 rounded-2xl border border-amber-900/40 flex items-center justify-between">
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-amber-200 dark:border-amber-900/40 flex items-center justify-between shadow-sm">
                 <div>
-                  <span className="text-xs font-bold text-slate-400 block">Earthquake Risk</span>
-                  <span className="text-lg font-black text-amber-400">MEDIUM 🟡</span>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Earthquake Risk</span>
+                  <span className="text-lg font-black text-amber-600 dark:text-amber-400">MEDIUM 🟡</span>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">📊</div>
+                <div className="h-8 w-8 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">📊</div>
               </div>
 
-              <div className="bg-slate-950 p-4 rounded-2xl border border-sky-900/40 flex items-center justify-between">
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-sky-200 dark:border-sky-900/40 flex items-center justify-between shadow-sm">
                 <div>
-                  <span className="text-xs font-bold text-slate-400 block">Heavy Rainfall</span>
-                  <span className="text-lg font-black text-sky-400">HIGH 🔵</span>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Heavy Rainfall</span>
+                  <span className="text-lg font-black text-sky-600 dark:text-sky-400">HIGH 🔵</span>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">🌧️</div>
+                <div className="h-8 w-8 rounded-full bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">🌧️</div>
               </div>
             </div>
 
@@ -1002,14 +1002,14 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             6. CRITICAL ALERTS SECTION
            ================================================== */}
         <section id="section-alerts" className="w-full">
-          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
+          <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xl dark:shadow-2xl space-y-4">
             
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black text-white flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-amber-400" />
+              <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-amber-500 dark:text-amber-400" />
                 <span>Critical Alerts</span>
               </h2>
-              <span className="text-xs font-bold text-slate-400">Real-time Emergency Feed</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Real-time Emergency Feed</span>
             </div>
 
             <div className="space-y-3">
@@ -1018,23 +1018,23 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                 { id: "A-2", severity: "🟠", title: "Flood Risk Increased", desc: "Teesta river basin water level breached caution line.", location: "Chungthang Sector", time: "35 minutes ago", lat: 27.58, lon: 88.62 },
                 { id: "A-3", severity: "🟡", title: "Heavy Rainfall Warning", desc: "Downpour expected over next 12 hours across East Khasi Hills.", location: "Sohra, Meghalaya", time: "1 hour ago", lat: 25.27, lon: 91.73 }
               ].map(alert => (
-                <div key={alert.id} className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div key={alert.id} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
                   <div className="flex items-start gap-3">
                     <span className="text-xl">{alert.severity}</span>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-black text-white">{alert.title}</h4>
-                        <span className="text-[10px] text-slate-400">&bull; {alert.location}</span>
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white">{alert.title}</h4>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400">&bull; {alert.location}</span>
                         <span className="text-[10px] text-slate-500 font-mono">({alert.time})</span>
                       </div>
-                      <p className="text-xs text-slate-300 mt-0.5 font-medium">{alert.desc}</p>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5 font-medium">{alert.desc}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => focusLocationOnMap(alert.lat, alert.lon, 11)}
-                      className="bg-sky-500/20 text-sky-300 border border-sky-500/40 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-sky-500/30 cursor-pointer"
+                      className="bg-sky-50 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-500/40 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-sky-100 dark:hover:bg-sky-500/30 cursor-pointer"
                     >
                       View on Map
                     </button>
@@ -1050,14 +1050,14 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             7. EMERGENCY RESOURCES GRID
            ================================================== */}
         <section id="section-resources" className="w-full">
-          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
+          <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xl dark:shadow-2xl space-y-4">
             
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black text-white flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-emerald-400" />
+              <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400" />
                 <span>Emergency Resources</span>
               </h2>
-              <span className="text-xs font-bold text-slate-400">Nearest Assets Grid</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Nearest Assets Grid</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
@@ -1075,12 +1075,12 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                     setActiveLayerFilter(res.layer);
                     focusLocationOnMap(res.lat, res.lon, 10);
                   }}
-                  className="bg-slate-950 p-4 rounded-2xl border border-slate-800 hover:border-emerald-500/50 transition cursor-pointer flex flex-col justify-between"
+                  className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 transition cursor-pointer flex flex-col justify-between shadow-sm"
                 >
                   <div className="text-2xl mb-1">{res.icon}</div>
-                  <div className="text-xl font-black text-white font-mono">{res.count}</div>
-                  <div className="text-xs font-bold text-slate-300 mt-0.5">{res.name}</div>
-                  <span className="text-[10px] text-emerald-400 font-bold mt-1">{res.status}</span>
+                  <div className="text-xl font-black text-slate-900 dark:text-white font-mono">{res.count}</div>
+                  <div className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-0.5">{res.name}</div>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-1">{res.status}</span>
                 </div>
               ))}
             </div>
@@ -1092,45 +1092,45 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             8. RELIEF & LOGISTICS OPERATIONS
            ================================================== */}
         <section className="w-full">
-          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6">
+          <div className="bg-white dark:bg-[#070d1e] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xl dark:shadow-2xl space-y-6">
             
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-black text-white flex items-center gap-2">
-                  <Truck className="h-5 w-5 text-indigo-400" />
+                <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <Truck className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
                   <span>Relief Operations &amp; Fleet Logistics</span>
                 </h2>
-                <p className="text-xs text-slate-400 font-semibold">Active supply convoys and dispatch routes</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Active supply convoys and dispatch routes</p>
               </div>
-              <div className="flex items-center gap-4 text-xs font-extrabold text-slate-300">
-                <span>Vehicles: <strong className="text-indigo-400 font-mono">09</strong></span>
-                <span>Deliveries: <strong className="text-emerald-400 font-mono">14</strong></span>
+              <div className="flex items-center gap-4 text-xs font-extrabold text-slate-700 dark:text-slate-300">
+                <span>Vehicles: <strong className="text-indigo-600 dark:text-indigo-400 font-mono">09</strong></span>
+                <span>Deliveries: <strong className="text-emerald-600 dark:text-emerald-400 font-mono">14</strong></span>
               </div>
             </div>
 
             {/* Logistics Vehicle Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {vehicles.map(v => (
-                <div key={v.id} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+                <div key={v.id} className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-sm font-black text-white">{v.name}</h4>
-                      <span className="text-[10px] text-slate-400 font-semibold">{v.type}</span>
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white">{v.name}</h4>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">{v.type}</span>
                     </div>
                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${
-                      v.risk === "WARNING" ? "bg-amber-500/20 text-amber-400 border border-amber-500/40" : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                      v.risk === "WARNING" ? "bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/40" : "bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/40"
                     }`}>
                       Route: {v.risk}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs font-medium bg-[#070d1e] p-2.5 rounded-xl border border-slate-800">
-                    <div><span className="text-slate-400">Corridor:</span> <strong className="text-white block">{v.route}</strong></div>
-                    <div><span className="text-slate-400">ETA:</span> <strong className="text-sky-400 block font-mono">{v.eta}</strong></div>
+                  <div className="grid grid-cols-2 gap-2 text-xs font-medium bg-white dark:bg-[#070d1e] p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div><span className="text-slate-500 dark:text-slate-400">Corridor:</span> <strong className="text-slate-900 dark:text-white block">{v.route}</strong></div>
+                    <div><span className="text-slate-500 dark:text-slate-400">ETA:</span> <strong className="text-sky-600 dark:text-sky-400 block font-mono">{v.eta}</strong></div>
                   </div>
 
                   <div className="flex items-center justify-between text-xs pt-1">
-                    <span className="text-slate-400">Cargo: <strong className="text-slate-200">{v.cargo}</strong></span>
+                    <span className="text-slate-500 dark:text-slate-400">Cargo: <strong className="text-slate-800 dark:text-slate-200">{v.cargo}</strong></span>
                     <button
                       onClick={() => focusLocationOnMap(27.42, 88.58, 11)}
                       className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl font-extrabold cursor-pointer text-xs"
@@ -1149,18 +1149,18 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             10. TRUSTED DATA SOURCES STATUS
            ================================================== */}
         <section className="w-full">
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
             <div>
-              <h4 className="text-xs font-black text-white">Trusted Data Sources Grid</h4>
-              <p className="text-[11px] text-slate-400">Verified feeds from satellite &amp; meteorological networks</p>
+              <h4 className="text-xs font-black text-slate-900 dark:text-white">Trusted Data Sources Grid</h4>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Verified feeds from satellite &amp; meteorological networks</p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-300">
-              <span className="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800">ISRO / Bhuvan</span>
-              <span className="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800">IMD Weather</span>
-              <span className="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800">Govt Reports</span>
-              <span className="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800">OpenStreetMap</span>
-              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded font-mono font-black">
+            <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-700 dark:text-slate-300">
+              <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">ISRO / Bhuvan</span>
+              <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">IMD Weather</span>
+              <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">Govt Reports</span>
+              <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">OpenStreetMap</span>
+              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 rounded font-mono font-black">
                 DEMO / SIMULATED DATA
               </span>
             </div>
@@ -1172,8 +1172,8 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
       {/* ==================================================
           11. PERSISTENT EMERGENCY ACTION BAR
          ================================================== */}
-      <div className="fixed bottom-16 lg:bottom-4 left-1/2 -translate-x-1/2 z-[90] bg-[#070d1e]/90 backdrop-blur-md border border-slate-700/80 rounded-full px-4 py-2 shadow-2xl flex items-center gap-2">
-        <span className="text-xs font-black text-white hidden sm:block pl-2">Need Emergency Help?</span>
+      <div className="fixed bottom-16 lg:bottom-4 left-1/2 -translate-x-1/2 z-[90] bg-white/95 dark:bg-[#070d1e]/90 backdrop-blur-md border border-slate-300 dark:border-slate-700/80 rounded-full px-4 py-2 shadow-2xl flex items-center gap-2">
+        <span className="text-xs font-black text-slate-900 dark:text-white hidden sm:block pl-2">Need Emergency Help?</span>
         
         <button
           onClick={() => setIsSosOpen(true)}
@@ -1211,7 +1211,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
       {/* ==================================================
           12. MOBILE FIXED BOTTOM NAVIGATION (Dashboard Only)
          ================================================== */}
-      <div className="xl:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#070d1e] border-t border-slate-800 px-2 py-2 flex items-center justify-around shadow-2xl">
+      <div className="xl:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white dark:bg-[#070d1e] border-t border-slate-200 dark:border-slate-800 px-2 py-2 flex items-center justify-around shadow-2xl">
         {[
           { id: "home", label: "Home", icon: Home, action: () => onNavigateModule ? onNavigateModule("home") : (window.location.href = "/") },
           { id: "map", label: "Map", icon: MapPin, action: () => focusLocationOnMap(27.3389, 88.6065, 8) },
@@ -1225,7 +1225,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               key={item.id}
               onClick={item.action}
               className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition cursor-pointer ${
-                item.active ? "text-sky-400 font-extrabold" : "text-slate-400 hover:text-white"
+                item.active ? "text-sky-600 dark:text-sky-400 font-extrabold" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <Icon className="h-4 w-4" />
