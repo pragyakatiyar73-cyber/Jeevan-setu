@@ -61,7 +61,7 @@ export default function NERLiveMapModule({
 
   // Base Style (Default to Vivid Sovereign Satellite with natural terrain relief)
   const [baseStyle, setBaseStyle] = useState<string>("esri");
-  const [isLayersPanelOpen, setIsLayersPanelOpen] = useState<boolean>(true);
+  const [isLayersPanelOpen, setIsLayersPanelOpen] = useState<boolean>(false);
   const [showSosBroadcast, setShowSosBroadcast] = useState<boolean>(true);
   const [mapSearchQuery, setMapSearchQuery] = useState<string>("");
 
