@@ -40,7 +40,8 @@ import {
   Mic,
   MicOff,
   Home,
-  BookOpen
+  BookOpen,
+  HeartPulse
 } from 'lucide-react';
 import L from 'leaflet';
 import {
@@ -65,6 +66,7 @@ import WeatherIntelligence from './components/WeatherIntelligence';
 import FloodIntelligenceModule from './components/FloodIntelligenceModule';
 import LandslideRiskIntelligence from './components/LandslideRiskIntelligence';
 import RoadAccessibilityModule from './components/RoadAccessibilityModule';
+import EmergencyFacilitiesModule from './components/EmergencyFacilitiesModule';
 import UAVDroneModule from './components/UAVDroneModule';
 import EmergencySOSModal from './components/EmergencySOSModal';
 import MDoNERCommandModule from './components/MDoNERCommandModule';
@@ -112,6 +114,7 @@ export default function App() {
     if (path.includes('/flood')) return 'flood';
     if (path.includes('/weather')) return 'weather';
     if (path.includes('/landslide')) return 'landslide';
+    if (path.includes('/facilities') || path.includes('/emergency')) return 'facilities';
 
     return 'home';
   });
@@ -640,6 +643,7 @@ export default function App() {
               {
                 category: t('sidebar.catResponse', '3. Emergency Rescue & Camps'),
                 items: [
+                  { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue Points'), icon: HeartPulse, badge: 'OSM LIVE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, badge: 'SOS CORE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'rescueteams', label: t('navigation.rescueteams', 'Rescue Team Command'), icon: ShieldCheck, badge: 'NDRF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'evacuation', label: t('navigation.evacuation', 'Evacuation & Safe Zone'), icon: Navigation, badge: 'ROUTE C', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
@@ -1882,6 +1886,19 @@ export default function App() {
           <LandslideRiskIntelligence
             onNavigateToMap={() => setActiveModule('map')}
             onNavigateToReroute={() => setActiveModule('rerouting')}
+            onTriggerSOS={() => setIsSosModalOpen(true)}
+          />
+        )}
+
+        {/* 7D. EMERGENCY FACILITIES & RESCUE POINTS INTELLIGENCE VIEW */}
+        {activeModule === 'facilities' && (
+          <EmergencyFacilitiesModule
+            onNavigateToMap={() => setActiveModule('map')}
+            onNavigateToReroute={(origin, dest) => {
+              setRouteStart(origin);
+              setRouteDest(dest);
+              setActiveModule('rerouting');
+            }}
             onTriggerSOS={() => setIsSosModalOpen(true)}
           />
         )}

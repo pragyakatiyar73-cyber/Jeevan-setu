@@ -13,6 +13,7 @@ export * from './droneRouting';
 export * from './smartMonitoring';
 export * from './incidentStore';
 export * from './bhuvanService';
+export * from './emergencyFacilitiesService';
 
 export interface APIRegistryStatus {
   category: string;
