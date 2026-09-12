@@ -755,39 +755,7 @@ export default function App() {
       <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0 max-w-full">
 
         {/* Top Header Command Bar — Clean, Aesthetic & Perfectly Responsive */}
-        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-3 sm:px-4 lg:px-5 flex items-center justify-between gap-2 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
-          
-          {/* Left: Breadcrumbs & Regional Network Status Beacon */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 overflow-hidden shrink">
-            <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 min-w-0">
-              <span className="hidden xl:inline shrink-0 font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                MDoNER
-              </span>
-              <span className="hidden xl:inline text-slate-400 dark:text-slate-600 shrink-0">/</span>
-              <span className="hidden md:inline shrink-0 text-slate-600 dark:text-slate-400">NER Grid</span>
-              <span className="hidden md:inline text-slate-400 dark:text-slate-600 shrink-0">/</span>
-              <span className="text-slate-900 dark:text-white font-black truncate max-w-[130px] sm:max-w-[220px] md:max-w-none">
-                {activeModule === 'customdashboard' ? 'Risk Dashboard' :
-                 activeModule === 'map' ? 'Live GIS Map' :
-                 activeModule === 'staterisk' ? 'Hazard Matrix' :
-                 activeModule === 'aiimpact' ? 'AI Assessment' :
-                 activeModule === 'facilities' ? 'Facilities' :
-                 activeModule === 'weather' ? 'Weather & Radar' :
-                 activeModule === 'safetyguide' ? 'Safety Guide' :
-                 activeModule === 'drone' ? 'Drone Rescue' :
-                 activeModule === 'rescueteams' ? 'Rescue Teams' :
-                 activeModule === 'reliefcamps' ? 'Relief Camps' :
-                 activeModule === 'alerts' ? 'Active Alerts' :
-                 activeModule === 'gov' ? 'MDoNER Command' :
-                 activeModule === 'sitrep' ? 'SITREP' : 'Command Center'}
-              </span>
-            </div>
-            <span className="hidden 2xl:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-              <span>8 States Live</span>
-            </span>
-          </div>
-
+        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-3 sm:px-4 lg:px-5 flex items-center justify-end gap-2 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
           {/* Right: Quick Action Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-50 ml-auto">
             {/* 🚨 Emergency SOS Refined Pill */}
@@ -835,25 +803,6 @@ export default function App() {
                 {currentTime || '23:45:11'}
               </span>
             </div>
-
-            {/* User Profile Badge: Admin Officer MDoNER L3 */}
-            <button
-              onClick={() => setActiveModule('gov')}
-              title="MDoNER Executive Oversight & Command Grid"
-              className={`flex items-center gap-1.5 rounded-xl border transition cursor-pointer p-1.5 xl:px-2.5 xl:py-1.5 text-xs shrink-0 ${
-                activeModule === 'gov'
-                  ? 'border-emerald-500 bg-emerald-500/20 text-white shadow-md'
-                  : 'border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900/60 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              <div className="h-6 w-6 rounded-lg bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center shrink-0">
-                AO
-              </div>
-              <div className="text-left hidden 2xl:block">
-                <div className="font-bold text-slate-900 dark:text-white leading-none text-xs">{t('header.adminOfficer', 'Admin Officer')}</div>
-                <div className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5">MDoNER L3</div>
-              </div>
-            </button>
 
             {/* 🌐 Language Switcher */}
             <div className="shrink-0">
