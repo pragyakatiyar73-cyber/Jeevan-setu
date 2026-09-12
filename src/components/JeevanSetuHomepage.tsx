@@ -637,21 +637,21 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <button
                   type="button"
                   onClick={() => onNavigateModule('customdashboard')}
-                  className="bg-[#38BDF8] hover:bg-[#0284C7] text-slate-950 font-black px-7 py-3.5 rounded-full shadow-xl shadow-sky-500/30 flex items-center gap-2.5 text-base transition transform hover:scale-105 cursor-pointer border border-sky-300/50"
+                  className="bg-[#38BDF8] hover:bg-[#0284C7] text-slate-950 font-black px-7 py-3.5 rounded-full shadow-xl shadow-sky-500/30 flex items-center gap-2.5 text-base transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-2xl hover:shadow-sky-500/50 cursor-pointer border border-sky-300/50 group"
                 >
-                  <LayoutDashboard className="h-5 w-5 text-slate-950" />
+                  <LayoutDashboard className="h-5 w-5 text-slate-950 group-hover:scale-110 transition duration-300" />
                   <span>{t('home.exploreDashboard', 'Explore Dashboard')}</span>
-                  <ArrowRight className="h-5 w-5" />
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition duration-300" />
                 </button>
 
                 <button
                   type="button"
                   onClick={() => onNavigateModule('map')}
-                  className="bg-[#0B152A]/80 hover:bg-[#0B152A] text-white font-extrabold px-7 py-3.5 rounded-full border border-[#38BDF8]/60 backdrop-blur flex items-center gap-2.5 text-base transition hover:border-[#38BDF8] cursor-pointer shadow-lg"
+                  className="bg-[#0B152A]/80 hover:bg-[#0B152A] text-white font-extrabold px-7 py-3.5 rounded-full border border-[#38BDF8]/60 backdrop-blur flex items-center gap-2.5 text-base transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:border-[#38BDF8] hover:shadow-2xl hover:shadow-sky-500/20 cursor-pointer shadow-lg group"
                 >
-                  <MapPin className="h-5 w-5 text-[#38BDF8]" />
+                  <MapPin className="h-5 w-5 text-[#38BDF8] group-hover:scale-110 transition duration-300" />
                   <span>{t('home.exploreLiveMap', 'Explore Live Map')}</span>
-                  <ArrowRight className="h-5 w-5" />
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition duration-300" />
                 </button>
               </div>
 
@@ -667,9 +667,9 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   return (
                     <div
                       key={item.label}
-                      className="bg-[#0B152A]/80 backdrop-blur-md border border-slate-700/80 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-200 flex items-center gap-2 shadow-sm"
+                      className="bg-[#0B152A]/80 backdrop-blur-md border border-slate-700/80 hover:border-sky-400 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-200 hover:text-white flex items-center gap-2 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] cursor-pointer group"
                     >
-                      <Icon className="h-3.5 w-3.5 text-[#38BDF8]" />
+                      <Icon className="h-3.5 w-3.5 text-[#38BDF8] group-hover:scale-125 transition duration-300" />
                       <span>{item.label}</span>
                     </div>
                   );
@@ -872,18 +872,18 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <div className="flex items-center gap-2">
               <button
                 onClick={handleOpenDashboard}
-                className="bg-sky-500 hover:bg-sky-400 text-slate-950 px-4 py-1.5 rounded-full text-xs font-black transition flex items-center gap-1.5 shadow-sm cursor-pointer border border-sky-300/40"
+                className="bg-sky-500 hover:bg-sky-400 text-slate-950 px-4 py-1.5 rounded-full text-xs font-black transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-lg shadow-sm cursor-pointer border border-sky-300/40 flex items-center gap-1.5 group"
               >
                 <span>{t('home.viewFullDashboard', 'View Full Dashboard')}</span>
-                <ArrowRight className="h-3.5 w-3.5" />
+                <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition duration-300" />
               </button>
 
               <button
                 onClick={() => onNavigateModule('map')}
-                className="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-400 border border-slate-300 dark:border-slate-700 rounded-full px-4 py-1.5 text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+                className="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-400 border border-slate-300 dark:border-slate-700 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-lg hover:border-sky-400 shadow-sm cursor-pointer flex items-center gap-1.5 group"
               >
                 <span>{t('home.viewFullMap', 'View Full Map')}</span>
-                <ArrowRight className="h-3.5 w-3.5" />
+                <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition duration-300" />
               </button>
             </div>
           </div>
