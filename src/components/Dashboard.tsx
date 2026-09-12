@@ -196,15 +196,6 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
         markers.addLayer(marker);
       });
     }
-
-    // Invalidate map size after DOM renders/tabs switch
-    const timer = setTimeout(() => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize();
-      }
-    }, 150);
-
-    return () => clearTimeout(timer);
   }, [landslideData, floodData, activeTab]);
 
   return (
@@ -316,14 +307,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
 
         {/* Pillar 3: Live GIS Map */}
         <div
-          onClick={() => {
-            setActiveTab('livemap');
-            setTimeout(() => {
-              const el = document.getElementById('live-gis-minimap-section');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-              if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize();
-            }, 100);
-          }}
+          onClick={() => setActiveTab('livemap')}
           className={`p-5 rounded-2xl border cursor-pointer transition-all duration-300 space-y-3 ${
             activeTab === 'livemap'
               ? 'border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/40 shadow-xl'
@@ -553,7 +537,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
       {/* 🗺️ PILLAR 3: LIVE GIS MAP SECTION */}
       {/* ---------------------------------------------------------------------- */}
       {(activeTab === 'all' || activeTab === 'livemap') && (
-        <div id="live-gis-minimap-section" className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 sm:p-6 shadow-xl space-y-4 transition-colors duration-300">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 sm:p-6 shadow-xl space-y-4 transition-colors duration-300">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 gap-3">
             <div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
@@ -561,28 +545,21 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                 3. Live North Eastern Region GIS Map Telemetry
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
-                Interactive Leaflet mini map showing 8-state NER boundary and real-time hazard markers.
+                Interactive Leaflet map showing 8-state NER boundary and real-time hazard markers.
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
-                ● Live GIS Telemetry Active
-              </span>
-
-              {onNavigateModule && (
-                <button
-                  onClick={() => onNavigateModule('map')}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black shadow-md shadow-indigo-600/30 flex items-center gap-2 cursor-pointer shrink-0 border border-indigo-400/30"
-                >
-                  Open Full 2D Tactical GIS Map 🗺️
-                </button>
-              )}
-            </div>
+            {onNavigateModule && (
+              <button
+                onClick={() => onNavigateModule('map')}
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black shadow-md shadow-indigo-600/30 flex items-center gap-2 cursor-pointer shrink-0 border border-indigo-400/30"
+              >
+                Open Full 2D Tactical GIS Map 🗺️
+              </button>
+            )}
           </div>
 
-          <div ref={mapContainerRef} className="h-80 sm:h-96 min-h-[320px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner" />
+          <div ref={mapContainerRef} className="h-96 w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner" />
 
           <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 font-mono">
             <div className="flex items-center gap-3">

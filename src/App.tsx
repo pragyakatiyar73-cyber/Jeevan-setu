@@ -67,27 +67,23 @@ import FloodIntelligenceModule from './components/FloodIntelligenceModule';
 import LandslideRiskIntelligence from './components/LandslideRiskIntelligence';
 import RoadAccessibilityModule from './components/RoadAccessibilityModule';
 import EmergencyFacilitiesModule from './components/EmergencyFacilitiesModule';
-import DisasterIncidentsModule from './components/DisasterIncidentsModule';
 import UAVDroneModule from './components/UAVDroneModule';
 import EmergencySOSModal from './components/EmergencySOSModal';
 import MDoNERCommandModule from './components/MDoNERCommandModule';
 import NERLiveMapModule from './components/NERLiveMapModule';
 import ActionAlertsModule from './components/ActionAlertsModule';
 import StateRiskMatrixSection from './components/StateRiskMatrixSection';
+import RescueTeamCommand from './components/RescueTeamCommand';
+import EvacuationPlanner from './components/EvacuationPlanner';
+import ReliefCampManagement from './components/ReliefCampManagement';
 import AISituationReportModule from './components/AISituationReportModule';
+import LifeSavingResponseEngine from './components/LifeSavingResponseEngine';
 import LanguageSelector from './components/LanguageSelector';
-
 import ThemeToggle from './components/ThemeToggle';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
-import ReliefSupplyModule from './components/ReliefSupplyModule';
-import DriverTrackingPage from './components/DriverTrackingPage';
-import SmartEmergencyResponseModule from './components/SmartEmergencyResponseModule';
-import SmartDynamicRoutingModule from './components/SmartDynamicRoutingModule';
 import { useTranslation } from './i18n';
-
 import { incidentStore } from './services/api';
-
 
 // NER State Data
 const NER_HUBS = [
@@ -111,11 +107,6 @@ export default function App() {
     if (hash) return hash;
 
     const path = window.location.pathname.toLowerCase();
-    if (path.includes('/dynamic-routing') || path.includes('/dynamic_routing') || path.includes('/safe-route')) return 'dynamicrouting';
-    if (path.includes('/emergency-response') || path.includes('/emergency_response')) return 'emergencyresponse';
-    if (path.includes('/driver/tracking') || path.includes('/driver-tracking')) return 'drivertracking';
-    if (path.includes('/relief-supply') || path.includes('/relief')) return 'reliefsupply';
-
     if (path.includes('/dashboard')) return 'customdashboard';
     if (path.includes('/live-map')) return 'map';
     if (path.includes('/risk-assessment')) return 'staterisk';
@@ -124,14 +115,15 @@ export default function App() {
     if (path.includes('/weather')) return 'weather';
     if (path.includes('/landslide')) return 'landslide';
     if (path.includes('/facilities') || path.includes('/emergency')) return 'facilities';
-    if (path.includes('/incidents') || path.includes('/disaster-reports')) return 'incidents';
-
-
 
     return 'home';
   });
+  const [previousModule, setPreviousModule] = useState<string>('home');
 
   const setActiveModule = (mod: string) => {
+    if (mod !== activeModule && activeModule !== 'map') {
+      setPreviousModule(activeModule);
+    }
     setActiveModuleState(mod);
     const url = new URL(window.location.href);
     if (mod === 'home') {
@@ -147,21 +139,7 @@ export default function App() {
     } else if (mod === 'staterisk') {
       url.pathname = '/risk-assessment';
       url.searchParams.set('tab', mod);
-    } else if (mod === 'emergencyresponse') {
-      url.pathname = '/emergency-response';
-      url.searchParams.set('tab', mod);
-    } else if (mod === 'dynamicrouting') {
-      url.pathname = '/dynamic-routing';
-      url.searchParams.set('tab', mod);
-    } else if (mod === 'reliefsupply') {
-
-      url.pathname = '/relief-supply';
-      url.searchParams.set('tab', mod);
-    } else if (mod === 'drivertracking') {
-      url.pathname = '/driver/tracking';
-      url.searchParams.set('tab', mod);
     } else if (mod === 'reliefcamps') {
-
       url.pathname = '/resources';
       url.searchParams.set('tab', mod);
     } else {
@@ -169,6 +147,26 @@ export default function App() {
     }
     window.history.pushState(null, '', url.toString());
   };
+
+  // Listen to browser Back / Forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab') || params.get('module');
+      if (tab) {
+        setActiveModuleState(tab);
+        return;
+      }
+      if (path.includes('/dashboard')) setActiveModuleState('customdashboard');
+      else if (path.includes('/live-map')) setActiveModuleState('map');
+      else if (path.includes('/risk-assessment')) setActiveModuleState('staterisk');
+      else if (path.includes('/resources')) setActiveModuleState('reliefcamps');
+      else setActiveModuleState('home');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Reset to 100% Native Pixel-Perfect Responsive Resolution
   useEffect(() => {
@@ -517,23 +515,6 @@ export default function App() {
       currentTileLayerRef.current = layer;
       mapInstanceRef.current = map;
 
-      const invalidate = () => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.invalidateSize();
-        }
-      };
-      invalidate();
-      setTimeout(invalidate, 100);
-      setTimeout(invalidate, 300);
-      setTimeout(invalidate, 600);
-
-      const resizeObserver = new ResizeObserver(() => {
-        invalidate();
-      });
-      if (mapContainerRef.current) {
-        resizeObserver.observe(mapContainerRef.current);
-      }
-
       // Add NER Hub Markers
       NER_HUBS.forEach(hub => {
         const color = hub.status === 'HIGH_ALERT' ? '#ef4444' : hub.status === 'CAUTION' ? '#f59e0b' : '#10b981';
@@ -614,7 +595,7 @@ export default function App() {
 
   if (activeModule === 'home') {
     return (
-      <div className="min-h-screen w-full bg-white dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
         <JeevanSetuHomepage
           onNavigateModule={(mod) => setActiveModule(mod)}
           onOpenSos={() => setIsSosModalOpen(true)}
@@ -678,7 +659,6 @@ export default function App() {
               {
                 category: t('sidebar.catIntelligence', '2. AI & GIS Intelligence'),
                 items: [
-                  { id: 'incidents', label: t('navigation.incidents', 'Disaster Reports & Incident Intelligence'), icon: ShieldAlert, badge: 'LIVE GIS', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, badge: 'VISION AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
                   { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, badge: '8 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
@@ -687,11 +667,11 @@ export default function App() {
               {
                 category: t('sidebar.catResponse', '3. Emergency Rescue & Camps'),
                 items: [
-                  { id: 'dynamicrouting', label: 'Smart Dynamic Routing', icon: Navigation, badge: 'SAFE ROUTE', iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
-                  { id: 'emergencyresponse', label: 'Smart Emergency Response', icon: ShieldAlert, badge: 'AI MATRIX', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue Points'), icon: HeartPulse, badge: 'OSM LIVE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'reliefsupply', label: 'Relief Supply & Vehicle Tracking', icon: Package, badge: 'REAL GPS', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'drivertracking', label: 'Driver Phone GPS Tracker', icon: Truck, badge: 'MOBILE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
+                  { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, badge: 'SOS CORE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'rescueteams', label: t('navigation.rescueteams', 'Rescue Team Command'), icon: ShieldCheck, badge: 'NDRF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
+                  { id: 'evacuation', label: t('navigation.evacuation', 'Evacuation & Safe Zone'), icon: Navigation, badge: 'ROUTE C', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
+                  { id: 'reliefcamps', label: t('navigation.reliefcamps', 'Relief Camp Grid'), icon: Building2, iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
                   { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
                   { id: 'alerts', label: t('navigation.alerts', 'Active Emergency Alerts'), icon: AlertTriangle, badge: 'LIVE', iconColor: 'text-orange-500 dark:text-orange-400 bg-orange-500/10' }
                 ]
@@ -889,8 +869,41 @@ export default function App() {
         )}
 
         {/* 🚨 LIFE-SAVING RESPONSE ENGINE */}
-        {/* 📷 AI DAMAGE ASSESSMENT */}
+        {activeModule === 'lifesaving' && (
+          <div className="h-full overflow-y-auto">
+            <LifeSavingResponseEngine />
+          </div>
+        )}
 
+        {/* 🚨 CITIZEN SOS TRIAGE */}
+        {activeModule === 'citizensos' && (
+          <div className="h-full overflow-y-auto">
+            <LifeSavingResponseEngine />
+          </div>
+        )}
+
+        {/* 🛡️ RESCUE TEAM COMMAND */}
+        {activeModule === 'rescueteams' && (
+          <div className="h-full overflow-y-auto">
+            <RescueTeamCommand />
+          </div>
+        )}
+
+        {/* 🧭 EVACUATION & SAFE ZONE PLANNER */}
+        {activeModule === 'evacuation' && (
+          <div className="h-full overflow-y-auto">
+            <EvacuationPlanner />
+          </div>
+        )}
+
+        {/* 🏢 RELIEF CAMP MANAGEMENT */}
+        {activeModule === 'reliefcamps' && (
+          <div className="h-full overflow-y-auto">
+            <ReliefCampManagement />
+          </div>
+        )}
+
+        {/* 📷 AI DAMAGE ASSESSMENT */}
         {activeModule === 'damageassessment' && (
           <div className="h-full overflow-y-auto">
             <AIDisasterImpactAssessment />
@@ -935,16 +948,15 @@ export default function App() {
           </div>
         )}
 
-        {/* 2. FULL EXPANDED 100% VIEWPORT LIVE MAP (Bypasses Dashboard Sidebar & Header) */}
+        {/* 2. LIVE GIS MAP (Integrated seamlessly into Dashboard layout) */}
         {activeModule === 'map' && (
-          <div className="fixed inset-0 z-[99999] w-screen h-screen bg-[#040814] overflow-hidden">
+          <div className="h-full w-full flex flex-col overflow-hidden">
             <NERLiveMapModule
-              hideHeader={true}
+              hideHeader={false}
               focusedTarget={mapFocusedTarget}
               onNavigateTo3DSim={() => setActiveModule('hub')}
               onTriggerSOS={() => setIsSosModalOpen(true)}
-              onBackToDashboard={() => setActiveModule('customdashboard')}
-              onBackToHome={() => setActiveModule('home')}
+              onBackToDashboard={() => setActiveModule(previousModule || 'home')}
             />
           </div>
         )}
@@ -1915,61 +1927,12 @@ export default function App() {
           />
         )}
 
-        {/* 7E. DISASTER REPORTS & INCIDENT INTELLIGENCE VIEW */}
-        {activeModule === 'incidents' && (
-          <DisasterIncidentsModule
-            onNavigateToMap={() => setActiveModule('map')}
-            onNavigateToReroute={(origin, dest) => {
-              setRouteStart(origin);
-              setRouteDest(dest);
-              setActiveModule('rerouting');
-            }}
-            onNavigateToFlood={() => setActiveModule('flood')}
-            onNavigateToLandslide={() => setActiveModule('landslide')}
-            onTriggerSOS={() => setIsSosModalOpen(true)}
-          />
+        {/* 8. LIVE RELIEF CAMP & SHELTER FINDER VIEW */}
+        {activeModule === 'reliefcamps' && (
+          <ReliefCampManagement onNavigateToMap={() => setActiveModule('map')} />
         )}
-
-        {/* 7EA. SMART EMERGENCY RESPONSE MODULE VIEW */}
-        {activeModule === 'emergencyresponse' && (
-          <div className="h-full overflow-y-auto p-4 md:p-6">
-            <SmartEmergencyResponseModule
-              onNavigateToMap={() => setActiveModule('map')}
-              onNavigateToSupply={() => setActiveModule('reliefsupply')}
-              onTriggerSOS={() => setIsSosModalOpen(true)}
-            />
-          </div>
-        )}
-
-        {/* 7EB. SMART DYNAMIC ROUTING & SAFE ROUTE RECOMMENDATION VIEW */}
-        {activeModule === 'dynamicrouting' && (
-          <div className="h-full overflow-y-auto">
-            <SmartDynamicRoutingModule />
-          </div>
-        )}
-
-
-        {/* 7F. RELIEF SUPPLY & VEHICLE TRACKING HUB */}
-        {activeModule === 'reliefsupply' && (
-          <div className="h-full overflow-y-auto p-4 md:p-6">
-            <ReliefSupplyModule
-              onNavigateToDriverTracking={() => setActiveModule('drivertracking')}
-            />
-          </div>
-        )}
-
-        {/* 7G. DRIVER MOBILE GPS TRACKER PAGE */}
-        {activeModule === 'drivertracking' && (
-          <div className="h-full overflow-y-auto">
-            <DriverTrackingPage
-              onBackToHub={() => setActiveModule('reliefsupply')}
-            />
-          </div>
-        )}
-
 
         {/* Fallback for other quick tabs */}
-
         {(activeModule === 'vehicles' || activeModule === 'alerts' || activeModule === 'vehicleselect' || activeModule === 'analytics') && (
           <div className="h-full overflow-y-auto p-6 space-y-6">
             <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl">

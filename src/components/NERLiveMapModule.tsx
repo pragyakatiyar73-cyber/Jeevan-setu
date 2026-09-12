@@ -16,12 +16,14 @@ import {
   Navigation,
   Activity,
   Maximize2,
+  Minimize2,
   Sun,
   Moon,
   Volume2,
   Search,
   Sparkles,
-  ChevronDown
+  ChevronDown,
+  ArrowLeft
 } from "lucide-react";
 import { getSpellingSuggestions, getDidYouMeanSuggestion } from "../utils/locationSpellCheck";
 
@@ -39,7 +41,6 @@ export interface NERLiveMapModuleProps {
   onNavigateTo3DSim?: () => void;
   onTriggerSOS?: () => void;
   onBackToDashboard?: () => void;
-  onBackToHome?: () => void;
 }
 
 export interface NERStateData {
@@ -184,8 +185,7 @@ export default function NERLiveMapModule({
   focusedTarget,
   onNavigateTo3DSim,
   onTriggerSOS,
-  onBackToDashboard,
-  onBackToHome
+  onBackToDashboard
 }: NERLiveMapModuleProps) {
   const { t } = useTranslation();
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -222,12 +222,37 @@ export default function NERLiveMapModule({
     crossBorderContext: false // OFF by default; excluded from core NER counts
   });
 
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  // Invalidate map size when fullscreen mode toggles
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      mapInstanceRef.current?.invalidateSize();
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [isFullscreen]);
+
   // Handle external focus target changes from Dashboard
   useEffect(() => {
     if (focusedTarget && mapInstanceRef.current) {
       mapInstanceRef.current.flyTo(focusedTarget.coord, focusedTarget.zoom, { duration: 1.2 });
     }
   }, [focusedTarget]);
+
+  // Keyboard shortcut (Escape) to exit full-screen or return to dashboard
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (isFullscreen) {
+          setIsFullscreen(false);
+        } else if (onBackToDashboard) {
+          onBackToDashboard();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFullscreen, onBackToDashboard]);
 
   // Initialize Map Instance & Build Interconnected Tactical Network
   useEffect(() => {
@@ -251,30 +276,10 @@ export default function NERLiveMapModule({
 
     mapInstanceRef.current = map;
 
-    // Guaranteed full-width rendering across layout shifts & flexbox expands
-    const invalidate = () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize();
-      }
-    };
-
-    invalidate();
-    const t1 = setTimeout(invalidate, 100);
-    const t2 = setTimeout(invalidate, 300);
-    const t3 = setTimeout(invalidate, 600);
-    const t4 = setTimeout(invalidate, 1200);
-
-    const resizeObserver = new ResizeObserver(() => {
-      invalidate();
-    });
-    if (mapRef.current) {
-      resizeObserver.observe(mapRef.current);
-    }
-
     const getTileUrl = (style: string) => {
-      if (style === "topo") return "https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
-      if (style === "osm" || style === "voyager") return "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
-      return "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+      if (style === "topo") return "https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
+      if (style === "osm" || style === "voyager") return "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
+      return "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
     };
 
     const baseTile = L.tileLayer(getTileUrl(baseStyle), {
@@ -407,11 +412,6 @@ export default function NERLiveMapModule({
     }
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-      resizeObserver.disconnect();
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -422,10 +422,10 @@ export default function NERLiveMapModule({
   // Dynamically update base tile URL on style switch
   useEffect(() => {
     if (!currentTileLayerRef.current) return;
-    let url = "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
-    if (baseStyle === "topo") url = "https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
-    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
-    else url = "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+    let url = "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+    if (baseStyle === "topo") url = "https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
+    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
+    else url = "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
 
     currentTileLayerRef.current.setUrl(url);
   }, [baseStyle]);
@@ -475,22 +475,35 @@ export default function NERLiveMapModule({
   const selectedStateObj = NER_STATES_DATA.find(s => s.id === selectedStateId);
 
   return (
-    <div className="h-full w-full relative flex flex-col select-none bg-[#040814] text-slate-100 font-sans overflow-hidden min-w-0">
+    <div className={`h-full w-full relative flex flex-col select-none bg-[#040814] text-slate-100 font-sans overflow-hidden min-w-0 ${isFullscreen ? 'fixed inset-0 z-[99999] w-screen h-screen' : ''}`}>
       
       {/* 🟢 TOP HEADER BAR SCOPED EXCLUSIVELY TO 8 NER STATES */}
       {!hideHeader && (
-        <div className="min-h-[64px] py-2.5 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-4 lg:px-6 flex flex-wrap items-center justify-between gap-3 z-20 backdrop-blur transition-colors duration-300">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shrink-0">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
-                North Eastern Region (NER 8 States) Dedicated GIS
-              </span>
-              <span className="hidden sm:inline text-xs italic text-slate-500 dark:text-slate-400">Arunachal, Assam, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura</span>
+        <div className="min-h-[60px] py-2.5 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-4 lg:px-6 flex flex-wrap items-center justify-between gap-3 z-20 backdrop-blur transition-colors duration-300">
+          <div className="flex items-center gap-3">
+            {onBackToDashboard && (
+              <button
+                type="button"
+                onClick={onBackToDashboard}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition-all duration-200 cursor-pointer shadow-md hover:scale-105 active:scale-95 shrink-0"
+                title="Back to Home (Esc)"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Home</span>
+              </button>
+            )}
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shrink-0">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+                  North Eastern Region (NER 8 States) Dedicated GIS
+                </span>
+                <span className="hidden sm:inline text-xs italic text-slate-500 dark:text-slate-400">Arunachal, Assam, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura</span>
+              </div>
+              <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight mt-0.5 leading-snug">
+                North Eastern Region (NER) Accessibility &amp; Disaster Intelligence Overview
+              </h1>
             </div>
-            <h1 className="text-sm sm:text-base lg:text-lg font-black text-slate-900 dark:text-white tracking-tight mt-0.5 leading-snug">
-              North Eastern Region (NER) Accessibility &amp; Disaster Intelligence Overview
-            </h1>
           </div>
 
           {/* TOP RIGHT STATE & DISTRICT SELECTORS */}
@@ -549,35 +562,53 @@ export default function NERLiveMapModule({
               </button>
             </div>
 
+            {/* Expand / Fullscreen Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              title={isFullscreen ? "Exit Fullscreen" : "Expand to Fullscreen"}
+            >
+              {isFullscreen ? <Minimize2 className="h-3.5 w-3.5 text-sky-400" /> : <Maximize2 className="h-3.5 w-3.5" />}
+              <span className="hidden md:inline">{isFullscreen ? "Exit" : "Expand"}</span>
+            </button>
+
           </div>
         </div>
       )}
 
       {/* MAP CANVAS CONTAINER */}
-      <div className="flex-1 relative w-full h-full min-h-0 min-w-0 overflow-hidden">
-        <div ref={mapRef} className="absolute inset-0 w-full h-full z-10" />
+      <div className="flex-1 relative w-full h-full overflow-hidden">
+        <div ref={mapRef} className="w-full h-full z-10" />
 
-        {/* 🔙 BACK TO HOMEPAGE & DASHBOARD FLOATING ACTION BUTTONS */}
-        <div className="absolute top-4 left-4 z-[999] flex items-center gap-2.5 flex-wrap">
-          {onBackToHome && (
+        {/* Floating Top Bar with Back & Close buttons (active only in full-screen or hideHeader mode) */}
+        {(isFullscreen || hideHeader) && onBackToDashboard && (
+          <div className="absolute top-4 left-4 right-4 z-[1001] pointer-events-none flex items-center justify-between gap-3">
+            {/* Back Button */}
             <button
-              onClick={onBackToHome}
-              className="px-4 py-2.5 bg-slate-900/95 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-xl border border-slate-700/90 shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-105 flex items-center gap-2 cursor-pointer group ring-2 ring-emerald-500/40"
+              type="button"
+              onClick={isFullscreen ? () => setIsFullscreen(false) : onBackToDashboard}
+              className="pointer-events-auto flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-slate-950/90 hover:bg-slate-900 text-white font-bold text-xs sm:text-sm shadow-2xl border border-white/20 backdrop-blur-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer group"
+              title={isFullscreen ? "Exit Fullscreen" : "Back to Home"}
+              aria-label="Back"
             >
-              <span className="text-emerald-400 font-extrabold text-sm">🏠</span>
-              <span>Back to Homepage</span>
+              <ArrowLeft className="h-4 w-4 text-sky-400 group-hover:-translate-x-1 transition-transform" />
+              <span>{isFullscreen ? "Exit Fullscreen" : "Back to Home"}</span>
             </button>
-          )}
-          {onBackToDashboard && (
+
+            {/* Close Button */}
             <button
-              onClick={onBackToDashboard}
-              className="px-4 py-2.5 bg-slate-900/95 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-xl border border-slate-700/90 shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-105 flex items-center gap-2 cursor-pointer group ring-2 ring-cyan-500/40"
+              type="button"
+              onClick={isFullscreen ? () => setIsFullscreen(false) : onBackToDashboard}
+              className="pointer-events-auto flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-slate-950/90 hover:bg-rose-950/90 text-white font-bold text-xs sm:text-sm shadow-2xl border border-white/20 hover:border-rose-500/50 backdrop-blur-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer group"
+              title="Close"
+              aria-label="Close"
             >
-              <span className="text-cyan-400 font-extrabold text-sm group-hover:-translate-x-1 transition-transform">←</span>
-              <span>Back to Dashboard</span>
+              <X className="h-4 w-4 text-rose-400 group-hover:rotate-90 transition-transform duration-200" />
+              <span className="hidden sm:inline">Close</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
     </div>
