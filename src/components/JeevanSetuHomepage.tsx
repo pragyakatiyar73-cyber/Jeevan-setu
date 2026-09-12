@@ -94,6 +94,9 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation)
   const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | null>(null);
 
+  // Compact Feature Modal state for hero indicator pills (ai, livedata, gis, risk)
+  const [activeFeatureModal, setActiveFeatureModal] = useState<'ai' | 'livedata' | 'gis' | 'risk' | null>(null);
+
   // AI Analysis Panel simulation state
   const [isAnalyzingAi, setIsAnalyzingAi] = useState(false);
 
@@ -656,13 +659,13 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 </button>
               </div>
 
-              {/* 4 Feature Indicator Pills (100% Functional & Clickable) */}
+              {/* 4 Feature Indicator Pills (Opens Compact Centered Modal in Middle of Screen) */}
               <div className="pt-3 flex flex-wrap items-center gap-2 sm:gap-3">
                 {[
-                  { label: 'AI Analysis', icon: Cpu, action: () => onNavigateModule('aiimpact') },
-                  { label: 'Live Data', icon: CloudRain, action: () => onNavigateModule('weather') },
-                  { label: 'GIS Mapping', icon: MapPin, action: () => onNavigateModule('map') },
-                  { label: '72-hour Risk', icon: Clock, action: () => onNavigateModule('staterisk') }
+                  { label: 'AI Analysis', icon: Cpu, action: () => setActiveFeatureModal('ai') },
+                  { label: 'Live Data', icon: CloudRain, action: () => setActiveFeatureModal('livedata') },
+                  { label: 'GIS Mapping', icon: MapPin, action: () => setActiveFeatureModal('gis') },
+                  { label: '72-hour Risk', icon: Clock, action: () => setActiveFeatureModal('risk') }
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
@@ -670,8 +673,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       key={item.label}
                       type="button"
                       onClick={item.action}
-                      title={`Click to open ${item.label}`}
-                      aria-label={`Open ${item.label}`}
+                      title={`Click to preview ${item.label}`}
+                      aria-label={`Preview ${item.label}`}
                       className="bg-[#0B152A]/80 backdrop-blur-md border border-slate-700/80 hover:border-sky-400 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-200 hover:text-white flex items-center gap-2 shadow-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.1] active:scale-95 cursor-pointer group"
                     >
                       <Icon className="h-3.5 w-3.5 text-[#38BDF8] group-hover:scale-125 transition duration-300" />
@@ -2496,6 +2499,309 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================
+          COMPACT CENTERED FEATURE PREVIEW MODAL ("saree feature open ho mid me par chote")
+         ================================================== */}
+      {activeFeatureModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-lg bg-white dark:bg-[#0B132B] border border-slate-200 dark:border-slate-700 rounded-3xl shadow-2xl overflow-hidden p-5 sm:p-7 space-y-5">
+            
+            {/* 1. AI ANALYSIS MODAL */}
+            {activeFeatureModal === 'ai' && (
+              <>
+                <div className="flex items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3.5">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 shrink-0">
+                      <Cpu className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/30">
+                        VISION AI • 99.4% ACCURACY
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-tight mt-1">
+                        AI Disaster Impact Assessment
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                        Multi-modal Vision AI & Geospatial Damage Classifier
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="p-1.5 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <div className="bg-purple-500/10 border border-purple-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div className="flex items-center justify-between text-purple-700 dark:text-purple-300 font-black">
+                      <span>Detected Structural Hazard:</span>
+                      <span className="bg-red-500/20 text-red-700 dark:text-red-400 px-2 py-0.5 rounded text-[10px] border border-red-500/30">CRITICAL 84%</span>
+                    </div>
+                    <p className="text-slate-700 dark:text-slate-300 font-medium">
+                      Landslide slip breach on NH-6 Km 142 (Sohra Corridor). 18 civilians trapped; mudflow volume estimated at 420 m³.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                      <div className="text-[10px] font-extrabold uppercase text-slate-400">Vision Model</div>
+                      <div className="text-xs font-black text-slate-900 dark:text-white mt-0.5">ResNet-50 SAR Radar</div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                      <div className="text-[10px] font-extrabold uppercase text-slate-400">Est. Casualty Triage</div>
+                      <div className="text-xs font-black text-rose-600 dark:text-rose-400 mt-0.5">Level 1 Immediate</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveFeatureModal(null);
+                      onNavigateModule('aiimpact');
+                    }}
+                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold px-5 py-2 rounded-xl shadow-md shadow-purple-600/30 flex items-center gap-1.5 text-xs transition transform hover:scale-105 cursor-pointer"
+                  >
+                    <span>Open Full AI Module</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* 2. LIVE DATA MODAL */}
+            {activeFeatureModal === 'livedata' && (
+              <>
+                <div className="flex items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3.5">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-sky-500/30 shrink-0">
+                      <CloudRain className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-sky-600 dark:text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/30">
+                        LIVE SATELLITE RADAR
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-tight mt-1">
+                        Real-Time Weather Telemetry
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                        Precipitation Radar & River Discharge Gauges
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="p-1.5 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <div className="bg-sky-500/10 border border-sky-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div className="flex items-center justify-between text-sky-700 dark:text-sky-300 font-black">
+                      <span>24h Rainfall Spike:</span>
+                      <span className="bg-sky-500/20 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded text-[10px] border border-sky-500/30">680 mm Severe</span>
+                    </div>
+                    <p className="text-slate-700 dark:text-slate-300 font-medium">
+                      Cherrapunji & Brahmaputra basin recording flash runoff surge. Brahmaputra gauge reading +2.4m over danger mark.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+                      <div className="text-[9px] font-extrabold uppercase text-slate-400">Wind Gusts</div>
+                      <div className="text-xs font-black text-sky-600 dark:text-sky-400 mt-0.5">45 km/h</div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+                      <div className="text-[9px] font-extrabold uppercase text-slate-400">Humidity</div>
+                      <div className="text-xs font-black text-sky-600 dark:text-sky-400 mt-0.5">94%</div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+                      <div className="text-[9px] font-extrabold uppercase text-slate-400">Radar Status</div>
+                      <div className="text-xs font-black text-emerald-600 dark:text-emerald-400 mt-0.5">ACTIVE</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveFeatureModal(null);
+                      onNavigateModule('weather');
+                    }}
+                    className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-extrabold px-5 py-2 rounded-xl shadow-md shadow-sky-500/30 flex items-center gap-1.5 text-xs transition transform hover:scale-105 cursor-pointer"
+                  >
+                    <span>Open Live Radar</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* 3. GIS MAPPING MODAL */}
+            {activeFeatureModal === 'gis' && (
+              <>
+                <div className="flex items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3.5">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-rose-500 to-amber-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 shrink-0">
+                      <MapPin className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/30">
+                        TACTICAL GIS GRID
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-tight mt-1">
+                        NER Live GIS & Satellite Map
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                        Google Hybrid Satellite, Topo Relief & Live Convoys
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="p-1.5 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div className="flex items-center justify-between text-rose-700 dark:text-rose-300 font-black">
+                      <span>Live Convoy Telemetry:</span>
+                      <span className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded text-[10px] border border-emerald-500/30">CONVOY #01 ACTIVE</span>
+                    </div>
+                    <p className="text-slate-700 dark:text-slate-300 font-medium">
+                      Medical Oxygen Convoy #01 en route Guwahati ➔ Silchar (Speed 48 km/h • ETA 3h 15m).
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                      <div className="text-[10px] font-extrabold uppercase text-slate-400">Active Overlays</div>
+                      <div className="text-xs font-black text-slate-900 dark:text-white mt-0.5">8 Hazard Zones</div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                      <div className="text-[10px] font-extrabold uppercase text-slate-400">Map View Mode</div>
+                      <div className="text-xs font-black text-sky-500 mt-0.5">100% Full View</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveFeatureModal(null);
+                      onNavigateModule('map');
+                    }}
+                    className="bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-extrabold px-5 py-2 rounded-xl shadow-md shadow-rose-600/30 flex items-center gap-1.5 text-xs transition transform hover:scale-105 cursor-pointer"
+                  >
+                    <span>Open Full Screen Map</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* 4. 72-HOUR RISK MODAL */}
+            {activeFeatureModal === 'risk' && (
+              <>
+                <div className="flex items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3.5">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-500 to-rose-600 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 shrink-0">
+                      <Clock className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">
+                        8-STATE RISK MATRIX
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-tight mt-1">
+                        72-Hour State Hazard Forecast
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                        Multi-State Predictive Risk Index (+0h to +72h)
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="p-1.5 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div className="flex items-center justify-between text-amber-700 dark:text-amber-300 font-black">
+                      <span>Highest Risk Sectors:</span>
+                      <span className="bg-rose-500/20 text-rose-700 dark:text-rose-400 px-2 py-0.5 rounded text-[10px] border border-rose-500/30">ASSAM & MEGHALAYA</span>
+                    </div>
+                    <p className="text-slate-700 dark:text-slate-300 font-medium">
+                      High runoff inundation in Assam Brahmaputra plains & hill edge slips along Meghalaya NH-6.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                      <div className="text-[10px] font-extrabold uppercase text-slate-400">Deployed NDRF</div>
+                      <div className="text-xs font-black text-emerald-600 dark:text-emerald-400 mt-0.5">27 Battalions</div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                      <div className="text-[10px] font-extrabold uppercase text-slate-400">Risk Timeline</div>
+                      <div className="text-xs font-black text-amber-600 dark:text-amber-400 mt-0.5">+24h Peak Runoff</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveFeatureModal(null);
+                      onNavigateModule('staterisk');
+                    }}
+                    className="bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white font-extrabold px-5 py-2 rounded-xl shadow-md shadow-amber-600/30 flex items-center gap-1.5 text-xs transition transform hover:scale-105 cursor-pointer"
+                  >
+                    <span>Open State Risk Matrix</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </>
+            )}
 
           </div>
         </div>
