@@ -597,42 +597,40 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {/* ==================================================
           3. HERO SECTION (100% Clean High-Res Landscape + Real React HTML Elements)
           ================================================== */}
-      <section className="relative w-full min-h-[60vh] sm:min-h-[65vh] lg:min-h-[700px] bg-[#070E20] text-white overflow-hidden flex items-center border-b border-slate-800">
-        {/* 100% Clean Photographic Background (High Clarity & Brightness) */}
+      <section className="relative w-full min-h-[60vh] sm:min-h-[65vh] lg:min-h-[700px] bg-[#040814] text-white overflow-hidden flex items-center border-b border-slate-800">
+        {/* 100% Clean Photographic Background with Rich Dark Gradient Overlay for Maximum Readability */}
         <div className="absolute inset-0 z-0">
           <img
             src="/disaster-response-hero.jpg"
             alt="Jeevan Setu Disaster Response & Rescue Operations"
-            className="w-full h-full object-cover object-right filter brightness-110 contrast-110 saturate-110"
+            className="w-full h-full object-cover object-right filter brightness-95 contrast-105 saturate-105"
           />
-          {/* Lightened, Smooth Navy Gradient Overlay for High Clarity & Vividness */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#070E20]/75 via-[#070E20]/35 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#070E20]/50 via-transparent to-transparent" />
+          {/* Deep Navy Dark Gradient Overlay for Crisp Text & Button Contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#040814]/95 via-[#040814]/75 to-[#040814]/35" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#040814]/90 via-transparent to-[#040814]/40" />
         </div>
-
-
 
         <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 py-16 sm:py-24 lg:py-32 flex flex-col justify-between">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             
-            {/* Hero Left Content with REAL working interactive React elements */}
+            {/* Hero Left Content with High-Contrast Typography & Glassmorphic Buttons */}
             <div className="max-w-3xl space-y-5">
               
               {/* Upper Small Label */}
-              <div className="text-xs sm:text-sm font-black uppercase tracking-widest text-[#38BDF8] font-sans">
+              <div className="text-xs sm:text-sm font-black uppercase tracking-widest text-[#38BDF8] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                 {t('home.badge', 'DISASTER RESPONSE & GIS INTELLIGENCE')}
               </div>
 
               {/* Title with "Jeevan" in White and "Setu" in Cyan */}
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white font-sans leading-none drop-shadow-lg">
-                Jeevan <span className="text-[#38BDF8]">Setu</span>
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white font-sans leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+                Jeevan <span className="text-[#38BDF8] drop-shadow-[0_0_25px_rgba(56,189,248,0.6)]">Setu</span>
               </h1>
 
-              <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-100 tracking-tight leading-snug drop-shadow-sm">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                 {t('home.heroSub', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </p>
 
-              <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium max-w-2xl drop-shadow-sm">
+              <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium max-w-2xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
                 {t('home.heroDesc', 'Jeevan Setu combines AI, GIS, satellite data, weather intelligence and real-time disaster information to help people understand risks, find emergency resources and respond faster.')}
               </p>
 
@@ -641,7 +639,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <button
                   type="button"
                   onClick={() => onNavigateModule('customdashboard')}
-                  className="bg-[#38BDF8] hover:bg-[#0284C7] text-slate-950 font-black px-7 py-3.5 rounded-full shadow-xl shadow-sky-500/30 flex items-center gap-2.5 text-base transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-2xl hover:shadow-sky-500/50 cursor-pointer border border-sky-300/50 group"
+                  className="bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369a1] hover:from-[#7dd3fc] hover:to-[#38BDF8] text-slate-950 font-black px-7 py-3.5 rounded-full shadow-2xl shadow-sky-500/40 flex items-center gap-2.5 text-base transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-sky-500/60 cursor-pointer border border-sky-200/60 group"
                 >
                   <LayoutDashboard className="h-5 w-5 text-slate-950 group-hover:scale-110 transition duration-300" />
                   <span>{t('home.exploreDashboard', 'Explore Dashboard')}</span>
@@ -651,7 +649,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <button
                   type="button"
                   onClick={() => onNavigateModule('map')}
-                  className="bg-[#0B152A]/80 hover:bg-[#0B152A] text-white font-extrabold px-7 py-3.5 rounded-full border border-[#38BDF8]/60 backdrop-blur flex items-center gap-2.5 text-base transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:border-[#38BDF8] hover:shadow-2xl hover:shadow-sky-500/20 cursor-pointer shadow-lg group"
+                  className="bg-slate-950/85 hover:bg-slate-900 text-white font-extrabold px-7 py-3.5 rounded-full border border-[#38BDF8]/70 hover:border-[#38BDF8] backdrop-blur-xl flex items-center gap-2.5 text-base transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-2xl hover:shadow-sky-500/30 cursor-pointer shadow-xl group"
                 >
                   <MapPin className="h-5 w-5 text-[#38BDF8] group-hover:scale-110 transition duration-300" />
                   <span>{t('home.exploreLiveMap', 'Explore Live Map')}</span>
@@ -675,10 +673,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       onClick={item.action}
                       title={`Click to preview ${item.label}`}
                       aria-label={`Preview ${item.label}`}
-                      className="bg-[#0B152A]/80 backdrop-blur-md border border-slate-700/80 hover:border-sky-400 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-200 hover:text-white flex items-center gap-2 shadow-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.1] active:scale-95 cursor-pointer group"
+                      className="bg-slate-950/85 backdrop-blur-xl border border-[#38BDF8]/50 hover:border-[#38BDF8] px-4 py-2 rounded-full text-xs font-bold text-white flex items-center gap-2 shadow-lg shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] active:scale-95 cursor-pointer group"
                     >
-                      <Icon className="h-3.5 w-3.5 text-[#38BDF8] group-hover:scale-125 transition duration-300" />
-                      <span>{item.label}</span>
+                      <Icon className="h-4 w-4 text-[#38BDF8] group-hover:scale-125 transition duration-300 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]" />
+                      <span className="font-extrabold tracking-wide">{item.label}</span>
                     </button>
                   );
                 })}
