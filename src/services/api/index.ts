@@ -15,6 +15,8 @@ export * from './incidentStore';
 export * from './bhuvanService';
 export * from './emergencyFacilitiesService';
 export * from './disasterIncidentsService';
+export * from './reliefSupplyService';
+
 
 export interface APIRegistryStatus {
   category: string;

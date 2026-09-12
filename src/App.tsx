@@ -83,8 +83,11 @@ import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
+import ReliefSupplyModule from './components/ReliefSupplyModule';
+import DriverTrackingPage from './components/DriverTrackingPage';
 import { useTranslation } from './i18n';
 import { incidentStore } from './services/api';
+
 
 // NER State Data
 const NER_HUBS = [
@@ -108,6 +111,9 @@ export default function App() {
     if (hash) return hash;
 
     const path = window.location.pathname.toLowerCase();
+    if (path.includes('/driver/tracking') || path.includes('/driver-tracking')) return 'drivertracking';
+    if (path.includes('/relief-supply') || path.includes('/relief')) return 'reliefsupply';
+
     if (path.includes('/dashboard')) return 'customdashboard';
     if (path.includes('/live-map')) return 'map';
     if (path.includes('/risk-assessment')) return 'staterisk';
@@ -117,6 +123,7 @@ export default function App() {
     if (path.includes('/landslide')) return 'landslide';
     if (path.includes('/facilities') || path.includes('/emergency')) return 'facilities';
     if (path.includes('/incidents') || path.includes('/disaster-reports')) return 'incidents';
+
 
     return 'home';
   });
@@ -137,7 +144,14 @@ export default function App() {
     } else if (mod === 'staterisk') {
       url.pathname = '/risk-assessment';
       url.searchParams.set('tab', mod);
+    } else if (mod === 'reliefsupply') {
+      url.pathname = '/relief-supply';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'drivertracking') {
+      url.pathname = '/driver/tracking';
+      url.searchParams.set('tab', mod);
     } else if (mod === 'reliefcamps') {
+
       url.pathname = '/resources';
       url.searchParams.set('tab', mod);
     } else {
@@ -647,7 +661,10 @@ export default function App() {
                 category: t('sidebar.catResponse', '3. Emergency Rescue & Camps'),
                 items: [
                   { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue Points'), icon: HeartPulse, badge: 'OSM LIVE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'reliefsupply', label: 'Relief Supply & Vehicle Tracking', icon: Package, badge: 'REAL GPS', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
+                  { id: 'drivertracking', label: 'Driver Phone GPS Tracker', icon: Truck, badge: 'MOBILE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
                   { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, badge: 'SOS CORE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+
                   { id: 'rescueteams', label: t('navigation.rescueteams', 'Rescue Team Command'), icon: ShieldCheck, badge: 'NDRF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'evacuation', label: t('navigation.evacuation', 'Evacuation & Safe Zone'), icon: Navigation, badge: 'ROUTE C', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
                   { id: 'reliefcamps', label: t('navigation.reliefcamps', 'Relief Camp Grid'), icon: Building2, iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
@@ -1920,6 +1937,25 @@ export default function App() {
             onTriggerSOS={() => setIsSosModalOpen(true)}
           />
         )}
+
+        {/* 7F. RELIEF SUPPLY & VEHICLE TRACKING HUB */}
+        {activeModule === 'reliefsupply' && (
+          <div className="h-full overflow-y-auto p-4 md:p-6">
+            <ReliefSupplyModule
+              onNavigateToDriverTracking={() => setActiveModule('drivertracking')}
+            />
+          </div>
+        )}
+
+        {/* 7G. DRIVER MOBILE GPS TRACKER PAGE */}
+        {activeModule === 'drivertracking' && (
+          <div className="h-full overflow-y-auto">
+            <DriverTrackingPage
+              onBackToHub={() => setActiveModule('reliefsupply')}
+            />
+          </div>
+        )}
+
 
         {/* 8. LIVE RELIEF CAMP & SHELTER FINDER VIEW */}
         {activeModule === 'reliefcamps' && (

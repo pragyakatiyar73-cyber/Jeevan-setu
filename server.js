@@ -700,13 +700,9 @@ app.get('/api/mdoner/data', async (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🌉 Jeevan Setu Disaster Intelligence Backend running on http://localhost:${PORT}`);
-});
-
 // ----------------------------------------------------
 // 🗺️ REAL-TIME GIS MAP LAYERS & OVERLAYS BACKEND API
+
 // ----------------------------------------------------
 const mapDbFile = './map_layers_db.json';
 let mapLayersDb = {
@@ -1048,9 +1044,553 @@ app.post('/api/disaster-reports/submit', async (req, res) => {
   });
 });
 
+// ====================================================
+// 📦🚚 REAL-TIME RELIEF SUPPLY & VEHICLE TRACKING API
+// ====================================================
+
+// SSE Clients Registry for Live Map Vehicle Streaming
+let sseVehicleClients = [];
+
+function broadcastVehicleLocation(vehicleData) {
+  sseVehicleClients = sseVehicleClients.filter(client => {
+    try {
+      client.res.write(`data: ${JSON.stringify(vehicleData)}\n\n`);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  });
+}
+
+// Initial Database Seeding Helper
+async function seedReliefDatabase(db) {
+  if (!db) return;
+  try {
+    const depotsCol = db.collection('relief_depots');
+    const depotsCount = await depotsCol.countDocuments();
+    if (depotsCount === 0) {
+      const initialDepots = [
+        { depotId: 'DEPOT-GAU-01', depotName: 'Guwahati Central Relief Hub', state: 'Assam', district: 'Kamrup Metropolitan', location: 'Garchuk Logistics Park, Guwahati', lat: 26.1445, lon: 91.7362, storageCapacity: 50000, currentStock: 34200, utilization: 68.4, status: 'Operational', lastUpdated: new Date().toISOString() },
+        { depotId: 'DEPOT-SHL-01', depotName: 'Shillong East Khasi Relief Base', state: 'Meghalaya', district: 'East Khasi Hills', location: 'Upper Shillong Cantonment', lat: 25.5788, lon: 91.8933, storageCapacity: 30000, currentStock: 18500, utilization: 61.6, status: 'Operational', lastUpdated: new Date().toISOString() },
+        { depotId: 'DEPOT-AIZ-01', depotName: 'Aizawl Regional Logistics Terminal', state: 'Mizoram', district: 'Aizawl', location: 'Zemabawk Relief Depot, Aizawl', lat: 23.7271, lon: 92.7176, storageCapacity: 25000, currentStock: 14200, utilization: 56.8, status: 'Operational', lastUpdated: new Date().toISOString() },
+        { depotId: 'DEPOT-ITA-01', depotName: 'Itanagar Foothills Relief Depot', state: 'Arunachal Pradesh', district: 'Papum Pare', location: 'Banderdewa Highway Junction', lat: 27.0844, lon: 93.6053, storageCapacity: 20000, currentStock: 9800, utilization: 49.0, status: 'Low Stock', lastUpdated: new Date().toISOString() },
+        { depotId: 'DEPOT-IMP-01', depotName: 'Imphal Valley Operations Depot', state: 'Manipur', district: 'Imphal West', location: 'Langgol Relief Complex', lat: 24.8170, lon: 93.9368, storageCapacity: 25000, currentStock: 16400, utilization: 65.6, status: 'Operational', lastUpdated: new Date().toISOString() },
+        { depotId: 'DEPOT-GKT-01', depotName: 'Gangtok Mountain Support Base', state: 'Sikkim', district: 'East Sikkim', location: 'Ranipool Staging Yard', lat: 27.3389, lon: 88.6065, storageCapacity: 15000, currentStock: 8200, utilization: 54.6, status: 'Operational', lastUpdated: new Date().toISOString() },
+        { depotId: 'DEPOT-AGT-01', depotName: 'Agartala Relief Supply Depot', state: 'Tripura', district: 'West Tripura', location: 'Arundhutinagar Logistics Center', lat: 23.8315, lon: 91.2868, storageCapacity: 20000, currentStock: 13900, utilization: 69.5, status: 'Operational', lastUpdated: new Date().toISOString() },
+        { depotId: 'DEPOT-KOH-01', depotName: 'Kohima Relief Storage Hub', state: 'Nagaland', district: 'Kohima', location: 'Lerie Logistics Zone', lat: 25.6751, lon: 94.1086, storageCapacity: 18000, currentStock: 11100, utilization: 61.6, status: 'Operational', lastUpdated: new Date().toISOString() }
+      ];
+      await depotsCol.insertMany(initialDepots);
+      console.log('🌱 Seeded 8 NER Relief Depots into MongoDB');
+    }
+
+    const vehiclesCol = db.collection('relief_vehicles');
+    const vehiclesCount = await vehiclesCol.countDocuments();
+    if (vehiclesCount === 0) {
+      const initialVehicles = [
+        { vehicleId: 'RT-101', vehicleType: '4x4 Heavy Rescue Truck', driverName: 'Biren Gogoi', driverPhone: '+91 98640 12345', sourceDepot: 'Guwahati Central Relief Hub', destination: 'Silchar, Cachar (Assam)', destinationLat: 24.8333, destinationLon: 92.7789, currentLatitude: 26.1445, currentLongitude: 91.7362, gpsAccuracy: null, speed: 0, heading: 0, trackingStatus: 'GPS_NOT_CONNECTED', tripStatus: 'AVAILABLE', lastLocationUpdate: null, assignedSupplies: [{ item: 'Drinking Water 1L Bottles', quantity: 1500 }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { vehicleId: 'RT-102', vehicleType: 'All-Terrain Supply Carrier', driverName: 'Sangma Marak', driverPhone: '+91 94361 56789', sourceDepot: 'Shillong East Khasi Relief Base', destination: 'Jowai, West Jaintia Hills (Meghalaya)', destinationLat: 25.4456, destinationLon: 92.2045, currentLatitude: 25.5788, currentLongitude: 91.8933, gpsAccuracy: null, speed: 0, heading: 0, trackingStatus: 'GPS_NOT_CONNECTED', tripStatus: 'AVAILABLE', lastLocationUpdate: null, assignedSupplies: [{ item: 'Emergency Rations & Pulses', quantity: 1200 }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { vehicleId: 'RT-103', vehicleType: 'Medical Mobile Unit', driverName: 'Lalremruata Sailo', driverPhone: '+91 98623 98765', sourceDepot: 'Aizawl Regional Logistics Terminal', destination: 'Lunglei (Mizoram)', destinationLat: 22.8872, destinationLon: 92.7345, currentLatitude: 23.7271, currentLongitude: 92.7176, gpsAccuracy: null, speed: 0, heading: 0, trackingStatus: 'GPS_NOT_CONNECTED', tripStatus: 'AVAILABLE', lastLocationUpdate: null, assignedSupplies: [{ item: 'Essential Antibiotics & First-Aid', quantity: 500 }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { vehicleId: 'RT-104', vehicleType: 'Emergency Boat Transporter', driverName: 'Tashi Tsering', driverPhone: '+91 94360 11223', sourceDepot: 'Itanagar Foothills Relief Depot', destination: 'Pasighat, East Siang (Arunachal Pradesh)', destinationLat: 28.0667, destinationLon: 95.3333, currentLatitude: 27.0844, currentLongitude: 93.6053, gpsAccuracy: null, speed: 0, heading: 0, trackingStatus: 'GPS_NOT_CONNECTED', tripStatus: 'AVAILABLE', lastLocationUpdate: null, assignedSupplies: [{ item: 'High-Impact Disaster Survival Kits', quantity: 300 }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { vehicleId: 'RT-105', vehicleType: 'Relief Ration Freighter', driverName: 'Nganba Singh', driverPhone: '+91 98561 44556', sourceDepot: 'Imphal Valley Operations Depot', destination: 'Churachandpur (Manipur)', destinationLat: 24.3333, destinationLon: 93.6833, currentLatitude: 24.8170, currentLongitude: 93.9368, gpsAccuracy: null, speed: 0, heading: 0, trackingStatus: 'GPS_NOT_CONNECTED', tripStatus: 'AVAILABLE', lastLocationUpdate: null, assignedSupplies: [{ item: 'Emergency Rations & Pulses', quantity: 800 }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { vehicleId: 'RT-106', vehicleType: 'High-Altitude Rescue Truck', driverName: 'Pemba Bhutia', driverPhone: '+91 94340 77889', sourceDepot: 'Gangtok Mountain Support Base', destination: 'Mangan, North Sikkim (Sikkim)', destinationLat: 27.5000, destinationLon: 88.5333, currentLatitude: 27.3389, currentLongitude: 88.6065, gpsAccuracy: null, speed: 0, heading: 0, trackingStatus: 'GPS_NOT_CONNECTED', tripStatus: 'AVAILABLE', lastLocationUpdate: null, assignedSupplies: [{ item: 'Thermal Blankets', quantity: 600 }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+      ];
+      await vehiclesCol.insertMany(initialVehicles);
+      console.log('🌱 Seeded 6 NER Relief Vehicles into MongoDB');
+    }
+
+    const suppliesCol = db.collection('relief_supplies');
+    const suppliesCount = await suppliesCol.countDocuments();
+    if (suppliesCount === 0) {
+      const initialSupplies = [
+        { supplyId: 'SUP-101', item: 'Drinking Water 1L Bottles', category: 'Drinking Water', state: 'Assam', district: 'Kamrup Metropolitan', depot: 'Guwahati Central Relief Hub', availableQuantity: 12000, requiredQuantity: 15000, reservedQuantity: 1500, deliveredQuantity: 4500, priority: 'High', status: 'Available', lastUpdated: new Date().toISOString() },
+        { supplyId: 'SUP-102', item: 'Emergency Rations & Pulses', category: 'Food', state: 'Meghalaya', district: 'East Khasi Hills', depot: 'Shillong East Khasi Relief Base', availableQuantity: 8500, requiredQuantity: 10000, reservedQuantity: 2000, deliveredQuantity: 3200, priority: 'Critical', status: 'Available', lastUpdated: new Date().toISOString() },
+        { supplyId: 'SUP-103', item: 'Essential Antibiotics & First-Aid', category: 'Medicines', state: 'Mizoram', district: 'Aizawl', depot: 'Aizawl Regional Logistics Terminal', availableQuantity: 1200, requiredQuantity: 5000, reservedQuantity: 500, deliveredQuantity: 1800, priority: 'Critical', status: 'Low Stock', lastUpdated: new Date().toISOString() },
+        { supplyId: 'SUP-104', item: 'Thermal Blankets & Sleeping Bags', category: 'Blankets', state: 'Sikkim', district: 'East Sikkim', depot: 'Gangtok Mountain Support Base', availableQuantity: 4000, requiredQuantity: 6000, reservedQuantity: 800, deliveredQuantity: 2100, priority: 'High', status: 'Available', lastUpdated: new Date().toISOString() },
+        { supplyId: 'SUP-105', item: 'High-Impact Disaster Survival Kits', category: 'Emergency Kits', state: 'Arunachal Pradesh', district: 'Papum Pare', depot: 'Itanagar Foothills Relief Depot', availableQuantity: 900, requiredQuantity: 3000, reservedQuantity: 300, deliveredQuantity: 1200, priority: 'High', status: 'Low Stock', lastUpdated: new Date().toISOString() },
+        { supplyId: 'SUP-106', item: 'Portable Oxygen Concentrators', category: 'Medical Equipment', state: 'Manipur', district: 'Imphal West', depot: 'Imphal Valley Operations Depot', availableQuantity: 180, requiredQuantity: 400, reservedQuantity: 50, deliveredQuantity: 120, priority: 'Critical', status: 'Critical', lastUpdated: new Date().toISOString() },
+        { supplyId: 'SUP-107', item: 'Hydraulic Cutter & Rescue Gear', category: 'Rescue Equipment', state: 'Nagaland', district: 'Kohima', depot: 'Kohima Relief Storage Hub', availableQuantity: 150, requiredQuantity: 200, reservedQuantity: 20, deliveredQuantity: 80, priority: 'High', status: 'Available', lastUpdated: new Date().toISOString() },
+        { supplyId: 'SUP-108', item: 'Waterproof Tarpaulins & Tents', category: 'Emergency Kits', state: 'Tripura', district: 'West Tripura', depot: 'Agartala Relief Supply Depot', availableQuantity: 5000, requiredQuantity: 7000, reservedQuantity: 1000, deliveredQuantity: 2400, priority: 'Medium', status: 'Available', lastUpdated: new Date().toISOString() }
+      ];
+      await suppliesCol.insertMany(initialSupplies);
+      console.log('🌱 Seeded 8 NER Relief Supply Categories into MongoDB');
+    }
+  } catch (err) {
+    console.warn('Relief DB seeding warning:', err.message);
+  }
+}
+
+// Trigger initial seed check on startup
+getMongoDbConnection().then(db => {
+  if (db) seedReliefDatabase(db);
+});
+
+// GET /api/relief/supplies - Fetch relief inventory summary & table
+app.get('/api/relief/supplies', async (req, res) => {
+  const db = await getMongoDbConnection();
+  if (!db) {
+    return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+  }
+
+  try {
+    const col = db.collection('relief_supplies');
+    const supplies = await col.find().sort({ priority: 1, lastUpdated: -1 }).toArray();
+
+    // Filter strictly 8 NER states
+    const nerSupplies = supplies.filter(s => isNERState(s.state));
+
+    let available = 0, critical = 0, reserved = 0, inTransit = 0, delivered = 0;
+    nerSupplies.forEach(s => {
+      available += (s.availableQuantity || 0);
+      if (s.status === 'Critical' || s.status === 'Low Stock') critical += 1;
+      reserved += (s.reservedQuantity || 0);
+      if (s.status === 'In Transit') inTransit += (s.reservedQuantity || 0);
+      delivered += (s.deliveredQuantity || 0);
+    });
+
+    res.json({
+      status: 'success',
+      coverage: 'North Eastern Region — 8 States',
+      stats: {
+        totalAvailable: available,
+        criticalShortageCount: critical,
+        suppliesReserved: reserved,
+        suppliesInTransit: inTransit,
+        deliveredSupplies: delivered
+      },
+      supplies: nerSupplies,
+      lastUpdated: new Date().toISOString()
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// POST /api/relief/supplies - Add or update supply inventory item
+app.post('/api/relief/supplies', async (req, res) => {
+  const { item, category, state, district, depot, availableQuantity, requiredQuantity, priority } = req.body || {};
+
+  if (!state || !isNERState(state)) {
+    return res.status(400).json({
+      status: 'rejected',
+      message: 'Jeevan Setu Relief Operations are restricted to the North-Eastern Region of India.'
+    });
+  }
+
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const col = db.collection('relief_supplies');
+    const now = new Date().toISOString();
+    const avail = Number(availableQuantity) || 0;
+    const reqQty = Number(requiredQuantity) || 100;
+    let statusVal = 'Available';
+    if (avail === 0) statusVal = 'Critical';
+    else if (avail < reqQty * 0.3) statusVal = 'Low Stock';
+
+    const newSupply = {
+      supplyId: `SUP-${Math.floor(100 + Math.random() * 900)}`,
+      item: item || 'General Relief Ration',
+      category: category || 'Food',
+      state: String(state).trim(),
+      district: district || 'Central District',
+      depot: depot || `${state} Hub Depot`,
+      availableQuantity: avail,
+      requiredQuantity: reqQty,
+      reservedQuantity: 0,
+      deliveredQuantity: 0,
+      priority: priority || 'High',
+      status: statusVal,
+      lastUpdated: now
+    };
+
+    await col.insertOne(newSupply);
+    res.json({ status: 'success', supply: newSupply, message: 'Relief supply added successfully' });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// POST /api/relief/requests/create - Create citizen or district supply request
+app.post('/api/relief/requests/create', async (req, res) => {
+  const { state, district, affectedArea, disasterType, item, category, requiredQuantity, priority } = req.body || {};
+
+  if (!state || !isNERState(state)) {
+    return res.status(400).json({
+      status: 'rejected',
+      message: 'Jeevan Setu Relief Operations are restricted to the North-Eastern Region of India.'
+    });
+  }
+
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const col = db.collection('relief_requests');
+    const now = new Date();
+    const newRequest = {
+      requestId: `REQ-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      state: String(state).trim(),
+      district: district || 'Central Sector',
+      affectedArea: affectedArea || `${district}, ${state}`,
+      disasterType: disasterType || 'Flood',
+      item: item || 'Drinking Water 1L Bottles',
+      category: category || 'Drinking Water',
+      requiredQuantity: Number(requiredQuantity) || 500,
+      priority: priority || 'High',
+      status: 'PENDING',
+      assignedDepotId: null,
+      assignedVehicleId: null,
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString()
+    };
+
+    await col.insertOne(newRequest);
+    console.log('📌 Supply Request Saved to MongoDB:', newRequest.requestId, newRequest.state);
+
+    res.json({
+      status: 'success',
+      message: 'Relief supply request created successfully and queued for smart allocation.',
+      request: newRequest
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// GET /api/relief/requests - List supply requests
+app.get('/api/relief/requests', async (req, res) => {
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const col = db.collection('relief_requests');
+    const requests = await col.find().sort({ createdAt: -1 }).toArray();
+    const nerRequests = requests.filter(r => isNERState(r.state));
+    res.json({ status: 'success', count: nerRequests.length, requests: nerRequests });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// GET /api/relief/depots - List relief depots
+app.get('/api/relief/depots', async (req, res) => {
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const col = db.collection('relief_depots');
+    const depots = await col.find().toArray();
+    const nerDepots = depots.filter(d => isNERState(d.state));
+    res.json({ status: 'success', count: nerDepots.length, depots: nerDepots });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// GET /api/relief/vehicles - List vehicle fleet with real-time GPS
+app.get('/api/relief/vehicles', async (req, res) => {
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const col = db.collection('relief_vehicles');
+    const vehicles = await col.find().toArray();
+    res.json({ status: 'success', count: vehicles.length, vehicles });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// GET /api/relief/vehicles/:vehicleId - Get single vehicle info
+app.get('/api/relief/vehicles/:vehicleId', async (req, res) => {
+  const { vehicleId } = req.params;
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const col = db.collection('relief_vehicles');
+    const vehicle = await col.findOne({ vehicleId: vehicleId.toUpperCase() });
+    if (!vehicle) {
+      return res.status(404).json({ status: 'error', message: `Vehicle '${vehicleId}' not found.` });
+    }
+    res.json({ status: 'success', vehicle });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// POST /api/relief/vehicles/location - Real-Time Driver GPS Location Update Endpoint
+app.post('/api/relief/vehicles/location', async (req, res) => {
+  const { vehicleId, latitude, longitude, accuracy, speed, heading, timestamp } = req.body || {};
+
+  if (!vehicleId) {
+    return res.status(400).json({ status: 'error', message: 'vehicleId is required.' });
+  }
+
+  const lat = Number(latitude);
+  const lon = Number(longitude);
+
+  if (isNaN(lat) || isNaN(lon)) {
+    return res.status(400).json({ status: 'error', message: 'Valid numerical latitude and longitude are required.' });
+  }
+
+  // Validate NER boundary
+  if (!isPointInNER(lat, lon)) {
+    console.warn(`⛔ Driver Location Outside NER Boundary: (${lat}, ${lon}) for ${vehicleId}`);
+    return res.status(400).json({
+      status: 'rejected',
+      message: 'Jeevan Setu Relief Operations are restricted to the North-Eastern Region of India.'
+    });
+  }
+
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const vehiclesCol = db.collection('relief_vehicles');
+    const locationsCol = db.collection('vehicle_locations');
+    const updateTime = timestamp ? new Date(timestamp).toISOString() : new Date().toISOString();
+
+    const vehicleObj = await vehiclesCol.findOne({ vehicleId: vehicleId.toUpperCase() });
+    if (!vehicleObj) {
+      return res.status(404).json({ status: 'error', message: `Vehicle ${vehicleId} not registered in fleet database.` });
+    }
+
+    const updatedVehicle = {
+      ...vehicleObj,
+      currentLatitude: lat,
+      currentLongitude: lon,
+      gpsAccuracy: Number(accuracy) || 5.0,
+      speed: Number(speed) || 0,
+      heading: Number(heading) || 0,
+      trackingStatus: 'GPS_CONNECTED',
+      tripStatus: vehicleObj.tripStatus === 'AVAILABLE' ? 'ON_ROUTE' : vehicleObj.tripStatus,
+      lastLocationUpdate: updateTime,
+      updatedAt: updateTime
+    };
+
+    await vehiclesCol.updateOne(
+      { vehicleId: vehicleId.toUpperCase() },
+      { $set: updatedVehicle }
+    );
+
+    // Save location audit history log
+    const locationEntry = {
+      vehicleId: vehicleId.toUpperCase(),
+      latitude: lat,
+      longitude: lon,
+      accuracy: Number(accuracy) || 5.0,
+      speed: Number(speed) || 0,
+      heading: Number(heading) || 0,
+      timestamp: updateTime
+    };
+    await locationsCol.insertOne(locationEntry);
+
+    console.log(`📡 REAL GPS UPDATE [${vehicleId}]: (${lat.toFixed(4)}, ${lon.toFixed(4)}) - ${accuracy}m acc`);
+
+    // Broadcast update via Server-Sent Events (SSE)
+    broadcastVehicleLocation(updatedVehicle);
+
+    res.json({
+      status: 'success',
+      message: 'Real-time vehicle GPS location updated & broadcasted successfully',
+      vehicle: updatedVehicle
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// GET /api/relief/vehicles/stream - Server-Sent Events (SSE) Stream Endpoint for Live Map
+app.get('/api/relief/vehicles/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  const client = { id: Date.now(), res };
+  sseVehicleClients.push(client);
+
+  req.on('close', () => {
+    sseVehicleClients = sseVehicleClients.filter(c => c.id !== client.id);
+  });
+});
+
+// POST /api/relief/operations/allocate - Smart Allocation Engine
+app.post('/api/relief/operations/allocate', async (req, res) => {
+  const { requestId } = req.body || {};
+
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const requestsCol = db.collection('relief_requests');
+    const depotsCol = db.collection('relief_depots');
+    const vehiclesCol = db.collection('relief_vehicles');
+    const opsCol = db.collection('relief_operations');
+    const suppliesCol = db.collection('relief_supplies');
+
+    const requestObj = await requestsCol.findOne({ requestId: requestId });
+    if (!requestObj) {
+      return res.status(404).json({ status: 'error', message: `Request '${requestId}' not found.` });
+    }
+
+    if (!isNERState(requestObj.state)) {
+      return res.status(400).json({
+        status: 'rejected',
+        message: 'Jeevan Setu Relief Operations are restricted to the North-Eastern Region of India.'
+      });
+    }
+
+    // Find suitable depot in NER state
+    const depots = await depotsCol.find({ state: requestObj.state }).toArray();
+    let selectedDepot = depots[0] || (await depotsCol.findOne({ status: 'Operational' }));
+
+    if (!selectedDepot) {
+      return res.status(400).json({ status: 'error', message: 'No operational relief depot found in NER.' });
+    }
+
+    // Find available vehicle
+    const availableVehicle = await vehiclesCol.findOne({ tripStatus: 'AVAILABLE' }) || await vehiclesCol.findOne();
+
+    if (!availableVehicle) {
+      return res.status(400).json({ status: 'error', message: 'No available relief vehicle in fleet.' });
+    }
+
+    const opId = `OP-NER-${Math.floor(100 + Math.random() * 900)}`;
+    const now = new Date().toISOString();
+
+    const newOp = {
+      operationId: opId,
+      requestId: requestObj.requestId,
+      sourceDepotId: selectedDepot.depotId,
+      sourceDepotName: selectedDepot.depotName,
+      destination: requestObj.affectedArea || `${requestObj.district}, ${requestObj.state}`,
+      destinationLat: requestObj.lat || selectedDepot.lat + 0.2,
+      destinationLon: requestObj.lon || selectedDepot.lon + 0.2,
+      vehicleId: availableVehicle.vehicleId,
+      vehicleType: availableVehicle.vehicleType,
+      supplies: [{ item: requestObj.item, category: requestObj.category, quantity: requestObj.requiredQuantity }],
+      quantity: requestObj.requiredQuantity,
+      tripStatus: 'LOADING',
+      gpsStatus: availableVehicle.trackingStatus || 'GPS_NOT_CONNECTED',
+      createdAt: now,
+      updatedAt: now
+    };
+
+    await opsCol.insertOne(newOp);
+
+    // Reserve supply
+    await suppliesCol.updateOne(
+      { item: requestObj.item, state: requestObj.state },
+      {
+        $inc: { availableQuantity: -requestObj.requiredQuantity, reservedQuantity: requestObj.requiredQuantity },
+        $set: { status: 'Reserved', lastUpdated: now }
+      }
+    );
+
+    // Update request and vehicle status
+    await requestsCol.updateOne({ requestId: requestId }, { $set: { status: 'ALLOCATED', assignedDepotId: selectedDepot.depotId, assignedVehicleId: availableVehicle.vehicleId, updatedAt: now } });
+    await vehiclesCol.updateOne({ vehicleId: availableVehicle.vehicleId }, { $set: { destination: newOp.destination, tripStatus: 'LOADING', updatedAt: now } });
+
+    res.json({
+      status: 'success',
+      message: 'Smart Allocation Successful! Depot and vehicle assigned.',
+      operation: newOp
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// POST /api/relief/operations/dispatch - Dispatch vehicle on route
+app.post('/api/relief/operations/dispatch', async (req, res) => {
+  const { operationId } = req.body || {};
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const opsCol = db.collection('relief_operations');
+    const vehiclesCol = db.collection('relief_vehicles');
+    const requestsCol = db.collection('relief_requests');
+    const suppliesCol = db.collection('relief_supplies');
+
+    const op = await opsCol.findOne({ operationId });
+    if (!op) return res.status(404).json({ status: 'error', message: `Operation ${operationId} not found.` });
+
+    const now = new Date().toISOString();
+    await opsCol.updateOne({ operationId }, { $set: { tripStatus: 'ON_ROUTE', updatedAt: now } });
+    await vehiclesCol.updateOne({ vehicleId: op.vehicleId }, { $set: { tripStatus: 'ON_ROUTE', updatedAt: now } });
+    await requestsCol.updateOne({ requestId: op.requestId }, { $set: { status: 'DISPATCHED', updatedAt: now } });
+
+    if (op.supplies && op.supplies[0]) {
+      await suppliesCol.updateOne({ item: op.supplies[0].item }, { $set: { status: 'In Transit', lastUpdated: now } });
+    }
+
+    res.json({ status: 'success', message: `Operation ${operationId} dispatched on route successfully.` });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// POST /api/relief/operations/deliver - Confirm delivery completion
+app.post('/api/relief/operations/deliver', async (req, res) => {
+  const { operationId } = req.body || {};
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const opsCol = db.collection('relief_operations');
+    const vehiclesCol = db.collection('relief_vehicles');
+    const requestsCol = db.collection('relief_requests');
+    const suppliesCol = db.collection('relief_supplies');
+
+    const op = await opsCol.findOne({ operationId });
+    if (!op) return res.status(404).json({ status: 'error', message: `Operation ${operationId} not found.` });
+
+    const now = new Date().toISOString();
+    await opsCol.updateOne({ operationId }, { $set: { tripStatus: 'DELIVERED', updatedAt: now, completedAt: now } });
+    await vehiclesCol.updateOne({ vehicleId: op.vehicleId }, { $set: { tripStatus: 'DELIVERED', updatedAt: now } });
+    await requestsCol.updateOne({ requestId: op.requestId }, { $set: { status: 'DELIVERED', updatedAt: now } });
+
+    if (op.supplies && op.supplies[0]) {
+      const qty = op.supplies[0].quantity || op.quantity || 0;
+      await suppliesCol.updateOne(
+        { item: op.supplies[0].item },
+        {
+          $inc: { reservedQuantity: -qty, deliveredQuantity: qty },
+          $set: { status: 'Delivered', lastUpdated: now }
+        }
+      );
+    }
+
+    res.json({ status: 'success', message: `Operation ${operationId} confirmed DELIVERED. Inventory updated!` });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// GET /api/relief/operations - Get active and complete operations list
+app.get('/api/relief/operations', async (req, res) => {
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const opsCol = db.collection('relief_operations');
+    const operations = await opsCol.find().sort({ updatedAt: -1 }).toArray();
+    res.json({ status: 'success', count: operations.length, operations });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Jeevan Setu Disaster Intelligence Backend Server running on port ${PORT}`);
 });
+
+
+
 
