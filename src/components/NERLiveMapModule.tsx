@@ -39,6 +39,7 @@ export interface NERLiveMapModuleProps {
   onNavigateTo3DSim?: () => void;
   onTriggerSOS?: () => void;
   onBackToDashboard?: () => void;
+  onBackToHome?: () => void;
 }
 
 export interface NERStateData {
@@ -183,7 +184,8 @@ export default function NERLiveMapModule({
   focusedTarget,
   onNavigateTo3DSim,
   onTriggerSOS,
-  onBackToDashboard
+  onBackToDashboard,
+  onBackToHome
 }: NERLiveMapModuleProps) {
   const { t } = useTranslation();
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -249,16 +251,22 @@ export default function NERLiveMapModule({
 
     mapInstanceRef.current = map;
 
+    setTimeout(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    }, 300);
+
     const getTileUrl = (style: string) => {
-      if (style === "topo") return "https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
-      if (style === "osm" || style === "voyager") return "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
-      return "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+      if (style === "topo") return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
+      if (style === "osm" || style === "voyager") return "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+      return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
     };
 
     const baseTile = L.tileLayer(getTileUrl(baseStyle), {
-      maxZoom: 20,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: "© Google Maps &bull; Jeevan Setu NER Sovereign GIS"
+      maxZoom: 19,
+      subdomains: ['a', 'b', 'c'],
+      attribution: "© Esri & OpenStreetMap &bull; Jeevan Setu NER Sovereign GIS"
     }).addTo(map);
     currentTileLayerRef.current = baseTile;
 
@@ -395,10 +403,10 @@ export default function NERLiveMapModule({
   // Dynamically update base tile URL on style switch
   useEffect(() => {
     if (!currentTileLayerRef.current) return;
-    let url = "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
-    if (baseStyle === "topo") url = "https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
-    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
-    else url = "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+    let url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    if (baseStyle === "topo") url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
+    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    else url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
     currentTileLayerRef.current.setUrl(url);
   }, [baseStyle]);
@@ -530,18 +538,27 @@ export default function NERLiveMapModule({
       <div className="flex-1 relative w-full h-full overflow-hidden">
         <div ref={mapRef} className="w-full h-full z-10" />
 
-        {/* 🔙 BACK TO DASHBOARD FLOATING ACTION BUTTON */}
-        {onBackToDashboard && (
-          <div className="absolute top-4 left-4 z-[999] flex items-center gap-2">
+        {/* 🔙 BACK TO HOMEPAGE & DASHBOARD FLOATING ACTION BUTTONS */}
+        <div className="absolute top-4 left-4 z-[999] flex items-center gap-2.5 flex-wrap">
+          {onBackToHome && (
+            <button
+              onClick={onBackToHome}
+              className="px-4 py-2.5 bg-slate-900/95 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-xl border border-slate-700/90 shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-105 flex items-center gap-2 cursor-pointer group ring-2 ring-emerald-500/40"
+            >
+              <span className="text-emerald-400 font-extrabold text-sm">🏠</span>
+              <span>Back to Homepage</span>
+            </button>
+          )}
+          {onBackToDashboard && (
             <button
               onClick={onBackToDashboard}
-              className="px-4 py-2.5 bg-slate-900/95 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-xl border border-slate-700/90 shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-105 flex items-center gap-2 cursor-pointer group ring-2 ring-cyan-500/30"
+              className="px-4 py-2.5 bg-slate-900/95 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-xl border border-slate-700/90 shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-105 flex items-center gap-2 cursor-pointer group ring-2 ring-cyan-500/40"
             >
               <span className="text-cyan-400 font-extrabold text-sm group-hover:-translate-x-1 transition-transform">←</span>
               <span>Back to Dashboard</span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
     </div>

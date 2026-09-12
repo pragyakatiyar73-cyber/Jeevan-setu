@@ -927,6 +927,7 @@ export default function App() {
               onNavigateTo3DSim={() => setActiveModule('hub')}
               onTriggerSOS={() => setIsSosModalOpen(true)}
               onBackToDashboard={() => setActiveModule('customdashboard')}
+              onBackToHome={() => setActiveModule('home')}
             />
           </div>
         )}
