@@ -495,11 +495,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               <Search className="h-4 sm:h-5 w-4 sm:w-5" />
             </button>
 
-            {/* Admin Officer Pill Badge */}
-            <div className="hidden md:flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>{t('nav.adminOfficer', 'Admin Officer (OSDMA)')}</span>
-            </div>
 
             {/* Language Selector */}
             <div className="relative hidden sm:block">
