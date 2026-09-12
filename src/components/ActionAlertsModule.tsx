@@ -150,11 +150,11 @@ export default function ActionAlertsModule({
         <div className="flex items-center gap-2.5 overflow-hidden">
           <span className="flex h-3 w-3 shrink-0 rounded-full bg-rose-500 animate-ping"></span>
           <div className="truncate font-semibold">
-            <span className="font-black text-rose-400">ACTIVE EMERGENCY SOS:</span>{" "}
+            <span className="font-black text-rose-400">{t('actionAlerts.activeEmergencySos', 'ACTIVE EMERGENCY SOS:')}</span>{" "}
             <span className="text-white font-bold">
               {latestSOS
                 ? `${latestSOS.landmark} (${latestSOS.distressType}) • ${latestSOS.personsTrapped} • Triage: ${latestSOS.triageLevel} • ID: ${latestSOS.sosId}`
-                : "NH-6 Km 142 (East Khasi Hills, Meghalaya) • 5-15 Persons Trapped • Triage: STANDARD_L3 • Nearest 4x4 Convoy #01 Rerouting"}
+                : t('actionAlerts.activeIncidentsBanner', 'NH-6 Km 142 (East Khasi Hills, Meghalaya) • 5-15 Persons Trapped • Triage: STANDARD_L3 • Nearest 4x4 Convoy #01 Rerouting')}
             </span>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default function ActionAlertsModule({
           onClick={onNavigateToMap}
           className="shrink-0 rounded-xl bg-rose-600 hover:bg-rose-500 px-3.5 py-1.5 font-black text-white shadow-lg transition flex items-center gap-1 cursor-pointer border border-rose-400/40"
         >
-          <span>Track on Map ➔</span>
+          <span>{t('actionAlerts.trackOnMap', 'Track on Map ➔')}</span>
         </button>
       </div>
 
@@ -172,8 +172,8 @@ export default function ActionAlertsModule({
         {/* CARD 1: CRITICAL LEVEL 1 */}
         <div className="rounded-2xl border border-rose-500/40 bg-white dark:bg-gradient-to-br dark:from-rose-950/40 dark:to-slate-950/80 p-5 shadow-xl flex items-center justify-between transition-colors duration-300">
           <div>
-            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">CRITICAL (LEVEL 1)</div>
-            <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">4 Active</div>
+            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">{t('actionAlerts.criticalLevel1', 'CRITICAL (LEVEL 1)')}</div>
+            <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">{t('actionAlerts.fourActive', '4 Active')}</div>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-600/20 border border-rose-500/40 text-rose-600 dark:text-rose-400 shadow-lg shadow-rose-600/30 animate-pulse">
             <Siren className="h-6 w-6" />
@@ -183,8 +183,8 @@ export default function ActionAlertsModule({
         {/* CARD 2: HIGH RISK LEVEL 2 */}
         <div className="rounded-2xl border border-amber-500/40 bg-white dark:bg-gradient-to-br dark:from-amber-950/40 dark:to-slate-950/80 p-5 shadow-xl flex items-center justify-between transition-colors duration-300">
           <div>
-            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">HIGH RISK (LEVEL 2)</div>
-            <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">6 Regulated</div>
+            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">{t('actionAlerts.highRiskLevel2', 'HIGH RISK (LEVEL 2)')}</div>
+            <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">{t('actionAlerts.sixRegulated', '6 Regulated')}</div>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-600/20 border border-amber-500/40 text-amber-600 dark:text-amber-400 shadow-lg shadow-amber-600/30">
             <AlertTriangle className="h-6 w-6" />
@@ -194,8 +194,8 @@ export default function ActionAlertsModule({
         {/* CARD 3: SURGE / WEATHER */}
         <div className="rounded-2xl border border-sky-500/40 bg-white dark:bg-gradient-to-br dark:from-sky-950/40 dark:to-slate-950/80 p-5 shadow-xl flex items-center justify-between transition-colors duration-300">
           <div>
-            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">SURGE / WEATHER</div>
-            <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">4 Monitored</div>
+            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">{t('actionAlerts.surgeWeather', 'SURGE / WEATHER')}</div>
+            <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">{t('actionAlerts.fourMonitored', '4 Monitored')}</div>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-600/20 border border-sky-500/40 text-sky-600 dark:text-sky-400 shadow-lg shadow-sky-600/30">
             <CloudRain className="h-6 w-6" />
@@ -205,7 +205,7 @@ export default function ActionAlertsModule({
         {/* CARD 4: AVG DISPATCH SPEED */}
         <div className="rounded-2xl border border-emerald-500/40 bg-white dark:bg-gradient-to-br dark:from-emerald-950/40 dark:to-slate-950/80 p-5 shadow-xl flex items-center justify-between transition-colors duration-300">
           <div>
-            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">AVG DISPATCH SPEED</div>
+            <div className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">{t('actionAlerts.avgDispatchSpeed', 'AVG DISPATCH SPEED')}</div>
             <div className="text-2xl lg:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1">14.2 min</div>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 shadow-lg shadow-emerald-600/30">
@@ -223,11 +223,11 @@ export default function ActionAlertsModule({
             <div className="flex items-center gap-2">
               <span className="text-xl">🚨</span>
               <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                Real-Time Emergency Incident Broadcast Feed (14 Events)
+                {t('actionAlerts.feedTitle', 'Real-Time Emergency Incident Broadcast Feed (14 Events)')}
               </h2>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
-              Live operational alerts across 8 NER States synchronized with NDRF, BRO & State Disaster Management Authorities (SDMAs)
+              {t('actionAlerts.feedSub', 'Live operational alerts across 8 NER States synchronized with NDRF, BRO & State Disaster Management Authorities (SDMAs)')}
             </p>
           </div>
 
@@ -235,7 +235,7 @@ export default function ActionAlertsModule({
           <div className="flex items-center gap-3 flex-wrap">
             <div className="w-64">
               <SmartSearchInput
-                placeholder="Search emergency broadcast feed..."
+                placeholder={t('actionAlerts.searchPlaceholder', 'Search emergency broadcast feed...')}
                 value={alertSearch}
                 onChange={setAlertSearch}
               />
@@ -246,9 +246,9 @@ export default function ActionAlertsModule({
               onChange={(e) => setFilterCategory(e.target.value)}
               className="rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3.5 py-2 text-xs font-bold text-slate-900 dark:text-slate-200 focus:border-sky-500 focus:outline-none"
             >
-              <option value="all">🔴 Critical Distress (4)</option>
-              <option value="high">🟡 High Risk Regulated (6)</option>
-              <option value="weather">🌧️ Weather Monitored (4)</option>
+              <option value="all">🔴 {t('actionAlerts.criticalDistress', 'Critical Distress (4)')}</option>
+              <option value="high">🟡 {t('actionAlerts.highRiskRegulated', 'High Risk Regulated (6)')}</option>
+              <option value="weather">🌧️ {t('actionAlerts.weatherMonitored', 'Weather Monitored (4)')}</option>
             </select>
 
             <button
@@ -256,7 +256,7 @@ export default function ActionAlertsModule({
               className="rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-black text-xs px-4 py-2 shadow-lg shadow-rose-600/40 transition cursor-pointer flex items-center gap-1.5 border border-rose-400/40"
             >
               <span>🚨</span>
-              <span>Broadcast SOS</span>
+              <span>{t('actionAlerts.broadcastSos', 'Broadcast SOS')}</span>
             </button>
           </div>
         </div>
@@ -340,7 +340,7 @@ export default function ActionAlertsModule({
                     onClick={onNavigateToMap}
                     className="rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs px-3.5 py-2 transition cursor-pointer flex items-center gap-1"
                   >
-                    <span>View Map 🗺️</span>
+                    <span>{t('actionAlerts.viewMap', 'View Map 🗺️')}</span>
                   </button>
                 </div>
               </div>

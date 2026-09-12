@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from '../i18n';
 import {
   FileBarChart,
   Download,
@@ -14,6 +15,7 @@ import {
 import { incidentStore, SITREPReport } from '../services/api/incidentStore';
 
 export default function AISituationReportModule() {
+  const { t } = useTranslation();
   const activeIncident = incidentStore.getActiveIncident();
   const [sitrep, setSitrep] = useState<SITREPReport | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
@@ -111,18 +113,18 @@ End of Situation Report — Jeevan Setu MDoNER Command Grid
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-black text-sky-400 border border-sky-500/40 uppercase">
-                REPORTING & SITREP STAGE
+                {t('sitrep.stageBadge', 'REPORTING & SITREP STAGE')}
               </span>
               <span className="rounded bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-mono text-emerald-400 border border-emerald-500/30">
-                VERIFIED DATA SUMMARY
+                {t('sitrep.verifiedSummaryBadge', 'VERIFIED DATA SUMMARY')}
               </span>
             </div>
             <h1 className="text-2xl font-black text-white mt-1 flex items-center gap-2">
               <FileBarChart className="h-7 w-7 text-sky-400" />
-              <span>AI Automated Situation Report (SITREP) Generator</span>
+              <span>{t('sitrep.title', 'AI Automated Situation Report (SITREP) Generator')}</span>
             </h1>
             <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-              Consolidates real-time telemetry from all 11 stages (Monitoring, AI Assessment, 72h Forecast, SOS Triage, Rescue Teams, UAVs, Relief Camps, and Damage) into a 16-section executive situation report.
+              {t('sitrep.subtitle', 'Consolidates real-time telemetry from all 11 stages (Monitoring, AI Assessment, 72h Forecast, SOS Triage, Rescue Teams, UAVs, Relief Camps, and Damage) into a 16-section executive situation report.')}
             </p>
           </div>
 
@@ -133,7 +135,7 @@ End of Situation Report — Jeevan Setu MDoNER Command Grid
               className="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-5 py-3 text-xs font-bold text-white shadow-lg hover:from-sky-500 hover:to-indigo-500 flex items-center gap-2 cursor-pointer"
             >
               <Sparkles className="h-4 w-4" />
-              <span>{isGenerating ? 'Compiling 16 Sections...' : 'GENERATE AI SITREP'}</span>
+              <span>{isGenerating ? t('common.loading', 'Compiling 16 Sections...') : t('sitrep.generateBtn', '✨ GENERATE AI SITREP')}</span>
             </button>
           </div>
         </div>

@@ -525,7 +525,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-rose-500 text-white px-3.5 py-1.5 rounded-full text-xs font-black shadow-lg shadow-red-600/30 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-red-400/40 animate-pulse"
           >
             <span>🚨</span>
-            <span>Emergency SOS</span>
+            <span>{t('cmdDashboard.emergencySos', 'Emergency SOS')}</span>
           </button>
         </div>
 
@@ -542,7 +542,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             {/* Card 1: Active Disasters */}
             <div className="bg-[#070d1e] border border-red-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-red-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Disasters</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.activeDisasters', 'Active Disasters')}</span>
                 <div className="h-8 w-8 rounded-xl bg-red-500/20 border border-red-500/40 text-red-400 flex items-center justify-center font-bold">
                   <ShieldAlert className="h-4 w-4" />
                 </div>
@@ -550,7 +550,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div className="mt-3">
                 <div className="text-3xl font-black text-white font-mono tracking-tight">12</div>
                 <div className="text-[11px] font-bold text-red-400 mt-0.5 flex items-center gap-1">
-                  <span>+3 today</span> &bull; <span>High Risk</span>
+                  <span>+3 today</span> &bull; <span>{t('landslide.highRisk', 'High Risk')}</span>
                 </div>
               </div>
             </div>
@@ -558,7 +558,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             {/* Card 2: Critical Alerts */}
             <div className="bg-[#070d1e] border border-amber-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-amber-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Critical Alerts</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.criticalAlerts', 'Critical Alerts')}</span>
                 <div className="h-8 w-8 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center font-bold">
                   <AlertTriangle className="h-4 w-4" />
                 </div>
@@ -566,7 +566,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div className="mt-3">
                 <div className="text-3xl font-black text-white font-mono tracking-tight">04</div>
                 <div className="text-[11px] font-bold text-amber-400 mt-0.5">
-                  Requires attention
+                  {t('cmdDashboard.requiresAttention', 'Requires attention')}
                 </div>
               </div>
             </div>
@@ -574,7 +574,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             {/* Card 3: Affected Districts */}
             <div className="bg-[#070d1e] border border-sky-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-sky-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Affected Districts</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.affectedDistricts', 'Affected Districts')}</span>
                 <div className="h-8 w-8 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-400 flex items-center justify-center font-bold">
                   <MapPin className="h-4 w-4" />
                 </div>
@@ -582,7 +582,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div className="mt-3">
                 <div className="text-3xl font-black text-white font-mono tracking-tight">18</div>
                 <div className="text-[11px] font-bold text-sky-400 mt-0.5">
-                  Currently affected
+                  {t('cmdDashboard.currentlyAffected', 'Currently affected')}
                 </div>
               </div>
             </div>
@@ -590,7 +590,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             {/* Card 4: Rescue Teams */}
             <div className="bg-[#070d1e] border border-emerald-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-emerald-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Rescue Teams</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.rescueTeams', 'Rescue Teams')}</span>
                 <div className="h-8 w-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center font-bold">
                   <ShieldCheck className="h-4 w-4" />
                 </div>
@@ -598,7 +598,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div className="mt-3">
                 <div className="text-3xl font-black text-white font-mono tracking-tight">27</div>
                 <div className="text-[11px] font-bold text-emerald-400 mt-0.5">
-                  Deployed (NDRF/SDRF)
+                  {t('lifeSavingEngine.deployed', 'Deployed')} (NDRF/SDRF)
                 </div>
               </div>
             </div>
@@ -606,7 +606,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             {/* Card 5: Relief Vehicles */}
             <div className="bg-[#070d1e] border border-indigo-900/40 p-4 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between group hover:border-indigo-500/60 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Relief Vehicles</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('cmdDashboard.reliefVehicles', 'Relief Vehicles')}</span>
                 <div className="h-8 w-8 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center font-bold">
                   <Truck className="h-4 w-4" />
                 </div>
@@ -614,7 +614,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div className="mt-3">
                 <div className="text-3xl font-black text-white font-mono tracking-tight">09</div>
                 <div className="text-[11px] font-bold text-indigo-400 mt-0.5">
-                  Active in field
+                  {t('cmdDashboard.activeInField', 'Active in field')}
                 </div>
               </div>
             </div>
@@ -633,10 +633,10 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div>
                 <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
                   <Radio className="h-5 w-5 text-red-500 animate-pulse" />
-                  <span>Live GIS Disaster Command Grid</span>
+                  <span>{t('cmdDashboard.liveGisTitle', 'Live GIS Disaster Command Grid')}</span>
                 </h2>
                 <p className="text-xs text-slate-400 font-semibold">
-                  Real-time telemetry, Doppler radar overlays &amp; asset locations
+                  {t('cmdDashboard.liveGisSubtitle', 'Real-time telemetry, Doppler radar overlays & asset locations')}
                 </p>
               </div>
 
@@ -653,7 +653,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                         : "bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-700"
                     }`}
                   >
-                    {filter}
+                    {filter === "All" ? t('cmdDashboard.filterAll', 'All') : filter === "Flood" ? t('cmdDashboard.filterFlood', 'Flood') : filter === "Landslide" ? t('cmdDashboard.filterLandslide', 'Landslide') : filter === "Rainfall" ? t('cmdDashboard.filterRainfall', 'Rainfall') : filter === "Emergency Resources" ? t('cmdDashboard.filterResources', 'Emergency Resources') : t('cmdDashboard.filterVehicles', 'Vehicles')}
                   </button>
                 ))}
               </div>
@@ -680,7 +680,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                         mapTileType === "satellite" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
                       }`}
                     >
-                      🛰️ Satellite
+                      {t('cmdDashboard.btnSatellite', '🛰️ Satellite')}
                     </button>
                     <button
                       onClick={() => switchBasemap("dark")}
@@ -688,7 +688,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                         mapTileType === "dark" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
                       }`}
                     >
-                      🌑 Dark GIS
+                      {t('cmdDashboard.btnDarkGis', '🌑 Dark GIS')}
                     </button>
                     <button
                       onClick={() => switchBasemap("topo")}
@@ -696,7 +696,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                         mapTileType === "topo" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
                       }`}
                     >
-                      ⛰️ Terrain
+                      {t('cmdDashboard.btnTerrain', '⛰️ Terrain')}
                     </button>
                   </div>
 
@@ -708,7 +708,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                         : "bg-slate-900/90 text-slate-400 border-slate-700"
                     }`}
                   >
-                    📡 Doppler Radar
+                    {t('cmdDashboard.btnDoppler', '📡 Doppler Radar')}
                   </button>
                 </div>
 
@@ -741,7 +741,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                 <div>
                   <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                     <div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Selected Area Intelligence</span>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">{t('cmdDashboard.selectedAreaIntel', 'Selected Area Intelligence')}</span>
                       <h3 className="text-lg font-black text-white mt-0.5">{selectedIncident.location}</h3>
                     </div>
                     <span
@@ -751,39 +751,39 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                           : "bg-amber-500/20 text-amber-400 border-amber-500/40"
                       }`}
                     >
-                      Risk: {selectedIncident.riskLevel}
+                      {t('cmdDashboard.riskHigh', 'Risk')}: {selectedIncident.riskLevel}
                     </span>
                   </div>
 
                   {/* Telemetry Metrics List */}
                   <div className="py-4 space-y-3 text-xs font-medium">
                     <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">Weather Condition:</span>
+                      <span className="text-slate-400 font-bold">{t('cmdDashboard.weatherCondition', 'Weather Condition:')}</span>
                       <span className="font-extrabold text-white flex items-center gap-1">
                         <CloudRain className="h-3.5 w-3.5 text-sky-400" />
-                        <span>Heavy Downpour (22°C)</span>
+                        <span>{t('cmdDashboard.heavyDownpour', 'Heavy Downpour (22°C)')}</span>
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">Accumulated Rainfall:</span>
+                      <span className="text-slate-400 font-bold">{t('cmdDashboard.accumulatedRainfall', 'Accumulated Rainfall:')}</span>
                       <span className="font-extrabold text-sky-400 font-mono">{selectedIncident.rainfallMm} mm (24h)</span>
                     </div>
 
                     <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">Road Accessibility:</span>
+                      <span className="text-slate-400 font-bold">{t('cmdDashboard.roadAccessibility', 'Road Accessibility:')}</span>
                       <span className={`font-extrabold ${selectedIncident.roadStatus === "Clear" ? "text-emerald-400" : "text-amber-400"}`}>
-                        ⚠️ {selectedIncident.roadStatus}
+                        ⚠️ {selectedIncident.roadStatus === "Partially Blocked" ? t('cmdDashboard.partiallyBlocked', 'Partially Blocked') : selectedIncident.roadStatus}
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">Nearest Shelter:</span>
+                      <span className="text-slate-400 font-bold">{t('cmdDashboard.nearestShelter', 'Nearest Shelter:')}</span>
                       <span className="font-extrabold text-purple-400">🏠 4.2 km (Mangan High School)</span>
                     </div>
 
                     <div className="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400 font-bold">Nearest Hospital:</span>
+                      <span className="text-slate-400 font-bold">{t('cmdDashboard.nearestHospital', 'Nearest Hospital:')}</span>
                       <span className="font-extrabold text-emerald-400">🏥 7.1 km (STNM Referral)</span>
                     </div>
                   </div>
@@ -792,10 +792,10 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                   <div className="p-3.5 bg-sky-950/40 border border-sky-500/30 rounded-xl space-y-1">
                     <div className="text-xs font-black text-sky-300 flex items-center gap-1">
                       <Sparkles className="h-3.5 w-3.5 text-sky-400" />
-                      <span>AI Tactical Recommendation</span>
+                      <span>{t('cmdDashboard.aiTacticalRec', 'AI Tactical Recommendation')}</span>
                     </div>
                     <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
-                      "Avoid affected mountain corridors over next 48 hours. Evacuate toward designated safe zone shelters."
+                      "{t('cmdDashboard.aiTacticalDesc', 'Avoid affected mountain corridors over next 48 hours. Evacuate toward designated safe zone shelters.')}"
                     </p>
                   </div>
                 </div>

@@ -473,12 +473,12 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
           {/* 2. FLIGHT TELEMETRY MATH CARD */}
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-4 transition-colors duration-300">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-              <span className="text-xs lg:text-sm font-black uppercase text-slate-700 dark:text-slate-300 tracking-wider">FLIGHT TELEMETRY MATH</span>
+              <span className="text-xs lg:text-sm font-black uppercase text-slate-700 dark:text-slate-300 tracking-wider">{t("uavTelemetry.flightTelemetryMath", "FLIGHT TELEMETRY MATH")}</span>
               <span className={"px-3 py-1 rounded-lg text-xs font-black uppercase border " + (
                 isRangeExceeded || isPayloadOverloaded ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/40" :
                 "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/40"
               )}>
-                {isRangeExceeded ? t("uav.rangeExceeded", "RANGE EXCEEDED") : isPayloadOverloaded ? "PAYLOAD OVERLOAD" : "SAFE"}
+                {isRangeExceeded ? t("uavTelemetry.rangeExceeded", "RANGE EXCEEDED") : isPayloadOverloaded ? "PAYLOAD OVERLOAD" : t("uavTelemetry.pass", "SAFE")}
               </span>
             </div>
 
@@ -486,26 +486,26 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
             <p className={"text-xs lg:text-sm font-bold leading-relaxed " + (
               isRangeExceeded || isPayloadOverloaded ? "text-rose-600 dark:text-rose-300" : "text-emerald-600 dark:text-emerald-300"
             )}>
-              {isRangeExceeded ? `⚠️ Flight distance (${flightDistanceKm} km) exceeds maximum operating radius (${selectedDrone.operatingRadiusKm} km) of ${selectedDrone.name}.` :
+              {isRangeExceeded ? `⚠️ ${t("uavTelemetry.rangeAlertMsg", "Flight distance exceeds maximum operating radius")}` :
                isPayloadOverloaded ? `⚠️ Payload mass (${payloadKg} kg) exceeds maximum capacity (${selectedDrone.maxPayloadKg} kg) of ${selectedDrone.name}.` :
                `🟢 All mission flight math parameters are within safe operational limits.`}
             </p>
 
             <div className="grid grid-cols-2 gap-3 font-mono pt-1">
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Flight Distance</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.flightDistance", "Flight Distance")}</span>
                 <b className="text-slate-900 dark:text-white text-base lg:text-lg font-black">{flightDistanceKm} km</b>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Max Radius Limit</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.maxRadiusLimit", "Max Radius Limit")}</span>
                 <b className="text-sky-600 dark:text-sky-400 text-base lg:text-lg font-black">{selectedDrone.operatingRadiusKm} km</b>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Remaining Payload</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.remainingPayload", "Remaining Payload")}</span>
                 <b className="text-emerald-600 dark:text-emerald-400 text-base lg:text-lg font-black">{Math.max(0, selectedDrone.maxPayloadKg - payloadKg)} kg</b>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Est. Battery Required</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.estBatteryRequired", "Est. Battery Required")}</span>
                 <b className="text-indigo-600 dark:text-indigo-300 text-base lg:text-lg font-black">{estimatedBatteryRequired}%</b>
               </div>
             </div>
@@ -513,13 +513,13 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
 
           {/* 3. PRE-FLIGHT SAFETY PROTOCOL (4 CARDS) */}
           <div className="space-y-3 pt-1">
-            <div className="text-xs lg:text-sm font-black uppercase text-slate-600 dark:text-slate-400 tracking-wider">PRE-FLIGHT SAFETY PROTOCOL</div>
+            <div className="text-xs lg:text-sm font-black uppercase text-slate-600 dark:text-slate-400 tracking-wider">{t("uavTelemetry.preFlightProtocol", "PRE-FLIGHT SAFETY PROTOCOL")}</div>
             <div className="grid grid-cols-2 gap-3">
               {/* Card 1: IAF Air Corridor */}
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] space-y-1 transition-colors duration-300">
                 <div className="flex items-center justify-between text-xs lg:text-sm">
-                  <span className="font-bold text-slate-900 dark:text-white">IAF Air Corridor</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-black">PASS</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{t("uavTelemetry.iafAirCorridor", "IAF Air Corridor")}</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-black">{t("uavTelemetry.pass", "PASS")}</span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Authorized Corridor #IAF-NER-9981 Active</p>
               </div>
@@ -527,8 +527,8 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
               {/* Card 2: Mountain Wind Check */}
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] space-y-1 transition-colors duration-300">
                 <div className="flex items-center justify-between text-xs lg:text-sm">
-                  <span className="font-bold text-slate-900 dark:text-white">Mountain Wind Check</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-black">PASS</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{t("uavTelemetry.mountainWindCheck", "Mountain Wind Check")}</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-black">{t("uavTelemetry.pass", "PASS")}</span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Wind: 28 km/h (&lt; 55 km/h Safe)</p>
               </div>
@@ -536,8 +536,8 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
               {/* Card 3: Helipad Receiver */}
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] space-y-1 transition-colors duration-300">
                 <div className="flex items-center justify-between text-xs lg:text-sm">
-                  <span className="font-bold text-slate-900 dark:text-white">Helipad Receiver</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-black">PASS</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{t("uavTelemetry.helipadReceiver", "Helipad Receiver")}</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-black">{t("uavTelemetry.pass", "PASS")}</span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Ground Optical Beacon Operational</p>
               </div>
@@ -545,8 +545,8 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
               {/* Card 4: Cold-Chain Pod */}
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] space-y-1 transition-colors duration-300">
                 <div className="flex items-center justify-between text-xs lg:text-sm">
-                  <span className="font-bold text-slate-900 dark:text-white">Cold-Chain Pod</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-black">PASS</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{t("uavTelemetry.coldChainPod", "Cold-Chain Pod")}</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-black">{t("uavTelemetry.pass", "PASS")}</span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">+4.2°C Thermal Storage Protected</p>
               </div>
@@ -582,43 +582,43 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-5 transition-colors duration-300">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h3 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-                <span>📡</span> Live UAV Telemetry System
+                <span>📡</span> {t("uavTelemetry.liveTelemetryTitle", "Live UAV Telemetry System")}
               </h3>
-              <span className="text-xs font-mono text-sky-600 dark:text-sky-400 font-bold">Updated every 1.0s</span>
+              <span className="text-xs font-mono text-sky-600 dark:text-sky-400 font-bold">{t("uavTelemetry.updatedEvery", "Updated every 1.0s")}</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Altitude</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.altitude", "Altitude")}</span>
                 <b className="text-slate-900 dark:text-white text-xl lg:text-2xl font-black">{currentAltitude} m MSL</b>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Speed</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.speed", "Speed")}</span>
                 <b className="text-sky-600 dark:text-sky-400 text-xl lg:text-2xl font-black">{currentSpeed} km/h</b>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Battery Level</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.batteryLevel", "Battery Level")}</span>
                 <b className={"text-xl lg:text-2xl font-black " + (currentBattery < 30 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400")}>{currentBattery}%</b>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Heading</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.heading", "Heading")}</span>
                 <b className="text-amber-600 dark:text-amber-400 text-xl lg:text-2xl font-black">142° SE</b>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Dist. Travelled</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.distTravelled", "Dist. Travelled")}</span>
                 <b className="text-indigo-600 dark:text-indigo-300 text-xl lg:text-2xl font-black">{currentDistanceTravelled} km</b>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Dist. Remaining</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.distRemaining", "Dist. Remaining")}</span>
                 <b className="text-sky-600 dark:text-sky-400 text-xl lg:text-2xl font-black">{distanceRemainingKm} km</b>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Est. ETA</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.estEta", "Est. ETA")}</span>
                 <b className="text-emerald-600 dark:text-emerald-400 text-xl lg:text-2xl font-black">00:{etaMinsRemaining < 10 ? '0' + etaMinsRemaining : etaMinsRemaining}:00</b>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">Mission Progress</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block uppercase">{t("uavTelemetry.missionProgress", "Mission Progress")}</span>
                 <b className="text-slate-900 dark:text-white text-xl lg:text-2xl font-black">{progressPercent}%</b>
               </div>
             </div>
@@ -630,7 +630,7 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
               </div>
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-mono font-medium">
                 <span>{selectedHub.name.split(' ')[0]}</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">{progressPercent}% Trajectory Cleared</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">{progressPercent}% {t("uavTelemetry.trajectoryCleared", "Trajectory Cleared")}</span>
                 <span>{selectedLZ.name.split(' ')[0]}</span>
               </div>
             </div>
