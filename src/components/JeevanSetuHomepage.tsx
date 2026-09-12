@@ -423,41 +423,42 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       <header className="sticky top-0 z-[100] w-full bg-[#0B132B] dark:bg-[#070d1e] text-white shadow-lg border-b border-slate-800 transition-colors duration-300">
         <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           
-          {/* LEFT: Logo & Nav Links */}
-          <div className="flex items-center gap-6 lg:gap-8">
-            <div
-              onClick={() => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className="flex items-center gap-3 cursor-pointer group shrink-0"
-            >
-              <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-sky-400/60 group-hover:scale-105 transition shadow-md shadow-sky-500/20 bg-slate-900 flex items-center justify-center">
-                <img
-                  src="/jeevan-setu-logo.jpg"
-                  alt="Jeevan Setu Logo"
-                  className="h-full w-full object-cover rounded-full"
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = 'none';
-                  }}
-                />
-                <span className="text-sky-400 font-black text-lg">JS</span>
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1">
-                  <span className="text-lg font-black tracking-wider text-white leading-none font-sans group-hover:text-sky-300 transition">
-                    {language === 'hi' ? (
-                      <>जीवन <span className="text-sky-400">सेतु</span></>
-                    ) : (
-                      <>Jeevan <span className="text-sky-400">Setu</span></>
-                    )}
-                  </span>
-                </div>
-                <span className="text-[10px] font-semibold text-sky-400/90 tracking-wide leading-tight mt-0.5 hidden sm:block">
-                  {t('nav.brandSubtitle', 'AI Powered Disaster Response & GIS Intelligence Platform')}
+          {/* LEFT: Logo & Brand */}
+          <div
+            onClick={() => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className="flex items-center gap-3 cursor-pointer group shrink-0"
+          >
+            <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-sky-400/60 group-hover:scale-105 transition shadow-md shadow-sky-500/20 bg-slate-900 flex items-center justify-center">
+              <img
+                src="/jeevan-setu-logo.jpg"
+                alt="Jeevan Setu Logo"
+                className="h-full w-full object-cover rounded-full"
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
+              />
+              <span className="text-sky-400 font-black text-lg">JS</span>
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <span className="text-lg font-black tracking-wider text-white leading-none font-sans group-hover:text-sky-300 transition">
+                  {language === 'hi' ? (
+                    <>जीवन <span className="text-sky-400">सेतु</span></>
+                  ) : (
+                    <>Jeevan <span className="text-sky-400">Setu</span></>
+                  )}
                 </span>
               </div>
+              <span className="text-[10px] font-semibold text-sky-400/90 tracking-wide leading-tight mt-0.5 hidden sm:block">
+                {t('nav.brandSubtitle', 'AI Powered Disaster Response & GIS Intelligence Platform')}
+              </span>
             </div>
+          </div>
 
-            {/* Navigation Links (Left-aligned next to logo) */}
-            <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+          {/* RIGHT: Navigation Links & Action Tools */}
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            {/* Navigation Links (Right Side) */}
+            <nav className="hidden md:flex items-center gap-1 lg:gap-2 mr-1 sm:mr-2">
               {[
                 { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
                 { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
@@ -482,10 +483,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 );
               })}
             </nav>
-          </div>
-
-          {/* RIGHT: Action Tools & Mobile Menu */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Search Icon */}
             <button
               onClick={() => setIsSearchOpen(true)}
