@@ -762,10 +762,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-indigo-700 dark:group-hover:text-indigo-300'
               },
               {
-                title: t('home.stateRisk', 'Risk Assessment'),
-                desc: t('home.stateRiskDesc', 'Analyze flood, landslide, rainfall and other disaster risks.'),
-                icon: AlertTriangle,
-                action: () => onNavigateModule('staterisk'),
+                title: t('home.reliefCamps', 'Relief Camps & Supplies'),
+                desc: t('home.reliefCampsDesc', 'Find nearby relief camps, shelter capacity, and emergency supplies.'),
+                icon: Building2,
+                action: () => onNavigateModule('reliefcamps'),
                 bgColor: 'bg-[#FFFBEB] dark:bg-amber-950/25',
                 hoverBg: 'hover:bg-[#FEF3C7] dark:hover:bg-amber-900/40',
                 borderColor: 'border-amber-200/80 dark:border-amber-900/40',
