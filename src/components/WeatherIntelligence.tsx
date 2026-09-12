@@ -1,5 +1,5 @@
-import { useTranslation } from "../i18n";
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "../i18n";
 import {
   CloudRain,
   MapPin,
@@ -11,20 +11,113 @@ import {
   Layers,
   CheckCircle2,
   RefreshCw,
-  Sliders,
   Radio,
   Thermometer,
   Droplets,
   Wind,
   ShieldCheck,
-  Search
+  Search,
+  Sun,
+  SunMedium,
+  CloudSun,
+  Cloud,
+  CloudFog,
+  CloudDrizzle,
+  CloudRainWind,
+  CloudSnow,
+  CloudLightning,
+  Globe,
+  Clock,
+  ArrowUpRight
 } from "lucide-react";
+
+import {
+  getLiveWeather,
+  WeatherData,
+  DailyForecastDay
+} from "../services/api/weather";
+import { isPointInNER } from "../utils/nerBoundary";
 
 interface WeatherIntelligenceProps {
   onNavigateToMap?: () => void;
   onNavigateToReroute?: (corridor?: string) => void;
   onTriggerSOS?: () => void;
 }
+
+export interface NERLocationItem {
+  name: string;
+  district: string;
+  state: 'Arunachal Pradesh' | 'Assam' | 'Manipur' | 'Meghalaya' | 'Mizoram' | 'Nagaland' | 'Sikkim' | 'Tripura';
+  lat: number;
+  lon: number;
+  altitude?: string;
+}
+
+// 🏞️ Master 8 North Eastern Region (NER) States & Major Districts/Cities Dataset
+export const NER_WEATHER_LOCATIONS: Record<string, NERLocationItem[]> = {
+  "Arunachal Pradesh": [
+    { name: "Itanagar", district: "Papum Pare", state: "Arunachal Pradesh", lat: 27.0844, lon: 93.6053, altitude: "320m" },
+    { name: "Tawang / Sela Pass", district: "Tawang", state: "Arunachal Pradesh", lat: 27.5861, lon: 91.8504, altitude: "3,500m" },
+    { name: "Pasighat", district: "East Siang", state: "Arunachal Pradesh", lat: 28.0660, lon: 95.3262, altitude: "155m" },
+    { name: "Ziro", district: "Lower Subansiri", state: "Arunachal Pradesh", lat: 27.5947, lon: 93.8385, altitude: "1,568m" },
+    { name: "Bomdila", district: "West Kameng", state: "Arunachal Pradesh", lat: 27.2642, lon: 92.4159, altitude: "2,217m" },
+    { name: "Changlang", district: "Changlang", state: "Arunachal Pradesh", lat: 27.1268, lon: 95.7337, altitude: "580m" }
+  ],
+  "Assam": [
+    { name: "Guwahati", district: "Kamrup Metropolitan", state: "Assam", lat: 26.1445, lon: 91.7362, altitude: "55m" },
+    { name: "Dispur", district: "Kamrup Metropolitan", state: "Assam", lat: 26.1433, lon: 91.7898, altitude: "55m" },
+    { name: "Dibrugarh", district: "Dibrugarh", state: "Assam", lat: 27.4728, lon: 94.9120, altitude: "108m" },
+    { name: "Silchar", district: "Cachar", state: "Assam", lat: 24.8333, lon: 92.7789, altitude: "22m" },
+    { name: "Tezpur", district: "Sonitpur", state: "Assam", lat: 26.6338, lon: 92.8006, altitude: "48m" },
+    { name: "Jorhat", district: "Jorhat", state: "Assam", lat: 26.7509, lon: 94.2037, altitude: "116m" },
+    { name: "Lakhimpur", district: "Lakhimpur", state: "Assam", lat: 27.2366, lon: 94.1037, altitude: "101m" },
+    { name: "Nagaon", district: "Nagaon", state: "Assam", lat: 26.3462, lon: 92.6840, altitude: "63m" }
+  ],
+  "Manipur": [
+    { name: "Imphal", district: "Imphal West", state: "Manipur", lat: 24.8170, lon: 93.9368, altitude: "786m" },
+    { name: "Churachandpur", district: "Churachandpur", state: "Manipur", lat: 24.3333, lon: 93.6833, altitude: "914m" },
+    { name: "Ukhrul", district: "Ukhrul", state: "Manipur", lat: 25.1167, lon: 94.3667, altitude: "1,662m" },
+    { name: "Tamenglong", district: "Tamenglong", state: "Manipur", lat: 24.9833, lon: 93.4833, altitude: "1,260m" },
+    { name: "Senapati", district: "Senapati", state: "Manipur", lat: 25.2667, lon: 94.0167, altitude: "1,100m" }
+  ],
+  "Meghalaya": [
+    { name: "Shillong", district: "East Khasi Hills", state: "Meghalaya", lat: 25.5788, lon: 91.8933, altitude: "1,525m" },
+    { name: "Sohra (Cherrapunji)", district: "East Khasi Hills", state: "Meghalaya", lat: 25.2702, lon: 91.7323, altitude: "1,430m" },
+    { name: "Mawsynram", district: "East Khasi Hills", state: "Meghalaya", lat: 25.2986, lon: 91.5822, altitude: "1,400m" },
+    { name: "Tura", district: "West Garo Hills", state: "Meghalaya", lat: 25.5142, lon: 90.2032, altitude: "349m" },
+    { name: "Jowai", district: "West Jaintia Hills", state: "Meghalaya", lat: 25.4452, lon: 92.2081, altitude: "1,380m" },
+    { name: "Nongpoh", district: "Ri-Bhoi", state: "Meghalaya", lat: 25.9038, lon: 91.8812, altitude: "485m" }
+  ],
+  "Mizoram": [
+    { name: "Aizawl", district: "Aizawl", state: "Mizoram", lat: 23.7271, lon: 92.7176, altitude: "1,132m" },
+    { name: "Lunglei", district: "Lunglei", state: "Mizoram", lat: 22.8841, lon: 92.7347, altitude: "722m" },
+    { name: "Champhai", district: "Champhai", state: "Mizoram", lat: 23.4735, lon: 93.3276, altitude: "1,678m" },
+    { name: "Serchhip", district: "Serchhip", state: "Mizoram", lat: 23.3086, lon: 92.8465, altitude: "888m" },
+    { name: "Kolasib", district: "Kolasib", state: "Mizoram", lat: 24.2255, lon: 92.6789, altitude: "640m" }
+  ],
+  "Nagaland": [
+    { name: "Kohima", district: "Kohima", state: "Nagaland", lat: 25.6751, lon: 94.1086, altitude: "1,444m" },
+    { name: "Dimapur", district: "Dimapur", state: "Nagaland", lat: 25.9060, lon: 93.7270, altitude: "145m" },
+    { name: "Mokokchung", district: "Mokokchung", state: "Nagaland", lat: 26.3262, lon: 94.5203, altitude: "1,325m" },
+    { name: "Tuensang", district: "Tuensang", state: "Nagaland", lat: 26.2841, lon: 94.8315, altitude: "1,371m" },
+    { name: "Wokha", district: "Wokha", state: "Nagaland", lat: 26.0984, lon: 94.2612, altitude: "1,314m" },
+    { name: "Mon", district: "Mon", state: "Nagaland", lat: 26.7481, lon: 95.0594, altitude: "897m" }
+  ],
+  "Sikkim": [
+    { name: "Gangtok", district: "East Sikkim", state: "Sikkim", lat: 27.3389, lon: 88.6065, altitude: "1,650m" },
+    { name: "Mangan", district: "North Sikkim", state: "Sikkim", lat: 27.5020, lon: 88.5342, altitude: "1,160m" },
+    { name: "Chungthang", district: "North Sikkim", state: "Sikkim", lat: 27.5800, lon: 88.6200, altitude: "1,790m" },
+    { name: "Namchi", district: "South Sikkim", state: "Sikkim", lat: 27.1664, lon: 88.3639, altitude: "1,315m" },
+    { name: "Geyzing", district: "West Sikkim", state: "Sikkim", lat: 27.2889, lon: 88.2361, altitude: "1,900m" }
+  ],
+  "Tripura": [
+    { name: "Agartala", district: "West Tripura", state: "Tripura", lat: 23.8315, lon: 91.2868, altitude: "12m" },
+    { name: "Udaipur", district: "Gomati", state: "Tripura", lat: 23.5333, lon: 91.4833, altitude: "22m" },
+    { name: "Dharmanagar", district: "North Tripura", state: "Tripura", lat: 24.3667, lon: 92.1667, altitude: "33m" },
+    { name: "Kailashahar", district: "Unakoti", state: "Tripura", lat: 24.3333, lon: 92.0167, altitude: "30m" },
+    { name: "Belonia", district: "South Tripura", state: "Tripura", lat: 23.2500, lon: 91.4500, altitude: "23m" }
+  ]
+};
 
 export default function WeatherIntelligence({
   onNavigateToMap,
@@ -33,297 +126,163 @@ export default function WeatherIntelligence({
 }: WeatherIntelligenceProps) {
   const { t } = useTranslation();
 
-  // Selected Sector State
-  const [selectedSector, setSelectedSector] = useState<string>("tawang");
-  const [gpsToast, setGpsToast] = useState<string | null>(null);
-  const [isScanning, setIsScanning] = useState<boolean>(true);
-  const [activeRadarNode, setActiveRadarNode] = useState<string>("mohanbari");
+  // State Selection
+  const [selectedState, setSelectedState] = useState<string>("Assam");
+  const [selectedLocation, setSelectedLocation] = useState<NERLocationItem>(NER_WEATHER_LOCATIONS["Assam"][0]);
 
-  // Canvas Ref for Radar Sweep
+  // Live Weather Telemetry State
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [lastRefreshed, setLastRefreshed] = useState<string>("");
+
+  // Search Bar State
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+
+  // Status Banners
+  const [statusToast, setStatusToast] = useState<string | null>(null);
+  const [isScanning, setIsScanning] = useState<boolean>(true);
+
+  // Canvas Ref for Doppler Radar
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Sector Data Roster
-  const sectorsData: Record<string, any> = {
-    tawang: {
-      id: "tawang",
-      state: "ARUNACHAL PRADESH",
-      name: "Tawang / Sela Pass (Arunachal Pradesh)",
-      coords: "27.5861° N, 91.8504° E",
-      altitude: "3,500m MSL",
-      desc: "Sub-zero freezing blizzard and snow slurry deposition along Sela Pass. Surface adhesion reduced by 64%.",
-      clearance: "❄️ 4x4 CHAINS ONLY - REGULATED",
-      clearanceType: "CHAINS",
-      clearanceSub: "Heavy trucks restricted unless equipped with snow chains. Kalaktang bypass advised.",
-      rainRate: "8.2",
-      rainUnit: "mm / hour (Torrential)",
-      soilSat: "68.0%",
-      soilSub: "Pore Water Peak",
-      temp: "-1.2°C",
-      humidity: "88%",
-      dewPoint: "20.8°C",
-      dopplerDbz: "38.5",
-      dopplerNode: "Cherrapunji Node",
-      echoType: "⚡ Cloudburst Echo"
-    },
-    shillong: {
-      id: "shillong",
-      state: "MEGHALAYA",
-      name: "Shillong & Sohra (Meghalaya)",
-      coords: "25.5788° N, 91.8933° E",
-      altitude: "1,525m MSL",
-      desc: "Severe convective storm cell active over East Khasi Hills. High runoff volume across Jowai highway.",
-      clearance: "🔴 HIGH RISK - CLOUDBURST WATCH",
-      clearanceType: "CRITICAL",
-      clearanceSub: "NH-6 Km 142 submerged. Sector 9 Jowai bypass active.",
-      rainRate: "16.4",
-      rainUnit: "mm / hour (Torrential)",
-      soilSat: "94.2%",
-      soilSub: "Critical Saturation",
-      temp: "21.8°C",
-      humidity: "94%",
-      dewPoint: "21.2°C",
-      dopplerDbz: "58.0",
-      dopplerNode: "Cherrapunji IMD",
-      echoType: "⚡ Convective Storm Core"
-    },
-    guwahati: {
-      id: "guwahati",
-      state: "ASSAM",
-      name: "Guwahati Hub (Assam)",
-      coords: "26.1445° N, 91.7362° E",
-      altitude: "55m MSL",
-      desc: "Light regional precipitation. Transit corridors open with clear flight operation window.",
-      clearance: "🟢 100% ALL CLEAR - NOMINAL",
-      clearanceType: "CLEAR",
-      clearanceSub: "Primary transit gateway operational. Speed limit 60 km/h.",
-      rainRate: "2.1",
-      rainUnit: "mm / hour (Light)",
-      soilSat: "42.0%",
-      soilSub: "Stable Bedrock",
-      temp: "28.5°C",
-      humidity: "78%",
-      dewPoint: "23.1°C",
-      dopplerDbz: "18.2",
-      dopplerNode: "Guwahati Radar",
-      echoType: "● Clear Corridor"
-    },
-    gangtok: {
-      id: "gangtok",
-      state: "SIKKIM",
-      name: "Gangtok / Teesta (Sikkim)",
-      coords: "27.3389° N, 88.6065° E",
-      altitude: "1,650m MSL",
-      desc: "Teesta basin flash flood alert. River discharge 3,420 cumec overtopping low embankments at Melli.",
-      clearance: "🔴 LOW EMBANKMENT SEVERED",
-      clearanceType: "CRITICAL",
-      clearanceSub: "NH-10 blocked at Melli. Lava-Reshi ridge detour active.",
-      rainRate: "14.1",
-      rainUnit: "mm / hour (Heavy)",
-      soilSat: "89.5%",
-      soilSub: "High Silt Surge",
-      temp: "18.0°C",
-      humidity: "91%",
-      dewPoint: "16.8°C",
-      dopplerDbz: "48.0",
-      dopplerNode: "Gangtok Teesta",
-      echoType: "🌊 River Surge Alert"
+  // Fetch Live Weather for Current Selected Coordinates
+  const fetchWeather = async (loc: NERLocationItem) => {
+    setIsLoading(true);
+    setStatusToast(`📡 Fetching Open-Meteo live weather telemetry for ${loc.name}, ${loc.state}...`);
+    
+    try {
+      const data = await getLiveWeather(loc.lat, loc.lon);
+      setWeather(data);
+      setLastRefreshed(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      
+      if (!data.isLive) {
+        setStatusToast(data.error || "Weather data unavailable");
+      } else {
+        setStatusToast(`✓ Live weather synchronized for ${loc.name}`);
+      }
+    } catch (err: any) {
+      console.error("Error loading weather telemetry:", err);
+      setWeather({
+        latitude: loc.lat,
+        longitude: loc.lon,
+        elevation: 0,
+        temperature: 0,
+        feelsLike: 0,
+        relativeHumidity: 0,
+        precipitation: 0,
+        precipitationProbability: 0,
+        rain: 0,
+        weatherCode: 0,
+        condition: 'Weather data unavailable',
+        conditionIcon: 'Cloud',
+        windSpeed: 0,
+        windDirection: 0,
+        windDirectionLabel: 'N/A',
+        windGusts: 0,
+        isSevereWeather: false,
+        severeRiskLevel: 'NONE',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isLive: false,
+        error: 'Weather data unavailable'
+      });
+      setStatusToast("Weather data unavailable");
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => setStatusToast(null), 5000);
     }
   };
 
-  const [customLiveGpsSector, setCustomLiveGpsSector] = useState<any | null>(null);
-  const [isLocating, setIsLocating] = useState<boolean>(false);
+  // Trigger weather fetch when selectedLocation changes
+  useEffect(() => {
+    fetchWeather(selectedLocation);
+  }, [selectedLocation]);
 
-  const [locationQuery, setLocationQuery] = useState<string>("");
-  const [locationResults, setLocationResults] = useState<any[]>([]);
-  const [isSearchingLoc, setIsSearchingLoc] = useState<boolean>(false);
+  // Handle State Dropdown Change
+  const handleStateChange = (stateName: string) => {
+    setSelectedState(stateName);
+    const locations = NER_WEATHER_LOCATIONS[stateName] || [];
+    if (locations.length > 0) {
+      setSelectedLocation(locations[0]);
+    }
+  };
 
-  const handleLocationSearch = async (query: string) => {
-    setLocationQuery(query);
+  // Handle Location Search
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
     if (!query || query.trim().length < 2) {
-      setLocationResults([]);
+      setSearchResults([]);
       return;
     }
-    setIsSearchingLoc(true);
+    setIsSearching(true);
     try {
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`);
       if (res.ok) {
         const data = await res.json();
-        setLocationResults(data?.results || []);
+        const results = data?.results || [];
+        // Pre-filter search results against NER boundary
+        const nerResults = results.filter((r: any) => isPointInNER(r.latitude, r.longitude));
+        setSearchResults(nerResults.length > 0 ? nerResults : [{ isOutofBounds: true, query }]);
       }
     } catch (err) {
-      console.warn("Location geocoding error:", err);
+      console.warn("Geocoding search error:", err);
     } finally {
-      setIsSearchingLoc(false);
+      setIsSearching(false);
     }
   };
 
-  const handleSelectSearchedLocation = async (item: any) => {
-    setIsLocating(true);
-    const displayName = `${item.name}${item.admin1 ? `, ${item.admin1}` : ''} (${item.country || 'India'})`;
-    setGpsToast(`📡 Loading real-time rainfall & disaster telemetry for ${displayName}...`);
-    try {
-      const lat = item.latitude;
-      const lon = item.longitude;
-      const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,rain,weather_code,wind_speed_10m,wind_gusts_10m`;
-      const wRes = await fetch(wUrl);
-      let tempVal = "25.0°C";
-      let rainVal = "0.0";
-      let humVal = "70%";
-      let dbzVal = "15.0";
-      let precipNum = 0;
-      let windGust = 10;
-
-      if (wRes.ok) {
-        const wJson = await wRes.json();
-        if (wJson?.current) {
-          tempVal = `${wJson.current.temperature_2m}°C`;
-          precipNum = wJson.current.precipitation || 0;
-          rainVal = `${precipNum}`;
-          humVal = `${wJson.current.relative_humidity_2m}%`;
-          windGust = wJson.current.wind_gusts_10m || 10;
-          dbzVal = (precipNum * 5 + 15).toFixed(1);
-        }
-      }
-
-      let clearanceText = "🟢 NOMINAL - ALL CLEAR";
-      let clearanceType = "CLEAR";
-      if (precipNum > 40 || windGust > 60) {
-        clearanceText = "🔴 EXTREME RISK - HEAVY RAINFALL / FLOOD WATCH";
-        clearanceType = "CRITICAL";
-      } else if (precipNum > 15 || windGust > 40) {
-        clearanceText = "🟠 HIGH RISK - REGULATED TRANSIT";
-        clearanceType = "CHAINS";
-      }
-
-      const customObj = {
-        id: "searched_loc",
-        state: (item.admin1 || item.country || "SEARCHED LOCATION").toUpperCase(),
-        name: `📍 ${displayName}`,
-        coords: `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E`,
-        altitude: item.elevation ? `${item.elevation}m MSL` : "Ground Level",
-        desc: `Live telemetry active for ${displayName}. Rain rate: ${rainVal} mm/h. Humidity: ${humVal}. Wind Gusts: ${windGust} km/h.`,
-        clearance: clearanceText,
-        clearanceType,
-        clearanceSub: `Real-time sensor telemetry synchronized for ${displayName}.`,
-        rainRate: rainVal,
-        rainUnit: "mm / hour (Live Sensor)",
-        soilSat: `${Math.min(95, Math.round(50 + precipNum * 1.5))}%`,
-        soilSub: precipNum > 20 ? "High Saturation" : "Normal Saturation",
-        temp: tempVal,
-        humidity: humVal,
-        dewPoint: "20.0°C",
-        dopplerDbz: dbzVal,
-        dopplerNode: `${item.name} Radar Node`,
-        echoType: precipNum > 10 ? "⚡ Convective Storm Cell" : "● Clear Sky"
-      };
-
-      setCustomLiveGpsSector(customObj);
-      setSelectedSector("live_gps");
-      setLocationResults([]);
-      setLocationQuery("");
-      setGpsToast(`📍 Loaded Live Telemetry for ${displayName}`);
-    } catch (e) {
-      console.error("Fetch weather error:", e);
-    } finally {
-      setIsLocating(false);
-      setTimeout(() => setGpsToast(null), 7000);
+  // Handle Selecting a Search Result
+  const handleSelectSearchResult = (item: any) => {
+    if (item.isOutofBounds) {
+      setStatusToast(`⚠️ Location '${item.query}' is outside the 8 North Eastern Region (NER) states.`);
+      setSearchResults([]);
+      setSearchQuery("");
+      setTimeout(() => setStatusToast(null), 6000);
+      return;
     }
-  };
 
-  const handleFetchGPS = () => {
-    setIsLocating(true);
-    setGpsToast("📡 Fetching your live GPS position & reverse geocoding sector...");
+    if (!isPointInNER(item.latitude, item.longitude)) {
+      setStatusToast(`⚠️ Location outside NER coverage.`);
+      setSearchResults([]);
+      setSearchQuery("");
+      setTimeout(() => setStatusToast(null), 6000);
+      return;
+    }
 
-    const processCoords = async (lat: number, lon: number) => {
-      try {
-        const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-        const geoRes = await fetch(geoUrl, { headers: { 'User-Agent': 'JeevanSetu-Weather/1.0' } });
-        let displayName = `Sector (${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E)`;
-        let stateName = "LOCAL SECTOR";
-
-        if (geoRes.ok) {
-          const geoJson = await geoRes.json();
-          displayName = geoJson.display_name || displayName;
-          stateName = (geoJson.address?.state || geoJson.address?.country || "LOCAL SECTOR").toUpperCase();
-        }
-
-        let tempVal = "24.5°C";
-        let rainVal = "0.5";
-        let humVal = "75%";
-        let dbzVal = "25.0";
-
-        try {
-          const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation`;
-          const wRes = await fetch(wUrl);
-          if (wRes.ok) {
-            const wJson = await wRes.json();
-            if (wJson?.current) {
-              tempVal = `${wJson.current.temperature_2m}°C`;
-              rainVal = `${wJson.current.precipitation}`;
-              humVal = `${wJson.current.relative_humidity_2m}%`;
-              dbzVal = (wJson.current.precipitation * 5 + 15).toFixed(1);
-            }
-          }
-        } catch (e) {
-          console.warn("Open-Meteo weather fetch fallback:", e);
-        }
-
-        const newSectorObj = {
-          id: "live_gps",
-          state: stateName,
-          name: `📍 LIVE GPS: ${displayName.slice(0, 50)}...`,
-          coords: `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E`,
-          altitude: "Ground Elevation",
-          desc: `Live telemetry active for ${displayName}. Real-time Doppler reflectivity: ${dbzVal} dBZ.`,
-          clearance: "🟢 LIVE GPS TELEMETRY ACTIVE",
-          clearanceType: "CLEAR",
-          clearanceSub: "Real-time user position synchronized with IMD Doppler radar grid.",
-          rainRate: rainVal,
-          rainUnit: "mm / hour (Live Sensor)",
-          soilSat: "55.0%",
-          soilSub: "Normal Saturation",
-          temp: tempVal,
-          humidity: humVal,
-          dewPoint: "19.5°C",
-          dopplerDbz: dbzVal,
-          dopplerNode: "Local Doppler Node",
-          echoType: "📍 Live User GPS Signal"
-        };
-
-        setCustomLiveGpsSector(newSectorObj);
-        setSelectedSector("live_gps");
-        setGpsToast(`📍 Live GPS Acquired: ${displayName} (${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E)`);
-      } catch (err) {
-        setGpsToast(`📍 GPS Coordinates (${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E) Loaded.`);
-        setSelectedSector("shillong");
-      } finally {
-        setIsLocating(false);
-        setTimeout(() => setGpsToast(null), 7000);
-      }
+    const customLoc: NERLocationItem = {
+      name: item.name,
+      district: item.admin1 || item.country || "NER Sector",
+      state: (item.admin1 || "Assam") as any,
+      lat: item.latitude,
+      lon: item.longitude,
+      altitude: item.elevation ? `${item.elevation}m` : undefined
     };
 
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => processCoords(pos.coords.latitude, pos.coords.longitude),
-        (err) => {
-          console.warn("GPS Geolocation error or timeout, using active Shillong sector coordinates:", err.message);
-          processCoords(25.5788, 91.8933);
-        },
-        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
-      );
-    } else {
-      processCoords(25.5788, 91.8933);
+    setSelectedLocation(customLoc);
+    setSearchResults([]);
+    setSearchQuery("");
+  };
+
+  // Weather Icon Render Helper
+  const renderWeatherIcon = (iconName?: string) => {
+    const props = { className: "h-8 w-8 text-sky-400" };
+    switch (iconName) {
+      case 'Sun': return <Sun className="h-8 w-8 text-amber-400" />;
+      case 'SunMedium': return <SunMedium className="h-8 w-8 text-amber-400" />;
+      case 'CloudSun': return <CloudSun className="h-8 w-8 text-amber-300" />;
+      case 'Cloud': return <Cloud className="h-8 w-8 text-slate-300" />;
+      case 'CloudFog': return <CloudFog className="h-8 w-8 text-slate-400" />;
+      case 'CloudDrizzle': return <CloudDrizzle className="h-8 w-8 text-sky-300" />;
+      case 'CloudRain': return <CloudRain className="h-8 w-8 text-blue-400" />;
+      case 'CloudRainWind': return <CloudRainWind className="h-8 w-8 text-blue-500" />;
+      case 'CloudSnow': return <CloudSnow className="h-8 w-8 text-indigo-200" />;
+      case 'CloudLightning': return <CloudLightning className="h-8 w-8 text-amber-500 animate-bounce" />;
+      default: return <CloudRain {...props} />;
     }
   };
 
-  const allSectorsData: Record<string, any> = {
-    ...(customLiveGpsSector ? { live_gps: customLiveGpsSector } : {}),
-    ...sectorsData
-  };
-
-  const currentSector = allSectorsData[selectedSector] || allSectorsData.tawang;
-
-  // Canvas Doppler Radar PPI Sweep Animation
+  // Canvas Doppler Radar Animation
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -372,10 +331,6 @@ export default function WeatherIntelligence({
       ctx.fillText("100km", cx + 5, cy - radius * 0.5);
       ctx.fillText("150km", cx + 5, cy - radius * 0.75);
       ctx.fillText("200km", cx + 5, cy - radius * 0.95);
-      ctx.fillText("N", cx - 3, cy - radius + 12);
-      ctx.fillText("S", cx - 3, cy + radius - 4);
-      ctx.fillText("E", cx + radius - 12, cy + 3);
-      ctx.fillText("W", cx - radius + 4, cy + 3);
 
       // Storm Echo Cells (Simulated dBZ Blobs)
       const echoBlobs = [
@@ -431,488 +386,425 @@ export default function WeatherIntelligence({
     };
   }, [isScanning]);
 
-
-
   return (
     <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
-      {/* SECTION 1: HEADER & HERO METEOROLOGICAL GRID */}
+      
+      {/* SECTION 1: HEADER & STATUS TOAST */}
       <div className="space-y-4">
-        {/* SLEEK INLINE GPS TOAST BANNER */}
-        {gpsToast && (
-          <div className="rounded-xl border border-sky-500/40 bg-sky-500/10 dark:bg-sky-950/90 p-3 text-xs lg:text-sm font-bold text-sky-700 dark:text-sky-200 shadow-xl backdrop-blur flex items-center justify-between animate-fade-in">
+        {statusToast && (
+          <div className="rounded-xl border border-sky-500/40 bg-sky-500/10 dark:bg-sky-950/90 p-3 text-xs lg:text-sm font-bold text-sky-700 dark:text-sky-200 shadow-xl backdrop-blur flex items-center justify-between animate-fadeIn">
             <div className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-sky-500 dark:bg-sky-400 animate-ping"></span>
-              <span>{gpsToast}</span>
+              <span>{statusToast}</span>
             </div>
-            <button onClick={() => setGpsToast(null)} className="text-sky-600 dark:text-sky-400 hover:text-slate-900 dark:hover:text-white font-black text-sm">✕</button>
+            <button onClick={() => setStatusToast(null)} className="text-sky-600 dark:text-sky-400 hover:text-white font-black text-sm">✕</button>
           </div>
         )}
 
         {/* Header Bar */}
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 lg:p-6 shadow-xl dark:shadow-2xl flex flex-col xl:flex-row xl:items-center justify-between gap-4 transition-colors duration-300 min-w-0">
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-indigo-500/20 px-3 py-0.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5 border border-indigo-500/30">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
-                📡 {t("weather.liveTelemetryNode", "LIVE METEOROLOGICAL TELEMETRY NODE • Sync: Live IMD / NASA GPM Radar")}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Coverage Badge */}
+              <span className="rounded-full bg-sky-500/20 px-3 py-0.5 text-xs font-bold text-sky-700 dark:text-sky-300 flex items-center gap-1.5 border border-sky-500/30">
+                <Globe className="h-3.5 w-3.5 text-sky-400" />
+                Data Coverage: North Eastern Region — 8 States
               </span>
+
+              {/* LIVE Status Badge */}
+              {weather?.isLive ? (
+                <span className="rounded-full bg-emerald-500/20 px-3 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 border border-emerald-500/30">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+                  Live Telemetry Active
+                </span>
+              ) : (
+                <span className="rounded-full bg-red-500/20 px-3 py-0.5 text-xs font-bold text-red-700 dark:text-red-400 flex items-center gap-1.5 border border-red-500/30">
+                  <AlertTriangle className="h-3.5 w-3.5 text-red-400" />
+                  {weather?.error || "Weather data unavailable"}
+                </span>
+              )}
             </div>
-            <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1.5 flex items-center gap-2.5">
-              <span>🌧️</span> {t("weather.title", "8-State Meteorological Grid & Cloudburst Intelligence")}
+
+            <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-2.5">
+              <span>🌧️</span> Weather Intelligence (Open-Meteo API)
             </h1>
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-4xl leading-relaxed">
-              {t("weather.subtitle", "Real-time satellite precipitation tracking, IMD Doppler radar reflectivity matrix, and geotechnical soil saturation correlation for all 8 North Eastern States (MDoNER / NEC).")}
+              Real-time meteorological telemetry, precipitation, temperature, humidity, wind direction &amp; 7-day weather forecast scoped exclusively to the 8 North Eastern Region (NER) states.
             </p>
           </div>
 
+          {/* Search Bar */}
           <div className="flex flex-wrap items-center gap-2.5 shrink-0 relative">
-            {/* Custom Location Search Bar */}
-            <div className="relative min-w-[220px]">
+            <div className="relative min-w-[240px]">
               <div className="flex items-center rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus-within:border-sky-500">
                 <Search className="h-3.5 w-3.5 text-sky-500 shrink-0 mr-2" />
                 <input
                   type="text"
-                  placeholder="Search Location (e.g. Dehradun)..."
-                  value={locationQuery}
-                  onChange={(e) => handleLocationSearch(e.target.value)}
+                  placeholder="Search NER City/District..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
                   className="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
                 />
               </div>
 
-              {locationResults.length > 0 && (
+              {searchResults.length > 0 && (
                 <div className="absolute left-0 right-0 top-11 z-[2500] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-1.5 shadow-2xl max-h-48 overflow-y-auto space-y-1">
-                  <div className="text-[9px] font-bold text-sky-600 dark:text-sky-400 uppercase px-1.5 py-0.5">Select Location for Real-Time Telemetry:</div>
-                  {locationResults.map((item, idx) => (
-                    <div
-                      key={`loc_res_${idx}`}
-                      onClick={() => handleSelectSearchedLocation(item)}
-                      className="cursor-pointer rounded-lg p-2 text-xs hover:bg-sky-50 dark:hover:bg-sky-950/50 transition flex flex-col"
-                    >
-                      <span className="font-bold text-slate-900 dark:text-white">{item.name}{item.admin1 ? `, ${item.admin1}` : ''}</span>
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{item.country || 'India'} • {item.latitude?.toFixed(2)}°N, {item.longitude?.toFixed(2)}°E</span>
-                    </div>
+                  <div className="text-[9px] font-bold text-sky-600 dark:text-sky-400 uppercase px-1.5 py-0.5">NER Location Search:</div>
+                  {searchResults.map((item, idx) => (
+                    item.isOutofBounds ? (
+                      <div key={`loc_err_${idx}`} className="p-2 text-xs text-red-400 font-bold bg-red-950/40 rounded-lg">
+                        ⚠️ '{item.query}' is outside North Eastern Region coverage.
+                      </div>
+                    ) : (
+                      <div
+                        key={`loc_res_${idx}`}
+                        onClick={() => handleSelectSearchResult(item)}
+                        className="cursor-pointer rounded-lg p-2 text-xs hover:bg-sky-50 dark:hover:bg-sky-950/50 transition flex flex-col"
+                      >
+                        <span className="font-bold text-slate-900 dark:text-white">{item.name}{item.admin1 ? `, ${item.admin1}` : ''}</span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{item.latitude?.toFixed(2)}°N, {item.longitude?.toFixed(2)}°E</span>
+                      </div>
+                    )
                   ))}
                 </div>
               )}
             </div>
 
             <button
-              onClick={handleFetchGPS}
-              className="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 font-bold text-white dark:text-slate-950 text-xs shadow-md shadow-sky-500/20 transition flex items-center gap-1.5 cursor-pointer"
+              onClick={() => fetchWeather(selectedLocation)}
+              disabled={isLoading}
+              className="p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 text-xs font-bold cursor-pointer"
+              title="Refresh Weather Telemetry"
             >
-              📍 {t("weather.fetchGps", "Fetch My Live GPS")}
+              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin text-sky-400' : ''}`} />
+              <span>Refresh</span>
             </button>
-
-            <select
-              value={selectedSector}
-              onChange={(e) => setSelectedSector(e.target.value)}
-              className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none cursor-pointer"
-            >
-              {customLiveGpsSector && (
-                <option value="live_gps" className="bg-white dark:bg-slate-950 text-sky-600 dark:text-sky-400 font-bold py-1">
-                  {customLiveGpsSector.name}
-                </option>
-              )}
-              <option value="tawang" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">📍 Sector: Tawang / Sela Pass (Arunachal)</option>
-              <option value="shillong" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">📍 Sector: Shillong & Sohra (Meghalaya)</option>
-              <option value="guwahati" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">📍 Sector: Guwahati Hub (Assam)</option>
-              <option value="gangtok" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold py-1">📍 Sector: Gangtok / Teesta (Sikkim)</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Hero Cards (1 Monitored Box + 4 Metric Cards) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* Left Monitored Sector Box */}
-          <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col justify-between space-y-4 relative overflow-hidden transition-colors duration-300">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{t("weather.currentMonitoredSector", "CURRENT MONITORED SECTOR:")}</span>
-                <span className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">{currentSector.coords}</span>
-              </div>
-
-              <div className="flex items-baseline justify-between pt-1">
-                <h3 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white">{currentSector.name}</h3>
-                <span className="text-xs lg:text-sm font-mono text-slate-500 dark:text-slate-400 font-bold">{currentSector.altitude}</span>
-              </div>
-
-              <p className="text-xs lg:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium">{currentSector.desc}</p>
-            </div>
-
-            {/* Warning Clearance Box */}
-            <div className="rounded-xl border border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 p-3.5 space-y-1 relative">
-              <div className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{t("weather.logisticsClearance", "LOGISTICS TRANSIT CLEARANCE:")}</div>
-              <div className="text-sm lg:text-base font-black text-amber-800 dark:text-amber-300 flex items-center justify-between">
-                <span>{currentSector.clearance}</span>
-                <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
-              </div>
-              <p className="text-xs text-slate-700 dark:text-slate-300 pt-0.5 font-medium">{currentSector.clearanceSub}</p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="grid grid-cols-3 gap-2.5 pt-1">
-              <button onClick={onNavigateToMap} className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs lg:text-sm font-bold text-slate-800 dark:text-slate-200 transition text-center cursor-pointer">
-                🗺️ {t("weather.viewMap", "View Map")}
-              </button>
-              <button onClick={() => onNavigateToReroute && onNavigateToReroute("NH-13")} className="py-2.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-xs lg:text-sm font-extrabold text-white dark:text-slate-950 shadow-md transition text-center cursor-pointer">
-                🎯 {t("weather.rerouteGis", "Reroute GIS")}
-              </button>
-              <button onClick={onTriggerSOS} className="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs lg:text-sm font-extrabold text-white shadow-md transition text-center cursor-pointer">
-                🚨 {t("weather.sosDistress", "SOS Distress")}
-              </button>
-            </div>
-          </div>
-
-          {/* Right 4 Metric Cards */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Card 1: Rain Rate */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{t("weather.rainRate", "RAIN RATE")}</span>
-                <CloudRain className="h-5 w-5 text-sky-500 dark:text-sky-400" />
-              </div>
-              <div>
-                <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">{currentSector.rainRate}</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">{currentSector.rainUnit}</div>
-              </div>
-              <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-                <div className="h-full bg-rose-500 rounded-full" style={{ width: "75%" }}></div>
-              </div>
-            </div>
-
-            {/* Card 2: Soil Saturation */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{t("weather.soilSaturation", "SOIL SATURATION")}</span>
-                <Droplets className="h-5 w-5 text-sky-500 dark:text-sky-400" />
-              </div>
-              <div>
-                <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">{currentSector.soilSat}</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">{currentSector.soilSub}</div>
-              </div>
-              <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-                <div className="h-full bg-rose-500 rounded-full" style={{ width: "68%" }}></div>
-              </div>
-            </div>
-
-            {/* Card 3: Temperature */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{t("weather.temperature", "TEMPERATURE")}</span>
-                <Thermometer className="h-5 w-5 text-rose-500 dark:text-rose-400" />
-              </div>
-              <div>
-                <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">{currentSector.temp}</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">Humidity: {currentSector.humidity}</div>
-              </div>
-              <div className="text-xs text-emerald-600 dark:text-emerald-400 font-mono font-bold flex items-center gap-1 border-t border-slate-200 dark:border-slate-800/80 pt-2">
-                <span>● Dew Pt: {currentSector.dewPoint}</span>
-              </div>
-            </div>
-
-            {/* Card 4: Doppler dBZ */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between transition-colors duration-300">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{t("weather.dopplerDbz", "DOPPLER DBZ")}</span>
-                <Radio className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
-              </div>
-              <div>
-                <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">{currentSector.dopplerDbz}</div>
-                <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">{currentSector.dopplerNode}</div>
-              </div>
-              <div className="text-xs text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1 border-t border-slate-200 dark:border-slate-800/80 pt-2">
-                <span>{currentSector.echoType}</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* SECTION 2: INTERACTIVE DOPPLER RADAR & HYDROLOGICAL SURGE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Box: Interactive IMD Doppler Cloudburst Radar Simulation */}
-        <div className="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-4 flex flex-col justify-between transition-colors duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-3">
-            <div>
-              <h3 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-                <span>📡</span> Interactive IMD Doppler Cloudburst Radar Simulation
-              </h3>
-              <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium">{t("weather.cloudburstRadarSubtitle", "High-resolution S-band Doppler sweep displaying extreme convective storm cores.")}</p>
-            </div>
-
-            <div className="flex items-center gap-2.5 shrink-0">
-              <button
-                onClick={() => setIsScanning(!isScanning)}
-                className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs lg:text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer"
-              >
-                {isScanning ? "⏸️ Freeze Scan" : "▶️ Resume Scan"}
-              </button>
-              <span className="px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 text-xs font-mono font-extrabold border border-sky-500/30">120 RPM</span>
-            </div>
+      {/* SECTION 2: NER HIERARCHICAL STATE & DISTRICT SELECTOR BAR */}
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-lg flex flex-wrap items-center justify-between gap-4">
+        
+        {/* State Selector */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <MapPin className="h-4 w-4 text-sky-500" />
+            <span>Select State:</span>
           </div>
-
-          {/* Radar Screen Area */}
-          <div className="relative rounded-xl bg-slate-950 border border-slate-800 h-64 lg:h-72 flex items-center justify-center overflow-hidden">
-            <canvas ref={canvasRef} width={420} height={280} className="w-full h-full object-contain" />
-
-            {/* Top Left HUD overlay */}
-            <div className="absolute top-3 left-3 rounded-lg bg-slate-950/80 border border-slate-800/80 p-2 text-[10px] font-mono text-sky-400 space-y-0.5 backdrop-blur">
-              <div>RADAR: Mohanbari Upper Assam Node</div>
-              <div>FREQ: 2.85 GHz (S-Band) | RANGE: 250 km</div>
-              <div>SCAN ANGLE: 0.5° Elevation Tilt</div>
-            </div>
-
-            {/* Bottom Left dBZ scale bar */}
-            <div className="absolute bottom-3 left-3 flex items-center gap-1 text-[9px] font-mono">
-              <span className="text-slate-400">dBZ:</span>
-              <span className="px-1.5 py-0.5 rounded bg-sky-500/30 text-sky-300 border border-sky-500/40">15</span>
-              <span className="px-1.5 py-0.5 rounded bg-emerald-500/30 text-emerald-300 border border-emerald-500/40">30</span>
-              <span className="px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-300 border border-amber-500/40">45</span>
-              <span className="px-1.5 py-0.5 rounded bg-rose-500/30 text-rose-300 border border-rose-500/40">55+</span>
-            </div>
-
-            {/* Bottom Right Echo HUD */}
-            <div className="absolute bottom-3 right-3 rounded-lg bg-slate-950/80 border border-slate-800/80 p-2 text-[10px] font-mono text-right backdrop-blur">
-              <div className="font-bold text-white">PEAK ECHO: 28 dBZ (Moderate)</div>
-              <div className="text-slate-400">ECHO TOP: 14.2 km MSL</div>
-            </div>
-          </div>
-
-          {/* 4 Bottom Radar Node Tabs */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
-            {[
-              { id: "cherrapunji", name: "Meghalaya", label: "Cherrapunji IMD", val: "58 dBZ (Storm)" },
-              { id: "gangtok", name: "Sikkim", label: "Gangtok Teesta", val: "48 dBZ (Surge)" },
-              { id: "mohanbari", name: "Upper Assam", label: "Mohanbari Radar", val: "28 dBZ (Moderate)" },
-              { id: "agartala", name: "Tripura", label: "Agartala Doppler", val: "20 dBZ (Light)" }
-            ].map((node) => (
+          <div className="flex flex-wrap gap-1.5">
+            {Object.keys(NER_WEATHER_LOCATIONS).map((stName) => (
               <button
-                key={node.id}
-                onClick={() => setActiveRadarNode(node.id)}
-                className={"p-3 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer " + (
-                  activeRadarNode === node.id
-                    ? "bg-sky-500/20 border-sky-500 text-slate-900 dark:text-white"
-                    : "bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-700"
-                )}
+                key={stName}
+                onClick={() => handleStateChange(stName)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer border ${
+                  selectedState === stName
+                    ? "bg-sky-600 text-white border-sky-400 shadow-md scale-[1.03]"
+                    : "bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800"
+                }`}
               >
-                <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{node.name}</div>
-                <div className="font-bold text-xs lg:text-sm text-slate-900 dark:text-white truncate mt-0.5">{node.label}</div>
-                <div className="text-xs font-mono font-semibold text-sky-600 dark:text-sky-400 mt-1">{node.val}</div>
+                {stName}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Right Box: River Basin & Hydrological Surge */}
-        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl space-y-4 flex flex-col justify-between transition-colors duration-300">
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
-            <h3 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-              <span>🌊</span> River Basin & Hydrological Surge
-            </h3>
-            <span className="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-700 dark:text-rose-300 text-xs font-mono font-bold border border-rose-500/30">
-              {t("weather.cwcTelemetryActive", "CWC Telemetry Active")}
-            </span>
-          </div>
-
-          {/* 3 River Cards */}
-          <div className="space-y-3.5">
-            {/* Station 1 */}
-            <div className="rounded-xl border border-rose-500/40 bg-rose-50 dark:bg-rose-950/20 p-4 space-y-2 transition-colors duration-300">
-              <div className="flex items-center justify-between text-xs lg:text-sm">
-                <span className="font-black text-slate-900 dark:text-white">Teesta River (Melli Gauge Station)</span>
-                <span className="font-mono text-rose-600 dark:text-rose-400 font-extrabold">Velocity: 4.2 m/s</span>
-              </div>
-              <div className="flex items-center justify-between text-xs font-mono text-slate-700 dark:text-slate-300">
-                <span>Discharge: 3,420 cumec</span>
-                <span className="text-rose-600 dark:text-rose-400 font-bold">+1.8m Above Danger Mark</span>
-              </div>
-              <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
-                <div className="h-full bg-rose-500 rounded-full" style={{ width: "92%" }}></div>
-              </div>
-            </div>
-
-            {/* Station 2 */}
-            <div className="rounded-xl border border-amber-500/40 bg-amber-50 dark:bg-amber-950/20 p-4 space-y-2 transition-colors duration-300">
-              <div className="flex items-center justify-between text-xs lg:text-sm">
-                <span className="font-black text-slate-900 dark:text-white">Barak River (Badarpur Junction)</span>
-                <span className="font-mono text-amber-600 dark:text-amber-400 font-extrabold">Rising (+0.14 m/hr)</span>
-              </div>
-              <div className="flex items-center justify-between text-xs font-mono text-slate-700 dark:text-slate-300">
-                <span>Water Level: 20.85m MSL</span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">+0.9m Above Danger Mark</span>
-              </div>
-              <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
-                <div className="h-full bg-amber-500 rounded-full" style={{ width: "78%" }}></div>
-              </div>
-            </div>
-
-            {/* Station 3 */}
-            <div className="rounded-xl border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/20 p-4 space-y-2 transition-colors duration-300">
-              <div className="flex items-center justify-between text-xs lg:text-sm">
-                <span className="font-black text-slate-900 dark:text-white">Brahmaputra (Pandu Port Base)</span>
-                <span className="font-mono text-emerald-600 dark:text-emerald-400 font-extrabold">Steady</span>
-              </div>
-              <div className="flex items-center justify-between text-xs font-mono text-slate-700 dark:text-slate-300">
-                <span>Discharge: 18,200 cumec</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">1.4m Below Danger Mark</span>
-              </div>
-              <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: "50%" }}></div>
-              </div>
-            </div>
-          </div>
-
-          {/* IMD Cloudburst Warning Banner */}
-          <div className="rounded-xl border border-rose-500/50 bg-rose-50 dark:bg-rose-950/40 p-4 space-y-1.5 transition-colors duration-300">
-            <div className="text-xs lg:text-sm font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
-              <AlertTriangle className="h-4 w-4 text-rose-500 dark:text-rose-400" />
-              IMD Cloudburst Watch: Khasi Hills & Teesta Basin
-            </div>
-            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
-              Convective cell updrafts exceeding 35 m/s. High flash flood potential along hill streams for the next 180 minutes.
-            </p>
-          </div>
+        {/* District / City Dropdown Selector */}
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">District / City:</span>
+          <select
+            value={selectedLocation.name}
+            onChange={(e) => {
+              const locs = NER_WEATHER_LOCATIONS[selectedState] || [];
+              const found = locs.find(l => l.name === e.target.value);
+              if (found) setSelectedLocation(found);
+            }}
+            className="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white font-bold px-3 py-1.5 rounded-xl text-xs border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-sky-500 shadow-sm"
+          >
+            {(NER_WEATHER_LOCATIONS[selectedState] || []).map((loc) => (
+              <option key={loc.name} value={loc.name}>
+                {loc.name} ({loc.district})
+              </option>
+            ))}
+          </select>
         </div>
+
       </div>
 
-      {/* SECTION 3: 8-STATE METEOROLOGICAL MATRIX */}
-      <div className="space-y-4 pt-2">
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-3">
-          <div>
-            <h2 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-              <span>🗺️</span> 8-State North Eastern Meteorological Matrix (All States)
-            </h2>
-            <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium">
-              Click on any state card to inspect radar telemetry, view live highway clearance, or trigger GIS bypass reroute.
-            </p>
-          </div>
-          <span className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-bold flex items-center gap-2 shrink-0">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
-            8 / 8 States Telemetry Synchronized
-          </span>
-        </div>
-
-        {/* 8 State Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { state: "MEGHALAYA", title: "Shillong & Sohra", rate: "16.4 mm/h", temp: "21.8°C", sub1: "Humidity: 94%", sub2: "Soil Saturation: 94.2% (Critical)", badge: "⚠️ Cloudburst Alert", badgeType: "rose" },
-            { state: "ARUNACHAL PRADESH", title: "Tawang / Sela Pass", rate: "8.2 mm/h", temp: "-1.2°C", sub1: "Elev: 3,500m", sub2: "Road Condition: Snow Slurry / Ice", badge: "❄️ Sub-Zero Blizzard", badgeType: "amber" },
-            { state: "ASSAM", title: "Guwahati Hub", rate: "2.1 mm/h", temp: "28.5°C", sub1: "Wind: 14 km/h", sub2: "Flight Corridor: 100% Clear", badge: "🟢 Clear Corridor", badgeType: "emerald" },
-            { state: "SIKKIM", title: "Gangtok / Teesta", rate: "14.1 mm/h", temp: "18.0°C", sub1: "Teesta Vel: 4.2 m/s", sub2: "Embankment: Overtopping Risk", badge: "🌊 River Surge Alert", badgeType: "rose" },
-            { state: "NAGALAND", title: "Kohima / Zubza", rate: "6.8 mm/h", temp: "20.1°C", sub1: "Soil Shear: Degraded", sub2: "Slope Stability: LHI 75.9%", badge: "🟠 Subsidence Watch", badgeType: "amber" },
-            { state: "MIZORAM", title: "Aizawl & Lunglei", rate: "11.2 mm/h", temp: "22.4°C", sub1: "Clay Sat: 82%", sub2: "Ridge Roadway: Clay Slump", badge: "🟠 Hillside Settling", badgeType: "amber" },
-            { state: "MANIPUR", title: "Imphal / Noney", rate: "5.4 mm/h", temp: "24.1°C", sub1: "Ijei Silt: 66%", sub2: "Valley Transit: 4-Lane Operable", badge: "🔵 Silt Basin Watch", badgeType: "sky" },
-            { state: "TRIPURA", title: "Agartala Transit", rate: "2.4 mm/h", temp: "29.2°C", sub1: "Humidity: 76%", sub2: "Inter-State Gate: 100% Nominal", badge: "🟢 Logistics Clear", badgeType: "emerald" }
-          ].map((st, i) => (
-            <div key={i} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 flex flex-col justify-between hover:border-sky-500/50 transition-colors duration-300">
+      {/* SECTION 3: MAIN TELEMETRY GRID & DOPPLER RADAR */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* LEFT 2 COLUMNS: CURRENT WEATHER DASHBOARD */}
+        <div className="lg:col-span-2 space-y-6">
+          
+          {/* Main Weather Telemetry Card */}
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-[#09132e] dark:via-[#070d1e] dark:to-[#040814] p-6 lg:p-8 shadow-2xl relative overflow-hidden flex flex-col justify-between">
+            
+            {/* Top Row: Location Title & Live Badge */}
+            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
               <div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{st.state}</span>
-                  <span className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">{st.rate}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest font-mono">
+                    {selectedLocation.district}, {selectedLocation.state}
+                  </span>
+                  {selectedLocation.altitude && (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                      Alt: {selectedLocation.altitude}
+                    </span>
+                  )}
                 </div>
-                <h4 className="font-black text-base lg:text-lg text-slate-900 dark:text-white mt-1.5">{st.title}</h4>
-                <div className="text-xs text-slate-700 dark:text-slate-300 font-mono mt-1.5 space-y-1">
-                  <div>Temp: <b>{st.temp}</b> &bull; {st.sub1}</div>
-                  <div className="text-slate-500 dark:text-slate-400 font-medium">{st.sub2}</div>
-                </div>
+                <h2 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1 flex items-center gap-2">
+                  <span>📍</span> {selectedLocation.name}
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                  GPS: {selectedLocation.lat.toFixed(4)}° N, {selectedLocation.lon.toFixed(4)}° E
+                </p>
               </div>
 
-              <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-3 text-xs">
-                <span className={
-                  "px-2.5 py-1 rounded text-xs font-bold " + (
-                    st.badgeType === "rose" ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30" :
-                    st.badgeType === "amber" ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30" :
-                    st.badgeType === "sky" ? "bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30" :
-                    "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
-                  )
-                }>
-                  {st.badge}
+              {/* Status Badge */}
+              <div className="flex flex-col items-end gap-1">
+                {weather?.isLive ? (
+                  <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/40 text-xs font-extrabold flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
+                    LIVE
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-700 dark:text-red-400 border border-red-500/40 text-xs font-extrabold flex items-center gap-1.5">
+                    <AlertTriangle className="h-3.5 w-3.5 text-red-400" />
+                    Weather data unavailable
+                  </span>
+                )}
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 mt-1">
+                  <Clock className="h-3 w-3" /> Updated: {weather?.timestamp || lastRefreshed || 'N/A'}
                 </span>
-
-                <button onClick={() => setSelectedSector(st.state.toLowerCase().split(" ")[0])} className="text-sky-600 dark:text-sky-400 font-bold hover:underline text-xs cursor-pointer">
-                  Inspect ➔
-                </button>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* SECTION 4: ALL-WEATHER HIGHWAY WEATHER CLEARANCE ADVISORY */}
-      <div className="space-y-4 pt-2">
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-3">
-          <div>
-            <h2 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-              <span>🚛</span> All-Weather Highway Weather Clearance Advisory (Logistics Corridors)
-            </h2>
-            <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium">
-              Automated vehicle convoy clearance derived from real-time precipitation & geotechnical slope stability.
-            </p>
+            {/* Middle Row: Temperature & Weather Condition */}
+            <div className="py-6 flex flex-wrap items-center justify-between gap-6">
+              <div className="flex items-center gap-5">
+                <div className="p-4 rounded-3xl bg-sky-500/10 dark:bg-sky-500/20 border border-sky-500/30 flex items-center justify-center">
+                  {renderWeatherIcon(weather?.conditionIcon)}
+                </div>
+                <div>
+                  <div className="text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight font-mono">
+                    {weather?.isLive ? `${weather.temperature}°C` : '--°C'}
+                  </div>
+                  <div className="text-xs font-bold text-slate-600 dark:text-slate-300 mt-1 flex items-center gap-2">
+                    <span>Feels like {weather?.isLive ? `${weather.feelsLike}°C` : '--'}</span>
+                    <span>&bull;</span>
+                    <span className="text-sky-600 dark:text-sky-400 font-extrabold">{weather?.condition || 'Unavailable'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Severe Risk Indicator */}
+              <div className="rounded-2xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 p-4 min-w-[200px]">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Precipitation Risk</div>
+                <div className={`text-base font-black mt-1 flex items-center gap-1.5 ${
+                  weather?.severeRiskLevel === 'EXTREME' ? 'text-red-500' :
+                  weather?.severeRiskLevel === 'HIGH' ? 'text-amber-500' :
+                  weather?.severeRiskLevel === 'MODERATE' ? 'text-yellow-500' : 'text-emerald-500'
+                }`}>
+                  <ShieldCheck className="h-4 w-4" />
+                  <span>{weather?.severeRiskLevel || 'NONE'} RISK</span>
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  Rain Probability: <b className="text-slate-900 dark:text-white font-mono">{weather?.isLive ? `${weather.precipitationProbability}%` : '--'}</b>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Grid: 4 Core Telemetry Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-4 border-t border-slate-200 dark:border-slate-800">
+              
+              {/* Rain / Precipitation */}
+              <div className="bg-white dark:bg-slate-950/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
+                  <Droplets className="h-3.5 w-3.5 text-blue-500" />
+                  <span>Rainfall</span>
+                </div>
+                <div className="text-xl font-black text-slate-900 dark:text-white font-mono mt-1">
+                  {weather?.isLive ? `${weather.precipitation} mm` : '--'}
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Rate per hour</div>
+              </div>
+
+              {/* Relative Humidity */}
+              <div className="bg-white dark:bg-slate-950/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
+                  <Thermometer className="h-3.5 w-3.5 text-amber-500" />
+                  <span>Humidity</span>
+                </div>
+                <div className="text-xl font-black text-slate-900 dark:text-white font-mono mt-1">
+                  {weather?.isLive ? `${weather.relativeHumidity}%` : '--'}
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Relative saturation</div>
+              </div>
+
+              {/* Wind Speed & Direction */}
+              <div className="bg-white dark:bg-slate-950/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
+                  <Wind className="h-3.5 w-3.5 text-teal-500" />
+                  <span>Wind Speed</span>
+                </div>
+                <div className="text-xl font-black text-slate-900 dark:text-white font-mono mt-1">
+                  {weather?.isLive ? `${weather.windSpeed} km/h` : '--'}
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Direction: <b className="text-sky-400">{weather?.isLive ? weather.windDirectionLabel : 'N/A'}</b> ({weather?.windDirection || 0}°)</div>
+              </div>
+
+              {/* Wind Gusts */}
+              <div className="bg-white dark:bg-slate-950/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
+                  <Compass className="h-3.5 w-3.5 text-indigo-500" />
+                  <span>Wind Gusts</span>
+                </div>
+                <div className="text-xl font-black text-slate-900 dark:text-white font-mono mt-1">
+                  {weather?.isLive ? `${weather.windGusts} km/h` : '--'}
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Peak velocity</div>
+              </div>
+
+            </div>
+
           </div>
-          <span className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-mono font-bold shrink-0">
-            MDoNER / BRO Coordinated
-          </span>
+
+          {/* 7-DAY FORECAST GRID */}
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <span>🗓️</span> 7-Day Open-Meteo Weather Forecast ({selectedLocation.name})
+              </h3>
+              <span className="text-xs font-bold text-sky-600 dark:text-sky-400 font-mono">Open-Meteo Live API</span>
+            </div>
+
+            {weather?.isLive && weather.forecast7Days && weather.forecast7Days.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+                {weather.forecast7Days.map((day, idx) => (
+                  <div
+                    key={`fc_day_${idx}`}
+                    className="bg-slate-50 dark:bg-slate-950/80 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 text-center flex flex-col justify-between group hover:border-sky-500/60 transition"
+                  >
+                    <div className="text-xs font-black text-slate-700 dark:text-slate-300">{day.dayName}</div>
+                    <div className="my-2 flex justify-center scale-90">
+                      {renderWeatherIcon(day.conditionIcon)}
+                    </div>
+                    <div className="text-[11px] font-bold text-slate-900 dark:text-white truncate" title={day.condition}>
+                      {day.condition}
+                    </div>
+                    <div className="mt-2 text-xs font-mono font-bold">
+                      <span className="text-slate-900 dark:text-white">{day.tempMax}°</span>
+                      <span className="text-slate-400 dark:text-slate-500 mx-1">/</span>
+                      <span className="text-slate-500 dark:text-slate-400">{day.tempMin}°</span>
+                    </div>
+                    <div className="mt-1 text-[10px] text-blue-600 dark:text-blue-400 font-bold">
+                      ☔ {day.precipitationProbabilityMax}%
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-xs font-bold bg-slate-50 dark:bg-slate-950/40 rounded-2xl border border-slate-200 dark:border-slate-800">
+                Weather data unavailable for 7-day forecast.
+              </div>
+            )}
+          </div>
+
         </div>
 
-        {/* Advisory Table */}
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] shadow-xl dark:shadow-2xl transition-colors duration-300">
-          <table className="w-full text-left text-xs lg:text-sm">
-            <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80 font-bold text-slate-700 dark:text-slate-400 uppercase text-xs tracking-wider">
-              <tr>
-                <th className="p-4">HIGHWAY CORRIDOR</th>
-                <th className="p-4">STATE / ROUTE</th>
-                <th className="p-4">CURRENT WEATHER HAZARD</th>
-                <th className="p-4">CONVOY CLEARANCE</th>
-                <th className="p-4">RECOMMENDED GREEN BYPASS</th>
-                <th className="p-4 text-center">ACTION</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80 text-slate-800 dark:text-slate-200">
-              {[
-                { corridor: "NH-6 Arterial Pass", route: "Meghalaya ➔ Assam (Km 142)", hazard: "16.4 mm/h Cloudburst Saturation", clearance: "IMPASSABLE AT KM 142", clearanceType: "CRITICAL", bypass: "Sector 9 Jowai Ridge Bypass", action: "Reroute GIS" },
-                { corridor: "NH-13 Trans-Arunachal", route: "Tezpur ➔ Tawang (Sela Pass)", hazard: "-1.2°C Freezing Snow Slurry", clearance: "4x4 CHAINS ONLY", clearanceType: "CHAINS", bypass: "Kalaktang Low-Altitude Bypass", action: "Reroute GIS" },
-                { corridor: "NH-10 Sikkim Artery", route: "Siliguri ➔ Gangtok (Melli)", hazard: "Teesta River Swell (4.2 m/s)", clearance: "LOW EMBANKMENT SEVERED", clearanceType: "CRITICAL", bypass: "Lava - Reshi Ridge Viaduct Link", action: "Reroute GIS" },
-                { corridor: "NH-29 Highland Pass", route: "Dimapur ➔ Kohima (Zubza)", hazard: "Soil Shear Subsidence", clearance: "REGULATED 15 KM/H", clearanceType: "REGULATED", bypass: "Pfutsero Highland Bedrock Link", action: "Reroute GIS" },
-                { corridor: "NH-37 Imphal Link", route: "Silchar ➔ Imphal Valley", hazard: "5.4 mm/h Light Valley Rain", clearance: "100% ALL CLEAR", clearanceType: "CLEAR", bypass: "Standard 4-Lane Valley Highway", action: "Track GIS" }
-              ].map((row, idx) => (
-                <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors duration-200">
-                  <td className="p-4 font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span className={"h-2.5 w-2.5 rounded-full " + (
-                      row.clearanceType === "CRITICAL" ? "bg-rose-500 animate-ping" :
-                      row.clearanceType === "CHAINS" ? "bg-amber-500" :
-                      row.clearanceType === "REGULATED" ? "bg-orange-500" : "bg-emerald-500"
-                    )}></span>
-                    {row.corridor}
-                  </td>
-                  <td className="p-4 text-slate-700 dark:text-slate-300">{row.route}</td>
-                  <td className={"p-4 font-semibold " + (row.clearanceType === "CRITICAL" ? "text-rose-600 dark:text-rose-400" : "text-amber-600 dark:text-amber-300")}>{row.hazard}</td>
-                  <td className="p-4">
-                    <span className={"px-3 py-1 rounded text-xs font-black uppercase " + (
-                      row.clearanceType === "CRITICAL" ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30" :
-                      row.clearanceType === "CHAINS" ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30" :
-                      row.clearanceType === "REGULATED" ? "bg-orange-500/20 text-orange-700 dark:text-orange-300 border border-orange-500/30" :
-                      "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
-                    )}>
-                      {row.clearance}
-                    </span>
-                  </td>
-                  <td className="p-4 text-emerald-600 dark:text-emerald-400 font-medium">{row.bypass}</td>
-                  <td className="p-4 text-center">
-                    <button
-                      onClick={() => onNavigateToReroute && onNavigateToReroute(row.corridor)}
-                      className={"px-3.5 py-2 rounded-xl font-extrabold text-xs lg:text-sm shadow transition cursor-pointer " + (
-                        row.action === "Track GIS" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "bg-sky-500 hover:bg-sky-400 text-white dark:text-slate-950"
-                      )}
-                    >
-                      {row.action}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* RIGHT 1 COLUMN: DOPPLER RADAR SWEEP & QUICK NAVIGATION */}
+        <div className="space-y-6">
+          
+          {/* Real-time Doppler Radar PPI Widget */}
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                  Doppler Radar PPI
+                </h3>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-sky-500">200 km Scope</span>
+            </div>
+
+            <div className="flex justify-center py-2">
+              <canvas
+                ref={canvasRef}
+                width={260}
+                height={260}
+                className="rounded-2xl bg-[#020617] border border-blue-900/60 shadow-inner"
+              />
+            </div>
+
+            <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-1.5 text-xs">
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span>Active Sector:</span>
+                <b className="text-slate-900 dark:text-white font-mono">{selectedLocation.name}</b>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span>Doppler Reflectivity:</span>
+                <b className="text-emerald-600 dark:text-emerald-400 font-mono">
+                  {weather?.isLive ? `${(weather.precipitation * 6 + 15).toFixed(1)} dBZ` : 'N/A'}
+                </b>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span>Cloud Echo:</span>
+                <b className="text-sky-600 dark:text-sky-400">{weather?.condition || 'Nominal'}</b>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Tactical Actions */}
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3">
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Tactical Actions
+            </h3>
+
+            {onNavigateToMap && (
+              <button
+                onClick={onNavigateToMap}
+                className="w-full p-3 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition flex items-center justify-between cursor-pointer shadow-md"
+              >
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>View on Live NER GIS Map</span>
+                </div>
+                <ArrowUpRight className="h-4 w-4" />
+              </button>
+            )}
+
+            {onNavigateToReroute && (
+              <button
+                onClick={() => onNavigateToReroute("NH-6 Corridor")}
+                className="w-full p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs border border-slate-300 dark:border-slate-800 transition flex items-center justify-between cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <Navigation className="h-4 w-4 text-emerald-500" />
+                  <span>Evacuation &amp; Road Reroute</span>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-slate-400" />
+              </button>
+            )}
+
+            {onTriggerSOS && (
+              <button
+                onClick={onTriggerSOS}
+                className="w-full p-3 rounded-2xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition flex items-center justify-between cursor-pointer shadow-md"
+              >
+                <div className="flex items-center gap-2">
+                  <Radio className="h-4 w-4" />
+                  <span>Trigger Emergency SOS Alert</span>
+                </div>
+                <ArrowUpRight className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
         </div>
+
       </div>
+
     </div>
   );
 }
