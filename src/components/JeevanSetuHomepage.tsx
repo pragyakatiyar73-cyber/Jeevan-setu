@@ -40,7 +40,11 @@ import {
   ExternalLink,
   Info,
   LayoutDashboard,
-  Menu
+  Menu,
+  Mic,
+  MicOff,
+  Volume2,
+  Bot
 } from 'lucide-react';
 import L from 'leaflet';
 import { useTranslation } from '../i18n';
@@ -169,6 +173,143 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   // Search Modal state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // AI Agent & Voice Search State
+  const [isAiAgentOpen, setIsAiAgentOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [aiMessages, setAiMessages] = useState<Array<{ role: 'user' | 'assistant'; text: string; actionText?: string; actionModule?: string }>>([
+    {
+      role: 'assistant',
+      text: 'Hello! I am your Jeevan Setu AI Agent. You can speak or type to search disaster alerts, check live GIS telemetry, locate emergency camps, or analyze local risk.'
+    }
+  ]);
+  const [isAiThinking, setIsAiThinking] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  // Toggle Voice-to-Text Listening
+  const toggleVoiceListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Speech Recognition is not supported in this browser. Please use Google Chrome or Edge, or type your query.');
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0].transcript)
+          .join('');
+        setAiPrompt(transcript);
+        if (isSearchOpen) {
+          setSearchQuery(transcript);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error('Failed to start speech recognition:', err);
+      setIsListening(false);
+    }
+  };
+
+  // Process AI Prompt and Return Disaster Intelligence
+  const handleSendAiPrompt = (queryText?: string) => {
+    const textToSend = queryText || aiPrompt;
+    if (!textToSend.trim()) return;
+
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+
+    const userMsg = { role: 'user' as const, text: textToSend };
+    setAiMessages(prev => [...prev, userMsg]);
+    setAiPrompt('');
+    setIsAiThinking(true);
+
+    const q = textToSend.toLowerCase();
+
+    setTimeout(() => {
+      let reply = '';
+      let actionText: string | undefined;
+      let actionModule: string | undefined;
+
+      if (q.includes('map') || q.includes('gis') || q.includes('satellite') || q.includes('telem') || q.includes('live')) {
+        reply = 'Live GIS telemetry is active. Sikkim Teesta corridor is on HIGH risk (82mm rain), and Assam Brahmaputra basin is being monitored by SDRF Team 8.';
+        actionText = 'Open Live Map';
+        actionModule = 'map';
+      } else if (q.includes('risk') || q.includes('landslide') || q.includes('flood') || q.includes('hazard') || q.includes('sikkim')) {
+        reply = 'Analyzed 8 North Eastern states: Sikkim (LHI 7.8, High Risk) and Meghalaya (Heavy Cloudburst Alert) require priority avoidance corridors.';
+        actionText = 'View Risk Matrix';
+        actionModule = 'staterisk';
+      } else if (q.includes('camp') || q.includes('shelter') || q.includes('hospital') || q.includes('resource') || q.includes('relief')) {
+        reply = '32 active relief camps are operational across NER with 14.8 tons of essential medical supplies. Gangtok Central Referral Hospital has 450 emergency beds available.';
+        actionText = 'View Relief Camps';
+        actionModule = 'reliefcamps';
+      } else if (q.includes('drone') || q.includes('aerial') || q.includes('flight') || q.includes('uav')) {
+        reply = 'UAV Garuda-X15 drone fleet is on standby at Guwahati logistics depot with high-altitude blood plasma and dialysis payload.';
+        actionText = 'Open Drone Dispatcher';
+        actionModule = 'drone';
+      } else if (q.includes('sos') || q.includes('emergency') || q.includes('help') || q.includes('rescue')) {
+        reply = 'Emergency SOS dispatch is standing by. National Disaster Helpline: 1078, National Emergency Number: 112. Connecting to triage center.';
+        actionText = 'Trigger Emergency SOS';
+        actionModule = 'sos';
+      } else if (q.includes('dashboard') || q.includes('command') || q.includes('center')) {
+        reply = 'Connecting to MDoNER / NEC Unified Command Center with 27 active rescue battalions and 9 relief fleets deployed in the field.';
+        actionText = 'Open Command Center';
+        actionModule = 'customdashboard';
+      } else {
+        reply = `AI Assistant analyzed "${textToSend}": All disaster response systems are operational. You can track real-time weather overlays, road accessibility corridors, and satellite indices across the North Eastern grid.`;
+        actionText = 'Explore Live Map';
+        actionModule = 'map';
+      }
+
+      setAiMessages(prev => [...prev, {
+        role: 'assistant',
+        text: reply,
+        actionText,
+        actionModule
+      }]);
+      setIsAiThinking(false);
+    }, 600);
+  };
+
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language === 'hi' ? 'hi-IN' : 'en-US';
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
   // Report Modal state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -432,14 +573,14 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           2. STICKY NAVBAR (Dark Navy matching reference image)
          ================================================== */}
       <header className="sticky top-0 z-[100] w-full bg-[#0B132B] dark:bg-[#070d1e] text-white shadow-lg border-b border-slate-800 transition-colors duration-300">
-        <div className="w-full px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+        <div className="w-full px-3 sm:px-4 lg:px-6 h-16 flex items-center justify-between gap-2 xl:gap-3">
           
           {/* LEFT: Logo & Brand (Enlarged) */}
           <div
             onClick={() => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="flex items-center gap-3.5 cursor-pointer group shrink-0"
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer group shrink-0"
           >
-            <div className="relative h-12 w-12 sm:h-13 sm:w-13 rounded-full overflow-hidden ring-2 ring-sky-400/60 group-hover:scale-105 transition shadow-lg shadow-sky-500/25 bg-slate-900 flex items-center justify-center">
+            <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-sky-400/60 group-hover:scale-105 transition shadow-md shadow-sky-500/20 bg-slate-900 flex items-center justify-center shrink-0">
               <img
                 src="/jeevan-setu-logo.jpg"
                 alt="Jeevan Setu Logo"
@@ -452,7 +593,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1">
-                <span className="text-xl sm:text-2xl font-black tracking-wider text-white leading-none font-sans group-hover:text-sky-300 transition">
+                <span className="text-lg font-black tracking-wider text-white leading-none font-sans group-hover:text-sky-300 transition whitespace-nowrap">
                   {language === 'hi' ? (
                     <>जीवन <span className="text-sky-400">सेतु</span></>
                   ) : (
@@ -460,55 +601,66 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   )}
                 </span>
               </div>
-              <span className="text-xs font-bold text-sky-400/90 tracking-wide leading-tight mt-1 hidden sm:block">
+              <span className="text-[10px] font-semibold text-sky-400/90 tracking-wide leading-tight mt-0.5 hidden 2xl:block whitespace-nowrap">
                 {t('nav.brandSubtitle', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </span>
             </div>
           </div>
 
-          {/* RIGHT: Navigation Links & Action Tools (Enlarged) */}
-          <div className="flex items-center gap-3 sm:gap-5 shrink-0">
-            {/* Navigation Links (Larger Text & Spacing) */}
-            <nav className="hidden md:flex items-center gap-2 lg:gap-3 mr-2 sm:mr-3">
-              {[
-                { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
-                { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
-                { id: 'Contact', name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setIsInfoModalOpen(true); } }
-              ].map((nav) => {
-                const isActive = activeTab === nav.id;
-                return (
-                  <button
-                    key={nav.id}
-                    onClick={nav.action}
-                    className={`px-4 py-2 rounded-xl text-base sm:text-lg font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] relative cursor-pointer ${
-                      isActive
-                        ? 'text-sky-300 font-extrabold'
-                        : 'text-slate-200 hover:text-white hover:bg-slate-800/70'
-                    }`}
-                  >
-                    {nav.name}
-                    {isActive && (
-                      <span className="absolute bottom-0 left-4 right-4 h-[3.5px] bg-sky-400 rounded-full shadow-md shadow-sky-400" />
-                    )}
-                  </button>
-                );
-              })}
-            </nav>
+          {/* Navigation Links (Positioned near AI Agent) */}
+          <nav className="hidden xl:flex items-center justify-end flex-1 gap-2.5 2xl:gap-4 mr-2 xl:mr-3">
+            {[
+              { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+              { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
+              { id: 'Contact', name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setIsInfoModalOpen(true); } }
+            ].map((nav) => {
+              const isActive = activeTab === nav.id;
+              return (
+                <button
+                  key={nav.id}
+                  onClick={nav.action}
+                  className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-sm font-semibold transition-all relative cursor-pointer whitespace-nowrap ${
+                    isActive
+                      ? 'text-sky-300 font-bold'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  }`}
+                >
+                  {nav.name}
+                </button>
+              );
+            })}
+          </nav>
 
-            {/* Search Icon (Enlarged) */}
+          {/* RIGHT: Action Tools & Mobile Menu */}
+          <div className="flex items-center gap-1.5 sm:gap-2 2xl:gap-2.5 shrink-0">
+            {/* 🤖 AI AGENT WITH VOICE SEARCH BUTTON */}
+            <button
+              onClick={() => setIsAiAgentOpen(true)}
+              className="bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-sky-500/20 hover:shadow-sky-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-sky-400/40 whitespace-nowrap shrink-0 group"
+              title="AI Agent & Voice Search"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-amber-300 group-hover:rotate-12 transition transform" />
+              <span>AI Agent</span>
+              <span className="flex items-center gap-0.5 bg-white/20 px-1.5 py-0.5 rounded-full text-[10px]">
+                <Mic className="h-2.5 w-2.5 text-white animate-pulse" />
+                <span className="hidden sm:inline">Voice</span>
+              </span>
+            </button>
+
+            {/* Search Icon (Moved to right side of AI Agent) */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2.5 rounded-full text-slate-200 hover:text-white hover:bg-slate-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer"
+              className="p-1.5 sm:p-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
               title="Search"
             >
               <Search className="h-5 sm:h-6 w-5 sm:w-6" />
             </button>
 
-            {/* Language Selector (Enlarged) */}
-            <div className="relative hidden sm:block">
+            {/* Language Selector */}
+            <div className="relative hidden sm:block shrink-0">
               <button
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-bold text-slate-100 hover:text-white hover:bg-slate-800 hover:border-sky-400/80 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.06] hover:shadow-md cursor-pointer border border-slate-700/70 shadow-sm"
+                className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700/60 whitespace-nowrap"
               >
                 <Globe className="h-4 w-4 text-sky-400" />
                 <span>{language === 'hi' ? 'हिन्दी' : language === 'as' ? 'অসমীয়া' : language === 'bn' ? 'বাংলা' : language === 'ne' ? 'नेपाली' : 'English'}</span>
@@ -543,19 +695,21 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* NER Coverage Badge */}
             <button
               onClick={() => onNavigateModule('gov')}
-              className="px-3 py-1 rounded-full text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-400/40 hover:bg-sky-500/30 hover:border-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.05] hover:shadow-lg cursor-pointer hidden lg:flex items-center gap-1.5 shadow-sm"
+              className="px-2.5 py-1 rounded-full text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-400/30 hover:bg-sky-500/30 transition cursor-pointer hidden md:flex items-center gap-1 shrink-0 whitespace-nowrap"
             >
               <span>🏛️</span>
               <span>Data Coverage: North Eastern Region — 8 States</span>
             </button>
 
             {/* Theme Toggle Switch */}
-            <ThemeToggle />
+            <div className="shrink-0">
+              <ThemeToggle />
+            </div>
 
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="xl:hidden p-2.5 rounded-lg text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+              className="xl:hidden p-1.5 sm:p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
             >
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -569,7 +723,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {[
               { name: 'Home', action: () => { setActiveTab('Home'); setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
               { name: 'About', action: () => { setActiveTab('About'); setIsMobileMenuOpen(false); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
-              { name: 'Contact', action: () => { setActiveTab('Contact'); setIsMobileMenuOpen(false); setIsInfoModalOpen(true); } }
+              { name: 'Contact', action: () => { setActiveTab('Contact'); setIsMobileMenuOpen(false); setIsInfoModalOpen(true); } },
+              { name: '🤖 AI Agent & Voice Search', action: () => { setIsMobileMenuOpen(false); setIsAiAgentOpen(true); } }
             ].map((nav) => (
               <button
                 key={nav.name}
@@ -591,13 +746,12 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
         {/* 100% Clean Photographic Background with Rich Dark Gradient Overlay for Maximum Readability */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/disaster-response-hero.jpg"
+            src="/hero-rescue-bg.jpg?v=3"
             alt="Jeevan Setu Disaster Response & Rescue Operations"
-            className="w-full h-full object-cover object-right filter brightness-95 contrast-105 saturate-105"
+            className="w-full h-full object-cover object-center"
           />
-          {/* Deep Navy Dark Gradient Overlay for Crisp Text & Button Contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#040814]/95 via-[#040814]/75 to-[#040814]/35" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#040814]/90 via-transparent to-[#040814]/40" />
+          {/* Subtle soft gradient on left for crisp text contrast without darkening the landscape */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#070E20]/75 via-[#070E20]/30 to-transparent pointer-events-none" />
         </div>
 
         <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 py-16 sm:py-24 lg:py-32 flex flex-col justify-between">
@@ -1783,37 +1937,38 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           MODAL 4: SEARCH MODAL (Centered Command Palette)
          ================================================== */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#070d1e] text-slate-900 dark:text-white rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-in zoom-in-95 duration-200 space-y-4">
-            
-            {/* Header & Close Button */}
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-              <div className="flex items-center gap-3 flex-1 mr-4">
-                <Search className="h-5 w-5 text-sky-500 shrink-0" />
-                <input
-                  type="text"
-                  placeholder={t('search.placeholder', 'Search state, hazard, hospital, or disaster alert...')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                  className="w-full bg-transparent text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-
+        <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-5 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-3">
+              <Search className="h-5 w-5 text-sky-500 shrink-0" />
+              <input
+                type="text"
+                placeholder={t('search.placeholder', 'Search state, hazard, hospital, or disaster alert...')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+                className="flex-1 min-w-0 bg-transparent text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
+              />
+              {/* Voice Search Button */}
               <button
-                onClick={() => {
-                  setIsSearchOpen(false);
-                  setSearchQuery('');
-                }}
-                className="p-1.5 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0"
+                type="button"
+                onClick={toggleVoiceListening}
+                className={`px-2.5 py-1.5 rounded-xl transition cursor-pointer shrink-0 flex items-center gap-1.5 text-xs font-bold ${
+                  isListening
+                    ? 'bg-red-600 text-white animate-pulse'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-sky-400'
+                }`}
+                title={isListening ? 'Stop Voice Listening' : 'Click to Speak (Voice Search)'}
+              >
+                {isListening ? <MicOff className="h-4 w-4 text-white" /> : <Mic className="h-4 w-4 text-sky-400" />}
+                <span className="hidden sm:inline text-[11px]">{isListening ? 'Listening...' : 'Voice'}</span>
+              </button>
+
+              {/* Close Button (Cleanly aligned next to Voice button with no overlap) */}
+              <button
+                onClick={() => setIsSearchOpen(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0"
+                title="Close Search"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1919,6 +2074,187 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 ));
               })()}
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================
+          MODAL 5: AI AGENT & VOICE SEARCH MODAL
+         ================================================== */}
+      {isAiAgentOpen && (
+        <div className="fixed inset-0 z-[210] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-[#070d1e] border border-sky-500/40 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl shadow-sky-500/10 relative flex flex-col max-h-[85vh]">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-sky-500/30">
+                  <Bot className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-black text-white">Jeevan Setu AI Agent</h3>
+                    <span className="bg-sky-500/20 text-sky-300 border border-sky-400/40 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
+                      Voice Active
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 font-semibold">
+                    Voice-to-Text Search &amp; Neural Disaster Intelligence Assistant
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  if (isListening && recognitionRef.current) {
+                    recognitionRef.current.stop();
+                    setIsListening(false);
+                  }
+                  setIsAiAgentOpen(false);
+                }}
+                className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Chat / Message Stream */}
+            <div className="flex-1 overflow-y-auto py-4 space-y-3.5 custom-scrollbar min-h-[220px]">
+              {aiMessages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {msg.role === 'assistant' && (
+                    <div className="h-7 w-7 rounded-xl bg-sky-600/30 border border-sky-400/30 text-sky-300 flex items-center justify-center shrink-0 mt-1">
+                      <Sparkles className="h-3.5 w-3.5" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[82%] rounded-2xl px-4 py-3 text-xs leading-relaxed ${
+                      msg.role === 'user'
+                        ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-slate-950 font-bold shadow-md'
+                        : 'bg-slate-900/90 border border-slate-800 text-slate-200'
+                    }`}
+                  >
+                    <p>{msg.text}</p>
+
+                    {/* Action button if AI suggested a navigation route */}
+                    {msg.actionText && (
+                      <div className="mt-2.5 pt-2 border-t border-slate-700/60 flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setIsAiAgentOpen(false);
+                            if (msg.actionModule === 'sos') {
+                              onOpenSos();
+                            } else if (msg.actionModule) {
+                              onNavigateModule(msg.actionModule);
+                            }
+                          }}
+                          className="bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1.5 transition cursor-pointer"
+                        >
+                          <span>{msg.actionText}</span>
+                          <ArrowRight className="h-3 w-3" />
+                        </button>
+                        <button
+                          onClick={() => speakText(msg.text)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-sky-300 hover:bg-slate-800 transition cursor-pointer"
+                          title="Read aloud"
+                        >
+                          <Volume2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {isAiThinking && (
+                <div className="flex items-center gap-2 text-sky-400 text-xs font-bold pl-9">
+                  <Activity className="h-3.5 w-3.5 animate-spin" />
+                  <span>AI Agent is analyzing telemetry...</span>
+                </div>
+              )}
+            </div>
+
+            {/* Voice Listening Active Wave Indicator */}
+            {isListening && (
+              <div className="mb-3 p-3 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-center justify-between animate-pulse">
+                <div className="flex items-center gap-2 text-xs font-bold text-red-400">
+                  <span className="h-2.5 w-2.5 rounded-full bg-red-500 animate-ping" />
+                  <span>Listening... Speak your search or question now</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleVoiceListening}
+                  className="bg-red-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg cursor-pointer"
+                >
+                  Stop
+                </button>
+              </div>
+            )}
+
+            {/* Quick Prompt Suggestions */}
+            <div className="flex flex-wrap gap-1.5 pb-3">
+              {[
+                'Show Live GIS Map',
+                'Check Landslide Risk in Sikkim',
+                'Find Nearest Relief Camps',
+                'Evacuation Route NH-10',
+                'Weather & Cyclone Watch'
+              ].map((suggestion, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSendAiPrompt(suggestion)}
+                  className="px-2.5 py-1 rounded-full bg-slate-900 hover:bg-sky-600/30 text-slate-300 hover:text-white border border-slate-800 text-[10px] font-semibold transition cursor-pointer"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+
+            {/* Input Bar with Voice to Text Mic Button */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendAiPrompt();
+              }}
+              className="flex items-center gap-2 pt-3 border-t border-slate-800"
+            >
+              {/* Voice-to-Text Microphone Trigger Button */}
+              <button
+                type="button"
+                onClick={toggleVoiceListening}
+                className={`p-3 rounded-2xl transition cursor-pointer flex items-center justify-center ${
+                  isListening
+                    ? 'bg-red-600 text-white ring-4 ring-red-500/40 animate-pulse'
+                    : 'bg-slate-800 hover:bg-sky-500 text-slate-200 hover:text-slate-950 border border-slate-700'
+                }`}
+                title={isListening ? 'Stop Listening' : 'Click to Speak (Voice Search)'}
+              >
+                {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              </button>
+
+              {/* Text Input Box */}
+              <input
+                type="text"
+                placeholder={isListening ? 'Listening to your voice...' : 'Ask AI Agent or speak via microphone...'}
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-4 py-3 text-xs font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500"
+              />
+
+              {/* Send Button */}
+              <button
+                type="submit"
+                disabled={!aiPrompt.trim() && !isListening}
+                className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 disabled:opacity-40 text-slate-950 font-black px-4 py-3 rounded-2xl text-xs flex items-center gap-1.5 transition cursor-pointer"
+              >
+                <span>Search</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </form>
 
           </div>
         </div>

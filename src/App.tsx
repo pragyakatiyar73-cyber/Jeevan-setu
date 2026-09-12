@@ -732,16 +732,16 @@ export default function App() {
       <div className="flex-1 flex flex-col h-full overflow-hidden">
 
         {/* Top Header Command Bar Matching media_1787858147598.png */}
-        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-3 sm:px-4 lg:px-6 flex items-center justify-between gap-3 backdrop-blur shadow-sm dark:shadow-md transition-colors duration-300 min-w-0">
+        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-3 sm:px-4 lg:px-6 flex items-center justify-between gap-2 lg:gap-3 backdrop-blur shadow-sm dark:shadow-md transition-colors duration-300 min-w-0">
           {/* MDoNER / Regional Title matching media_1787858147598.png */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="text-[11px] font-black leading-tight text-emerald-600 dark:text-emerald-400">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="text-[10px] sm:text-[11px] font-black leading-tight text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
                 <div>{t('header.titleLine1', 'Ministry of Development')}</div>
                 <div>{t('header.titleLine2', 'of North Eastern Region')}</div>
                 <div>{t('header.titleLine3', '(MDoNER)')}</div>
               </div>
-              <div className="hidden sm:block text-[11px] font-bold leading-tight text-slate-600 dark:text-slate-300 border-l border-slate-200 dark:border-slate-800 pl-3">
+              <div className="hidden 2xl:block text-[11px] font-bold leading-tight text-slate-600 dark:text-slate-300 border-l border-slate-200 dark:border-slate-800 pl-3 whitespace-nowrap">
                 <div>{t('header.councilLine1', 'North Eastern')}</div>
                 <div>{t('header.councilLine2', 'Council (NEC)')}</div>
                 <div>{t('header.councilLine3', 'Command Grid')}</div>
@@ -750,20 +750,21 @@ export default function App() {
           </div>
 
           {/* Glowing Header Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 z-50">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-50">
             {/* 🚨 EMERGENCY SOS Glowing Pill Button */}
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="rounded-full bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 px-3.5 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1.5 border border-rose-400/40 cursor-pointer animate-pulse shrink-0"
+              className="rounded-full bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 px-2.5 sm:px-3 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1 sm:gap-1.5 border border-rose-400/40 cursor-pointer animate-pulse shrink-0 whitespace-nowrap"
             >
               <span className="text-xs">🚨</span>
-              <span>{t('navigation.sos', 'Emergency SOS')}</span>
+              <span className="hidden sm:inline">{t('navigation.sos', 'Emergency SOS')}</span>
+              <span className="sm:hidden">SOS</span>
             </button>
 
             {/* 🤖 AI Pill Button */}
             <button
               onClick={() => setActiveModule('aiimpact')}
-              className={`rounded-full px-3 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+              className={`rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-black transition flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0 whitespace-nowrap ${
                 activeModule === 'aiimpact'
                   ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-purple-600/40'
                   : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
@@ -776,7 +777,7 @@ export default function App() {
             {/* 📖 Safety Guide Pill Button */}
             <button
               onClick={() => setActiveModule('safetyguide')}
-              className={`rounded-full px-3 py-1.5 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+              className={`rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-black transition flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0 whitespace-nowrap hidden xl:flex ${
                 activeModule === 'safetyguide'
                   ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-teal-600/40'
                   : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
@@ -787,18 +788,18 @@ export default function App() {
             </button>
 
             {/* Live IST Clock */}
-            <div className="flex flex-col text-right font-mono px-1.5 shrink-0">
-              <span className="text-xs lg:text-sm font-black text-slate-900 dark:text-slate-100 tracking-wider">
+            <div className="hidden xl:flex flex-col text-right font-mono px-1 shrink-0">
+              <span className="text-xs font-black text-slate-900 dark:text-slate-100 tracking-wider whitespace-nowrap">
                 {currentTime || '23:45:11'} IST
               </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">2026 NER Grid</span>
+              <span className="text-[9px] text-slate-500 dark:text-slate-400 font-bold whitespace-nowrap hidden 2xl:inline">2026 NER Grid</span>
             </div>
 
             {/* User Profile Badge: Admin Officer MDoNER L3 */}
             <button
               onClick={() => setActiveModule('gov')}
               title="Click to Open MDoNER Command / Executive Oversight"
-              className={`flex items-center gap-2 rounded-full border transition cursor-pointer px-3 py-1.5 text-xs shrink-0 ${
+              className={`flex items-center gap-1.5 sm:gap-2 rounded-full border transition cursor-pointer px-2 sm:px-2.5 py-1.5 text-xs shrink-0 whitespace-nowrap ${
                 activeModule === 'gov'
                   ? 'border-emerald-400 bg-emerald-900/80 text-white shadow-md shadow-emerald-500/30'
                   : 'border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
@@ -807,13 +808,13 @@ export default function App() {
               <div className="h-6 w-6 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center shrink-0">
                 AO
               </div>
-              <div className="text-left">
-                <div className="font-extrabold text-slate-900 dark:text-white leading-none text-xs">{t('header.adminOfficer', 'Admin Officer')}</div>
-                <div className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5">MDONER L3</div>
+              <div className="text-left hidden 2xl:block">
+                <div className="font-extrabold text-slate-900 dark:text-white leading-none text-xs whitespace-nowrap">{t('header.adminOfficer', 'Admin Officer')}</div>
+                <div className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5 whitespace-nowrap">MDONER L3</div>
               </div>
             </button>
 
-            {/* 🌐 Language Switcher (EN <-> हिन्दी Toggle) */}
+            {/* 🌐 Language Switcher */}
             <div className="shrink-0">
               <LanguageSelector />
             </div>

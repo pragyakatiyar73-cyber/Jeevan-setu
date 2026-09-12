@@ -37,51 +37,49 @@ export default function LanguageSelector() {
     <div className="relative z-[9999] shrink-0" ref={dropdownRef}>
       {/* Sleek Command Center Language Pill */}
       <div className="flex items-center rounded-full border border-slate-300 dark:border-slate-700/80 bg-slate-100 dark:bg-slate-950 p-0.5 shadow-sm dark:shadow-md shrink-0">
-        {/* Quick English Toggle */}
-        <button
-          onClick={() => selectLanguage("en")}
-          className={`rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
-            language === "en"
-              ? "bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-md shadow-sky-500/30"
-              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-          }`}
-          title="Switch to English"
-        >
-          <span>🇬🇧</span>
-          <span>EN</span>
-        </button>
+        {/* Full 3-pill switcher on 2XL+ screens */}
+        <div className="hidden 2xl:flex items-center">
+          {/* Quick English Toggle */}
+          <button
+            onClick={() => selectLanguage("en")}
+            className={`rounded-full px-2.5 py-1 text-xs font-black transition-all flex items-center gap-1 cursor-pointer ${
+              language === "en"
+                ? "bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-md shadow-sky-500/30"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+            }`}
+            title="Switch to English"
+          >
+            <span>🇬🇧</span>
+            <span>EN</span>
+          </button>
 
-        {/* Quick Hindi Toggle */}
-        <button
-          onClick={() => selectLanguage("hi")}
-          className={`rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
-            language === "hi"
-              ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/30"
-              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-          }`}
-          title="हिन्दी में बदलें (Hindi)"
-        >
-          <span>🇮🇳</span>
-          <span>हिन्दी</span>
-        </button>
+          {/* Quick Hindi Toggle */}
+          <button
+            onClick={() => selectLanguage("hi")}
+            className={`rounded-full px-2.5 py-1 text-xs font-black transition-all flex items-center gap-1 cursor-pointer ${
+              language === "hi"
+                ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/30"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+            }`}
+            title="हिन्दी में बदलें (Hindi)"
+          >
+            <span>🇮🇳</span>
+            <span>हिन्दी</span>
+          </button>
+        </div>
 
-        {/* North Eastern Languages Dropdown Trigger Pill */}
+        {/* Compact/Unified Language Menu Trigger */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer border ${
+          className={`rounded-full px-2.5 py-1 text-xs font-black transition-all flex items-center gap-1 cursor-pointer border ${
             isNerActive
               ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-400/40 shadow-md shadow-purple-600/30"
               : "border-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white"
           }`}
-          title="All North Eastern Region Languages (Assam, Meghalaya, Manipur, Mizoram, Sikkim, Tripura, Nagaland, Arunachal)"
+          title="Select Language (English, Hindi, and 10 North Eastern Languages)"
         >
-          <span>{isNerActive ? activeLangMeta.flag : "🌿"}</span>
-          <span className="hidden sm:inline">
-            {isNerActive ? activeLangMeta.nativeLabel : "NER"}
-          </span>
-          <span className="sm:hidden">
-            {isNerActive ? activeLangMeta.code.toUpperCase() : "NER"}
-          </span>
+          <span>{activeLangMeta.flag}</span>
+          <span className="font-extrabold">{activeLangMeta.code.toUpperCase()}</span>
           <ChevronDown
             className={`h-3 w-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
           />
