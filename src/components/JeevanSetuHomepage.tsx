@@ -1333,16 +1333,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <div className="flex flex-wrap items-center gap-3 shrink-0">
               <button
                 onClick={onOpenSos}
-                className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold shadow-lg shadow-red-600/40 hover:scale-105 transition flex items-center gap-2 cursor-pointer border border-red-400/50"
+                className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold shadow-lg shadow-red-600/40 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-2xl hover:shadow-red-600/60 flex items-center gap-2 cursor-pointer border border-red-400/50 group"
               >
-                <PhoneCall className="h-4 w-4 animate-pulse" />
+                <PhoneCall className="h-4 w-4 animate-pulse group-hover:scale-125 transition duration-300" />
                 <span>{t('home.emergencyHelp', 'Emergency Help')}</span>
               </button>
               <button
                 onClick={() => onNavigateModule('reliefcamps')}
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center gap-2"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 hover:border-emerald-400 backdrop-blur px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer flex items-center gap-2 group"
               >
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <ShieldCheck className="h-4 w-4 text-emerald-400 group-hover:scale-125 transition duration-300" />
                 <span>{t('home.exploreResources', 'Explore Resources')}</span>
               </button>
             </div>
@@ -1366,24 +1366,24 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-200">
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md transition hover:scale-105">
-              <Radio className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-sky-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+              <Radio className="h-5 w-5 text-sky-600 dark:text-sky-400 group-hover:scale-125 transition duration-300" />
               <span>{t('home.isroSatelliteData', 'ISRO / Satellite Data')}</span>
             </div>
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md transition hover:scale-105">
-              <CloudRain className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+              <CloudRain className="h-5 w-5 text-blue-600 dark:text-blue-400 group-hover:scale-125 transition duration-300" />
               <span>{t('home.imdWeatherData', 'IMD Weather Data')}</span>
             </div>
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md transition hover:scale-105">
-              <Building2 className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-slate-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+              <Building2 className="h-5 w-5 text-slate-700 dark:text-slate-300 group-hover:scale-125 transition duration-300" />
               <span>{t('home.govReports', 'Government Reports')}</span>
             </div>
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md transition hover:scale-105">
-              <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+              <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-125 transition duration-300" />
               <span>{t('home.groundReports', 'Ground Reports')}</span>
             </div>
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md transition hover:scale-105">
-              <MapPin className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-purple-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+              <MapPin className="h-5 w-5 text-purple-600 dark:text-purple-400 group-hover:scale-125 transition duration-300" />
               <span>{t('home.gisRemoteSensing', 'GIS & Remote Sensing')}</span>
             </div>
           </div>
