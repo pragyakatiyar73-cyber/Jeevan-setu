@@ -36,6 +36,10 @@ import {
   BHUVAN_PORTAL_URL,
   BHUVAN_API_PORTAL_URL
 } from '../services/api/bhuvanService';
+import {
+  getCrowdsourcedReportsTelemetry,
+  CrowdsourcedTelemetryData
+} from '../services/api/crowdsourcedService';
 
 interface TrustedDataSourcesModalProps {
   isOpen: boolean;
@@ -74,6 +78,10 @@ export default function TrustedDataSourcesModal({
   const [bhuvanStatus, setBhuvanStatus] = useState<BhuvanServiceTelemetry | null>(null);
   const [bhuvanLoading, setBhuvanLoading] = useState<boolean>(false);
 
+  // MongoDB Crowdsourced Reports State
+  const [crowdsourcedData, setCrowdsourcedData] = useState<CrowdsourcedTelemetryData | null>(null);
+  const [crowdsourcedLoading, setCrowdsourcedLoading] = useState<boolean>(false);
+
   useEffect(() => {
     if (initialTab) {
       setActiveTab(initialTab);
@@ -111,12 +119,36 @@ export default function TrustedDataSourcesModal({
     }
   };
 
+  // Fetch MongoDB Crowdsourced Telemetry
+  const fetchCrowdsourcedData = async () => {
+    setCrowdsourcedLoading(true);
+    try {
+      const data = await getCrowdsourcedReportsTelemetry();
+      setCrowdsourcedData(data);
+    } catch (err) {
+      setCrowdsourcedData({
+        isConnected: false,
+        status: 'error',
+        database: 'MongoDB (Unavailable)',
+        totalReports: 0,
+        reportsLastHour: 0,
+        latestReportTimestamp: null,
+        recentReports: [],
+        error: 'Database unavailable'
+      });
+    } finally {
+      setCrowdsourcedLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
       if (activeTab === 'imd') {
         fetchWeather(selectedLocation.lat, selectedLocation.lon);
       } else if (activeTab === 'isro') {
         fetchBhuvanTelemetry(selectedBhuvanLayer);
+      } else if (activeTab === 'ground') {
+        fetchCrowdsourcedData();
       }
     }
   }, [isOpen, activeTab, selectedLocation, selectedBhuvanLayer]);
@@ -199,7 +231,7 @@ export default function TrustedDataSourcesModal({
                   Verified Telemetry
                 </span>
               </h3>
-              <p className="text-xs text-slate-400">Real-time integrated meteorological & spatial intelligence networks</p>
+              <p className="text-xs text-slate-400">Real-time integrated meteorological, spatial &amp; MongoDB crowdsourced intelligence</p>
             </div>
           </div>
 
@@ -258,7 +290,7 @@ export default function TrustedDataSourcesModal({
             }`}
           >
             <Users className="h-4 w-4" />
-            Ground Telemetry
+            Ground Reports (MongoDB)
           </button>
 
           <button
@@ -270,7 +302,7 @@ export default function TrustedDataSourcesModal({
             }`}
           >
             <MapPin className="h-4 w-4" />
-            GIS & Remote Sensing
+            GIS &amp; Remote Sensing
           </button>
         </div>
 
@@ -514,7 +546,7 @@ export default function TrustedDataSourcesModal({
                         <AlertTriangle className="h-5 w-5" />
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-slate-400 block uppercase">Precipitation & Wind Risk Assessment</span>
+                        <span className="text-xs font-bold text-slate-400 block uppercase">Precipitation &amp; Wind Risk Assessment</span>
                         <span className="text-sm font-black text-white">
                           Status: {weatherData.severeRiskLevel} RISK
                         </span>
@@ -728,7 +760,7 @@ export default function TrustedDataSourcesModal({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Building2 className="h-6 w-6 text-slate-300" />
-                    <h4 className="text-base font-black text-white">NDMA & MDoNER Emergency Bulletins</h4>
+                    <h4 className="text-base font-black text-white">NDMA &amp; MDoNER Emergency Bulletins</h4>
                   </div>
                   <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-bold">
                     VERIFIED
@@ -741,23 +773,146 @@ export default function TrustedDataSourcesModal({
             </div>
           )}
 
-          {/* TAB 4: GROUND REPORTS */}
+          {/* TAB 4: GROUND REPORTS (MONGODB INTEGRATED) */}
           {activeTab === 'ground' && (
-            <div className="space-y-4">
-              <div className="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-3">
-                <div className="flex items-center justify-between">
+            <div className="space-y-6">
+              
+              {/* Header & Status */}
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
+                
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
                   <div className="flex items-center gap-3">
-                    <Users className="h-6 w-6 text-emerald-400" />
-                    <h4 className="text-base font-black text-white">Crowdsourced Ground Telemetry Feed</h4>
+                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
+                      <Users className="h-6 w-6 text-emerald-400 animate-pulse" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">Live MongoDB Database Collection</span>
+                      <h4 className="text-xl font-black text-white">Crowdsourced Ground Reports</h4>
+                      <p className="text-xs text-slate-400">Database: jeevan_setu.crowdsourced_reports</p>
+                    </div>
                   </div>
-                  <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-bold">
-                    REAL-TIME
-                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={fetchCrowdsourcedData}
+                      disabled={crowdsourcedLoading}
+                      className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition duration-200"
+                      title="Refresh MongoDB Data"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${crowdsourcedLoading ? 'animate-spin' : ''}`} />
+                    </button>
+
+                    {crowdsourcedLoading ? (
+                      <span className="flex items-center gap-1.5 px-3 py-1 bg-sky-500/20 text-sky-400 border border-sky-500/40 rounded-full text-xs font-black">
+                        <RefreshCw className="h-3 w-3 animate-spin" />
+                        QUERYING MONGODB...
+                      </span>
+                    ) : crowdsourcedData?.isConnected ? (
+                      <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full text-xs font-black tracking-wide animate-pulse">
+                        <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                        MONGODB CONNECTED
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1.5 px-3 py-1 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded-full text-xs font-black">
+                        <AlertTriangle className="h-3.5 w-3.5" />
+                        DATABASE UNAVAILABLE
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Field reports submitted by citizens, first responders, and local disaster volunteers across affected sectors. Cross-verified with AI damage triage and satellite observations.
-                </p>
+
+                {/* 4 Required Metric Summary Cards */}
+                {crowdsourcedData?.isConnected ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    
+                    {/* Item 1: Total Reports */}
+                    <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Reports</span>
+                      <p className="text-3xl font-black text-emerald-400 font-mono">
+                        {crowdsourcedData.totalReports}
+                      </p>
+                      <p className="text-[11px] text-slate-400">Recorded in MongoDB</p>
+                    </div>
+
+                    {/* Item 2: Reports from Last 1 Hour */}
+                    <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Reports from Last 1 Hour</span>
+                      <p className="text-3xl font-black text-sky-400 font-mono">
+                        {crowdsourcedData.reportsLastHour}
+                      </p>
+                      <p className="text-[11px] text-slate-400">Past 60 minutes window</p>
+                    </div>
+
+                    {/* Item 3: Latest Report Timestamp */}
+                    <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Latest Report Timestamp</span>
+                      <p className="text-xs font-black text-white font-mono leading-tight pt-1">
+                        {crowdsourcedData.latestReportTimestamp || 'No reports yet'}
+                      </p>
+                      <p className="text-[11px] text-slate-400">MongoDB latest insertion</p>
+                    </div>
+
+                  </div>
+                ) : (
+                  <div className="p-6 bg-rose-950/30 border border-rose-800/60 rounded-xl space-y-2">
+                    <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
+                      <AlertTriangle className="h-5 w-5" />
+                      Database Unavailable
+                    </div>
+                    <p className="text-xs text-rose-300/80">
+                      Unable to connect to MongoDB instance (<code className="font-mono bg-rose-900/40 px-1 py-0.5 rounded">mongodb://localhost:27017</code>). No dummy numbers are displayed as per system rules.
+                    </p>
+                    <button
+                      onClick={fetchCrowdsourcedData}
+                      className="mt-2 px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition duration-200 shadow"
+                    >
+                      Retry Database Connection
+                    </button>
+                  </div>
+                )}
+
               </div>
+
+              {/* Item 4: Active / Recent Disaster Reports List */}
+              {crowdsourcedData?.isConnected && crowdsourcedData.recentReports.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                    <span>Active / Recent Disaster Reports from MongoDB</span>
+                    <span className="text-emerald-400 font-mono font-bold">{crowdsourcedData.recentReports.length} Live Documents</span>
+                  </h4>
+
+                  <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                    {crowdsourcedData.recentReports.map((report) => (
+                      <div
+                        key={report.reportId || report._id}
+                        className="bg-slate-950 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-white">{report.disasterType}</span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
+                              report.severity === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40' :
+                              report.severity === 'HIGH' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40' :
+                              'bg-sky-500/20 text-sky-400 border border-sky-500/40'
+                            }`}>
+                              {report.severity}
+                            </span>
+                          </div>
+                          <span className="text-[11px] font-mono text-slate-400">{report.timestamp}</span>
+                        </div>
+
+                        <p className="text-xs text-slate-300">{report.description}</p>
+
+                        <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-slate-900">
+                          <span>📍 Location: {report.locationName} ({report.latitude}°, {report.longitude}°)</span>
+                          <span className="text-sky-400 font-bold">ID: {report.reportId}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           )}
 
@@ -768,7 +923,7 @@ export default function TrustedDataSourcesModal({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <MapPin className="h-6 w-6 text-purple-400" />
-                    <h4 className="text-base font-black text-white">GIS Spatial Layers & OpenTopo</h4>
+                    <h4 className="text-base font-black text-white">GIS Spatial Layers &amp; OpenTopo</h4>
                   </div>
                   <span className="px-2.5 py-1 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-full text-xs font-bold">
                     ACTIVE
@@ -786,7 +941,7 @@ export default function TrustedDataSourcesModal({
         {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between">
           <span className="text-xs text-slate-400 font-mono">
-            Jeevan Setu Verified Data Ecosystem • ISRO Bhuvan WMS &amp; Open-Meteo Integration
+            Jeevan Setu Verified Data Ecosystem • MongoDB &amp; ISRO Bhuvan Integration
           </span>
           <button
             onClick={onClose}

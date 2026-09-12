@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import { MongoClient } from 'mongodb';
 
 dotenv.config();
 
@@ -743,4 +744,138 @@ app.get('/api/map/layers', (req, res) => {
     database: 'map_layers_db.json',
     layers: mapLayersDb
   });
+});
+
+// ----------------------------------------------------
+// 👥 MONGODB CROWDSOURCED REPORTS DISASTER TELEMETRY API
+// ----------------------------------------------------
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || 'jeevan_setu';
+const MONGODB_COLLECTION = 'crowdsourced_reports';
+
+let mongoClientInstance = null;
+let mongoDbInstance = null;
+
+async function getMongoDbConnection() {
+  if (mongoDbInstance) return mongoDbInstance;
+  try {
+    mongoClientInstance = new MongoClient(MONGODB_URI, { serverSelectionTimeoutMS: 3000 });
+    await mongoClientInstance.connect();
+    mongoDbInstance = mongoClientInstance.db(MONGODB_DB_NAME);
+    console.log('🌱 MongoDB Connected Successfully:', `${MONGODB_DB_NAME}.${MONGODB_COLLECTION}`);
+    return mongoDbInstance;
+  } catch (err) {
+    console.error('⚠️ MongoDB Connection Unavailable:', err.message);
+    mongoDbInstance = null;
+    mongoClientInstance = null;
+    return null;
+  }
+}
+
+// GET /api/reports/crowdsourced - Fetch live report metrics & recent active disaster reports
+app.get('/api/reports/crowdsourced', async (req, res) => {
+  const db = await getMongoDbConnection();
+  if (!db) {
+    return res.json({
+      isConnected: false,
+      status: 'error',
+      message: 'Database unavailable',
+      totalReports: 0,
+      reportsLastHour: 0,
+      latestReportTimestamp: null,
+      recentReports: []
+    });
+  }
+
+  try {
+    const col = db.collection(MONGODB_COLLECTION);
+    const totalReports = await col.countDocuments();
+
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const reportsLastHour = await col.countDocuments({
+      createdAt: { $gte: oneHourAgo }
+    });
+
+    const latestDocList = await col.find().sort({ createdAt: -1 }).limit(1).toArray();
+    let latestReportTimestamp = null;
+    if (latestDocList.length > 0) {
+      const rawTs = latestDocList[0].timestamp || latestDocList[0].createdAt;
+      const d = new Date(rawTs);
+      if (!isNaN(d.getTime())) {
+        latestReportTimestamp = `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+      } else {
+        latestReportTimestamp = rawTs;
+      }
+    }
+
+    const recentReports = await col.find().sort({ createdAt: -1 }).limit(15).toArray();
+
+    res.json({
+      isConnected: true,
+      status: 'success',
+      database: `MongoDB (${MONGODB_DB_NAME}.${MONGODB_COLLECTION})`,
+      totalReports,
+      reportsLastHour,
+      latestReportTimestamp,
+      recentReports
+    });
+  } catch (err) {
+    console.error('Error querying MongoDB crowdsourced_reports:', err);
+    res.json({
+      isConnected: false,
+      status: 'error',
+      message: 'Database unavailable',
+      totalReports: 0,
+      reportsLastHour: 0,
+      latestReportTimestamp: null,
+      recentReports: []
+    });
+  }
+});
+
+// POST /api/reports/crowdsourced - Submit new crowdsourced disaster report to MongoDB
+app.post('/api/reports/crowdsourced', async (req, res) => {
+  const db = await getMongoDbConnection();
+  if (!db) {
+    return res.status(503).json({
+      isConnected: false,
+      status: 'error',
+      message: 'Database unavailable'
+    });
+  }
+
+  try {
+    const col = db.collection(MONGODB_COLLECTION);
+    const now = new Date();
+    const newReport = {
+      reportId: `REP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      disasterType: req.body.disasterType || 'General Disaster Alert',
+      locationName: req.body.locationName || 'Unspecified Location',
+      latitude: Number(req.body.latitude) || 26.1445,
+      longitude: Number(req.body.longitude) || 91.7362,
+      description: req.body.description || 'Citizen ground report logged.',
+      severity: req.body.severity || 'HIGH',
+      status: 'ACTIVE',
+      timestamp: now.toISOString(),
+      createdAt: now
+    };
+
+    const result = await col.insertOne(newReport);
+    console.log('📌 New Crowdsourced Report Saved to MongoDB:', newReport.reportId);
+
+    res.json({
+      isConnected: true,
+      status: 'success',
+      message: 'Report saved to MongoDB successfully',
+      reportId: newReport.reportId,
+      insertedId: result.insertedId
+    });
+  } catch (err) {
+    console.error('Error inserting report to MongoDB:', err);
+    res.status(500).json({
+      isConnected: false,
+      status: 'error',
+      message: 'Database unavailable'
+    });
+  }
 });
