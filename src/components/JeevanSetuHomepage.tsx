@@ -1172,19 +1172,19 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {/* ==================================================
           4. HOW JEEVAN SETU WORKS (From data to action — in just a few steps)
           ================================================== */}
-      <section id="how-it-works" className="w-full py-12 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+      <section id="how-it-works" className="w-full py-16 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
+        <div className="w-full px-4 sm:px-8 lg:px-12">
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
               {t('home.howItWorksTitle', 'How Jeevan Setu Works')}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+            <p className="text-sm sm:text-base lg:text-lg text-slate-500 dark:text-slate-400 font-semibold mt-2">
               {t('home.howItWorksSub', 'From data to action — in just a few steps.')}
             </p>
           </div>
 
-          {/* 4 Horizontal Steps Process Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+          {/* 4 Horizontal Steps Process Grid (Enlarged Full-Width Cards) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 relative">
             
             {[
               {
@@ -1192,54 +1192,58 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 title: t('home.step1Title', 'Report'),
                 desc: t('home.step1Desc', 'Share photos, location and details about the disaster.'),
                 icon: Camera,
-                color: 'bg-sky-500/10 text-sky-500 border-sky-400/30'
+                color: 'bg-sky-500/15 text-sky-500 border-sky-400/40'
               },
               {
                 stepNum: '2',
                 title: t('home.step2Title', 'AI Analysis'),
                 desc: t('home.step2Desc', 'Our AI processes data from satellites, weather and ground reports.'),
                 icon: Cpu,
-                color: 'bg-cyan-500/10 text-cyan-500 border-cyan-400/30'
+                color: 'bg-cyan-500/15 text-cyan-500 border-cyan-400/40'
               },
               {
                 stepNum: '3',
                 title: t('home.step3Title', 'Risk Assessment'),
                 desc: t('home.step3Desc', 'Get instant risk levels, impact analysis and 72-hour forecast.'),
                 icon: AlertTriangle,
-                color: 'bg-amber-500/10 text-amber-500 border-amber-400/30'
+                color: 'bg-amber-500/15 text-amber-500 border-amber-400/40'
               },
               {
                 stepNum: '4',
                 title: t('home.step4Title', 'Get Help'),
                 desc: t('home.step4Desc', 'Find nearby shelters, hospitals, routes and emergency services.'),
                 icon: ShieldAlert,
-                color: 'bg-rose-500/10 text-rose-500 border-rose-400/30'
+                color: 'bg-rose-500/15 text-rose-500 border-rose-400/40'
               }
             ].map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div key={item.stepNum} className="flex flex-col items-center text-center group relative p-5 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800">
-                  
-                  {/* Arrow Connector between steps (visible on medium+ screens) */}
+                <div
+                  key={item.stepNum}
+                  className="flex flex-col items-center text-center group relative p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl transition duration-300 min-h-[260px] sm:min-h-[290px] justify-between"
+                >
+                  {/* Arrow Connector between steps (visible on desktop) */}
                   {idx < 3 && (
-                    <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-20 pointer-events-none">
-                      <ArrowRight className="h-5 w-5 text-sky-400 opacity-70" />
+                    <div className="hidden lg:block absolute top-1/2 -right-5 transform -translate-y-1/2 z-20 pointer-events-none">
+                      <ArrowRight className="h-7 w-7 text-sky-400 opacity-80" />
                     </div>
                   )}
 
-                  <div className={`h-14 w-14 rounded-2xl ${item.color} border flex items-center justify-center shadow-sm group-hover:scale-110 transition duration-300 mb-4 relative`}>
-                    <Icon className="h-7 w-7" />
-                    <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-slate-900 text-white dark:bg-sky-400 dark:text-slate-950 font-black text-xs flex items-center justify-center shadow">
+                  <div className={`h-16 w-16 sm:h-20 sm:w-20 rounded-3xl ${item.color} border flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300 mb-5 relative`}>
+                    <Icon className="h-8 w-8 sm:h-10 sm:w-10" />
+                    <span className="absolute -top-3 -right-3 h-8 w-8 rounded-full bg-slate-900 text-white dark:bg-sky-400 dark:text-slate-950 font-black text-sm flex items-center justify-center shadow-lg ring-4 ring-white dark:ring-slate-900">
                       {item.stepNum}
                     </span>
                   </div>
 
-                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white mb-1">
-                    {item.stepNum}. {item.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-xs">
-                    {item.desc}
-                  </p>
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-2">
+                      {item.stepNum}. {item.title}
+                    </h3>
+                    <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
                 </div>
               );
             })}
