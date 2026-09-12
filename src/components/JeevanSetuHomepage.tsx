@@ -18,6 +18,9 @@ import {
   Building2,
   Users,
   FileText,
+  HelpCircle,
+  Lock,
+  Mail,
   X,
   Upload,
   Navigation,
@@ -1240,6 +1243,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
   // Emergency Info Modal state
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [infoModalTab, setInfoModalTab] = useState<'privacy' | 'terms' | 'help' | 'contact' | 'resources'>('privacy');
 
   // Mobile Menu state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -1961,7 +1965,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {[
                 { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
                 { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
-                { id: 'Contact', name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setIsInfoModalOpen(true); } }
+                { id: 'Contact', name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setInfoModalTab('contact'); setIsInfoModalOpen(true); } }
               ].map((nav) => {
                 const isActive = activeTab === nav.id;
                 return (
@@ -2061,7 +2065,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {[
               { name: 'Home', action: () => { setActiveTab('Home'); setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
               { name: 'About', action: () => { setActiveTab('About'); setIsMobileMenuOpen(false); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
-              { name: 'Contact', action: () => { setActiveTab('Contact'); setIsMobileMenuOpen(false); setIsInfoModalOpen(true); } }
+              { name: 'Contact', action: () => { setActiveTab('Contact'); setIsMobileMenuOpen(false); setInfoModalTab('contact'); setIsInfoModalOpen(true); } }
             ].map((nav) => (
               <button
                 key={nav.name}
@@ -2964,13 +2968,13 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
             {/* Center Links (Compact) */}
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs font-semibold text-slate-300">
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.privacyPolicy', 'Privacy Policy')}</button>
+              <button onClick={() => { setInfoModalTab('privacy'); setIsInfoModalOpen(true); }} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.privacyPolicy', 'Privacy Policy')}</button>
               <span className="text-slate-700">|</span>
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.termsOfUse', 'Terms of Use')}</button>
+              <button onClick={() => { setInfoModalTab('terms'); setIsInfoModalOpen(true); }} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.termsOfUse', 'Terms of Use')}</button>
               <span className="text-slate-700">|</span>
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.help', 'Help')}</button>
+              <button onClick={() => { setInfoModalTab('help'); setIsInfoModalOpen(true); }} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.help', 'Help')}</button>
               <span className="text-slate-700">|</span>
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.contact', 'Contact')}</button>
+              <button onClick={() => { setInfoModalTab('contact'); setIsInfoModalOpen(true); }} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.contact', 'Contact')}</button>
             </div>
 
             {/* Right: Follow Us (Compact) */}
@@ -3239,77 +3243,369 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       )}
 
       {/* ==================================================
-          MODAL 3: EMERGENCY INFORMATION MODAL
+          MODAL 3: INFORMATION & POLICY MODAL (Privacy, Terms, Help, Contact, Resources)
          ================================================== */}
       {isInfoModalOpen && (
         <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 dark:border-slate-800 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsInfoModalOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer z-10"
+              title="Close"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-10 w-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">Emergency Resources</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Nearby Shelters, Hospitals &amp; Evacuation Corridors</p>
-              </div>
+            {/* Modal Tabs Header */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-4 border-b border-slate-100 dark:border-slate-800 text-xs font-bold scrollbar-none pr-10">
+              {[
+                { id: 'privacy', label: 'Privacy Policy', icon: Lock },
+                { id: 'terms', label: 'Terms of Use', icon: FileText },
+                { id: 'help', label: 'Help & Guide', icon: HelpCircle },
+                { id: 'contact', label: 'Contact', icon: PhoneCall },
+                { id: 'resources', label: 'Emergency Resources', icon: ShieldCheck },
+              ].map((tab) => {
+                const Icon = tab.icon;
+                const isActive = infoModalTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setInfoModalTab(tab.id as any)}
+                    className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                      isActive
+                        ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="space-y-3 text-xs font-medium max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
-              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 rounded-2xl flex items-center justify-between">
-                <div>
-                  <div className="font-extrabold text-slate-900 dark:text-white">Gangtok District Relief Shelter</div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400">Capacity: 450 beds &bull; Medical Staff Onsite</div>
+            {/* TAB 1: PRIVACY POLICY */}
+            {infoModalTab === 'privacy' && (
+              <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300 animate-in fade-in duration-150">
+                <div className="flex items-center gap-3 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                  <div className="h-10 w-10 rounded-2xl bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold shrink-0">
+                    <Lock className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Privacy Policy</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Citizen Data Protection & Ethical Disaster Telemetry (DPDP Act 2023)</p>
+                  </div>
                 </div>
-                <button
-                  onClick={() => { setIsInfoModalOpen(false); onNavigateModule('reliefcamps'); }}
-                  className="bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-bold text-[11px]"
-                >
-                  Locate
-                </button>
-              </div>
 
-              <div className="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded-2xl flex items-center justify-between">
-                <div>
-                  <div className="font-extrabold text-slate-900 dark:text-white">STNM Super Specialty Hospital</div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400">Emergency Ward: 24x7 Open &bull; Blood Bank Ready</div>
+                <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar">
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                      <span>1. Zero Commercial Profiling & Monetization</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      Jeevan Setu is an official humanitarian logistics system developed for the Ministry of Development of North Eastern Region (MoDoNER) and North Eastern Council (NEC). Citizen location coordinates, contact details, and emergency distress logs are strictly never sold, rented, or shared with commercial advertisers or third-party tracking services.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <MapPin className="h-4 w-4 text-sky-500" />
+                      <span>2. Purpose-Bound Location Telemetry</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      GPS coordinates and environmental telemetry are accessed only when you voluntarily trigger an Emergency SOS distress beacon, report a geotechnical road breach, or request evacuation routing. Location data is relayed strictly to verified response agencies (NDRF, SDRF, Indian Army, BRO).
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <Activity className="h-4 w-4 text-purple-500" />
+                      <span>3. Cryptographic Transmission & Ephemeral Storage</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      Emergency distress packets, blood group alerts, and compressed offline SMS payloads are transmitted using secure protocols. Disaster photos uploaded for AI geotechnical triage are stored in encrypted government cloud vaults and auto-archived post-relief completion.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <FileText className="h-4 w-4 text-amber-500" />
+                      <span>4. DPDP Act 2023 Compliance & Data Rights</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      In full accordance with India's Digital Personal Data Protection Act (2023), citizens retain the right to review, update, or request the redaction of their personal identity from public emergency audit logs once operational life-safety hazards are mitigated.
+                    </p>
+                  </div>
                 </div>
-                <button
-                  onClick={() => { setIsInfoModalOpen(false); onNavigateModule('lifesaving'); }}
-                  className="bg-blue-600 text-white px-3 py-1.5 rounded-xl font-bold text-[11px]"
-                >
-                  Call
-                </button>
               </div>
+            )}
 
-              <div className="p-3 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/60 rounded-2xl flex items-center justify-between">
-                <div>
-                  <div className="font-extrabold text-slate-900 dark:text-white">Evacuation Route NH-10 Clearance</div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400">Green Corridor Active for Emergency Convoy</div>
+            {/* TAB 2: TERMS OF USE */}
+            {infoModalTab === 'terms' && (
+              <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300 animate-in fade-in duration-150">
+                <div className="flex items-center gap-3 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                  <div className="h-10 w-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Terms of Use</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Platform Governance & Emergency Response Protocol</p>
+                  </div>
                 </div>
-                <button
-                  onClick={() => { setIsInfoModalOpen(false); onNavigateModule('evacuation'); }}
-                  className="bg-purple-600 text-white px-3 py-1.5 rounded-xl font-bold text-[11px]"
-                >
-                  Route
-                </button>
-              </div>
-            </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <button onClick={onOpenSos} className="text-red-600 dark:text-red-400 font-extrabold text-xs flex items-center gap-1">
-                <PhoneCall className="h-3.5 w-3.5" />
+                <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar">
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <Building2 className="h-4 w-4 text-indigo-500" />
+                      <span>1. Operational Mandate</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      Jeevan Setu is intended as an emergency response, digital twin simulation, and lifeline supply bridge for the 8 North Eastern States of India. All telemetry, disaster tracking, and AI route optimizations are provided to safeguard life and infrastructure during monsoon surges and seismic events.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-red-50 dark:bg-red-950/30 rounded-2xl border border-red-200 dark:border-red-900/50 space-y-1">
+                    <div className="font-extrabold text-red-700 dark:text-red-400 flex items-center gap-1.5 text-xs">
+                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                      <span>2. Strict Prohibition on False Alarms (DM Act 2005)</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-red-800 dark:text-red-300">
+                      The Emergency SOS beacon and NDRF 1078 SMS gateway are strictly reserved for genuine life-threatening emergencies. Generating malicious false alarms or intentionally transmitting fictitious disaster coordinates is a punishable offense under Section 54 of the Disaster Management Act, 2005.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <Radio className="h-4 w-4 text-emerald-500" />
+                      <span>3. Real-Time Telemetry & Environmental Dynamic Disclaimer</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      Meteorological feeds (Open-Meteo IMD Grid), seismic telemetry (USGS), and thermal wildfire satellite anomalies (NASA EONET) represent near-instantaneous sensor captures. Mountain weather patterns can evolve rapidly; users must heed physical ground instructions from local law enforcement and civil defense personnel.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <Navigation className="h-4 w-4 text-sky-500" />
+                      <span>4. Autonomous Rerouting & Green Corridor Compliance</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      AI-calculated bypass corridors and bridge load assessments are computational models based on satellite slope gradients and rainfall saturation. Emergency convoy operators must coordinate with Border Roads Organisation (BRO) checkpoints before transiting severe pass sectors.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: HELP & USER GUIDE */}
+            {infoModalTab === 'help' && (
+              <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300 animate-in fade-in duration-150">
+                <div className="flex items-center gap-3 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                  <div className="h-10 w-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shrink-0">
+                    <HelpCircle className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Help & User Guide</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Operational Walkthrough for Emergency Tools & GIS Telemetry</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar">
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <PhoneCall className="h-4 w-4 text-red-500" />
+                      <span>How to Trigger Emergency SOS (Offline Ready)</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      Click the red <strong>Emergency SOS</strong> button in the top navigation or floating action beacon. Even if internet connectivity drops, the system generates a standardized SMS pre-populated with your GPS coordinates addressed to the NDRF National Helpline (1078) and sounds an 880Hz acoustic rescue siren.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <Camera className="h-4 w-4 text-sky-500" />
+                      <span>How to Report a Landslide or Road Blockage</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      Navigate to the <strong>Report Disaster</strong> card. Select the disaster category, attach a photo of the road slip or flood, and verify the auto-detected coordinates. The integrated AI vision triage engine scans geotechnical deformation and notifies district command.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <MapIcon className="h-4 w-4 text-emerald-500" />
+                      <span>Navigating the Live Interactive GIS Map</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      Use the <strong>Incident Filter</strong> legend (Flood, Landslide, Earthquake, Fire, Heavy Rain) in the top-right of the map to toggle specific hazards. Click on any marker to inspect real-time Open-Meteo weather readings, deployed rescue units, and impacted perimeters.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+                    <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                      <Zap className="h-4 w-4 text-amber-500" />
+                      <span>Offline PWA Installation</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                      Jeevan Setu is a Progressive Web App (PWA). You can install it on Android, iOS, or Windows directly from your browser. Crucial emergency data—including offline shelter directories, first-aid checklists, and SOS sirens—remain accessible without mobile data.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 4: CONTACT & DIRECTORY */}
+            {infoModalTab === 'contact' && (
+              <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300 animate-in fade-in duration-150">
+                <div className="flex items-center gap-3 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                  <div className="h-10 w-10 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold shrink-0">
+                    <PhoneCall className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Emergency Command & Directory</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Direct Contact Lines for NDRF, MoDoNER & State Operations</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar">
+                  <div className="p-3 bg-red-50 dark:bg-red-950/30 rounded-2xl border border-red-200 dark:border-red-900/50 flex items-center justify-between">
+                    <div>
+                      <div className="font-extrabold text-red-900 dark:text-red-300 text-xs">NDRF National 24x7 Control Room</div>
+                      <div className="text-[11px] text-red-700 dark:text-red-400 mt-0.5">Toll-Free Emergency Helpline: <strong>1078</strong></div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400">Direct Line: +91-11-24363260 &bull; Email: hq.ndrf@nic.in</div>
+                    </div>
+                    <a
+                      href="tel:1078"
+                      className="bg-red-600 hover:bg-red-500 text-white px-3.5 py-2 rounded-xl font-bold text-xs shadow-md shadow-red-600/30 transition flex items-center gap-1.5 shrink-0"
+                    >
+                      <PhoneCall className="h-3.5 w-3.5 animate-pulse" />
+                      <span>Dial 1078</span>
+                    </a>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1.5">
+                    <div className="font-extrabold text-slate-900 dark:text-white text-xs flex items-center gap-1.5">
+                      <Building2 className="h-4 w-4 text-sky-500" />
+                      <span>Ministry of Development of North Eastern Region (MoDoNER)</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300">
+                      Vigyan Bhawan Annexe, Maulana Azad Road, New Delhi 110011<br />
+                      Phone: +91-11-23022400 &bull; Email: <span className="text-sky-500 font-mono">support@jeevansetu.gov.in</span>
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-1.5">
+                    <div className="font-extrabold text-slate-900 dark:text-white text-xs flex items-center gap-1.5">
+                      <Building2 className="h-4 w-4 text-indigo-500" />
+                      <span>North Eastern Council (NEC) Secretariat</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300">
+                      Nongrim Hills, Shillong, Meghalaya 793003<br />
+                      Phone: +91-364-2522644 &bull; Email: <span className="text-indigo-500 font-mono">nec-shillong@nic.in</span>
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+                    <div className="font-extrabold text-slate-900 dark:text-white text-xs">
+                      State Emergency Operations Centers (SEOC - NER 8 States)
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                        <span className="font-bold text-slate-900 dark:text-white">Sikkim:</span> <a href="tel:03592202461" className="text-sky-500 font-mono">03592-202461</a>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                        <span className="font-bold text-slate-900 dark:text-white">Assam:</span> <a href="tel:1079" className="text-sky-500 font-mono">1070 / 1079</a>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                        <span className="font-bold text-slate-900 dark:text-white">Meghalaya:</span> <a href="tel:1070" className="text-sky-500 font-mono">1070</a>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                        <span className="font-bold text-slate-900 dark:text-white">Arunachal:</span> <a href="tel:03602212541" className="text-sky-500 font-mono">0360-2212541</a>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                        <span className="font-bold text-slate-900 dark:text-white">Manipur:</span> <a href="tel:03852443441" className="text-sky-500 font-mono">0385-2443441</a>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                        <span className="font-bold text-slate-900 dark:text-white">Mizoram:</span> <a href="tel:03892335837" className="text-sky-500 font-mono">0389-2335837</a>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                        <span className="font-bold text-slate-900 dark:text-white">Nagaland:</span> <a href="tel:03702291122" className="text-sky-500 font-mono">0370-2291122</a>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                        <span className="font-bold text-slate-900 dark:text-white">Tripura:</span> <a href="tel:03812416045" className="text-sky-500 font-mono">0381-2416045</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 5: EMERGENCY RESOURCES */}
+            {infoModalTab === 'resources' && (
+              <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300 animate-in fade-in duration-150">
+                <div className="flex items-center gap-3 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                  <div className="h-10 w-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shrink-0">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Emergency Resources</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Nearby Shelters, Hospitals &amp; Evacuation Corridors</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar">
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 rounded-2xl flex items-center justify-between">
+                    <div>
+                      <div className="font-extrabold text-slate-900 dark:text-white">Gangtok District Relief Shelter</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400">Capacity: 450 beds &bull; Medical Staff Onsite</div>
+                    </div>
+                    <button
+                      onClick={() => { setIsInfoModalOpen(false); onNavigateModule('reliefcamps'); }}
+                      className="bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-bold text-[11px] hover:bg-emerald-500 transition cursor-pointer"
+                    >
+                      Locate
+                    </button>
+                  </div>
+
+                  <div className="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded-2xl flex items-center justify-between">
+                    <div>
+                      <div className="font-extrabold text-slate-900 dark:text-white">STNM Super Specialty Hospital</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400">Emergency Ward: 24x7 Open &bull; Blood Bank Ready</div>
+                    </div>
+                    <button
+                      onClick={() => { setIsInfoModalOpen(false); onNavigateModule('lifesaving'); }}
+                      className="bg-blue-600 text-white px-3 py-1.5 rounded-xl font-bold text-[11px] hover:bg-blue-500 transition cursor-pointer"
+                    >
+                      Call
+                    </button>
+                  </div>
+
+                  <div className="p-3 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/60 rounded-2xl flex items-center justify-between">
+                    <div>
+                      <div className="font-extrabold text-slate-900 dark:text-white">Evacuation Route NH-10 Clearance</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400">Green Corridor Active for Emergency Convoy</div>
+                    </div>
+                    <button
+                      onClick={() => { setIsInfoModalOpen(false); onNavigateModule('evacuation'); }}
+                      className="bg-purple-600 text-white px-3 py-1.5 rounded-xl font-bold text-[11px] hover:bg-purple-500 transition cursor-pointer"
+                    >
+                      Route
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Footer */}
+            <div className="pt-4 mt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <button onClick={onOpenSos} className="text-red-600 dark:text-red-400 font-extrabold text-xs flex items-center gap-1.5 hover:underline cursor-pointer">
+                <PhoneCall className="h-3.5 w-3.5 animate-pulse" />
                 <span>Call Emergency Helpline (1078)</span>
               </button>
               <button
                 onClick={() => setIsInfoModalOpen(false)}
-                className="bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold"
+                className="bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer"
               >
                 Close
               </button>
