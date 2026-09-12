@@ -140,8 +140,9 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
         attributionControl: false
       }).setView([23.5, 83.5], 5);
 
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 18
+      L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
       }).addTo(map);
 
       DISASTER_MARKERS.forEach((item) => {
@@ -226,16 +227,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     return () => clearInterval(interval);
   }, []);
 
-  // Map Basemap URLs
+  // Map Basemap URLs (Google Maps Live Telemetry)
   const getTileUrl = (type: 'satellite' | 'dark' | 'topo') => {
     switch (type) {
       case 'dark':
-        return 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+        return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
       case 'topo':
-        return 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+        return 'https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
       case 'satellite':
       default:
-        return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+        return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
     }
   };
 

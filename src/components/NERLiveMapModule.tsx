@@ -104,14 +104,15 @@ export default function NERLiveMapModule({
     mapInstanceRef.current = map;
 
     const getTileUrl = (style: string) => {
-      if (style === "topo") return "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
-      if (style === "osm" || style === "voyager") return "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-      return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+      if (style === "topo") return "https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
+      if (style === "osm" || style === "voyager") return "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
+      return "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
     };
 
     const baseTile = L.tileLayer(getTileUrl(baseStyle), {
-      maxZoom: 18,
-      attribution: "Esri Sovereign Satellite &bull; Jeevan Setu Tactical GIS"
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: "© Google Maps &bull; Jeevan Setu Live GIS"
     }).addTo(map);
     currentTileLayerRef.current = baseTile;
 
@@ -721,10 +722,10 @@ export default function NERLiveMapModule({
   // Dynamically update base tile URL on style switch without map teardown
   useEffect(() => {
     if (!currentTileLayerRef.current) return;
-    let url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-    if (baseStyle === "topo") url = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
-    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-    else url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    let url = "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+    if (baseStyle === "topo") url = "https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
+    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
+    else url = "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
 
     currentTileLayerRef.current.setUrl(url);
   }, [baseStyle]);
