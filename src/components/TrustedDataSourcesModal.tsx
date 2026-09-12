@@ -53,8 +53,9 @@ const PRESET_LOCATIONS = [
   { name: 'Shillong, Meghalaya', lat: 25.5788, lon: 91.8933 },
   { name: 'Itanagar, Arunachal', lat: 27.0844, lon: 93.6053 },
   { name: 'Imphal, Manipur', lat: 24.8170, lon: 93.9368 },
-  { name: 'Wayanad, Kerala', lat: 11.6854, lon: 76.1320 },
-  { name: 'Delhi NCR', lat: 28.6139, lon: 77.2090 }
+  { name: 'Aizawl, Mizoram', lat: 23.7271, lon: 92.7176 },
+  { name: 'Kohima, Nagaland', lat: 25.6751, lon: 94.1086 },
+  { name: 'Agartala, Tripura', lat: 23.8315, lon: 91.2868 }
 ];
 
 export default function TrustedDataSourcesModal({
