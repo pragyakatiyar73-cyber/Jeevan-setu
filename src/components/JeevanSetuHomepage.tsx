@@ -1805,6 +1805,34 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {/* PANEL 1: REPORT A DISASTER */}
               {activeSidePanel === 'report' && (
                 <div className="space-y-5 text-xs font-medium">
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-red-500/10 border border-red-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-red-600 dark:text-red-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-red-500/20 text-red-600 dark:text-red-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-red-500/20 text-red-600 dark:text-red-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Select the disaster category (e.g., Landslide, Flood, Rainfall).</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-red-500/20 text-red-600 dark:text-red-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Upload or capture a ground photo showing the incident site damage.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-red-500/20 text-red-600 dark:text-red-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Tap the <strong>"GPS"</strong> button to auto-detect your location coordinates.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-red-500/20 text-red-600 dark:text-red-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Click <strong>"Submit Report"</strong> to trigger instant emergency telemetry.</span>
+                      </div>
+                    </div>
+                  </div>
                   {reportSuccess ? (
                     <div className="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 rounded-2xl p-6 text-center space-y-3">
                       <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto animate-bounce" />
@@ -1916,9 +1944,38 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {/* PANEL 2: AI ANALYSIS & TRIAGE */}
               {activeSidePanel === 'aianalysis' && (
                 <div className="space-y-5 text-xs font-medium">
-                  <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl space-y-2">
-                    <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm">
-                      <Cpu className="h-5 w-5 text-cyan-400" />
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-cyan-500/10 border border-cyan-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-cyan-600 dark:text-cyan-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Choose or upload an aerial, drone, or satellite disaster photo.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Click <strong>"Run Live AI Triage Scan"</strong> to start Gemini AI processing.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Review structural damage %, flood depth, and AI severity rating.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Inspect recommended rescue protocols for NDRF/UAV dispatch.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-2 text-cyan-500 font-bold text-sm">
+                      <Cpu className="h-5 w-5 text-cyan-500" />
                       <span>Gemini AI Structural Damage Triage Engine</span>
                     </div>
                     <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed">
@@ -1992,6 +2049,34 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {/* PANEL 3: CHECK DISASTER RISK */}
               {activeSidePanel === 'risk' && (
                 <div className="space-y-5 text-xs font-medium">
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-amber-500/10 border border-amber-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-amber-600 dark:text-amber-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Select your target state or district from the region selector.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Check the <strong>Landslide Hazard Index (LHI)</strong> score out of 10.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Inspect 72-hour rainfall predictions and soil saturation levels.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Click <strong>"Open State Risk Matrix"</strong> to view state-wide hazard maps.</span>
+                      </div>
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-slate-700 dark:text-slate-300 font-extrabold mb-1">Select Target Region</label>
                     <select
@@ -2065,6 +2150,35 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {/* PANEL 4: GET HELP & EMERGENCY RESPONSE */}
               {activeSidePanel === 'gethelp' && (
                 <div className="space-y-5 text-xs font-medium">
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-rose-500/10 border border-rose-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-rose-600 dark:text-rose-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-rose-500/20 text-rose-600 dark:text-rose-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Tap <strong>"Transmit Emergency SOS Now"</strong> for instant 1-click distress location transmission.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Directly call 24/7 helplines (<strong>NDRF 1078</strong> or <strong>State SDMA 1070</strong>).</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Browse nearby open relief camps, distances, and bed capacities.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Click <strong>"View All Relief Camps &amp; Supplies"</strong> for safe route navigation.</span>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Big Red SOS Button */}
                   <div className="p-5 bg-gradient-to-br from-red-950/90 to-rose-950/80 border border-red-500/40 rounded-2xl space-y-3 text-center shadow-lg">
                     <ShieldAlert className="h-10 w-10 text-red-400 mx-auto animate-pulse" />
@@ -2138,9 +2252,37 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 </div>
               )}
 
-              {/* PANEL 3: EXPLORE LIVE SITUATION */}
+              {/* PANEL 5: EXPLORE LIVE SITUATION */}
               {activeSidePanel === 'livesituation' && (
                 <div className="space-y-5 text-xs font-medium">
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-purple-500/10 border border-purple-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-purple-600 dark:text-purple-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-purple-500/20 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Interact with the live GIS radar map to inspect active incident markers.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Monitor active disaster incident stats and deployed rescue team counts.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Review recent emergency alerts and live incident feeds across India.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Click <strong>"Open Full Operational Dashboard"</strong> for full command radar.</span>
+                      </div>
+                    </div>
+                  </div>
                   {/* Live Leaflet Map Preview inside Drawer */}
                   <div className="relative w-full h-56 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-inner">
                     <div ref={sidePanelMapContainerRef} className="w-full h-full z-0" />
