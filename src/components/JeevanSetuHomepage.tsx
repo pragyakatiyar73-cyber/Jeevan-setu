@@ -580,16 +580,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           3. HERO SECTION (100% Clean High-Res Landscape + Real React HTML Elements)
           ================================================== */}
       <section className="relative w-full min-h-[60vh] sm:min-h-[65vh] lg:min-h-[700px] bg-[#070E20] text-white overflow-hidden flex items-center border-b border-slate-800">
-        {/* 100% Clean Photographic Background (Zero Baked Text / Zero Misalignment) */}
+        {/* 100% Clean Photographic Background (High Clarity & Brightness) */}
         <div className="absolute inset-0 z-0">
           <img
             src="/disaster-response-hero.jpg"
             alt="Jeevan Setu Disaster Response & Rescue Operations"
-            className="w-full h-full object-cover object-right filter brightness-95 contrast-105"
+            className="w-full h-full object-cover object-right filter brightness-110 contrast-110 saturate-110"
           />
-          {/* Smooth Dark Navy Gradient Overlay for Perfect Contrast & Crisp Text */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#070E20]/95 via-[#070E20]/65 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#070E20]/80 via-transparent to-transparent" />
+          {/* Lightened, Smooth Navy Gradient Overlay for High Clarity & Vividness */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#070E20]/75 via-[#070E20]/35 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#070E20]/50 via-transparent to-transparent" />
         </div>
 
 
