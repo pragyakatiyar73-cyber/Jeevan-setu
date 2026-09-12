@@ -251,11 +251,25 @@ export default function NERLiveMapModule({
 
     mapInstanceRef.current = map;
 
-    setTimeout(() => {
+    // Guaranteed full-width rendering across layout shifts & flexbox expands
+    const invalidate = () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.invalidateSize();
       }
-    }, 300);
+    };
+
+    invalidate();
+    const t1 = setTimeout(invalidate, 100);
+    const t2 = setTimeout(invalidate, 300);
+    const t3 = setTimeout(invalidate, 600);
+    const t4 = setTimeout(invalidate, 1200);
+
+    const resizeObserver = new ResizeObserver(() => {
+      invalidate();
+    });
+    if (mapRef.current) {
+      resizeObserver.observe(mapRef.current);
+    }
 
     const getTileUrl = (style: string) => {
       if (style === "topo") return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
@@ -393,6 +407,11 @@ export default function NERLiveMapModule({
     }
 
     return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+      resizeObserver.disconnect();
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -535,8 +554,8 @@ export default function NERLiveMapModule({
       )}
 
       {/* MAP CANVAS CONTAINER */}
-      <div className="flex-1 relative w-full h-full overflow-hidden">
-        <div ref={mapRef} className="w-full h-full z-10" />
+      <div className="flex-1 relative w-full h-full min-h-0 min-w-0 overflow-hidden">
+        <div ref={mapRef} className="absolute inset-0 w-full h-full z-10" />
 
         {/* 🔙 BACK TO HOMEPAGE & DASHBOARD FLOATING ACTION BUTTONS */}
         <div className="absolute top-4 left-4 z-[999] flex items-center gap-2.5 flex-wrap">

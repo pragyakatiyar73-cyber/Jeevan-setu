@@ -517,6 +517,23 @@ export default function App() {
       currentTileLayerRef.current = layer;
       mapInstanceRef.current = map;
 
+      const invalidate = () => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      };
+      invalidate();
+      setTimeout(invalidate, 100);
+      setTimeout(invalidate, 300);
+      setTimeout(invalidate, 600);
+
+      const resizeObserver = new ResizeObserver(() => {
+        invalidate();
+      });
+      if (mapContainerRef.current) {
+        resizeObserver.observe(mapContainerRef.current);
+      }
+
       // Add NER Hub Markers
       NER_HUBS.forEach(hub => {
         const color = hub.status === 'HIGH_ALERT' ? '#ef4444' : hub.status === 'CAUTION' ? '#f59e0b' : '#10b981';

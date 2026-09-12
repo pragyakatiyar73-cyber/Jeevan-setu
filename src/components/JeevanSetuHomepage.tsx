@@ -220,16 +220,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     return () => clearInterval(interval);
   }, []);
 
-  // Map Basemap URLs (Google Maps Live Telemetry)
+  // Map Basemap URLs (Esri & OpenStreetMap Reliable GIS Layers)
   const getTileUrl = (type: 'satellite' | 'dark' | 'topo') => {
     switch (type) {
       case 'dark':
-        return 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
+        return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
       case 'topo':
-        return 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
+        return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}';
       case 'satellite':
       default:
-        return 'https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
+        return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
     }
   };
 
@@ -256,8 +256,27 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       attributionControl: false
     }).setView([26.1, 92.8], 7);
 
-    const initialTile = L.tileLayer(getTileUrl(mapTileType), { maxZoom: 18, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(map);
+    const initialTile = L.tileLayer(getTileUrl(mapTileType), { maxZoom: 18 }).addTo(map);
     tileLayerRef.current = initialTile;
+
+    // Guaranteed full-width rendering across layout shifts
+    const invalidate = () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    };
+
+    invalidate();
+    const t1 = setTimeout(invalidate, 100);
+    const t2 = setTimeout(invalidate, 300);
+    const t3 = setTimeout(invalidate, 600);
+
+    const resizeObserver = new ResizeObserver(() => {
+      invalidate();
+    });
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
 
     // Doppler Radar Layer Overlay
     const radarTile = L.tileLayer('https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913/{z}/{x}/{y}.png', {
@@ -281,6 +300,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     mapInstanceRef.current = map;
 
     return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      resizeObserver.disconnect();
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
