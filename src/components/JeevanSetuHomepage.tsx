@@ -94,8 +94,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation, safetyguide, reliefcamps)
   const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | 'safetyguide' | 'reliefcamps' | null>(null);
 
-  // Compact Feature Modal state for hero indicator pills (ai, livedata, gis, risk)
-  const [activeFeatureModal, setActiveFeatureModal] = useState<'ai' | 'livedata' | 'gis' | 'risk' | null>(null);
+  // Compact Feature Modal state for hero indicator pills (ai, livedata, gis, risk, resources)
+  const [activeFeatureModal, setActiveFeatureModal] = useState<'ai' | 'livedata' | 'gis' | 'risk' | 'resources' | null>(null);
 
   // AI Analysis Panel simulation state
   const [isAnalyzingAi, setIsAnalyzingAi] = useState(false);
@@ -1345,7 +1345,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <span>{t('home.emergencyHelp', 'Emergency Help')}</span>
               </button>
               <button
-                onClick={() => onNavigateModule('reliefcamps')}
+                onClick={() => setActiveFeatureModal('resources')}
                 className="bg-white/10 hover:bg-white/20 text-white border border-white/30 hover:border-emerald-400 backdrop-blur px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer flex items-center gap-2 group"
               >
                 <ShieldCheck className="h-4 w-4 text-emerald-400 group-hover:scale-125 transition duration-300" />
@@ -3017,6 +3017,110 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <span>Open State Risk Matrix</span>
                     <ArrowRight className="h-4 w-4" />
                   </button>
+                </div>
+              </>
+            )}
+
+            {/* 5. EXPLORE RESOURCES MODAL */}
+            {activeFeatureModal === 'resources' && (
+              <>
+                <div className="flex items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3.5">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 shrink-0">
+                      <ShieldCheck className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                        DISASTER RESOURCE DIRECTORY
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-tight mt-1">
+                        Explore Emergency Resources
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                        Relief Camps, Medical Units, Survival Guides &amp; Helplines
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="p-1.5 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-300 text-xs">
+                        <Building2 className="h-4 w-4 text-emerald-500" />
+                        <span>Relief Camps</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">
+                        340+ active beds with food, water &amp; shelter in Guwahati/Shillong sectors.
+                      </p>
+                    </div>
+
+                    <div className="bg-sky-50 dark:bg-sky-950/40 p-3 rounded-2xl border border-sky-200 dark:border-sky-800/60 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-sky-700 dark:text-sky-300 text-xs">
+                        <PhoneCall className="h-4 w-4 text-sky-500" />
+                        <span>24/7 Helplines</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">
+                        Direct hotline to NDRF (1078), SDMA (1070) &amp; Emergency Call Center (112).
+                      </p>
+                    </div>
+
+                    <div className="bg-amber-50 dark:bg-amber-950/40 p-3 rounded-2xl border border-amber-200 dark:border-amber-800/60 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-amber-700 dark:text-amber-300 text-xs">
+                        <ShieldCheck className="h-4 w-4 text-amber-500" />
+                        <span>Safety Guides</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">
+                        Official Do's &amp; Don'ts for Landslides, Floods &amp; 72-hr Survival Checklist.
+                      </p>
+                    </div>
+
+                    <div className="bg-purple-50 dark:bg-purple-950/40 p-3 rounded-2xl border border-purple-200 dark:border-purple-800/60 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-purple-700 dark:text-purple-300 text-xs">
+                        <Zap className="h-4 w-4 text-purple-500" />
+                        <span>Medical Supplies</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">
+                        650+ first aid kits, oxygen cylinders &amp; mobile ambulance units deployed.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800 gap-2">
+                  <button
+                    onClick={() => setActiveFeatureModal(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                  >
+                    Close
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setActiveFeatureModal(null);
+                        onNavigateModule('safetyguide');
+                      }}
+                      className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-3.5 py-2 rounded-xl border border-slate-700 text-xs transition cursor-pointer"
+                    >
+                      Safety Guide
+                    </button>
+                    <button
+                      onClick={() => {
+                        setActiveFeatureModal(null);
+                        onNavigateModule('reliefcamps');
+                      }}
+                      className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold px-4 py-2 rounded-xl shadow-md shadow-emerald-600/30 flex items-center gap-1 text-xs transition transform hover:scale-105 cursor-pointer"
+                    >
+                      <span>Relief Camps</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </>
             )}
