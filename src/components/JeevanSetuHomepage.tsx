@@ -616,21 +616,21 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* Hero Left Content with High-Contrast Typography & Glassmorphic Buttons */}
             <div className="max-w-3xl space-y-5">
               
-              {/* Upper Small Label */}
-              <div className="text-xs sm:text-sm font-black uppercase tracking-widest text-[#38BDF8] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              {/* Upper Label */}
+              <div className="text-sm sm:text-base font-black uppercase tracking-widest text-[#38BDF8] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                 {t('home.badge', 'DISASTER RESPONSE & GIS INTELLIGENCE')}
               </div>
 
               {/* Title with "Jeevan" in White and "Setu" in Cyan */}
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white font-sans leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white font-sans leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
                 Jeevan <span className="text-[#38BDF8] drop-shadow-[0_0_25px_rgba(56,189,248,0.6)]">Setu</span>
               </h1>
 
-              <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+              <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                 {t('home.heroSub', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </p>
 
-              <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium max-w-2xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+              <p className="text-base sm:text-lg text-slate-200 leading-relaxed font-medium max-w-2xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
                 {t('home.heroDesc', 'Jeevan Setu combines AI, GIS, satellite data, weather intelligence and real-time disaster information to help people understand risks, find emergency resources and respond faster.')}
               </p>
 
@@ -639,21 +639,21 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <button
                   type="button"
                   onClick={() => onNavigateModule('customdashboard')}
-                  className="bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369a1] hover:from-[#7dd3fc] hover:to-[#38BDF8] text-slate-950 font-black px-7 py-3.5 rounded-full shadow-2xl shadow-sky-500/40 flex items-center gap-2.5 text-base transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-sky-500/60 cursor-pointer border border-sky-200/60 group"
+                  className="bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369a1] hover:from-[#7dd3fc] hover:to-[#38BDF8] text-slate-950 font-black px-8 py-4 rounded-full shadow-2xl shadow-sky-500/40 flex items-center gap-2.5 text-base sm:text-lg transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-sky-500/60 cursor-pointer border border-sky-200/60 group"
                 >
-                  <LayoutDashboard className="h-5 w-5 text-slate-950 group-hover:scale-110 transition duration-300" />
+                  <LayoutDashboard className="h-6 w-6 text-slate-950 group-hover:scale-110 transition duration-300" />
                   <span>{t('home.exploreDashboard', 'Explore Dashboard')}</span>
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition duration-300" />
+                  <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition duration-300" />
                 </button>
 
                 <button
                   type="button"
                   onClick={() => onNavigateModule('map')}
-                  className="bg-slate-950/85 hover:bg-slate-900 text-white font-extrabold px-7 py-3.5 rounded-full border border-[#38BDF8]/70 hover:border-[#38BDF8] backdrop-blur-xl flex items-center gap-2.5 text-base transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-2xl hover:shadow-sky-500/30 cursor-pointer shadow-xl group"
+                  className="bg-slate-950/85 hover:bg-slate-900 text-white font-extrabold px-8 py-4 rounded-full border border-[#38BDF8]/70 hover:border-[#38BDF8] backdrop-blur-xl flex items-center gap-2.5 text-base sm:text-lg transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.06] hover:shadow-2xl hover:shadow-sky-500/30 cursor-pointer shadow-xl group"
                 >
-                  <MapPin className="h-5 w-5 text-[#38BDF8] group-hover:scale-110 transition duration-300" />
+                  <MapPin className="h-6 w-6 text-[#38BDF8] group-hover:scale-110 transition duration-300" />
                   <span>{t('home.exploreLiveMap', 'Explore Live Map')}</span>
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition duration-300" />
+                  <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition duration-300" />
                 </button>
               </div>
 
@@ -673,10 +673,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       onClick={item.action}
                       title={`Click to preview ${item.label}`}
                       aria-label={`Preview ${item.label}`}
-                      className="bg-slate-950/85 backdrop-blur-xl border border-[#38BDF8]/50 hover:border-[#38BDF8] px-4 py-2 rounded-full text-xs font-bold text-white flex items-center gap-2 shadow-lg shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] active:scale-95 cursor-pointer group"
+                      className="bg-slate-950/85 backdrop-blur-xl border border-[#38BDF8]/50 hover:border-[#38BDF8] px-4.5 py-2.5 rounded-full text-xs sm:text-sm font-extrabold text-white flex items-center gap-2 shadow-lg shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] active:scale-95 cursor-pointer group"
                     >
-                      <Icon className="h-4 w-4 text-[#38BDF8] group-hover:scale-125 transition duration-300 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]" />
-                      <span className="font-extrabold tracking-wide">{item.label}</span>
+                      <Icon className="h-4.5 w-4.5 text-[#38BDF8] group-hover:scale-125 transition duration-300 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]" />
+                      <span className="font-black tracking-wide">{item.label}</span>
                     </button>
                   );
                 })}
@@ -718,10 +718,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           
           {/* Section Header */}
           <div className="mb-6">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
               {t('home.whatJeevanSetuDoes', 'What Jeevan Setu Does')}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-semibold mt-1">
               {t('home.whatJeevanSetuSub', 'Smart tools for faster response, better preparedness and safer communities.')}
             </p>
           </div>
@@ -831,10 +831,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                         <Icon className="h-5 w-5" />
                       </div>
                     </div>
-                    <h3 className={`text-sm sm:text-base font-extrabold text-slate-900 dark:text-white ${card.hoverText} transition`}>
+                    <h3 className={`text-base sm:text-lg font-black text-slate-900 dark:text-white ${card.hoverText} transition`}>
                       {card.title}
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 font-medium leading-snug">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 font-medium leading-snug">
                       {card.desc}
                     </p>
                   </div>
@@ -866,10 +866,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <Radio className="h-5 w-5 animate-pulse" />
               </div>
               <div>
-                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
                   {t('home.liveSituationTitle', 'Live Situation')}
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+                <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-semibold mt-1">
                   {t('home.liveSituationSub', 'Real-time updates from across India')}
                 </p>
               </div>
@@ -1177,10 +1177,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       <section id="how-it-works" className="w-full py-16 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
         <div className="w-full px-4 sm:px-8 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
               {t('home.howItWorksTitle', 'How Jeevan Setu Works')}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-semibold mt-1">
               {t('home.howItWorksSub', 'From data to action — in just a few steps.')}
             </p>
           </div>
@@ -1298,10 +1298,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   </div>
 
                   <div>
-                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mb-1.5 group-hover:text-sky-400 transition">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-1.5 group-hover:text-sky-400 transition">
                       {item.stepNum}. {item.title}
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed mb-3">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed mb-3">
                       {item.desc}
                     </p>
                     <span className="inline-flex items-center gap-1 text-xs font-bold text-sky-400 group-hover:underline">
@@ -1363,10 +1363,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
         <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
           
           <div className="space-y-1">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
               {t('home.trustedSourcesTitle', 'Trusted Data Sources')}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-semibold mt-1">
               {t('home.trustedSourcesSub', 'Powered by reliable and verified sources for accurate information.')}
             </p>
           </div>
