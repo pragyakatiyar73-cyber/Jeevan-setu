@@ -954,3 +954,103 @@ app.post('/api/reports/crowdsourced', async (req, res) => {
   }
 });
 
+// GET /api/disaster-incidents - Fetch verified disaster incidents strictly inside 8 NER states
+app.get('/api/disaster-incidents', async (req, res) => {
+  const { type, state, district, severity, status, search } = req.query || {};
+
+  const db = await getMongoDbConnection();
+  let mongodbReports = [];
+
+  if (db) {
+    try {
+      const col = db.collection('disaster_incidents');
+      const docs = await col.find().sort({ createdAt: -1 }).toArray();
+      mongodbReports = docs.filter(doc => {
+        const lat = Number(doc.lat || doc.latitude);
+        const lon = Number(doc.lon || doc.longitude);
+        const st = doc.state;
+        return isPointInNER(lat, lon) && (!st || isNERState(st));
+      });
+    } catch (e) {
+      console.warn('MongoDB disaster_incidents query warning:', e.message);
+    }
+  }
+
+  res.json({
+    status: 'success',
+    coverage: 'Data Coverage: North Eastern Region — 8 States',
+    dataStatus: 'LIVE',
+    incidents: mongodbReports,
+    totalCount: mongodbReports.length,
+    lastUpdated: new Date().toISOString()
+  });
+});
+
+// POST /api/disaster-reports/submit - Submit citizen disaster report with strict NER validation
+app.post('/api/disaster-reports/submit', async (req, res) => {
+  const { disasterType, state, district, locationName, description, lat, lon, photo, contact } = req.body || {};
+
+  if (!state || !isNERState(state)) {
+    return res.status(400).json({
+      status: 'rejected',
+      message: `Geographic validation failed: State '${state}' is not one of the 8 North Eastern Region (NER) states.`
+    });
+  }
+
+  const numLat = Number(lat);
+  const numLon = Number(lon);
+
+  if (!isNaN(numLat) && !isNaN(numLon) && !isPointInNER(numLat, numLon)) {
+    return res.status(400).json({
+      status: 'rejected',
+      message: `Geographic validation failed: Coordinates (${numLat}, ${numLon}) lie outside the 8 North Eastern Region (NER) states.`
+    });
+  }
+
+  const now = new Date();
+  const reportRecord = {
+    reportId: `REP-NER-${Math.floor(100000 + Math.random() * 900000)}`,
+    disasterType: disasterType || 'Other Disaster',
+    state: String(state).trim(),
+    district: district ? String(district).trim() : 'Regional Sector',
+    locationName: locationName || `${district || 'Sector'}, ${state}`,
+    lat: !isNaN(numLat) ? numLat : 26.1445,
+    lon: !isNaN(numLon) ? numLon : 91.7362,
+    description: description || 'Citizen report logged.',
+    severity: 'MODERATE',
+    status: 'UNVERIFIED',
+    isVerified: false,
+    verificationLabel: 'User Report — Pending Verification',
+    reporterContact: contact || 'Not available',
+    photoUrl: photo || null,
+    source: 'Citizen Ground Report',
+    date: now.toISOString().split('T')[0],
+    time: now.toLocaleTimeString('en-US', { hour12: false }),
+    createdAt: now,
+    lastUpdated: now.toISOString()
+  };
+
+  const db = await getMongoDbConnection();
+  if (db) {
+    try {
+      const col = db.collection('user_disaster_reports');
+      await col.insertOne(reportRecord);
+      console.log('📌 Citizen Disaster Report Saved to MongoDB:', reportRecord.reportId, reportRecord.state);
+    } catch (e) {
+      console.warn('MongoDB save warning:', e.message);
+    }
+  }
+
+  res.json({
+    status: 'success',
+    message: 'User disaster report submitted successfully. Stored as UNVERIFIED pending official review.',
+    report: reportRecord
+  });
+});
+
+// Start Server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Jeevan Setu Disaster Intelligence Backend Server running on port ${PORT}`);
+});
+

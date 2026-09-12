@@ -67,6 +67,7 @@ import FloodIntelligenceModule from './components/FloodIntelligenceModule';
 import LandslideRiskIntelligence from './components/LandslideRiskIntelligence';
 import RoadAccessibilityModule from './components/RoadAccessibilityModule';
 import EmergencyFacilitiesModule from './components/EmergencyFacilitiesModule';
+import DisasterIncidentsModule from './components/DisasterIncidentsModule';
 import UAVDroneModule from './components/UAVDroneModule';
 import EmergencySOSModal from './components/EmergencySOSModal';
 import MDoNERCommandModule from './components/MDoNERCommandModule';
@@ -115,6 +116,7 @@ export default function App() {
     if (path.includes('/weather')) return 'weather';
     if (path.includes('/landslide')) return 'landslide';
     if (path.includes('/facilities') || path.includes('/emergency')) return 'facilities';
+    if (path.includes('/incidents') || path.includes('/disaster-reports')) return 'incidents';
 
     return 'home';
   });
@@ -635,6 +637,7 @@ export default function App() {
               {
                 category: t('sidebar.catIntelligence', '2. AI & GIS Intelligence'),
                 items: [
+                  { id: 'incidents', label: t('navigation.incidents', 'Disaster Reports & Incident Intelligence'), icon: ShieldAlert, badge: 'LIVE GIS', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, badge: 'VISION AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
                   { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, badge: '8 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
@@ -1899,6 +1902,21 @@ export default function App() {
               setRouteDest(dest);
               setActiveModule('rerouting');
             }}
+            onTriggerSOS={() => setIsSosModalOpen(true)}
+          />
+        )}
+
+        {/* 7E. DISASTER REPORTS & INCIDENT INTELLIGENCE VIEW */}
+        {activeModule === 'incidents' && (
+          <DisasterIncidentsModule
+            onNavigateToMap={() => setActiveModule('map')}
+            onNavigateToReroute={(origin, dest) => {
+              setRouteStart(origin);
+              setRouteDest(dest);
+              setActiveModule('rerouting');
+            }}
+            onNavigateToFlood={() => setActiveModule('flood')}
+            onNavigateToLandslide={() => setActiveModule('landslide')}
             onTriggerSOS={() => setIsSosModalOpen(true)}
           />
         )}

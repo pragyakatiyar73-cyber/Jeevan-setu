@@ -14,6 +14,7 @@ export * from './smartMonitoring';
 export * from './incidentStore';
 export * from './bhuvanService';
 export * from './emergencyFacilitiesService';
+export * from './disasterIncidentsService';
 
 export interface APIRegistryStatus {
   category: string;
