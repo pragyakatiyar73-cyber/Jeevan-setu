@@ -596,8 +596,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
       {/* ==================================================
           3. HERO SECTION (100% Clean High-Res Landscape + Real React HTML Elements)
-         ================================================== */}
-      <section className="relative w-full min-h-[500px] lg:min-h-[550px] bg-[#070E20] text-white overflow-hidden flex items-center border-b border-slate-800">
+          ================================================== */}
+      <section className="relative w-full min-h-[60vh] sm:min-h-[65vh] lg:min-h-[700px] bg-[#070E20] text-white overflow-hidden flex items-center border-b border-slate-800">
         {/* 100% Clean Photographic Background (Zero Baked Text / Zero Misalignment) */}
         <div className="absolute inset-0 z-0">
           <img
@@ -606,56 +606,56 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             className="w-full h-full object-cover object-right filter brightness-95 contrast-105"
           />
           {/* Smooth Dark Navy Gradient Overlay for Perfect Contrast & Crisp Text */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#070E20]/95 via-[#070E20]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#070E20]/95 via-[#070E20]/65 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#070E20]/80 via-transparent to-transparent" />
         </div>
 
 
 
-        <div className="relative z-20 w-full px-4 sm:px-6 lg:px-8 py-12 lg:py-16 flex flex-col justify-between">
+        <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 py-16 sm:py-24 lg:py-32 flex flex-col justify-between">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             
             {/* Hero Left Content with REAL working interactive React elements */}
-            <div className="max-w-2xl space-y-4">
+            <div className="max-w-3xl space-y-5">
               
               {/* Upper Small Label */}
-              <div className="text-[11px] sm:text-xs font-black uppercase tracking-widest text-[#38BDF8] font-sans">
+              <div className="text-xs sm:text-sm font-black uppercase tracking-widest text-[#38BDF8] font-sans">
                 {t('home.badge', 'DISASTER RESPONSE & GIS INTELLIGENCE')}
               </div>
 
               {/* Title with "Jeevan" in White and "Setu" in Cyan */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white font-sans leading-none drop-shadow-lg">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white font-sans leading-none drop-shadow-lg">
                 Jeevan <span className="text-[#38BDF8]">Setu</span>
               </h1>
 
-              <p className="text-lg sm:text-xl lg:text-2xl font-extrabold text-slate-100 tracking-tight leading-snug drop-shadow-sm">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-100 tracking-tight leading-snug drop-shadow-sm">
                 {t('home.heroSub', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </p>
 
-              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium max-w-xl drop-shadow-sm">
+              <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium max-w-2xl drop-shadow-sm">
                 {t('home.heroDesc', 'Jeevan Setu combines AI, GIS, satellite data, weather intelligence and real-time disaster information to help people understand risks, find emergency resources and respond faster.')}
               </p>
 
               {/* TWO REAL WORKING CALL TO ACTION BUTTONS */}
-              <div className="pt-2 flex flex-wrap items-center gap-3.5 z-30">
+              <div className="pt-3 flex flex-wrap items-center gap-4 z-30">
                 <button
                   type="button"
                   onClick={() => onNavigateModule('customdashboard')}
-                  className="bg-[#38BDF8] hover:bg-[#0284C7] text-slate-950 font-black px-6 py-3 rounded-full shadow-lg shadow-sky-500/30 flex items-center gap-2 text-sm transition transform hover:scale-105 cursor-pointer border border-sky-300/50"
+                  className="bg-[#38BDF8] hover:bg-[#0284C7] text-slate-950 font-black px-7 py-3.5 rounded-full shadow-xl shadow-sky-500/30 flex items-center gap-2.5 text-base transition transform hover:scale-105 cursor-pointer border border-sky-300/50"
                 >
-                  <LayoutDashboard className="h-4 w-4 text-slate-950" />
+                  <LayoutDashboard className="h-5 w-5 text-slate-950" />
                   <span>{t('home.exploreDashboard', 'Explore Dashboard')}</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-5 w-5" />
                 </button>
 
                 <button
                   type="button"
                   onClick={() => onNavigateModule('map')}
-                  className="bg-[#0B152A]/80 hover:bg-[#0B152A] text-white font-extrabold px-6 py-3 rounded-full border border-[#38BDF8]/60 backdrop-blur flex items-center gap-2 text-sm transition hover:border-[#38BDF8] cursor-pointer shadow-md"
+                  className="bg-[#0B152A]/80 hover:bg-[#0B152A] text-white font-extrabold px-7 py-3.5 rounded-full border border-[#38BDF8]/60 backdrop-blur flex items-center gap-2.5 text-base transition hover:border-[#38BDF8] cursor-pointer shadow-lg"
                 >
-                  <MapPin className="h-4 w-4 text-[#38BDF8]" />
+                  <MapPin className="h-5 w-5 text-[#38BDF8]" />
                   <span>{t('home.exploreLiveMap', 'Explore Live Map')}</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-5 w-5" />
                 </button>
               </div>
 
