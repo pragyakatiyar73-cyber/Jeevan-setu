@@ -12,6 +12,7 @@ export * from './routing';
 export * from './droneRouting';
 export * from './smartMonitoring';
 export * from './incidentStore';
+export * from './bhuvanService';
 
 export interface APIRegistryStatus {
   category: string;

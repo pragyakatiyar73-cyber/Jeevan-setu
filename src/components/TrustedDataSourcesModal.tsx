@@ -28,6 +28,14 @@ import {
   Navigation
 } from 'lucide-react';
 import { getLiveWeather, WeatherData } from '../services/api/weather';
+import {
+  getBhuvanServiceStatus,
+  BhuvanServiceTelemetry,
+  DOCUMENTED_BHUVAN_LAYERS,
+  BHUVAN_WMS_ENDPOINT,
+  BHUVAN_PORTAL_URL,
+  BHUVAN_API_PORTAL_URL
+} from '../services/api/bhuvanService';
 
 interface TrustedDataSourcesModalProps {
   isOpen: boolean;
@@ -61,6 +69,11 @@ export default function TrustedDataSourcesModal({
   const [weatherError, setWeatherError] = useState<string | null>(null);
   const [geoLocating, setGeoLocating] = useState<boolean>(false);
 
+  // Bhuvan State
+  const [selectedBhuvanLayer, setSelectedBhuvanLayer] = useState<string>('india3');
+  const [bhuvanStatus, setBhuvanStatus] = useState<BhuvanServiceTelemetry | null>(null);
+  const [bhuvanLoading, setBhuvanLoading] = useState<boolean>(false);
+
   useEffect(() => {
     if (initialTab) {
       setActiveTab(initialTab);
@@ -85,11 +98,28 @@ export default function TrustedDataSourcesModal({
     }
   };
 
-  useEffect(() => {
-    if (isOpen && activeTab === 'imd') {
-      fetchWeather(selectedLocation.lat, selectedLocation.lon);
+  // Fetch Bhuvan telemetry status
+  const fetchBhuvanTelemetry = async (layerId: string) => {
+    setBhuvanLoading(true);
+    try {
+      const telemetry = await getBhuvanServiceStatus(layerId);
+      setBhuvanStatus(telemetry);
+    } catch (err) {
+      setBhuvanStatus(null);
+    } finally {
+      setBhuvanLoading(false);
     }
-  }, [isOpen, activeTab, selectedLocation]);
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      if (activeTab === 'imd') {
+        fetchWeather(selectedLocation.lat, selectedLocation.lon);
+      } else if (activeTab === 'isro') {
+        fetchBhuvanTelemetry(selectedBhuvanLayer);
+      }
+    }
+  }, [isOpen, activeTab, selectedLocation, selectedBhuvanLayer]);
 
   const handleSelectPreset = (loc: typeof PRESET_LOCATIONS[0]) => {
     setSelectedLocation(loc);
@@ -204,7 +234,7 @@ export default function TrustedDataSourcesModal({
             }`}
           >
             <Radio className="h-4 w-4" />
-            ISRO / Bhuvan Satellite
+            ISRO / Satellite Data (Bhuvan WMS)
           </button>
 
           <button
@@ -502,37 +532,192 @@ export default function TrustedDataSourcesModal({
             </div>
           )}
 
-          {/* TAB 2: ISRO / SATELLITE DATA */}
+          {/* TAB 2: ISRO / SATELLITE DATA (OFFICIAL BHUVAN INTEGRATION) */}
           {activeTab === 'isro' && (
-            <div className="space-y-4">
-              <div className="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Radio className="h-6 w-6 text-sky-400" />
-                    <h4 className="text-base font-black text-white">ISRO Bhuvan & NRSC Satellite Feeds</h4>
+            <div className="space-y-6">
+              
+              {/* Controls & Layer Selector */}
+              <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Radio className="h-4 w-4 text-sky-400" />
+                      ISRO Bhuvan Documented Public WMS Service
+                    </h4>
+                    <p className="text-xs text-slate-400">Verified sovereign geospatial layers from NRSC / ISRO GeoWebCache WMS</p>
                   </div>
-                  <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-bold">
-                    CONNECTED
-                  </span>
+
+                  <button
+                    onClick={() => fetchBhuvanTelemetry(selectedBhuvanLayer)}
+                    disabled={bhuvanLoading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 rounded-xl text-xs font-bold transition duration-200 disabled:opacity-50"
+                  >
+                    <RefreshCw className={`h-3.5 w-3.5 ${bhuvanLoading ? 'animate-spin' : ''}`} />
+                    Refresh Service Status
+                  </button>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Sovereign Indian remote sensing satellite feeds providing high-resolution disaster inundation imagery, landslide susceptibility vectors, and terrain elevation models.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                  <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase">Active Sensors</span>
-                    <span className="text-xs font-bold text-white">ResourceSat-2A & Cartosat-3</span>
-                  </div>
-                  <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase">Ground Resolution</span>
-                    <span className="text-xs font-bold text-sky-400 font-mono">10m Multispectral</span>
-                  </div>
-                  <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase">WMS Protocol</span>
-                    <span className="text-xs font-bold text-emerald-400 font-mono">bhuvan-vec1.nrsc.gov.in</span>
+
+                {/* Layer Picker Dropdown / Grid */}
+                <div className="space-y-2 pt-2 border-t border-slate-800/80">
+                  <label className="text-xs font-bold text-slate-300 block">Select Documented Bhuvan Data Layer / Source:</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {DOCUMENTED_BHUVAN_LAYERS.map((layer) => (
+                      <button
+                        key={layer.id}
+                        onClick={() => setSelectedBhuvanLayer(layer.id)}
+                        className={`p-3 rounded-xl border text-left transition duration-200 ${
+                          selectedBhuvanLayer === layer.id
+                            ? 'bg-sky-950/60 border-sky-400 text-white shadow'
+                            : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:bg-slate-800'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-extrabold text-sky-300">{layer.name}</span>
+                          {layer.requiresCredentials ? (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                              Token Required
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                              Public WMS
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">{layer.description}</p>
+                      </button>
+                    ))}
                   </div>
                 </div>
+
               </div>
+
+              {/* Status Header Banner */}
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
+                
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-sky-500/10 border border-sky-500/30 rounded-2xl">
+                      <Radio className="h-6 w-6 text-sky-400 animate-pulse" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400 block">Sovereign Data Provider</span>
+                      <h4 className="text-xl font-black text-white">Source: ISRO / Bhuvan</h4>
+                      <p className="text-xs text-slate-400">National Remote Sensing Centre (NRSC) • Hyderabad, India</p>
+                    </div>
+                  </div>
+
+                  {/* Service Status Badge */}
+                  <div>
+                    {bhuvanLoading ? (
+                      <span className="flex items-center gap-1.5 px-3.5 py-1.5 bg-sky-500/20 text-sky-400 border border-sky-500/40 rounded-full text-xs font-black">
+                        <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                        CHECKING BHUVAN STATUS...
+                      </span>
+                    ) : bhuvanStatus?.serviceStatus === 'OPERATIONAL' ? (
+                      <span className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full text-xs font-black tracking-wide animate-pulse">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                        OPERATIONAL (200 OK)
+                      </span>
+                    ) : bhuvanStatus?.serviceStatus === 'AUTHENTICATION_REQUIRED' ? (
+                      <span className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded-full text-xs font-black">
+                        <AlertTriangle className="h-4 w-4 text-amber-400" />
+                        AUTHENTICATION REQUIRED
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1.5 px-3.5 py-1.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded-full text-xs font-black">
+                        <AlertTriangle className="h-4 w-4 text-rose-400" />
+                        SERVICE UNAVAILABLE
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Metadata Summary Grid (Required Fields Display) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  
+                  {/* Field 1: Source */}
+                  <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Source</span>
+                    <p className="text-sm font-black text-white">ISRO / Bhuvan</p>
+                    <p className="text-[11px] text-slate-400">NRSC Geospatial Portal</p>
+                  </div>
+
+                  {/* Field 2: Service Status */}
+                  <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Service Status</span>
+                    <p className={`text-sm font-black ${
+                      bhuvanStatus?.serviceStatus === 'OPERATIONAL' ? 'text-emerald-400' :
+                      bhuvanStatus?.serviceStatus === 'AUTHENTICATION_REQUIRED' ? 'text-amber-400' : 'text-rose-400'
+                    }`}>
+                      {bhuvanStatus?.serviceStatus || 'Checking...'}
+                    </p>
+                    <p className="text-[11px] text-slate-400 font-mono">
+                      {bhuvanStatus?.latencyMs ? `Latency: ${bhuvanStatus.latencyMs}ms` : 'GeoWebCache WMS'}
+                    </p>
+                  </div>
+
+                  {/* Field 3: Last Successful Data Fetch */}
+                  <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Last Successful Data Fetch</span>
+                    <p className="text-xs font-black text-white font-mono">
+                      {bhuvanLoading ? 'Fetching capabilities...' : bhuvanStatus?.lastFetchTime || 'Unavailable'}
+                    </p>
+                    <p className="text-[11px] text-slate-400">GetCapabilities verified</p>
+                  </div>
+
+                  {/* Field 4: Data Layer / Source Name */}
+                  <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Data Layer / Source Name</span>
+                    <p className="text-xs font-black text-sky-400 font-mono truncate" title={bhuvanStatus?.dataLayerName}>
+                      {bhuvanStatus?.dataLayerName || 'india3'}
+                    </p>
+                    <p className="text-[11px] text-slate-400 font-mono">WMS Layer ID: {bhuvanStatus?.dataLayerId}</p>
+                  </div>
+
+                </div>
+
+                {/* Authentication / Token Prompt if required */}
+                {bhuvanStatus?.serviceStatus === 'AUTHENTICATION_REQUIRED' && (
+                  <div className="p-4 bg-amber-950/40 border border-amber-800/60 rounded-xl space-y-2">
+                    <div className="flex items-center gap-2 text-amber-300 font-bold text-xs">
+                      <AlertTriangle className="h-4 w-4" />
+                      Registration &amp; Credentials Required
+                    </div>
+                    <p className="text-xs text-slate-300">
+                      {bhuvanStatus.error}
+                    </p>
+                    <div className="flex items-center gap-3 pt-1">
+                      <a
+                        href={BHUVAN_API_PORTAL_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 rounded-lg text-xs font-bold transition duration-200"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        Register on Bhuvan Developer Portal
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {/* Technical Endpoint Specs */}
+                <div className="pt-3 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-400 font-mono">
+                  <div>
+                    <span className="text-slate-500">WMS Endpoint: </span>
+                    <span className="text-slate-300">{BHUVAN_WMS_ENDPOINT}</span>
+                  </div>
+                  <a
+                    href={BHUVAN_PORTAL_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sky-400 hover:underline"
+                  >
+                    bhuvan.nrsc.gov.in <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+
+              </div>
+
             </div>
           )}
 
@@ -601,7 +786,7 @@ export default function TrustedDataSourcesModal({
         {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between">
           <span className="text-xs text-slate-400 font-mono">
-            Jeevan Setu Verified Data Ecosystem • Open-Meteo API Provider
+            Jeevan Setu Verified Data Ecosystem • ISRO Bhuvan WMS &amp; Open-Meteo Integration
           </span>
           <button
             onClick={onClose}
