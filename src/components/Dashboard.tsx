@@ -42,6 +42,7 @@ import {
 import ThemeToggle from "./ThemeToggle";
 import LanguageSelector from "./LanguageSelector";
 import EmergencySOSModal from "./EmergencySOSModal";
+import TrustedDataSourcesModal from "./TrustedDataSourcesModal";
 
 // Interactive Map Marker Data
 interface DisasterIncident {
@@ -196,6 +197,10 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
 
   // Selected Area Intelligence Panel State
   const [selectedIncident, setSelectedIncident] = useState<DisasterIncident>(DASHBOARD_INCIDENTS[0]);
+
+  // Trusted Data Sources Modal State
+  const [trustedSourcesModalOpen, setTrustedSourcesModalOpen] = useState(false);
+  const [trustedSourcesTab, setTrustedSourcesTab] = useState<'imd' | 'isro' | 'gov' | 'ground' | 'gis'>('imd');
 
   // Map Filterable Layer State
   const [activeLayerFilter, setActiveLayerFilter] = useState<string>("All");
@@ -1156,16 +1161,52 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             </div>
 
             <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-700 dark:text-slate-300">
-              <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">ISRO / Bhuvan</span>
-              <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">IMD Weather</span>
-              <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">Govt Reports</span>
-              <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">OpenStreetMap</span>
-              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 rounded font-mono font-black">
-                DEMO / SIMULATED DATA
+              <button
+                type="button"
+                onClick={() => { setTrustedSourcesTab('isro'); setTrustedSourcesModalOpen(true); }}
+                className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 hover:bg-sky-500/10 hover:border-sky-400 rounded-lg border border-slate-200 dark:border-slate-800 cursor-pointer transition"
+              >
+                ISRO / Bhuvan
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setTrustedSourcesTab('imd'); setTrustedSourcesModalOpen(true); }}
+                className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 hover:bg-blue-500/10 hover:border-blue-400 rounded-lg border border-slate-200 dark:border-slate-800 cursor-pointer transition flex items-center gap-1.5"
+              >
+                IMD Weather
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setTrustedSourcesTab('gov'); setTrustedSourcesModalOpen(true); }}
+                className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 hover:bg-slate-700/20 rounded-lg border border-slate-200 dark:border-slate-800 cursor-pointer transition"
+              >
+                Govt Reports
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setTrustedSourcesTab('gis'); setTrustedSourcesModalOpen(true); }}
+                className="px-2.5 py-1 bg-slate-100 dark:bg-slate-900 hover:bg-purple-500/10 hover:border-purple-400 rounded-lg border border-slate-200 dark:border-slate-800 cursor-pointer transition"
+              >
+                OpenStreetMap / GIS
+              </button>
+
+              <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 rounded font-mono font-black">
+                OPEN-METEO LIVE FEED
               </span>
             </div>
           </div>
         </section>
+
+        {/* Trusted Data Sources Modal */}
+        <TrustedDataSourcesModal
+          isOpen={trustedSourcesModalOpen}
+          onClose={() => setTrustedSourcesModalOpen(false)}
+          initialTab={trustedSourcesTab}
+        />
 
       </div>
 

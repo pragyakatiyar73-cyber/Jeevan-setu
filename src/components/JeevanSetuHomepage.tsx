@@ -45,6 +45,7 @@ import {
 import L from 'leaflet';
 import { useTranslation } from '../i18n';
 import ThemeToggle from './ThemeToggle';
+import TrustedDataSourcesModal from './TrustedDataSourcesModal';
 
 interface JeevanSetuHomepageProps {
   onNavigateModule: (module: string) => void;
@@ -96,6 +97,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
   // Compact Feature Modal state for hero indicator pills (ai, livedata, gis, risk, resources)
   const [activeFeatureModal, setActiveFeatureModal] = useState<'ai' | 'livedata' | 'gis' | 'risk' | 'resources' | null>(null);
+
+  // Trusted Data Sources Modal state
+  const [trustedSourceModalOpen, setTrustedSourceModalOpen] = useState(false);
+  const [trustedSourceTab, setTrustedSourceTab] = useState<'imd' | 'isro' | 'gov' | 'ground' | 'gis'>('imd');
 
   // AI Analysis Panel simulation state
   const [isAnalyzingAi, setIsAnalyzingAi] = useState(false);
@@ -1356,30 +1361,62 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-200">
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-sky-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+            <button
+              type="button"
+              onClick={() => { setTrustedSourceTab('isro'); setTrustedSourceModalOpen(true); }}
+              className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-sky-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group text-left"
+            >
               <Radio className="h-5 w-5 text-sky-600 dark:text-sky-400 group-hover:scale-125 transition duration-300" />
               <span>{t('home.isroSatelliteData', 'ISRO / Satellite Data')}</span>
-            </div>
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setTrustedSourceTab('imd'); setTrustedSourceModalOpen(true); }}
+              className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group text-left relative"
+            >
               <CloudRain className="h-5 w-5 text-blue-600 dark:text-blue-400 group-hover:scale-125 transition duration-300" />
               <span>{t('home.imdWeatherData', 'IMD Weather Data')}</span>
-            </div>
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-slate-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse ml-0.5" title="Live Open-Meteo Integration Active" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setTrustedSourceTab('gov'); setTrustedSourceModalOpen(true); }}
+              className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-slate-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group text-left"
+            >
               <Building2 className="h-5 w-5 text-slate-700 dark:text-slate-300 group-hover:scale-125 transition duration-300" />
               <span>{t('home.govReports', 'Government Reports')}</span>
-            </div>
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setTrustedSourceTab('ground'); setTrustedSourceModalOpen(true); }}
+              className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group text-left"
+            >
               <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-125 transition duration-300" />
               <span>{t('home.groundReports', 'Ground Reports')}</span>
-            </div>
-            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-purple-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group">
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setTrustedSourceTab('gis'); setTrustedSourceModalOpen(true); }}
+              className="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-purple-400/80 shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.08] hover:shadow-xl cursor-pointer group text-left"
+            >
               <MapPin className="h-5 w-5 text-purple-600 dark:text-purple-400 group-hover:scale-125 transition duration-300" />
               <span>{t('home.gisRemoteSensing', 'GIS & Remote Sensing')}</span>
-            </div>
+            </button>
           </div>
 
         </div>
       </section>
+
+      {/* Trusted Data Sources Interactive Live Modal */}
+      <TrustedDataSourcesModal
+        isOpen={trustedSourceModalOpen}
+        onClose={() => setTrustedSourceModalOpen(false)}
+        initialTab={trustedSourceTab}
+      />
 
       {/* ==================================================
           9. FOOTER (Compact & Sleek)
