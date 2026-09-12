@@ -1732,7 +1732,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       )}
 
       {/* ==================================================
-          LEFT-SIDE SLIDING DRAWER / PANEL (Opens directly on Homepage)
+          RIGHT-SIDE SLIDING DRAWER / PANEL (Opens directly on Homepage)
          ================================================== */}
       {activeSidePanel && (
         <>
@@ -1742,8 +1742,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[190] animate-in fade-in duration-200"
           />
 
-          {/* Left-Side Drawer Container */}
-          <div className="fixed top-0 left-0 h-full z-[200] w-full sm:w-[480px] lg:w-[540px] bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 shadow-2xl flex flex-col border-r border-slate-200 dark:border-slate-800 animate-in slide-in-from-left duration-300">
+          {/* Right-Side Drawer Container */}
+          <div className="fixed top-0 right-0 h-full z-[200] w-full sm:w-[480px] lg:w-[540px] bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-800 animate-in slide-in-from-right duration-300">
             
             {/* Drawer Header */}
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-[#0b132b]">
