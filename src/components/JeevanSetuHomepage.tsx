@@ -1758,48 +1758,146 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       )}
 
       {/* ==================================================
-          MODAL 4: SEARCH MODAL
+          MODAL 4: SEARCH MODAL (Centered Command Palette)
          ================================================== */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-5 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-in fade-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsSearchOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-            >
-              <X className="h-5 w-5" />
-            </button>
+        <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#070d1e] text-slate-900 dark:text-white rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-in zoom-in-95 duration-200 space-y-4">
+            
+            {/* Header & Close Button */}
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-3 flex-1 mr-4">
+                <Search className="h-5 w-5 text-sky-500 shrink-0" />
+                <input
+                  type="text"
+                  placeholder={t('search.placeholder', 'Search state, hazard, hospital, or disaster alert...')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                  className="w-full bg-transparent text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
 
-            <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
-              <Search className="h-5 w-5 text-sky-500" />
-              <input
-                type="text"
-                placeholder={t('search.placeholder', 'Search state, hazard, hospital, or disaster alert...')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                autoFocus
-                className="flex-1 bg-transparent text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
-              />
+              <button
+                onClick={() => {
+                  setIsSearchOpen(false);
+                  setSearchQuery('');
+                }}
+                className="p-1.5 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
-            <div className="py-4 space-y-2 text-xs font-medium text-slate-600 dark:text-slate-300">
-              <div className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 tracking-wider">{t('search.quickSuggestions', 'Quick Suggestions')}</div>
-              {[
-                { label: t('search.sikkimLandslide', 'Sikkim Landslide High-Risk Area'), action: () => { setIsSearchOpen(false); onNavigateModule('staterisk'); } },
-                { label: t('search.assamFlood', 'Assam Kaziranga Flood Live Map'), action: () => { setIsSearchOpen(false); onNavigateModule('map'); } },
-                { label: t('search.meghalayaNDRF', 'NDRF Relief Camps in Meghalaya'), action: () => { setIsSearchOpen(false); onNavigateModule('reliefcamps'); } },
-                { label: t('search.droneMedical', 'UAV Drone Medical Supply Routes'), action: () => { setIsSearchOpen(false); onNavigateModule('drone'); } }
-              ].map((item, idx) => (
-                <button
-                  key={idx}
-                  onClick={item.action}
-                  className="w-full text-left p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-between text-slate-800 dark:text-slate-200 font-bold"
-                >
-                  <span>{item.label}</span>
-                  <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
-                </button>
-              ))}
+            {/* Quick Suggestions & Filtered Search Results */}
+            <div className="space-y-2 text-xs font-medium text-slate-600 dark:text-slate-300 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1">
+              <div className="flex items-center justify-between text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 tracking-wider pb-1">
+                <span>{searchQuery ? 'Search Results' : t('search.quickSuggestions', 'Quick Suggestions')}</span>
+                <span className="text-sky-500">Instant Navigation</span>
+              </div>
+
+              {(() => {
+                const allSearchItems = [
+                  {
+                    id: 'sos',
+                    label: 'Emergency SOS Dispatch Signal',
+                    category: '24x7 SOS',
+                    color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30',
+                    action: () => { setIsSearchOpen(false); onOpenSos(); }
+                  },
+                  {
+                    id: 'sikkim',
+                    label: t('search.sikkimLandslide', 'Sikkim Landslide High-Risk Area'),
+                    category: 'RISK RADAR',
+                    color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30',
+                    action: () => { setIsSearchOpen(false); setActiveSidePanel('risk'); }
+                  },
+                  {
+                    id: 'reliefcamps',
+                    label: t('search.meghalayaNDRF', 'NDRF Relief Camps in Meghalaya'),
+                    category: 'RELIEF CAMPS',
+                    color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+                    action: () => { setIsSearchOpen(false); setActiveSidePanel('reliefcamps'); }
+                  },
+                  {
+                    id: 'safetyguide',
+                    label: 'Disaster Safety Guide & Helplines',
+                    category: 'SAFETY GUIDE',
+                    color: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/30',
+                    action: () => { setIsSearchOpen(false); setActiveSidePanel('safetyguide'); }
+                  },
+                  {
+                    id: 'assam',
+                    label: t('search.assamFlood', 'Assam Kaziranga Flood Live Map'),
+                    category: 'GIS MAP',
+                    color: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30',
+                    action: () => { setIsSearchOpen(false); onNavigateModule('map'); }
+                  },
+                  {
+                    id: 'aiimpact',
+                    label: 'AI Disaster Impact Assessment',
+                    category: 'VISION AI',
+                    color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30',
+                    action: () => { setIsSearchOpen(false); setActiveSidePanel('aianalysis'); }
+                  },
+                  {
+                    id: 'report',
+                    label: 'Report a Disaster (Ground Photo Triage)',
+                    category: 'REPORT',
+                    color: 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30',
+                    action: () => { setIsSearchOpen(false); setActiveSidePanel('report'); }
+                  },
+                  {
+                    id: 'drone',
+                    label: t('search.droneMedical', 'UAV Drone Medical Supply Routes'),
+                    category: 'DRONE',
+                    color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30',
+                    action: () => { setIsSearchOpen(false); onNavigateModule('drone'); }
+                  }
+                ];
+
+                const filtered = searchQuery.trim()
+                  ? allSearchItems.filter(item =>
+                      item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      item.category.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                  : allSearchItems;
+
+                if (filtered.length === 0) {
+                  return (
+                    <div className="py-8 text-center text-slate-400 space-y-1">
+                      <div className="text-sm font-bold">No matching results found</div>
+                      <div className="text-xs text-slate-500">Try searching for "Landslide", "Flood", "Relief", or "SOS"</div>
+                    </div>
+                  );
+                }
+
+                return filtered.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={item.action}
+                    className="w-full text-left p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-between text-slate-800 dark:text-slate-200 font-bold group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded border ${item.color}`}>
+                        {item.category}
+                      </span>
+                      <span className="text-xs group-hover:text-sky-500 transition">{item.label}</span>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-sky-500 group-hover:translate-x-1 transition transform" />
+                  </button>
+                ));
+              })()}
             </div>
+
           </div>
         </div>
       )}
