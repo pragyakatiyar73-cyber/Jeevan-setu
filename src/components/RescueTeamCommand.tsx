@@ -14,8 +14,10 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { incidentStore, RescueTeam, CitizenSOS } from '../services/api/incidentStore';
+import { useTranslation } from '../i18n';
 
 export default function RescueTeamCommand() {
+  const { t, language } = useTranslation();
   const [teams, setTeams] = useState<RescueTeam[]>(incidentStore.getRescueTeams());
   const [sosList, setSosList] = useState<CitizenSOS[]>(incidentStore.getSOSAlerts());
   const activeIncident = incidentStore.getActiveIncident();
@@ -51,24 +53,24 @@ export default function RescueTeamCommand() {
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-black text-sky-400 border border-sky-500/40 uppercase">
-                RESCUE STAGE
+                {t('rescueTeamCommand.badge', 'RESCUE STAGE')}
               </span>
               <span className="rounded bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-mono text-emerald-400 border border-emerald-500/30">
-                VERIFIED DATA COMMAND
+                {t('rescueTeamCommand.verifiedDataCommand', 'VERIFIED DATA COMMAND')}
               </span>
             </div>
             <h1 className="text-2xl font-black text-white mt-1 flex items-center gap-2">
               <Users className="h-7 w-7 text-sky-400" />
-              <span>NDRF / SDRF Rescue Team Command & Tactical Dispatch</span>
+              <span>{t('rescueTeamCommand.title', 'NDRF / SDRF Rescue Team Command & Tactical Dispatch')}</span>
             </h1>
             <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-              Manage specialized disaster response battalions, engineer units, and medical triage teams. Assign active teams to high-priority citizen distress calls and sector zones.
+              {t('rescueTeamCommand.subtitle', 'Manage specialized disaster response battalions, engineer units, and medical triage teams. Assign active teams to high-priority citizen distress calls and sector zones.')}
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="rounded-xl border border-slate-700 bg-slate-900/90 p-3 text-center">
-              <div className="text-[10px] text-slate-400 font-bold uppercase">Active Incident</div>
+              <div className="text-[10px] text-slate-400 font-bold uppercase">{t('rescueTeamCommand.activeIncident', 'Active Incident')}</div>
               <div className="text-amber-400 font-black text-sm">{activeIncident.id}</div>
               <div className="text-[11px] text-slate-300">{activeIncident.locationName}</div>
             </div>
@@ -89,7 +91,7 @@ export default function RescueTeamCommand() {
         <div className="lg:col-span-7 space-y-4">
           <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
             <Shield className="h-4 w-4 text-sky-400" />
-            <span>Deployed Response Squads ({teams.length})</span>
+            <span>{t('rescueTeamCommand.deployedSquads', 'Deployed Response Squads')} ({teams.length})</span>
           </h2>
 
           <div className="space-y-3">
@@ -122,25 +124,27 @@ export default function RescueTeamCommand() {
                         : 'bg-indigo-500/20 text-indigo-400 border-indigo-500/40'
                     }`}
                   >
-                    STATUS: {team.status.replace('_', ' ')}
+                    {team.status === 'AVAILABLE' ? t('rescueTeamCommand.statusAvailable', 'STATUS: AVAILABLE') :
+                     team.status === 'EN_ROUTE' ? t('rescueTeamCommand.statusEnRoute', 'STATUS: EN ROUTE') :
+                     t('rescueTeamCommand.statusOnSite', 'STATUS: ON SITE')}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono pt-1">
                   <div className="rounded-lg bg-slate-50 dark:bg-slate-950 p-2 border border-slate-200 dark:border-slate-800">
-                    <div className="text-[10px] text-slate-400">Current Base</div>
+                    <div className="text-[10px] text-slate-400">{t('rescueTeamCommand.currentBase', 'Current Base')}</div>
                     <div className="font-semibold text-slate-800 dark:text-slate-200 text-[11px] truncate">{team.currentLocation}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 dark:bg-slate-950 p-2 border border-slate-200 dark:border-slate-800">
-                    <div className="text-[10px] text-slate-400">Personnel</div>
-                    <div className="font-bold text-sky-400">{team.personnelCount} Personnel</div>
+                    <div className="text-[10px] text-slate-400">{t('rescueTeamCommand.personnel', 'Personnel')}</div>
+                    <div className="font-bold text-sky-400">{team.personnelCount} {t('rescueTeamCommand.personnel', 'Personnel')}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 dark:bg-slate-950 p-2 border border-slate-200 dark:border-slate-800">
-                    <div className="text-[10px] text-slate-400">Dispatch ETA</div>
+                    <div className="text-[10px] text-slate-400">{t('rescueTeamCommand.dispatchEta', 'Dispatch ETA')}</div>
                     <div className="font-bold text-emerald-400">{team.etaMinutes} Mins</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 dark:bg-slate-950 p-2 border border-slate-200 dark:border-slate-800">
-                    <div className="text-[10px] text-slate-400">Radio Contact</div>
+                    <div className="text-[10px] text-slate-400">{t('rescueTeamCommand.radioContact', 'Radio Contact')}</div>
                     <div className="font-semibold text-slate-300 text-[10px]">{team.contactNumber}</div>
                   </div>
                 </div>
@@ -162,7 +166,7 @@ export default function RescueTeamCommand() {
                     }`}
                   >
                     <UserCheck className="h-3.5 w-3.5" />
-                    <span>{selectedTeamId === team.id ? 'Deselect Squad' : 'Select Squad for Assignment'}</span>
+                    <span>{selectedTeamId === team.id ? 'Deselect Squad' : t('rescueTeamCommand.selectSquad', 'Select Squad for Assignment')}</span>
                   </button>
                 </div>
               </div>
@@ -174,7 +178,7 @@ export default function RescueTeamCommand() {
         <div className="lg:col-span-5 space-y-4">
           <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
             <Radio className="h-4 w-4 text-rose-500" />
-            <span>Unassigned SOS Tickets ({sosList.filter(s => s.status !== 'ASSIGNED' && s.status !== 'RESOLVED').length})</span>
+            <span>{t('rescueTeamCommand.unassignedSos', 'Unassigned SOS Tickets')} ({sosList.filter(s => s.status !== 'ASSIGNED' && s.status !== 'RESOLVED').length})</span>
           </h2>
 
           <div className="space-y-3">
@@ -213,17 +217,17 @@ export default function RescueTeamCommand() {
           <div className="rounded-2xl border border-indigo-500/40 bg-gradient-to-r from-indigo-950/80 to-slate-900 p-5 shadow-2xl space-y-3">
             <h3 className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
               <Sparkles className="h-4 w-4 text-indigo-400" />
-              <span>Squad Assignment Dispatch Console</span>
+              <span>{t('rescueTeamCommand.dispatchConsole', 'Squad Assignment Dispatch Console')}</span>
             </h3>
 
             <div className="text-xs space-y-1.5 font-mono">
               <div className="flex justify-between">
-                <span className="text-slate-400">Selected Team:</span>
-                <b className="text-amber-400">{selectedTeamId || 'None Selected'}</b>
+                <span className="text-slate-400">{t('rescueTeamCommand.selectedTeam', 'Selected Team:')}</span>
+                <b className="text-amber-400">{selectedTeamId || t('rescueTeamCommand.noneSelected', 'None Selected')}</b>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Target SOS Ticket:</span>
-                <b className="text-rose-400">{selectedSosId || 'None Selected'}</b>
+                <span className="text-slate-400">{t('rescueTeamCommand.targetSos', 'Target SOS Ticket:')}</span>
+                <b className="text-rose-400">{selectedSosId || t('rescueTeamCommand.noneSelected', 'None Selected')}</b>
               </div>
             </div>
 
@@ -237,7 +241,7 @@ export default function RescueTeamCommand() {
               }`}
             >
               <Send className="h-4 w-4" />
-              <span>DISPATCH & ASSIGN SQUAD NOW</span>
+              <span>{t('rescueTeamCommand.dispatchNow', 'DISPATCH & ASSIGN SQUAD NOW')}</span>
             </button>
           </div>
         </div>

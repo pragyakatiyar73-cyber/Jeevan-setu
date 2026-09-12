@@ -20,12 +20,14 @@ import {
 } from 'lucide-react';
 import { incidentStore, ReliefCamp } from '../services/api/incidentStore';
 import SmartSearchInput from './common/SmartSearchInput';
+import { useTranslation } from '../i18n';
 
 interface ReliefCampManagementProps {
   onNavigateToMap?: () => void;
 }
 
 export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampManagementProps) {
+  const { t, language } = useTranslation();
   const [camps, setCamps] = useState<ReliefCamp[]>(incidentStore.getReliefCamps());
   const activeIncident = incidentStore.getActiveIncident();
   const [updateCampId, setUpdateCampId] = useState<string | null>(null);
@@ -109,33 +111,33 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded bg-indigo-500/20 px-2.5 py-0.5 text-[11px] font-black text-indigo-300 border border-indigo-500/40 uppercase">
-                LIVE RELIEF CAMP & SHELTER FINDER
+                {t('reliefCampGrid.badge', 'LIVE RELIEF CAMP & SHELTER FINDER')}
               </span>
               <span className="rounded bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-mono text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
-                VERIFIED TELEMETRY
+                {t('reliefCampGrid.verifiedTelemetry', 'VERIFIED TELEMETRY')}
               </span>
             </div>
             <h1 className="text-2xl lg:text-3xl font-black text-white mt-1 flex items-center gap-3">
               <Building2 className="h-7 w-7 text-indigo-400" />
-              <span>Relief Camp & Evacuee Shelter Grid</span>
+              <span>{t('reliefCampGrid.title', 'Relief Camp & Evacuee Shelter Grid')}</span>
             </h1>
             <p className="text-xs lg:text-sm text-slate-300 mt-1 max-w-3xl leading-relaxed">
-              Find nearby emergency shelters, real-time bed availability, medical triage support, clean drinking water, ration stocks, and safe evacuation routes.
+              {t('reliefCampGrid.subtitle', 'Find nearby emergency shelters, real-time bed availability, medical triage support, clean drinking water, ration stocks, and safe evacuation routes.')}
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-3 font-mono text-xs text-center">
             <div className="rounded-xl border border-slate-700 bg-slate-900/90 p-3 shadow-inner">
-              <div className="text-[10px] text-slate-400 uppercase font-bold">Total Beds</div>
+              <div className="text-[10px] text-slate-400 uppercase font-bold">{t('reliefCampGrid.totalBeds', 'Total Beds')}</div>
               <div className="text-slate-100 font-black text-lg">{totalCap}</div>
             </div>
             <div className="rounded-xl border border-slate-700 bg-slate-900/90 p-3 shadow-inner">
-              <div className="text-[10px] text-amber-400 uppercase font-bold">Occupied</div>
+              <div className="text-[10px] text-amber-400 uppercase font-bold">{t('reliefCampGrid.occupied', 'Occupied')}</div>
               <div className="text-amber-400 font-black text-lg">{totalOcc}</div>
             </div>
             <div className="rounded-xl border border-slate-700 bg-slate-900/90 p-3 shadow-inner">
-              <div className="text-[10px] text-emerald-400 uppercase font-bold">Free Beds</div>
+              <div className="text-[10px] text-emerald-400 uppercase font-bold">{t('reliefCampGrid.freeBeds', 'Free Beds')}</div>
               <div className="text-emerald-400 font-black text-lg">{totalAvail}</div>
             </div>
           </div>
@@ -148,7 +150,7 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
           {/* Smart Search Bar */}
           <div className="flex-1 min-w-[280px]">
             <SmartSearchInput
-              placeholder="Search relief camp by name, sector location, or district..."
+              placeholder={t('reliefCampGrid.searchPlaceholder', 'Search relief camp by name, sector location, or district...')}
               value={searchQuery}
               onChange={setSearchQuery}
               enableAI={true}
@@ -166,7 +168,7 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                   : 'bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
-              All Camps ({camps.length})
+              {t('reliefCampGrid.allCamps', 'All Camps')} ({camps.length})
             </button>
 
             <button
@@ -177,7 +179,7 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                   : 'bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
-              🟢 Free Beds Available
+              🟢 {t('reliefCampGrid.freeBedsAvailable', 'Free Beds Available')}
             </button>
 
             <button
@@ -188,7 +190,7 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                   : 'bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
-              🏥 Medical Triage On-Site
+              🏥 {t('reliefCampGrid.medicalTriageOnSite', 'Medical Triage On-Site')}
             </button>
 
             <button
@@ -199,7 +201,7 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                   : 'bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800'
               }`}
             >
-              💧 High Water/Ration Stock
+              💧 {t('reliefCampGrid.highWaterStock', 'High Water/Ration Stock')}
             </button>
           </div>
         </div>
@@ -242,7 +244,7 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                           : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
                       }`}
                     >
-                      {camp.status === 'FULL' ? '🔴 CAMP FULL' : '🟢 OPEN (VACANCY)'}
+                      {camp.status === 'FULL' ? '🔴 CAMP FULL' : `🟢 ${t('reliefCampGrid.openVacancy', 'OPEN (VACANCY)')}`}
                     </span>
                   </div>
 
@@ -259,10 +261,10 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                     <div className="flex justify-between text-xs font-mono">
                       <span className="text-slate-400 font-bold flex items-center gap-1">
                         <Bed className="h-3.5 w-3.5 text-sky-400" />
-                        <span>Bed Capacity:</span>
+                        <span>{t('reliefCampGrid.bedCapacity', 'Bed Capacity:')}</span>
                       </span>
                       <b className={avail > 0 ? 'text-emerald-400' : 'text-rose-400'}>
-                        {avail > 0 ? `${avail} Free Beds` : '0 Beds Available'}
+                        {avail > 0 ? `${avail} ${t('reliefCampGrid.freeBeds', 'Free Beds')}` : '0 Beds Available'}
                       </b>
                     </div>
 
@@ -276,7 +278,7 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                     </div>
 
                     <div className="text-[11px] font-mono text-slate-400 flex justify-between pt-0.5">
-                      <span>Occupied: {camp.occupiedCapacity}</span>
+                      <span>{t('reliefCampGrid.occupied', 'Occupied')}: {camp.occupiedCapacity}</span>
                       <span>Total: {camp.totalCapacity} ({occPercent}%)</span>
                     </div>
                   </div>
@@ -286,29 +288,31 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                     <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                       <span className="flex items-center gap-1.5 text-slate-400">
                         <Utensils className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Ration Supply</span>
+                        <span>{t('reliefCampGrid.rationSupply', 'Ration Supply')}</span>
                       </span>
                       <b className={camp.foodSupplyStatus === 'ADEQUATE' ? 'text-emerald-400' : 'text-amber-400'}>
-                        {camp.foodSupplyStatus}
+                        {camp.foodSupplyStatus === 'ADEQUATE' ? t('reliefCampGrid.adequate', 'ADEQUATE') : t('reliefCampGrid.replenishing', 'REPLENISHING')}
                       </b>
                     </div>
 
                     <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                       <span className="flex items-center gap-1.5 text-slate-400">
                         <Droplets className="h-3.5 w-3.5 text-sky-400" />
-                        <span>Drinking Water</span>
+                        <span>{t('reliefCampGrid.drinkingWater', 'Drinking Water')}</span>
                       </span>
                       <b className={camp.waterSupplyStatus === 'ADEQUATE' ? 'text-emerald-400' : 'text-rose-400'}>
-                        {camp.waterSupplyStatus}
+                        {camp.waterSupplyStatus === 'ADEQUATE' ? t('reliefCampGrid.adequate', 'ADEQUATE') : t('reliefCampGrid.critical', 'CRITICAL')}
                       </b>
                     </div>
 
                     <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                       <span className="flex items-center gap-1.5 text-slate-400">
                         <HeartPulse className="h-3.5 w-3.5 text-rose-400" />
-                        <span>Medical Unit</span>
+                        <span>{t('reliefCampGrid.medicalUnit', 'Medical Unit')}</span>
                       </span>
-                      <b className="text-slate-200 text-[10px] uppercase font-bold">{camp.medicalSupportStatus.replace(/_/g, ' ')}</b>
+                      <b className="text-slate-200 text-[10px] uppercase font-bold">
+                        {camp.medicalSupportStatus.includes('DOCTOR') ? t('reliefCampGrid.fullDoctors', 'FULL DOCTORS ON SITE') : t('reliefCampGrid.paramedicsOnly', 'PARAMEDICS ONLY')}
+                      </b>
                     </div>
                   </div>
                 </div>
@@ -321,7 +325,7 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                     className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 py-2.5 text-xs font-black text-white shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Plus className="h-4 w-4" />
-                    <span>CHECK-IN EVACUEE / UPDATE BEDS</span>
+                    <span>{t('reliefCampGrid.checkInEvacuee', '+ CHECK-IN EVACUEE / UPDATE BEDS')}</span>
                   </button>
 
                   {/* Turn-by-Turn Safe Route Navigation Button */}
@@ -366,7 +370,7 @@ export default function ReliefCampManagement({ onNavigateToMap }: ReliefCampMana
                       }}
                       className="w-full text-center text-[11px] font-bold text-slate-400 hover:text-slate-200 py-1 transition cursor-pointer"
                     >
-                      ⚙️ Manager Bed Capacity Override
+                      {t('reliefCampGrid.managerOverride', '⚙️ Manager Bed Capacity Override')}
                     </button>
                   )}
                 </div>

@@ -33,8 +33,10 @@ import {
   ResponseStatusLifecycle,
   DataStatusTag
 } from '../services/api/incidentStore';
+import { useTranslation } from '../i18n';
 
 export default function LifeSavingResponseEngine() {
+  const { t, language } = useTranslation();
   const [incidents, setIncidents] = useState<DisasterIncident[]>(incidentStore.getIncidents());
   const activeIncident = incidentStore.getActiveIncident();
   const [teams, setTeams] = useState<RescueTeam[]>(incidentStore.getRescueTeams());
@@ -218,18 +220,18 @@ export default function LifeSavingResponseEngine() {
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded bg-rose-500/20 px-2.5 py-0.5 text-[11px] font-black text-rose-400 border border-rose-500/40 uppercase animate-pulse">
-                DECISION SUPPORT & EMERGENCY RESPONSE ENGINE
+                {t('lifeSavingEngine.badge', 'DECISION SUPPORT & EMERGENCY RESPONSE ENGINE')}
               </span>
               <span className="rounded bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-mono text-emerald-400 border border-emerald-500/30">
-                VERIFIED DATA + AI ESTIMATE
+                {t('lifeSavingEngine.verifiedData', 'VERIFIED DATA + AI ESTIMATE')}
               </span>
             </div>
             <h1 className="text-2xl font-black text-white mt-1 flex items-center gap-2">
               <ShieldAlert className="h-7 w-7 text-rose-500" />
-              <span>LIFE-SAVING RESPONSE CENTER</span>
+              <span>{t('lifeSavingEngine.title', 'LIFE-SAVING RESPONSE CENTER')}</span>
             </h1>
             <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-              Converts disaster telemetry into actionable emergency response recommendations: matching available rescue teams, determining accessible routes, and tracking rescue lifecycle to resolution.
+              {t('lifeSavingEngine.subtitle', 'Converts disaster telemetry into actionable emergency response recommendations: matching available rescue teams, determining accessible routes, and tracking rescue lifecycle to resolution.')}
             </p>
           </div>
 
@@ -239,7 +241,7 @@ export default function LifeSavingResponseEngine() {
               className="rounded-xl bg-gradient-to-r from-rose-600 to-sky-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg hover:from-rose-500 hover:to-sky-500 flex items-center gap-2 cursor-pointer"
             >
               <Eye className="h-4 w-4" />
-              <span>VIEW INCIDENT ({activeIncident.id})</span>
+              <span>{t('lifeSavingEngine.viewIncident', 'VIEW INCIDENT')} ({activeIncident.id})</span>
             </button>
           </div>
         </div>
@@ -255,45 +257,45 @@ export default function LifeSavingResponseEngine() {
       {/* 📊 1. HEADER KPI METRICS GRID */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-center">
-          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">Active Incidents</div>
+          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">{t('lifeSavingEngine.activeIncidents', 'Active Incidents')}</div>
           <div className="text-xl font-black text-slate-900 dark:text-white mt-0.5">{incidents.length}</div>
-          <span className="text-[9px] font-mono text-sky-400">VERIFIED</span>
+          <span className="text-[9px] font-mono text-sky-400">{t('lifeSavingEngine.verified', 'VERIFIED')}</span>
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-center">
-          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">People At Risk</div>
+          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">{t('lifeSavingEngine.peopleAtRisk', 'People At Risk')}</div>
           <div className="text-xl font-black text-amber-500 mt-0.5">{totalPeopleAtRisk.toLocaleString()}</div>
-          <span className="text-[9px] font-mono text-amber-400">AI ESTIMATE</span>
+          <span className="text-[9px] font-mono text-amber-400">{t('lifeSavingEngine.aiEstimate', 'AI ESTIMATE')}</span>
         </div>
 
         <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-center">
-          <div className="text-[10px] text-rose-400 font-bold uppercase">Critical Incidents</div>
+          <div className="text-[10px] text-rose-400 font-bold uppercase">{t('lifeSavingEngine.criticalIncidents', 'Critical Incidents')}</div>
           <div className="text-xl font-black text-rose-500 mt-0.5">{criticalIncidentsCount}</div>
-          <span className="text-[9px] font-mono text-rose-400">HIGH URGENCY</span>
+          <span className="text-[9px] font-mono text-rose-400">{t('lifeSavingEngine.highUrgency', 'HIGH URGENCY')}</span>
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-center">
-          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">Teams Available</div>
+          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">{t('lifeSavingEngine.teamsAvailable', 'Teams Available')}</div>
           <div className="text-xl font-black text-emerald-400 mt-0.5">{availableTeamsCount}</div>
-          <span className="text-[9px] font-mono text-emerald-400">READY</span>
+          <span className="text-[9px] font-mono text-emerald-400">{t('lifeSavingEngine.ready', 'READY')}</span>
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-center">
-          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">Teams Active</div>
+          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">{t('lifeSavingEngine.teamsActive', 'Teams Active')}</div>
           <div className="text-xl font-black text-sky-400 mt-0.5">{activeTeamsCount}</div>
-          <span className="text-[9px] font-mono text-sky-400">DEPLOYED</span>
+          <span className="text-[9px] font-mono text-sky-400">{t('lifeSavingEngine.deployed', 'DEPLOYED')}</span>
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-center">
-          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">Medical Requests</div>
+          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">{t('lifeSavingEngine.medicalRequests', 'Medical Requests')}</div>
           <div className="text-xl font-black text-rose-400 mt-0.5">{medicalRequestsCount}</div>
-          <span className="text-[9px] font-mono text-rose-400">TRIAGE</span>
+          <span className="text-[9px] font-mono text-rose-400">{t('lifeSavingEngine.triage', 'TRIAGE')}</span>
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-center">
-          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">Unresolved SOS</div>
+          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">{t('lifeSavingEngine.unresolvedSos', 'Unresolved SOS')}</div>
           <div className="text-xl font-black text-amber-400 mt-0.5">{unresolvedSosCount}</div>
-          <span className="text-[9px] font-mono text-amber-400">LIVE QUEUE</span>
+          <span className="text-[9px] font-mono text-amber-400">{t('lifeSavingEngine.liveQueue', 'LIVE QUEUE')}</span>
         </div>
       </div>
 
@@ -309,7 +311,7 @@ export default function LifeSavingResponseEngine() {
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-rose-500" />
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                  Operational Life-Saving Priority Engine
+                  {t('lifeSavingEngine.priorityEngineTitle', 'Operational Life-Saving Priority Engine')}
                 </h2>
               </div>
 
@@ -332,7 +334,7 @@ export default function LifeSavingResponseEngine() {
                   activeIncident.priorityLevel === 'HIGH' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
                   'bg-sky-500/20 text-sky-300 border-sky-500/40'
                 }`}>
-                  {activeIncident.priorityLevel} PRIORITY
+                  {activeIncident.priorityLevel} {t('lifeSavingEngine.criticalPriority', 'PRIORITY')}
                 </span>
               </div>
             </div>
@@ -341,7 +343,7 @@ export default function LifeSavingResponseEngine() {
             <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 space-y-2">
               <div className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
                 <ShieldCheck className="h-4 w-4" />
-                <span>Priority Decision Reasoning (Operational Urgency Rule)</span>
+                <span>{t('lifeSavingEngine.priorityReasoning', 'Priority Decision Reasoning (Operational Urgency Rule)')}</span>
               </div>
               <p className="text-xs text-slate-200 leading-relaxed font-sans">
                 "{activeIncident.priorityReason}"
@@ -350,7 +352,7 @@ export default function LifeSavingResponseEngine() {
 
             {/* Key Risk Factors List */}
             <div className="space-y-1.5 font-mono text-xs">
-              <div className="text-[10px] text-slate-400 uppercase font-bold">Key Risk Factors Evaluated:</div>
+              <div className="text-[10px] text-slate-400 uppercase font-bold">{t('lifeSavingEngine.keyRiskFactors', 'Key Risk Factors Evaluated:')}</div>
               <div className="flex flex-wrap gap-2">
                 {activeIncident.keyRiskFactors.map((factor, i) => (
                   <span
@@ -364,8 +366,8 @@ export default function LifeSavingResponseEngine() {
             </div>
 
             <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-3 font-mono">
-              <span>Last Evaluated: <b>{activeIncident.timestamp}</b></span>
-              <span className="text-sky-400 font-bold">DATA STATUS: VERIFIED + AI ESTIMATE</span>
+              <span>{t('lifeSavingEngine.lastEvaluated', 'Last Evaluated')}: <b>{activeIncident.timestamp}</b></span>
+              <span className="text-sky-400 font-bold">{t('lifeSavingEngine.dataStatus', 'DATA STATUS: VERIFIED + AI ESTIMATE')}</span>
             </div>
           </div>
 
@@ -374,16 +376,16 @@ export default function LifeSavingResponseEngine() {
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 flex-wrap gap-2">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                 <Users className="h-5 w-5 text-sky-400" />
-                <span>Resource Requirement & Available Match Matrix</span>
+                <span>{t('lifeSavingEngine.resourceMatrixTitle', 'Resource Requirement & Available Match Matrix')}</span>
               </h3>
               <span className="rounded bg-indigo-500/20 text-indigo-300 px-2.5 py-0.5 text-[10px] font-mono font-bold border border-indigo-500/30">
-                AI / RULE-BASED RECOMMENDATION
+                {t('lifeSavingEngine.aiRuleRecommendation', 'AI / RULE-BASED RECOMMENDATION')}
               </span>
             </div>
 
             {/* Required Resource Categories Badges */}
             <div className="space-y-1.5 font-mono text-xs">
-              <div className="text-[10px] text-slate-400 uppercase font-bold">Required Resource Categories:</div>
+              <div className="text-[10px] text-slate-400 uppercase font-bold">{t('lifeSavingEngine.requiredResourceCategories', 'Required Resource Categories:')}</div>
               <div className="flex flex-wrap gap-2">
                 {activeIncident.requiredResourceCategories.map((res, idx) => (
                   <span
@@ -398,7 +400,7 @@ export default function LifeSavingResponseEngine() {
 
             {/* Available Teams Matching Table */}
             <div className="space-y-2">
-              <div className="text-[10px] text-slate-400 font-mono font-bold uppercase">Available Response Teams:</div>
+              <div className="text-[10px] text-slate-400 font-mono font-bold uppercase">{t('lifeSavingEngine.availableResponseTeams', 'Available Response Teams:')}</div>
               <div className="space-y-2">
                 {teams.map((team, idx) => {
                   const isMatch = team.id === 'TEAM-01'; // Optimal recommended team
@@ -417,7 +419,7 @@ export default function LifeSavingResponseEngine() {
                           <b className="text-slate-900 dark:text-white">{team.name} ({team.id})</b>
                           {isMatch && (
                             <span className="rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-2 py-0.5 border border-emerald-500/40">
-                              RECOMMENDED MATCH
+                              {t('lifeSavingEngine.recommendedMatch', 'RECOMMENDED MATCH')}
                             </span>
                           )}
                         </div>
@@ -432,7 +434,7 @@ export default function LifeSavingResponseEngine() {
                           className="rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow hover:bg-emerald-500 flex items-center gap-1 cursor-pointer"
                         >
                           <UserCheck className="h-3.5 w-3.5" />
-                          <span>ASSIGN SQUAD NOW</span>
+                          <span>{t('lifeSavingEngine.assignSquadNow', 'ASSIGN SQUAD NOW')}</span>
                         </button>
                       ) : (
                         <button
@@ -440,7 +442,7 @@ export default function LifeSavingResponseEngine() {
                           className="rounded-xl bg-sky-600/20 text-sky-300 border border-sky-500/30 px-3 py-1.5 text-[11px] font-bold hover:bg-sky-600/30 transition flex items-center gap-1 cursor-pointer"
                         >
                           <CheckCircle2 className="h-3.5 w-3.5 text-sky-400" />
-                          <span>DEPLOYED ({team.status.replace(/_/g, ' ')})</span>
+                          <span>{t('lifeSavingEngine.deployed', 'DEPLOYED')} ({team.status.replace(/_/g, ' ')})</span>
                         </button>
                       )}
                     </div>
@@ -455,7 +457,7 @@ export default function LifeSavingResponseEngine() {
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                 <Navigation className="h-5 w-5 text-teal-400" />
-                <span>Dynamic Evacuation Route Intelligence</span>
+                <span>{t('lifeSavingEngine.evacuationRoutingTitle', 'Dynamic Evacuation Route Intelligence')}</span>
               </h3>
               <span className="text-[10px] text-teal-400 font-mono font-bold">OSRM ROUTING ENGINE</span>
             </div>
@@ -487,7 +489,7 @@ export default function LifeSavingResponseEngine() {
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-rose-500" />
-                <span>Life-Saving GIS Incident & Resource Map</span>
+                <span>{t('lifeSavingEngine.gisMapTitle', 'Life-Saving GIS Incident & Resource Map')}</span>
               </h3>
               <span className="text-[10px] font-mono text-slate-400">Leaflet Canvas</span>
             </div>
@@ -501,15 +503,15 @@ export default function LifeSavingResponseEngine() {
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl space-y-4">
             <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
               <Clock className="h-4 w-4 text-sky-400" />
-              <span>Response Lifecycle Tracker & Triage Status</span>
+              <span>{t('lifeSavingEngine.lifecycleTitle', 'Response Lifecycle Tracker & Triage Status')}</span>
             </h3>
 
             {/* Visual Step Indicator */}
             <div className="space-y-2 font-mono">
               <div className="flex justify-between text-[11px] font-bold">
-                <span className="text-slate-400">Current Lifecycle Stage:</span>
+                <span className="text-slate-400">{t('lifeSavingEngine.currentStage', 'Current Lifecycle Stage:')}</span>
                 <span className="text-amber-400 font-black">
-                  Stage {currentStepIdx + 1} of 10: {activeIncident.responseStatus.replace(/_/g, ' ')}
+                  {t('lifeSavingEngine.stageOf', 'Stage')} {currentStepIdx + 1} of 10: {activeIncident.responseStatus.replace(/_/g, ' ')}
                 </span>
               </div>
 
@@ -574,38 +576,38 @@ export default function LifeSavingResponseEngine() {
                   }}
                   className="col-span-2 sm:col-span-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 py-2.5 px-3 font-extrabold text-white shadow hover:opacity-90 transition flex items-center justify-center gap-1.5 cursor-pointer mb-1"
                 >
-                  <span>ADVANCE NEXT STAGE ➔ ({LIFECYCLE_STEPS[Math.min(LIFECYCLE_STEPS.length - 1, currentStepIdx + 1)].label})</span>
+                  <span>{t('lifeSavingEngine.advanceNextStage', 'ADVANCE NEXT STAGE')} ➔ ({LIFECYCLE_STEPS[Math.min(LIFECYCLE_STEPS.length - 1, currentStepIdx + 1)].label})</span>
                 </button>
 
                 <button
                   onClick={() => handleUpdateStatus('EN_ROUTE')}
                   className="rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 py-2 font-bold hover:bg-indigo-600/30 transition cursor-pointer"
                 >
-                  MARK EN ROUTE
+                  {t('lifeSavingEngine.markEnRoute', 'MARK EN ROUTE')}
                 </button>
                 <button
                   onClick={() => handleUpdateStatus('REACHED_LOCATION')}
                   className="rounded-xl bg-amber-600/20 text-amber-300 border border-amber-500/30 py-2 font-bold hover:bg-amber-600/30 transition cursor-pointer"
                 >
-                  MARK REACHED
+                  {t('lifeSavingEngine.markReached', 'MARK REACHED')}
                 </button>
                 <button
                   onClick={() => handleUpdateStatus('RESCUE_IN_PROGRESS')}
                   className="rounded-xl bg-rose-600/20 text-rose-300 border border-rose-500/30 py-2 font-bold hover:bg-rose-600/30 transition cursor-pointer"
                 >
-                  RESCUE ACTIVE
+                  {t('lifeSavingEngine.rescueActive', 'RESCUE ACTIVE')}
                 </button>
                 <button
                   onClick={() => handleUpdateStatus('RESCUED_SAFE')}
                   className="rounded-xl bg-sky-600/20 text-sky-300 border border-sky-500/30 py-2 font-bold hover:bg-sky-600/30 transition cursor-pointer"
                 >
-                  RESCUED / SAFE
+                  {t('lifeSavingEngine.rescuedSafe', 'RESCUED / SAFE')}
                 </button>
                 <button
                   onClick={() => handleUpdateStatus('RESOLVED')}
                   className="rounded-xl bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 py-2 font-bold hover:bg-emerald-600/30 transition cursor-pointer col-span-2 sm:col-span-1"
                 >
-                  MARK RESOLVED
+                  {t('lifeSavingEngine.markResolved', 'MARK RESOLVED')}
                 </button>
               </div>
 

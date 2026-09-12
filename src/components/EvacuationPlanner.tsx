@@ -16,8 +16,10 @@ import {
   Send
 } from 'lucide-react';
 import { incidentStore } from '../services/api/incidentStore';
+import { useTranslation } from '../i18n';
 
 export default function EvacuationPlanner() {
+  const { t, language } = useTranslation();
   const activeIncident = incidentStore.getActiveIncident();
   const [selectedRoute, setSelectedRoute] = useState<'A' | 'B' | 'C'>('C');
   const [broadcastMessage, setBroadcastMessage] = useState<string | null>(null);
@@ -25,35 +27,35 @@ export default function EvacuationPlanner() {
   const routes = [
     {
       id: 'A',
-      name: 'Route A — Direct NH-6 Primary Highway Corridor',
+      name: language === 'hi' ? 'मार्ग A — प्रत्यक्ष NH-6 प्राथमिक राजमार्ग गलियारा' : 'Route A — Direct NH-6 Primary Highway Corridor',
       status: 'BLOCKED',
       statusColor: 'text-rose-500 bg-rose-500/10 border-rose-500/30',
-      badge: 'HIGH RISK / DISRUPTED',
+      badge: t('evacuationPlanner.highRiskDisrupted', 'HIGH RISK / DISRUPTED'),
       distanceKm: '42 km',
-      travelTimeMins: 'N/A (Blocked)',
-      reason: 'Severe 350m slope collapse & mudslide near Km 142 East Khasi Hills',
+      travelTimeMins: language === 'hi' ? 'लागू नहीं (अवरुद्ध)' : 'N/A (Blocked)',
+      reason: language === 'hi' ? 'केएम 142 ईस्ट खासी हिल्स के पास गंभीर 350 मीटर ढलान ढहने और भूस्खलन' : 'Severe 350m slope collapse & mudslide near Km 142 East Khasi Hills',
       isRecommended: false
     },
     {
       id: 'B',
-      name: 'Route B — State Highway 12 District Connector',
+      name: language === 'hi' ? 'मार्ग B — राज्य राजमार्ग 12 जिला कनेक्टर' : 'Route B — State Highway 12 District Connector',
       status: 'HIGH_RISK',
       statusColor: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
-      badge: 'CAUTION / PARTIAL',
+      badge: t('evacuationPlanner.cautionPartial', 'CAUTION / PARTIAL'),
       distanceKm: '58 km',
-      travelTimeMins: '1h 45m',
-      reason: 'Waterlogging at Culvert #4 (Speed restricted to 20 km/h for heavy trucks)',
+      travelTimeMins: language === 'hi' ? '1 घंटा 45 मिनट' : '1h 45m',
+      reason: language === 'hi' ? 'कलवर्ट #4 पर जलभराव (भारी ट्रकों के लिए गति 20 किमी/घंटा तक सीमित)' : 'Waterlogging at Culvert #4 (Speed restricted to 20 km/h for heavy trucks)',
       isRecommended: false
     },
     {
       id: 'C',
-      name: 'Route C — Jowai Ridge Bypass High-Altitude Corridor',
+      name: language === 'hi' ? 'मार्ग C — जोवई रिज बाईपास उच्च-ऊंचाई गलियारा' : 'Route C — Jowai Ridge Bypass High-Altitude Corridor',
       status: 'SAFE',
       statusColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30',
-      badge: 'RECOMMENDED BY AI',
+      badge: t('evacuationPlanner.recommendedByAi', 'RECOMMENDED BY AI'),
       distanceKm: '64 km',
-      travelTimeMins: '1h 10m',
-      reason: 'Clear road conditions • Continuous BRO traffic management • Zero waterlogging',
+      travelTimeMins: language === 'hi' ? '1 घंटा 10 मिनट' : '1h 10m',
+      reason: language === 'hi' ? 'स्पष्ट सड़क स्थिति • निरंतर बीआरओ यातायात प्रबंधन • शून्य जलभराव' : 'Clear road conditions • Continuous BRO traffic management • Zero waterlogging',
       isRecommended: true
     }
   ];
@@ -66,25 +68,25 @@ export default function EvacuationPlanner() {
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded bg-teal-500/20 px-2.5 py-0.5 text-[11px] font-black text-teal-300 border border-teal-500/40 uppercase">
-                EVACUATION STAGE
+                {t('evacuationPlanner.badge', 'EVACUATION STAGE')}
               </span>
               <span className="rounded bg-indigo-500/20 px-2.5 py-0.5 text-[11px] font-mono text-indigo-300 border border-indigo-500/30">
-                AI / ALGORITHMIC RECOMMENDATION
+                {t('evacuationPlanner.algoRecommendation', 'AI / ALGORITHMIC RECOMMENDATION')}
               </span>
             </div>
             <h1 className="text-2xl font-black text-white mt-1 flex items-center gap-2">
               <Navigation className="h-7 w-7 text-teal-400" />
-              <span>Evacuation & Safe Zone Route Planner</span>
+              <span>{t('evacuationPlanner.title', 'Evacuation & Safe Zone Route Planner')}</span>
             </h1>
             <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-              Connects high-risk disaster sectors + active road blockages + dynamic rerouting to identify safe evacuation paths to registered relief hubs.
+              {t('evacuationPlanner.subtitle', 'Connects high-risk disaster sectors + active road blockages + dynamic rerouting to identify safe evacuation paths to registered relief hubs.')}
             </p>
           </div>
 
           <div className="rounded-xl border border-slate-700 bg-slate-900/90 p-3 text-right font-mono text-xs">
-            <div className="text-slate-400">Threat Zone:</div>
+            <div className="text-slate-400">{t('evacuationPlanner.threatZone', 'Threat Zone:')}</div>
             <div className="text-rose-400 font-bold">{activeIncident.locationName}</div>
-            <div className="text-teal-300 text-[11px]">Affected Pop: {activeIncident.affectedPopulation.toLocaleString()}</div>
+            <div className="text-teal-300 text-[11px]">{t('evacuationPlanner.affectedPop', 'Affected Pop:')} {activeIncident.affectedPopulation.toLocaleString()}</div>
           </div>
         </div>
       </div>
@@ -95,7 +97,7 @@ export default function EvacuationPlanner() {
         <div className="lg:col-span-7 space-y-4">
           <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
             <Compass className="h-4 w-4 text-teal-400" />
-            <span>Evaluated Evacuation Corridors</span>
+            <span>{t('evacuationPlanner.evaluatedCorridors', 'Evaluated Evacuation Corridors')}</span>
           </h2>
 
           <div className="space-y-4">
@@ -126,16 +128,16 @@ export default function EvacuationPlanner() {
 
                 <div className="grid grid-cols-3 gap-3 text-xs font-mono pt-1">
                   <div className="rounded-lg bg-slate-50 dark:bg-slate-950 p-2 border border-slate-200 dark:border-slate-800">
-                    <div className="text-[10px] text-slate-400">Total Distance</div>
+                    <div className="text-[10px] text-slate-400">{t('evacuationPlanner.totalDistance', 'Total Distance')}</div>
                     <div className="font-bold text-slate-800 dark:text-slate-200">{r.distanceKm}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 dark:bg-slate-950 p-2 border border-slate-200 dark:border-slate-800">
-                    <div className="text-[10px] text-slate-400">Est. Travel Time</div>
+                    <div className="text-[10px] text-slate-400">{t('evacuationPlanner.estTravelTime', 'Est. Travel Time')}</div>
                     <div className="font-bold text-teal-400">{r.travelTimeMins}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 dark:bg-slate-950 p-2 border border-slate-200 dark:border-slate-800">
-                    <div className="text-[10px] text-slate-400">Data Status</div>
-                    <div className="font-bold text-sky-400 text-[10px]">AI ESTIMATE</div>
+                    <div className="text-[10px] text-slate-400">{t('evacuationPlanner.dataStatus', 'Data Status')}</div>
+                    <div className="font-bold text-sky-400 text-[10px]">{t('evacuationPlanner.aiEstimate', 'AI ESTIMATE')}</div>
                   </div>
                 </div>
 
@@ -143,10 +145,10 @@ export default function EvacuationPlanner() {
                   <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs text-emerald-400 flex items-center justify-between">
                     <span className="font-bold flex items-center gap-1.5">
                       <Sparkles className="h-4 w-4" />
-                      RECOMMENDED EVACUATION CORRIDOR (OPTIMAL SAFETY & ZERO CHOKEPOINTS)
+                      {language === 'hi' ? 'अनुशंसित निकासी गलियारा (सर्वोत्तम सुरक्षा एवं शून्य अवरोध)' : 'RECOMMENDED EVACUATION CORRIDOR (OPTIMAL SAFETY & ZERO CHOKEPOINTS)'}
                     </span>
                     <span className="font-mono text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">
-                      AI/Algorithmic Recommendation
+                      {t('evacuationPlanner.algoRecommendation', 'AI/Algorithmic Recommendation')}
                     </span>
                   </div>
                 )}
@@ -160,36 +162,39 @@ export default function EvacuationPlanner() {
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xl space-y-4">
             <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>Selected Corridor Dispatch Blueprint</span>
+              <span>{t('evacuationPlanner.selectedBlueprint', 'Selected Corridor Dispatch Blueprint')}</span>
             </h2>
 
             <div className="space-y-3 font-mono text-xs">
               <div className="rounded-xl bg-slate-50 dark:bg-slate-950 p-3 border border-slate-200 dark:border-slate-800 space-y-1.5">
                 <div className="flex justify-between text-slate-400">
-                  <span>Selected Route:</span>
+                  <span>{t('evacuationPlanner.selectedRoute', 'Selected Route:')}</span>
                   <b className="text-emerald-400">Route {selectedRoute}</b>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Origin Danger Zone:</span>
+                  <span>{t('evacuationPlanner.originDangerZone', 'Origin Danger Zone:')}</span>
                   <b className="text-slate-200">{activeIncident.locationName}</b>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Destination Safe Hub:</span>
-                  <b className="text-teal-300">Shillong High-Altitude Relief Hub A</b>
+                  <span>{t('evacuationPlanner.destinationSafeHub', 'Destination Safe Hub:')}</span>
+                  <b className="text-teal-300">{language === 'hi' ? 'शिलांग उच्च-ऊंचाई राहत हब A' : 'Shillong High-Altitude Relief Hub A'}</b>
                 </div>
               </div>
 
               <div className="rounded-xl border border-slate-700 bg-slate-950 p-3 space-y-1">
-                <div className="text-[11px] font-bold text-slate-300">Algorithmic Route Evaluation Note:</div>
+                <div className="text-[11px] font-bold text-slate-300">{t('evacuationPlanner.routeEvaluationNote', 'Algorithmic Route Evaluation Note:')}</div>
                 <p className="text-[10px] text-slate-400 leading-normal font-sans">
-                  The OSRM routing engine automatically filtered out NH-6 (350m mudslide breach) and designated Route C via Jowai Ridge as the safest evacuation vector for civilian buses and ambulance triage.
+                  {language === 'hi'
+                    ? 'OSRM रूटिंग इंजन ने NH-6 (350m भूस्खलन मार्ग) को स्वतः फ़िल्टर कर दिया है और जोवई रिज के माध्यम से मार्ग C को नागरिक बसों और एम्बुलेंस ट्रियाज के लिए सबसे सुरक्षित निकासी वेक्टर घोषित किया है।'
+                    : 'The OSRM routing engine automatically filtered out NH-6 (350m mudslide breach) and designated Route C via Jowai Ridge as the safest evacuation vector for civilian buses and ambulance triage.'
+                  }
                 </p>
               </div>
 
               <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-3 text-[11px] text-sky-300 flex items-start gap-2 font-sans">
                 <Info className="h-4 w-4 text-sky-400 shrink-0 mt-0.5" />
                 <span>
-                  <b>Labeling Notice:</b> All dynamic evacuation routing recommendations are labeled as <b>AI/Algorithmic Recommendation</b> based on real-time OSRM network analysis.
+                  {t('evacuationPlanner.labelingNotice', 'Labeling Notice: All dynamic evacuation routing recommendations are labeled as AI/Algorithmic Recommendation based on real-time OSRM network analysis.')}
                 </span>
               </div>
 
@@ -198,7 +203,7 @@ export default function EvacuationPlanner() {
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-bold text-emerald-300">Evacuation Broadcast Dispatched</div>
+                      <div className="font-bold text-emerald-300">{language === 'hi' ? 'निकासी प्रसारण भेजा गया' : 'Evacuation Broadcast Dispatched'}</div>
                       <div className="text-[11px] text-emerald-200/90">{broadcastMessage}</div>
                     </div>
                   </div>
@@ -213,12 +218,15 @@ export default function EvacuationPlanner() {
 
               <button
                 onClick={() => {
-                  setBroadcastMessage(`Evacuation Dispatch Alert Issued for Route ${selectedRoute} via Jowai Ridge Bypass! Synchronized with NDRF & MDoNER Emergency Grids.`);
+                  setBroadcastMessage(language === 'hi'
+                    ? `जोवई रिज बाईपास के माध्यम से मार्ग ${selectedRoute} के लिए निकासी प्रेषण अलर्ट जारी किया गया! NDRF और MDoNER आपातकालीन ग्रिड के साथ सिंक्रनाइज़।`
+                    : `Evacuation Dispatch Alert Issued for Route ${selectedRoute} via Jowai Ridge Bypass! Synchronized with NDRF & MDoNER Emergency Grids.`
+                  );
                 }}
                 className="w-full rounded-xl bg-gradient-to-r from-teal-600 via-indigo-600 to-sky-600 p-3 text-xs font-bold text-white shadow-lg hover:opacity-90 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Send className="h-4 w-4" />
-                <span>ISSUE PUBLIC EVACUATION ROUTE BROADCAST</span>
+                <span>{t('evacuationPlanner.issueBroadcast', 'ISSUE PUBLIC EVACUATION ROUTE BROADCAST')}</span>
               </button>
             </div>
           </div>
