@@ -1253,6 +1253,40 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
 
       {/* ==================================================
+          EMERGENCY CTA SECTION
+         ================================================== */}
+      <section className="w-full px-4 sm:px-6 lg:px-8 mb-16">
+        <div className="bg-gradient-to-r from-red-950/90 via-rose-950/80 to-slate-900 border border-red-500/30 rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+          <div className="space-y-2 max-w-xl">
+            <div className="inline-flex items-center gap-2 bg-red-500/20 border border-red-400/40 text-red-300 text-xs font-bold px-3 py-1 rounded-full">
+              <ShieldAlert className="h-3.5 w-3.5 text-red-400 animate-pulse" />
+              <span>{t('home.emergencyCoordination', '24x7 Emergency Coordination')}</span>
+            </div>
+            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">{t('home.needHelpTitle', 'Need help during a disaster?')}</h3>
+            <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
+              {t('home.needHelpDesc', 'Send distress signal, access live emergency maps, locate relief shelters, or connect with command teams.')}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              onClick={onOpenSos}
+              className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold shadow-lg shadow-red-600/40 hover:scale-105 transition flex items-center gap-2 cursor-pointer border border-red-400/50"
+            >
+              <PhoneCall className="h-4 w-4 animate-pulse" />
+              <span>{t('home.emergencyHelp', 'Emergency Help')}</span>
+            </button>
+            <button
+              onClick={() => onNavigateModule('reliefcamps')}
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center gap-2"
+            >
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <span>{t('home.exploreResources', 'Explore Resources')}</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================================================
           8. TRUSTED DATA SOURCES
          ================================================== */}
       <section className="w-full bg-slate-50 dark:bg-[#070d1e] border-t border-b border-slate-200/80 dark:border-slate-800 py-8 mb-12 transition-colors duration-300">
@@ -1290,40 +1324,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </div>
           </div>
 
-        </div>
-      </section>
-
-      {/* ==================================================
-          EMERGENCY CTA SECTION
-         ================================================== */}
-      <section className="w-full px-4 sm:px-6 lg:px-8 mb-16">
-        <div className="bg-gradient-to-r from-red-950/90 via-rose-950/80 to-slate-900 border border-red-500/30 rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-          <div className="space-y-2 max-w-xl">
-            <div className="inline-flex items-center gap-2 bg-red-500/20 border border-red-400/40 text-red-300 text-xs font-bold px-3 py-1 rounded-full">
-              <ShieldAlert className="h-3.5 w-3.5 text-red-400 animate-pulse" />
-              <span>{t('home.emergencyCoordination', '24x7 Emergency Coordination')}</span>
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">{t('home.needHelpTitle', 'Need help during a disaster?')}</h3>
-            <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
-              {t('home.needHelpDesc', 'Send distress signal, access live emergency maps, locate relief shelters, or connect with command teams.')}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <button
-              onClick={onOpenSos}
-              className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold shadow-lg shadow-red-600/40 hover:scale-105 transition flex items-center gap-2 cursor-pointer border border-red-400/50"
-            >
-              <PhoneCall className="h-4 w-4 animate-pulse" />
-              <span>{t('home.emergencyHelp', 'Emergency Help')}</span>
-            </button>
-            <button
-              onClick={() => onNavigateModule('reliefcamps')}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center gap-2"
-            >
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>{t('home.exploreResources', 'Explore Resources')}</span>
-            </button>
-          </div>
         </div>
       </section>
 
