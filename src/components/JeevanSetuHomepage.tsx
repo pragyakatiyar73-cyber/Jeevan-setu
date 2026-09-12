@@ -459,9 +459,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           <nav className="hidden xl:flex items-center gap-1 lg:gap-2">
             {[
               { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
-              { id: 'Live Map', name: t('nav.liveMapNav', 'Live Map'), action: () => { setActiveTab('Live Map'); onNavigateModule('map'); } },
-              { id: 'Risk Assessment', name: t('nav.riskAssessmentNav', 'Risk Assessment'), action: () => { setActiveTab('Risk Assessment'); onNavigateModule('staterisk'); } },
-              { id: 'Resources', name: t('nav.resourcesNav', 'Resources'), action: () => { setActiveTab('Resources'); onNavigateModule('reliefcamps'); } },
               { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
               { id: 'Contact', name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setIsInfoModalOpen(true); } }
             ].map((nav) => {
@@ -494,15 +491,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               title="Search"
             >
               <Search className="h-4 sm:h-5 w-4 sm:w-5" />
-            </button>
-
-            {/* Red Emergency Help SOS Button */}
-            <button
-              onClick={onOpenSos}
-              className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-extrabold shadow-lg shadow-red-600/30 hover:shadow-red-600/50 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-red-400/40"
-            >
-              <PhoneCall className="h-3.5 sm:h-4 w-3.5 sm:w-4 animate-pulse" />
-              <span>{t('nav.emergencySos', 'Emergency SOS')}</span>
             </button>
 
             {/* Admin Officer Pill Badge */}
@@ -575,9 +563,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           <div className="xl:hidden bg-[#070d1e] border-t border-slate-800 px-4 py-4 space-y-2 text-sm font-semibold text-slate-200 shadow-2xl">
             {[
               { name: 'Home', action: () => { setActiveTab('Home'); setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
-              { name: 'Live Map', action: () => { setActiveTab('Live Map'); setIsMobileMenuOpen(false); onNavigateModule('map'); } },
-              { name: 'Risk Assessment', action: () => { setActiveTab('Risk Assessment'); setIsMobileMenuOpen(false); onNavigateModule('staterisk'); } },
-              { name: 'Resources', action: () => { setActiveTab('Resources'); setIsMobileMenuOpen(false); onNavigateModule('reliefcamps'); } },
               { name: 'About', action: () => { setActiveTab('About'); setIsMobileMenuOpen(false); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
               { name: 'Contact', action: () => { setActiveTab('Contact'); setIsMobileMenuOpen(false); setIsInfoModalOpen(true); } }
             ].map((nav) => (
