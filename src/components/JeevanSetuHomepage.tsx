@@ -93,6 +93,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
   // Side Panel Drawer state (report, risk, livesituation)
   const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'risk' | 'livesituation' | null>(null);
+  const [liveCategoryFilter, setLiveCategoryFilter] = useState<string>('All');
 
   // Side Panel Map Refs & Effect
   const sidePanelMapContainerRef = useRef<HTMLDivElement>(null);
@@ -844,6 +845,223 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 </div>
               );
             })}
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* ==================================================
+          LIVE DISASTER SITUATION ROOM (लाइव आपदा स्थिति)
+          ================================================== */}
+      <section id="live-situation" className="w-full px-4 sm:px-6 lg:px-8 mb-16 py-2">
+        <div className="bg-slate-900 dark:bg-[#070d1e] p-6 sm:p-10 rounded-3xl border border-rose-500/40 dark:border-rose-500/30 shadow-2xl relative overflow-hidden text-white">
+          
+          {/* Ambient Glows */}
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-rose-600/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-sky-600/10 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Section Header with Live Pulse Badge */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-slate-800/80">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/15 border border-rose-500/40 text-rose-400 text-xs font-bold uppercase tracking-wider mb-3">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+                </span>
+                {t('home.livePulse', 'Live Telemetry Active • 24/7 Ground Monitoring')}
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
+                <Activity className="h-7 w-7 text-rose-500 animate-pulse" />
+                {t('home.liveSituationTitle', 'Live Disaster Situation Room (लाइव स्थिति)')}
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1 max-w-2xl">
+                {t('home.liveSituationSub', 'Real-time telemetry, active advisories, weather radar feeds, and ground response status across India.')}
+              </p>
+            </div>
+
+            {/* Quick Action Navigation Buttons */}
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => onNavigateModule('map')}
+                className="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-sky-500/25 transition duration-200 flex items-center gap-2"
+              >
+                <MapIcon className="h-4 w-4" />
+                {t('home.viewGisMap', 'View Live GIS Map')}
+              </button>
+              <button
+                onClick={handleOpenDashboard}
+                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold text-xs sm:text-sm transition duration-200 flex items-center gap-2"
+              >
+                <LayoutDashboard className="h-4 w-4 text-emerald-400" />
+                {t('home.openDashboardBtn', 'Command Dashboard')}
+              </button>
+              <button
+                onClick={onOpenSos}
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-rose-600/30 transition duration-200 flex items-center gap-2 animate-pulse"
+              >
+                <Radio className="h-4 w-4" />
+                {t('home.emergencySosBtn', 'Emergency SOS')}
+              </button>
+            </div>
+          </div>
+
+          {/* 4 Real-time Telemetry Metrics Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-b border-slate-800/80">
+            <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 flex items-center gap-3.5">
+              <div className="h-10 w-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center border border-rose-500/30 shrink-0">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">{t('home.activeIncidentsLabel', 'Active Incidents')}</p>
+                <h4 className="text-lg sm:text-xl font-black text-white">7 High Alert Zones</h4>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 flex items-center gap-3.5">
+              <div className="h-10 w-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center border border-sky-500/30 shrink-0">
+                <Users className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">{t('home.responseTeamsLabel', 'Teams Deployed')}</p>
+                <h4 className="text-lg sm:text-xl font-black text-white">142 NDRF / SDRF</h4>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 flex items-center gap-3.5">
+              <div className="h-10 w-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
+                <Globe className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">{t('home.satelliteStatusLabel', 'Satellite Radar')}</p>
+                <h4 className="text-lg sm:text-xl font-black text-emerald-400">INSAT-3DR Live</h4>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 flex items-center gap-3.5">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">{t('home.peopleAssistedLabel', 'Citizens Evacuated')}</p>
+                <h4 className="text-lg sm:text-xl font-black text-white">4,850 Rescued</h4>
+              </div>
+            </div>
+          </div>
+
+          {/* Scrolling Real-time Live Ticker */}
+          <div className="my-6 bg-slate-950/80 border border-rose-500/30 rounded-2xl p-3 flex items-center gap-3 overflow-hidden shadow-inner">
+            <div className="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-extrabold text-[11px] uppercase tracking-wider shrink-0 flex items-center gap-1.5">
+              <Zap className="h-3.5 w-3.5 fill-white" />
+              LIVE TICKER
+            </div>
+            <div className="overflow-hidden relative w-full text-xs font-medium text-slate-200">
+              <div className="animate-marquee flex items-center gap-8">
+                <span className="inline-flex items-center gap-1.5 text-rose-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                  <strong>Assam Flood:</strong> Kaziranga Sector water level +1.8m above danger mark. NDRF Team 8 deployed.
+                </span>
+                <span className="text-slate-600">•</span>
+                <span className="inline-flex items-center gap-1.5 text-amber-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                  <strong>Sikkim Landslide:</strong> Mangan-Gangtok NH10 blocked near Mile 9. Heavy machinery clearing route.
+                </span>
+                <span className="text-slate-600">•</span>
+                <span className="inline-flex items-center gap-1.5 text-sky-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
+                  <strong>Meghalaya IMD Advisory:</strong> Sohra & Cherrapunji high rainfall alert for next 12 hours.
+                </span>
+                <span className="text-slate-600">•</span>
+                <span className="inline-flex items-center gap-1.5 text-orange-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-orange-500"></span>
+                  <strong>Wayanad Shift:</strong> Continuous sensors monitoring hillside stability. Relief camps operational.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Incident Filter Tabs */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <Radio className="h-5 w-5 text-rose-400" />
+              {t('home.liveIncidentsHeading', 'Active Disaster Incidents & Telemetry')}
+            </h3>
+
+            <div className="flex flex-wrap items-center gap-2 bg-slate-950/70 p-1.5 rounded-xl border border-slate-800">
+              {['All', 'Landslide', 'Flood', 'Heavy Rainfall', 'Earthquake', 'Fire'].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setLiveCategoryFilter(cat)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                    liveCategoryFilter === cat
+                      ? 'bg-rose-600 text-white shadow-md'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  {cat === 'All' ? t('home.filterAll', 'All Live (7)') : cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Incidents Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {DISASTER_MARKERS.filter(item => liveCategoryFilter === 'All' || item.type === liveCategoryFilter).map((item) => (
+              <div
+                key={item.id}
+                onClick={() => onNavigateModule('map')}
+                className="bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-rose-500/50 rounded-2xl p-5 shadow-lg transition duration-200 cursor-pointer group flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 ${
+                      item.severity === 'High Risk'
+                        ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                        : item.severity === 'Moderate Risk'
+                        ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
+                        : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                    }`}>
+                      <span className="h-2 w-2 rounded-full bg-current animate-pulse"></span>
+                      {item.severity}
+                    </span>
+                    <span className="text-[11px] text-slate-400 flex items-center gap-1 font-medium">
+                      <Clock className="h-3 w-3" />
+                      {item.time}
+                    </span>
+                  </div>
+
+                  <h4 className="text-base font-extrabold text-white group-hover:text-rose-400 transition flex items-center gap-2">
+                    {item.name}
+                  </h4>
+                  
+                  <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-1.5 font-medium">
+                    <MapPin className="h-3.5 w-3.5 text-rose-400 shrink-0" />
+                    {item.loc}
+                  </p>
+
+                  <div className="mt-4 pt-3 border-t border-slate-700/60 grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-slate-900/60 rounded-lg p-2 border border-slate-800">
+                      <span className="text-[10px] text-slate-400 block font-semibold uppercase">{t('home.populationAtRisk', 'Pop. at Risk')}</span>
+                      <span className="font-bold text-white">{item.pop}</span>
+                    </div>
+                    <div className="bg-slate-900/60 rounded-lg p-2 border border-slate-800">
+                      <span className="text-[10px] text-slate-400 block font-semibold uppercase">{t('home.groundUnit', 'Ground Unit')}</span>
+                      <span className="font-bold text-sky-300 truncate block">{item.teams}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-3 flex items-center justify-between text-xs font-semibold text-sky-400 group-hover:text-sky-300">
+                  <span className="flex items-center gap-1">
+                    <Crosshair className="h-3.5 w-3.5" />
+                    {item.lat}° N, {item.lon}° E
+                  </span>
+                  <span className="flex items-center gap-1 group-hover:translate-x-1 transition">
+                    {t('home.inspectOnMap', 'Inspect GIS')} <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
 
         </div>
