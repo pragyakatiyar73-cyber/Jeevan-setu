@@ -914,14 +914,17 @@ export default function App() {
           </div>
         )}
 
-        {/* 2. FULL EXPANDED MAP VIEW MATCHING SCREENSHOT media_1787754063833.png */}
+        {/* 2. FULL EXPANDED 100% VIEWPORT LIVE MAP (Bypasses Dashboard Sidebar & Header) */}
         {activeModule === 'map' && (
-          <NERLiveMapModule
-            hideHeader={true}
-            focusedTarget={mapFocusedTarget}
-            onNavigateTo3DSim={() => setActiveModule('hub')}
-            onTriggerSOS={() => setIsSosModalOpen(true)}
-          />
+          <div className="fixed inset-0 z-[99999] w-screen h-screen bg-[#040814] overflow-hidden">
+            <NERLiveMapModule
+              hideHeader={true}
+              focusedTarget={mapFocusedTarget}
+              onNavigateTo3DSim={() => setActiveModule('hub')}
+              onTriggerSOS={() => setIsSosModalOpen(true)}
+              onBackToDashboard={() => setActiveModule('home')}
+            />
+          </div>
         )}
 
         {/* 🚨 ACTION ALERTS / REAL-TIME EMERGENCY INCIDENT BROADCAST FEED MATCHING SCREENSHOT media_1787753496813.png */}

@@ -37,6 +37,7 @@ export interface NERLiveMapModuleProps {
   focusedTarget?: { coord: [number, number]; zoom: number } | null;
   onNavigateTo3DSim?: () => void;
   onTriggerSOS?: () => void;
+  onBackToDashboard?: () => void;
 }
 
 export default function NERLiveMapModule({
@@ -44,7 +45,8 @@ export default function NERLiveMapModule({
   activeSosLocation,
   focusedTarget,
   onNavigateTo3DSim,
-  onTriggerSOS
+  onTriggerSOS,
+  onBackToDashboard
 }: NERLiveMapModuleProps) {
   const { t } = useTranslation();
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -824,29 +826,95 @@ export default function NERLiveMapModule({
         
         {/* LEAFLET MAP CANVAS */}
         <div ref={mapRef} className="w-full h-full z-0" />
+        
+        {/* FULL-SCREEN MODE FLOATING CONTROL HEADER BAR */}
         {hideHeader && (
-          <div className="absolute top-4 right-16 z-[1000] flex items-center gap-1.5 text-xs bg-white/90 dark:bg-slate-950/85 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 backdrop-blur shadow-2xl">
-            <button
-              onClick={() => {
-                if (mapInstanceRef.current) {
-                  mapInstanceRef.current.flyTo([26.20, 89.50], 6.5, { duration: 1.2 });
-                }
-              }}
-              className="rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 px-2.5 py-1 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1 cursor-pointer shrink-0"
-              title="Overview"
-            >
-              <span>🇮🇳</span> <span>Overview</span>
-            </button>
+          <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-wrap items-center justify-between gap-2.5 bg-slate-900/90 dark:bg-[#040814]/90 p-2.5 rounded-2xl border border-slate-700/80 backdrop-blur shadow-2xl">
+            <div className="flex items-center gap-2.5">
+              {onBackToDashboard && (
+                <button
+                  onClick={onBackToDashboard}
+                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:from-sky-600 hover:to-indigo-700 text-white font-extrabold text-xs shadow-md shadow-sky-500/20 flex items-center gap-1.5 cursor-pointer border border-sky-300/30 transition transform hover:scale-105"
+                  title="Return to Main Dashboard"
+                >
+                  <span className="text-sm">←</span>
+                  <span>{t("navigation.home", "Back to Dashboard")}</span>
+                </button>
+              )}
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                <span className="font-black text-xs text-white tracking-tight hidden sm:inline">
+                  NER Live GIS Map • 100% Full View
+                </span>
+              </div>
+            </div>
 
-            <button onClick={() => setBaseStyle("esri")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs shrink-0 ${baseStyle === "esri" ? "bg-indigo-600 text-white shadow" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}>🛰️ Satellite</button>
-            <button onClick={() => setBaseStyle("topo")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs shrink-0 ${baseStyle === "topo" ? "bg-indigo-600 text-white shadow" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}>⛰️ Topo</button>
-            <button onClick={() => setBaseStyle("osm")} className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs shrink-0 ${baseStyle === "osm" ? "bg-indigo-600 text-white shadow" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}>🗺️ Roads</button>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setIsLayersPanelOpen(!isLayersPanelOpen)}
+                className={`rounded-xl border border-slate-700 px-3 py-1.5 text-xs font-extrabold transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  isLayersPanelOpen ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+                }`}
+              >
+                <Layers className="h-4 w-4 text-sky-400" />
+                <span>Layers Panel</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  if (mapInstanceRef.current) {
+                    mapInstanceRef.current.flyTo([26.20, 89.50], 6.5, { duration: 1.2 });
+                  }
+                }}
+                className="rounded-xl bg-slate-800 border border-slate-700 px-2.5 py-1.5 text-xs font-extrabold text-slate-200 hover:bg-slate-700 transition flex items-center gap-1 cursor-pointer shrink-0"
+                title="Overview All Zones"
+              >
+                <span>🇮🇳</span> <span className="hidden sm:inline">All Zones</span>
+              </button>
+
+              <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs shrink-0">
+                <button
+                  onClick={() => setBaseStyle("esri")}
+                  className={`px-2.5 py-1 rounded-lg font-extrabold transition text-xs shrink-0 ${
+                    baseStyle === "esri" ? "bg-indigo-600 text-white shadow" : "text-slate-300 hover:text-white"
+                  }`}
+                >
+                  🛰️ Satellite
+                </button>
+                <button
+                  onClick={() => setBaseStyle("topo")}
+                  className={`px-2.5 py-1 rounded-lg font-extrabold transition text-xs shrink-0 ${
+                    baseStyle === "topo" ? "bg-indigo-600 text-white shadow" : "text-slate-300 hover:text-white"
+                  }`}
+                >
+                  ⛰️ Topo
+                </button>
+                <button
+                  onClick={() => setBaseStyle("osm")}
+                  className={`px-2.5 py-1 rounded-lg font-extrabold transition text-xs shrink-0 ${
+                    baseStyle === "osm" ? "bg-indigo-600 text-white shadow" : "text-slate-300 hover:text-white"
+                  }`}
+                >
+                  🗺️ Google Roads
+                </button>
+              </div>
+
+              {onTriggerSOS && (
+                <button
+                  onClick={onTriggerSOS}
+                  className="rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 px-3 py-1.5 text-xs font-black text-white shadow-md shadow-rose-600/30 flex items-center gap-1 cursor-pointer border border-rose-400/30 animate-pulse shrink-0"
+                >
+                  <span>🚨</span>
+                  <span className="hidden sm:inline">SOS</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 
         {/* LEFT FLOATING LAYERS & OVERLAYS INTERACTIVE PANEL */}
         {isLayersPanelOpen ? (
-          <div className="absolute left-4 top-4 z-[1000] w-72 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#070d1e]/95 p-4 shadow-2xl backdrop-blur text-xs space-y-3 transition-colors duration-300">
+          <div className={`absolute left-4 z-[1000] w-72 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#070d1e]/95 p-4 shadow-2xl backdrop-blur text-xs space-y-3 transition-colors duration-300 ${hideHeader ? 'top-16' : 'top-4'}`}>
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
               <div className="flex items-center gap-2 font-black uppercase text-slate-900 dark:text-white tracking-wider">
                 <span>{t("map.layersPanel", "LAYERS & OVERLAYS")}</span>
@@ -1019,72 +1087,70 @@ export default function NERLiveMapModule({
           )
         )}
 
-        {/* RIGHT FLOATING ZOOM CONTROLS (Only in embedded mode) */}
-        {!hideHeader && (
-          <div className="absolute right-4 top-4 z-[1000] flex flex-col gap-2">
-            <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
-              <button
-                onClick={() => mapInstanceRef.current?.zoomIn()}
-                className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
-                title="Zoom In"
-              >
-                +
-              </button>
-              <button
-                onClick={() => mapInstanceRef.current?.zoomOut()}
-                className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
-                title="Zoom Out"
-              >
-                -
-              </button>
-            </div>
-
-            <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
-              <button
-                onClick={() => setBaseStyle(baseStyle === "esri" ? "topo" : "esri")}
-                className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
-                title="Toggle Satellite / Topo View"
-              >
-                {baseStyle === "esri" ? "⛰️" : "🛰️"}
-              </button>
-              <button
-                onClick={() => mapInstanceRef.current?.flyTo([30.3880, 78.0500], 11, { duration: 1.5 })}
-                className="h-8 w-8 rounded-lg bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-purple-500/30"
-                title="Focus Dehradun to Mussoorie Corridor"
-              >
-                🏔️
-              </button>
-              <button
-                onClick={() => mapInstanceRef.current?.flyTo([26.9157, 70.9083], 8, { duration: 1.5 })}
-                className="h-8 w-8 rounded-lg bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-amber-500/30"
-                title="Focus Rajasthan Thar Desert Sector"
-              >
-                🏜️
-              </button>
-              <button
-                onClick={() => mapInstanceRef.current?.flyTo([34.1526, 77.5771], 8, { duration: 1.5 })}
-                className="h-8 w-8 rounded-lg bg-sky-600 hover:bg-sky-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-sky-500/30"
-                title="Focus J&K & Ladakh High Altitude Pass"
-              >
-                ❄️
-              </button>
-              <button
-                onClick={() => mapInstanceRef.current?.flyTo([28.6139, 77.2090], 11, { duration: 1.5 })}
-                className="h-8 w-8 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-emerald-500/30"
-                title="Focus Delhi (NCT) & Chandigarh Urban Grid"
-              >
-                🏙️
-              </button>
-              <button
-                onClick={() => mapInstanceRef.current?.setView([27.5000, 81.5000], 6)}
-                className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
-                title="Center All-India National Map Overview"
-              >
-                🎯
-              </button>
-            </div>
+        {/* RIGHT FLOATING ZOOM CONTROLS */}
+        <div className={`absolute right-4 z-[1000] flex flex-col gap-2 ${hideHeader ? 'top-16' : 'top-4'}`}>
+          <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
+            <button
+              onClick={() => mapInstanceRef.current?.zoomIn()}
+              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
+              title="Zoom In"
+            >
+              +
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.zoomOut()}
+              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
+              title="Zoom Out"
+            >
+              -
+            </button>
           </div>
-        )}
+
+          <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
+            <button
+              onClick={() => setBaseStyle(baseStyle === "esri" ? "topo" : "esri")}
+              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
+              title="Toggle Satellite / Topo View"
+            >
+              {baseStyle === "esri" ? "⛰️" : "🛰️"}
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.flyTo([30.3880, 78.0500], 11, { duration: 1.5 })}
+              className="h-8 w-8 rounded-lg bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-purple-500/30"
+              title="Focus Dehradun to Mussoorie Corridor"
+            >
+              🏔️
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.flyTo([26.9157, 70.9083], 8, { duration: 1.5 })}
+              className="h-8 w-8 rounded-lg bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-amber-500/30"
+              title="Focus Rajasthan Thar Desert Sector"
+            >
+              🏜️
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.flyTo([34.1526, 77.5771], 8, { duration: 1.5 })}
+              className="h-8 w-8 rounded-lg bg-sky-600 hover:bg-sky-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-sky-500/30"
+              title="Focus J&K & Ladakh High Altitude Pass"
+            >
+              ❄️
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.flyTo([28.6139, 77.2090], 11, { duration: 1.5 })}
+              className="h-8 w-8 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-emerald-500/30"
+              title="Focus Delhi (NCT) & Chandigarh Urban Grid"
+            >
+              🏙️
+            </button>
+            <button
+              onClick={() => mapInstanceRef.current?.setView([27.5000, 81.5000], 6)}
+              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
+              title="Center All-India National Map Overview"
+            >
+              🎯
+            </button>
+          </div>
+        </div>
 
       </div>
     </div>
