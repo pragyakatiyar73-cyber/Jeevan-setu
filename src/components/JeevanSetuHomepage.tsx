@@ -895,32 +895,32 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <div className="lg:col-span-3 flex flex-col justify-between space-y-6">
               {/* 4 Statistics Grid */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col items-start justify-center">
-                  <div className="h-7 w-7 rounded-full bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center mb-1 text-xs font-extrabold">
+                <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.05] hover:border-sky-400/80 cursor-pointer flex flex-col items-start justify-center group">
+                  <div className="h-7 w-7 rounded-full bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center mb-1 text-xs font-extrabold group-hover:scale-110 transition">
                     <ShieldAlert className="h-4 w-4" />
                   </div>
                   <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">12</span>
                   <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">{t('home.activeIncidents', 'Active Incidents')}</span>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col items-start justify-center">
-                  <div className="h-7 w-7 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-1 text-xs font-extrabold">
+                <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.05] hover:border-amber-400/80 cursor-pointer flex flex-col items-start justify-center group">
+                  <div className="h-7 w-7 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-1 text-xs font-extrabold group-hover:scale-110 transition">
                     <AlertTriangle className="h-4 w-4" />
                   </div>
                   <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">04</span>
                   <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">{t('home.criticalAlerts', 'Critical Alerts')}</span>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col items-start justify-center">
-                  <div className="h-7 w-7 rounded-full bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-1 text-xs font-extrabold">
+                <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.05] hover:border-blue-400/80 cursor-pointer flex flex-col items-start justify-center group">
+                  <div className="h-7 w-7 rounded-full bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-1 text-xs font-extrabold group-hover:scale-110 transition">
                     <MapPin className="h-4 w-4" />
                   </div>
                   <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">18</span>
                   <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1">{t('home.affectedDistricts', 'Affected Districts')}</span>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col items-start justify-center">
-                  <div className="h-7 w-7 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-1 text-xs font-extrabold">
+                <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.05] hover:border-emerald-400/80 cursor-pointer flex flex-col items-start justify-center group">
+                  <div className="h-7 w-7 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-1 text-xs font-extrabold group-hover:scale-110 transition">
                     <Users className="h-4 w-4" />
                   </div>
                   <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">27</span>
@@ -929,10 +929,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               </div>
 
               {/* Recent Alerts List */}
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex-1 flex flex-col justify-between">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.03] hover:border-sky-400/80 cursor-pointer flex-1 flex flex-col justify-between group">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 mb-3">
                   <span className="text-xs font-extrabold text-slate-900 dark:text-white">{t('home.recentAlerts', 'Recent Alerts')}</span>
-                  <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
+                  <ArrowRight className="h-3.5 w-3.5 text-slate-400 group-hover:translate-x-1 transition" />
                 </div>
 
                 <div className="space-y-3">
@@ -941,7 +941,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     { title: 'Flood Alert – Assam', risk: 'Moderate Risk', riskClass: 'text-amber-600 dark:text-amber-400 font-bold', time: '4 hours ago', dot: 'bg-amber-500' },
                     { title: 'Heavy Rainfall – Meghalaya', risk: 'Monitor', riskClass: 'text-slate-500 dark:text-slate-400 font-semibold', time: '6 hours ago', dot: 'bg-emerald-500' }
                   ].map((alert, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-xs py-1">
+                    <div key={idx} className="flex items-center justify-between text-xs py-1 hover:bg-slate-50 dark:hover:bg-slate-800/50 px-1.5 rounded-lg transition">
                       <div className="flex items-center gap-2 overflow-hidden pr-1">
                         <span className={`h-2 w-2 rounded-full shrink-0 ${alert.dot}`} />
                         <span className="font-bold text-slate-900 dark:text-slate-200 truncate">{alert.title}</span>
@@ -957,7 +957,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </div>
 
             {/* CENTER COLUMN: Real Interactive Command Live GIS India Map (6 Cols) */}
-            <div className="lg:col-span-6 relative min-h-[420px] lg:min-h-[460px] rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-xl bg-slate-950 group">
+            <div className="lg:col-span-6 relative min-h-[420px] lg:min-h-[460px] rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.01] hover:border-sky-400/80 bg-slate-950 group">
               
               {/* Tactical HUD Radar Sweep overlay */}
               <div className="radar-sweep-line" />
@@ -1111,15 +1111,15 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* RIGHT COLUMN: Weather Card & High Risk Banner (3 Cols) */}
             <div className="lg:col-span-3 flex flex-col justify-between space-y-4">
               {/* Weather Card */}
-              <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm flex-1 flex flex-col justify-between">
+              <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.03] hover:border-sky-400/80 cursor-pointer flex-1 flex flex-col justify-between group">
                 <div>
                   <div className="flex items-center justify-between text-slate-400 dark:text-slate-500 mb-2">
-                    <CloudRain className="h-8 w-8 text-sky-500" />
+                    <CloudRain className="h-8 w-8 text-sky-500 group-hover:scale-110 transition" />
                     <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">{t('home.liveWeather', 'Live Weather')}</span>
                   </div>
 
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">{t('home.currentWeather', 'Current Weather')}</span>
-                  <h4 className="text-lg font-black text-slate-900 dark:text-white mt-0.5 leading-tight">
+                  <h4 className="text-lg font-black text-slate-900 dark:text-white mt-0.5 leading-tight group-hover:text-sky-400 transition">
                     {t('home.heavyRainfall', 'Heavy Rainfall')}
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
@@ -1128,7 +1128,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 </div>
 
                 <div className="pt-4">
-                  <div className="text-4xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
+                  <div className="text-4xl font-black text-slate-900 dark:text-white font-mono tracking-tight group-hover:scale-105 transition origin-left">
                     22°C
                   </div>
                   <div className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">
@@ -1140,10 +1140,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {/* High Risk Banner */}
               <div
                 onClick={() => setIsRiskModalOpen(true)}
-                className="bg-[#FFF0F0] dark:bg-[#250d11] hover:bg-[#FFE2E2] dark:hover:bg-[#341217] border border-red-200/90 dark:border-red-900/40 rounded-2xl p-4 flex items-center justify-between gap-3 cursor-pointer transition shadow-sm"
+                className="bg-[#FFF0F0] dark:bg-[#250d11] hover:bg-[#FFE2E2] dark:hover:bg-[#341217] border border-red-200/90 dark:border-red-900/40 hover:border-red-400/80 rounded-2xl p-4 flex items-center justify-between gap-3 cursor-pointer transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.04] hover:shadow-xl shadow-sm group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <div className="h-9 w-9 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition">
                     <ShieldAlert className="h-5 w-5" />
                   </div>
                   <div>
@@ -1155,7 +1155,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     </span>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-red-500 shrink-0" />
+                <ArrowRight className="h-4 w-4 text-red-500 shrink-0 group-hover:translate-x-1.5 transition" />
               </div>
             </div>
 
