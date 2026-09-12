@@ -146,8 +146,8 @@ export default function SmartEmergencyResponseModule({ onNavigateToMap, onNaviga
     if (!leafletMapRef.current) {
       const map = L.map(mapContainerRef.current).setView([26.1445, 91.7362], 7);
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap &copy; CARTO',
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '&copy; Esri & Jeevan Setu NER',
         maxZoom: 18
       }).addTo(map);
 
