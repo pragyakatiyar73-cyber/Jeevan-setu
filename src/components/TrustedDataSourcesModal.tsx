@@ -226,13 +226,16 @@ export default function TrustedDataSourcesModal({
               <ShieldCheck className="h-5 w-5 text-sky-400" />
             </div>
             <div>
-              <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
+              <h3 className="text-xl font-extrabold text-white flex flex-wrap items-center gap-2">
                 Trusted Data Sources
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                   Verified Telemetry
                 </span>
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                  Data Coverage: North Eastern Region — 8 States
+                </span>
               </h3>
-              <p className="text-xs text-slate-400">Real-time integrated meteorological, spatial &amp; MongoDB crowdsourced intelligence</p>
+              <p className="text-xs text-slate-400">Real-time integrated meteorological, spatial &amp; MongoDB crowdsourced intelligence for the 8 NER states</p>
             </div>
           </div>
 

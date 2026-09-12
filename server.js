@@ -772,6 +772,46 @@ async function getMongoDbConnection() {
   }
 }
 
+// 📍 Master 8 NER States Geographic Validation for Server
+const NER_STATES = [
+  'Arunachal Pradesh',
+  'Assam',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Sikkim',
+  'Tripura'
+];
+
+const MASTER_NER_POLYGON = [
+  [28.2, 88.0], [28.1, 88.9], [27.3, 88.9], [27.0, 89.8],
+  [27.4, 91.6], [28.0, 92.5], [29.3, 94.5], [29.5, 96.5],
+  [28.2, 97.4], [27.0, 96.5], [26.2, 95.3], [25.2, 94.8],
+  [24.2, 94.4], [23.2, 93.4], [21.9, 92.8], [22.4, 92.2],
+  [23.0, 91.2], [24.1, 91.1], [24.9, 91.8], [25.2, 89.8],
+  [26.1, 89.7], [26.6, 88.5], [27.2, 88.0]
+];
+
+function isPointInNER(lat, lon) {
+  if (typeof lat !== 'number' || typeof lon !== 'number' || isNaN(lat) || isNaN(lon)) return false;
+  if (lat < 21.8 || lat > 29.6 || lon < 87.8 || lon > 97.5) return false;
+  let inside = false;
+  for (let i = 0, j = MASTER_NER_POLYGON.length - 1; i < MASTER_NER_POLYGON.length; j = i++) {
+    const xi = MASTER_NER_POLYGON[i][0], yi = MASTER_NER_POLYGON[i][1];
+    const xj = MASTER_NER_POLYGON[j][0], yj = MASTER_NER_POLYGON[j][1];
+    const intersect = ((yi > lon) !== (yj > lon)) && (lat < (xj - xi) * (lon - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function isNERState(stateName) {
+  if (!stateName) return false;
+  const norm = String(stateName).trim().toLowerCase();
+  return NER_STATES.some(s => s.toLowerCase() === norm);
+}
+
 // GET /api/reports/crowdsourced - Fetch live report metrics & recent active disaster reports
 app.get('/api/reports/crowdsourced', async (req, res) => {
   const db = await getMongoDbConnection();
@@ -789,17 +829,23 @@ app.get('/api/reports/crowdsourced', async (req, res) => {
 
   try {
     const col = db.collection(MONGODB_COLLECTION);
-    const totalReports = await col.countDocuments();
+    const allDocs = await col.find().sort({ createdAt: -1 }).toArray();
 
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    const reportsLastHour = await col.countDocuments({
-      createdAt: { $gte: oneHourAgo }
+    // Filter documents strictly inside the NER boundary
+    const nerDocs = allDocs.filter(doc => {
+      const lat = Number(doc.latitude);
+      const lon = Number(doc.longitude);
+      const st = doc.state;
+      return isPointInNER(lat, lon) && (!st || isNERState(st));
     });
 
-    const latestDocList = await col.find().sort({ createdAt: -1 }).limit(1).toArray();
+    const totalReports = nerDocs.length;
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const reportsLastHour = nerDocs.filter(doc => new Date(doc.createdAt) >= oneHourAgo).length;
+
     let latestReportTimestamp = null;
-    if (latestDocList.length > 0) {
-      const rawTs = latestDocList[0].timestamp || latestDocList[0].createdAt;
+    if (nerDocs.length > 0) {
+      const rawTs = nerDocs[0].timestamp || nerDocs[0].createdAt;
       const d = new Date(rawTs);
       if (!isNaN(d.getTime())) {
         latestReportTimestamp = `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
@@ -808,11 +854,12 @@ app.get('/api/reports/crowdsourced', async (req, res) => {
       }
     }
 
-    const recentReports = await col.find().sort({ createdAt: -1 }).limit(15).toArray();
+    const recentReports = nerDocs.slice(0, 15);
 
     res.json({
       isConnected: true,
       status: 'success',
+      coverage: 'Data Coverage: North Eastern Region — 8 States',
       database: `MongoDB (${MONGODB_DB_NAME}.${MONGODB_COLLECTION})`,
       totalReports,
       reportsLastHour,
@@ -844,15 +891,41 @@ app.post('/api/reports/crowdsourced', async (req, res) => {
     });
   }
 
+  const lat = Number(req.body.latitude);
+  const lon = Number(req.body.longitude);
+  const state = req.body.state ? String(req.body.state).trim() : 'Assam';
+  const district = req.body.district ? String(req.body.district).trim() : 'Kamrup Metropolitan';
+
+  // Geographic boundary validation
+  if (!isPointInNER(lat, lon)) {
+    console.warn(`⛔ Rejected Crowdsourced Report Outside NER Boundary: (${lat}, ${lon})`);
+    return res.status(400).json({
+      isConnected: true,
+      status: 'rejected',
+      message: `Geographic validation failed: Coordinates (${lat}, ${lon}) are outside the 8 North Eastern Region (NER) states.`
+    });
+  }
+
+  if (!isNERState(state)) {
+    console.warn(`⛔ Rejected Crowdsourced Report Outside NER State: ${state}`);
+    return res.status(400).json({
+      isConnected: true,
+      status: 'rejected',
+      message: `Geographic validation failed: State '${state}' is not one of the 8 North Eastern Region (NER) states.`
+    });
+  }
+
   try {
     const col = db.collection(MONGODB_COLLECTION);
     const now = new Date();
     const newReport = {
       reportId: `REP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
       disasterType: req.body.disasterType || 'General Disaster Alert',
-      locationName: req.body.locationName || 'Unspecified Location',
-      latitude: Number(req.body.latitude) || 26.1445,
-      longitude: Number(req.body.longitude) || 91.7362,
+      locationName: req.body.locationName || `${district}, ${state}`,
+      latitude: lat,
+      longitude: lon,
+      state: state,
+      district: district,
       description: req.body.description || 'Citizen ground report logged.',
       severity: req.body.severity || 'HIGH',
       status: 'ACTIVE',
@@ -861,14 +934,15 @@ app.post('/api/reports/crowdsourced', async (req, res) => {
     };
 
     const result = await col.insertOne(newReport);
-    console.log('📌 New Crowdsourced Report Saved to MongoDB:', newReport.reportId);
+    console.log('📌 New Crowdsourced Report Saved to MongoDB:', newReport.reportId, `${district}, ${state}`);
 
     res.json({
       isConnected: true,
       status: 'success',
-      message: 'Report saved to MongoDB successfully',
+      message: 'Report validated and saved to MongoDB successfully',
       reportId: newReport.reportId,
-      insertedId: result.insertedId
+      insertedId: result.insertedId,
+      coverage: 'North Eastern Region — 8 States'
     });
   } catch (err) {
     console.error('Error inserting report to MongoDB:', err);
@@ -879,3 +953,4 @@ app.post('/api/reports/crowdsourced', async (req, res) => {
     });
   }
 });
+

@@ -250,11 +250,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
     });
 
-    // Create map centered on India
+    // Create map centered on 8 North Eastern Region (NER) States
     const map = L.map(mapContainerRef.current, {
       zoomControl: false,
       attributionControl: false
-    }).setView([23.5, 83.5], 5);
+    }).setView([26.1, 92.8], 7);
 
     const initialTile = L.tileLayer(getTileUrl(mapTileType), { maxZoom: 18 }).addTo(map);
     tileLayerRef.current = initialTile;
@@ -540,13 +540,13 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               )}
             </div>
 
-            {/* NER Pill Badge (Enlarged) */}
+            {/* NER Coverage Badge */}
             <button
               onClick={() => onNavigateModule('gov')}
-              className="px-3.5 py-1.5 rounded-full text-sm font-black bg-sky-500/20 text-sky-300 border border-sky-400/40 hover:bg-sky-500/30 hover:border-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.1] hover:shadow-lg cursor-pointer hidden lg:flex items-center gap-1.5 shadow-sm"
+              className="px-3 py-1 rounded-full text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-400/40 hover:bg-sky-500/30 hover:border-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.05] hover:shadow-lg cursor-pointer hidden lg:flex items-center gap-1.5 shadow-sm"
             >
               <span>🏛️</span>
-              <span>NER</span>
+              <span>Data Coverage: North Eastern Region — 8 States</span>
             </button>
 
             {/* Theme Toggle Switch */}

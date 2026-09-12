@@ -201,6 +201,7 @@ export default function NERLiveMapModule({
   const disruptionsGroupRef = useRef<L.LayerGroup>(L.layerGroup());
   const convoysGroupRef = useRef<L.LayerGroup>(L.layerGroup());
   const depotsGroupRef = useRef<L.LayerGroup>(L.layerGroup());
+  const crossBorderGroupRef = useRef<L.LayerGroup>(L.layerGroup());
 
   // Base Style
   const [baseStyle, setBaseStyle] = useState<string>("esri");
@@ -215,7 +216,8 @@ export default function NERLiveMapModule({
     weather: true,
     disruptions: true,
     convoys: true,
-    depots: true
+    depots: true,
+    crossBorderContext: false // OFF by default; excluded from core NER counts
   });
 
   // Handle external focus target changes from Dashboard
@@ -267,6 +269,26 @@ export default function NERLiveMapModule({
     disruptionsGroupRef.current = L.layerGroup().addTo(map);
     convoysGroupRef.current = L.layerGroup().addTo(map);
     depotsGroupRef.current = L.layerGroup().addTo(map);
+    crossBorderGroupRef.current = L.layerGroup().addTo(map);
+
+    // 🌐 CROSS-BORDER CONTEXT OVERLAY LAYER (Disabled by default, isolated from core stats)
+    const crossBorderPoints = [
+      { name: "Nepal Border Corridor", lat: 26.8, lon: 87.2, info: "Cross-Border Transit Context (Nepal) — Excluded from core NER stats" },
+      { name: "Bhutan Samdrup Jongkhar Corridor", lat: 26.8, lon: 91.5, info: "Cross-Border Transit Context (Bhutan) — Excluded from core NER stats" },
+      { name: "Bangladesh Sylhet Border Corridor", lat: 24.9, lon: 91.8, info: "Cross-Border Transit Context (Bangladesh) — Excluded from core NER stats" }
+    ];
+
+    crossBorderPoints.forEach(cb => {
+      const cbIcon = L.divIcon({
+        className: "custom-crossborder-marker",
+        html: `<div style="background: #64748b; color: white; border: 1.5px dashed #cbd5e1; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🌐 ${cb.name}</div>`,
+        iconSize: [140, 24],
+        iconAnchor: [70, 12]
+      });
+      L.marker([cb.lat, cb.lon], { icon: cbIcon })
+        .bindTooltip(cb.info, { permanent: false })
+        .addTo(crossBorderGroupRef.current);
+    });
 
     // 🌊 WEATHER RADAR OVERLAY LAYER
     L.tileLayer("https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913/{z}/{x}/{y}.png", {
@@ -276,17 +298,29 @@ export default function NERLiveMapModule({
 
     // 🗺️ DRAW SOVEREIGN 8 NER STATES BOUNDARY POLYGON
     const nerBoundaryCoords: L.LatLngExpression[] = [
-      [27.1000, 88.0000],
-      [28.1000, 88.9000],
-      [27.0000, 89.8000],
-      [28.0000, 91.5000],
-      [29.5000, 97.4000],
-      [27.0000, 97.5000],
-      [24.5000, 94.8000],
-      [21.9000, 92.6000],
-      [22.9000, 91.1000],
-      [25.0000, 89.8000],
-      [26.8000, 89.7000]
+      [28.2, 88.0],
+      [28.1, 88.9],
+      [27.3, 88.9],
+      [27.0, 89.8],
+      [27.4, 91.6],
+      [28.0, 92.5],
+      [29.3, 94.5],
+      [29.5, 96.5],
+      [28.2, 97.4],
+      [27.0, 96.5],
+      [26.2, 95.3],
+      [25.2, 94.8],
+      [24.2, 94.4],
+      [23.2, 93.4],
+      [21.9, 92.8],
+      [22.4, 92.2],
+      [23.0, 91.1],
+      [24.1, 91.1],
+      [24.9, 91.8],
+      [25.2, 89.8],
+      [26.1, 89.7],
+      [26.6, 88.5],
+      [27.2, 88.0]
     ];
     L.polygon(nerBoundaryCoords, {
       color: '#38bdf8',
@@ -294,7 +328,7 @@ export default function NERLiveMapModule({
       dashArray: '6, 6',
       fillColor: '#0284c7',
       fillOpacity: 0.04
-    }).addTo(map).bindTooltip("North Eastern Region (8 Sovereign States Boundary)", { permanent: false });
+    }).addTo(map).bindTooltip("Data Coverage: North Eastern Region — 8 Sovereign States", { permanent: false });
 
     // 🚨 EMERGENCY SOS GLOWING BEACON MARKER
     const sosLat = activeSosLocation ? activeSosLocation.lat : 25.5788;
@@ -380,6 +414,7 @@ export default function NERLiveMapModule({
     if (overlays.disruptions) { map.addLayer(disruptionsGroupRef.current); } else { map.removeLayer(disruptionsGroupRef.current); }
     if (overlays.convoys) { map.addLayer(convoysGroupRef.current); } else { map.removeLayer(convoysGroupRef.current); }
     if (overlays.depots) { map.addLayer(depotsGroupRef.current); } else { map.removeLayer(depotsGroupRef.current); }
+    if (overlays.crossBorderContext) { map.addLayer(crossBorderGroupRef.current); } else { map.removeLayer(crossBorderGroupRef.current); }
   }, [overlays]);
 
   // Handle State Selection

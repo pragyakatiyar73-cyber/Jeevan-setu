@@ -497,8 +497,13 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
           ))}
         </nav>
 
-        {/* RIGHT: Live Grid Synchronized Status & Bell */}
-        <div className="hidden md:flex items-center gap-3 shrink-0">
+        {/* RIGHT: Live Grid Synchronized Status & Coverage Badge */}
+        <div className="hidden md:flex items-center gap-2.5 shrink-0">
+          <span className="inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-950/60 border border-blue-500/30 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold text-blue-700 dark:text-blue-400">
+            <Globe className="h-3 w-3 text-blue-500" />
+            <span>Data Coverage: North Eastern Region — 8 States</span>
+          </span>
+
           <span className="inline-flex items-center gap-1.5 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
             <span>Grid Synchronized</span>

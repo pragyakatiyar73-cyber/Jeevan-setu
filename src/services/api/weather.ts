@@ -5,6 +5,8 @@
  * wind gusts, and real-time atmospheric data via Open-Meteo API.
  */
 
+import { isPointInNER } from '../../utils/nerBoundary';
+
 export interface WeatherData {
   latitude: number;
   longitude: number;
@@ -75,11 +77,34 @@ export function getWMOWeatherCondition(code: number): { condition: string; icon:
  * Fetches real-time meteorological metrics for any coordinate using Open-Meteo API
  */
 export async function getLiveWeather(lat: number, lon: number): Promise<WeatherData> {
+  // Reject locations outside 8 NER states
+  if (!isPointInNER(lat, lon)) {
+    return {
+      latitude: lat,
+      longitude: lon,
+      elevation: 0,
+      temperature: 0,
+      relativeHumidity: 0,
+      precipitation: 0,
+      rain: 0,
+      weatherCode: -1,
+      condition: 'Data unavailable',
+      windSpeed: 0,
+      windGusts: 0,
+      isSevereWeather: false,
+      severeRiskLevel: 'NONE',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isLive: false,
+      error: 'Data unavailable (Location outside North Eastern Region)'
+    };
+  }
+
   const url = new URL(OPEN_METEO_BASE);
   url.searchParams.set('latitude', lat.toString());
   url.searchParams.set('longitude', lon.toString());
   url.searchParams.set('current', 'temperature_2m,relative_humidity_2m,precipitation,rain,weather_code,wind_speed_10m,wind_gusts_10m');
   url.searchParams.set('timezone', 'Asia/Kolkata');
+
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 8000);

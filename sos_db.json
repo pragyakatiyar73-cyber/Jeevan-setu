@@ -1,5 +1,39 @@
 [
   {
+    "sosId": "SOS-2026-7362",
+    "distressType": "🌊 Flash Flood",
+    "lat": 27.26,
+    "lon": 92.42,
+    "landmark": "In a Bangladesh.",
+    "personsTrapped": "5 to 15 Persons",
+    "triageLevel": "🔴 Level 1: Immediate Rescue",
+    "status": "ACTIVE_DISPATCH",
+    "timestamp": "2026-09-12T15:19:32.912Z",
+    "respondersNotified": [
+      "NDRF 12th Bn",
+      "SDRF Arunachal",
+      "MDoNER Triage Center",
+      "IAF Helicopter Unit Tezpur"
+    ]
+  },
+  {
+    "sosId": "SOS-2026-9525",
+    "distressType": "🌊 Flash Flood",
+    "lat": 26.4736,
+    "lon": 80.3596,
+    "landmark": "Fluid eye, inner Nepal.",
+    "personsTrapped": "1 to 4 Persons",
+    "triageLevel": "🔴 Level 1: Immediate Rescue",
+    "status": "ACTIVE_DISPATCH",
+    "timestamp": "2026-09-12T15:19:00.498Z",
+    "respondersNotified": [
+      "NDRF 12th Bn",
+      "SDRF Arunachal",
+      "MDoNER Triage Center",
+      "IAF Helicopter Unit Tezpur"
+    ]
+  },
+  {
     "sosId": "SOS-2026-8611",
     "distressType": "Trapped in Landslide / Mudflow",
     "lat": 27.26,

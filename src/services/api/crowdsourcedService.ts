@@ -1,9 +1,4 @@
-/**
- * 👥 Crowdsourced Ground Reports API Service (MongoDB Integrated)
- * 
- * Provides real-time disaster reports, 1-hour count metrics, and latest report timestamps
- * directly from MongoDB database (jeevan_setu.crowdsourced_reports).
- */
+import { isPointInNER, validateNERLocation } from '../../utils/nerBoundary';
 
 export interface CrowdsourcedReportItem {
   _id?: string;
@@ -12,6 +7,8 @@ export interface CrowdsourcedReportItem {
   locationName: string;
   latitude: number;
   longitude: number;
+  state?: string;
+  district?: string;
   description: string;
   reporterName?: string;
   severity: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW';
@@ -24,6 +21,7 @@ export interface CrowdsourcedTelemetryData {
   isConnected: boolean;
   status: 'success' | 'error';
   database: string;
+  coverage?: string;
   totalReports: number;
   reportsLastHour: number;
   latestReportTimestamp: string | null;
@@ -64,14 +62,19 @@ export async function getCrowdsourcedReportsTelemetry(): Promise<CrowdsourcedTel
       };
     }
 
+    const rawReports: CrowdsourcedReportItem[] = Array.isArray(data.recentReports) ? data.recentReports : [];
+    // Strict geographic validation filter
+    const nerFilteredReports = rawReports.filter(rep => isPointInNER(rep.latitude, rep.longitude));
+
     return {
       isConnected: true,
       status: 'success',
+      coverage: 'Data Coverage: North Eastern Region — 8 States',
       database: data.database || 'MongoDB (jeevan_setu.crowdsourced_reports)',
-      totalReports: data.totalReports ?? 0,
+      totalReports: data.totalReports ?? nerFilteredReports.length,
       reportsLastHour: data.reportsLastHour ?? 0,
       latestReportTimestamp: data.latestReportTimestamp || null,
-      recentReports: Array.isArray(data.recentReports) ? data.recentReports : []
+      recentReports: nerFilteredReports
     };
   } catch (err: any) {
     clearTimeout(timeoutId);
@@ -97,9 +100,20 @@ export async function submitCrowdsourcedReport(reportData: {
   locationName: string;
   latitude: number;
   longitude: number;
+  state?: string;
+  district?: string;
   description: string;
   severity?: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW';
 }): Promise<{ success: boolean; message: string; reportId?: string }> {
+  // Pre-validate coordinates locally against NER boundary
+  const geoValidation = validateNERLocation(reportData.latitude, reportData.longitude, reportData.state, reportData.district);
+  if (!geoValidation.isValid) {
+    return {
+      success: false,
+      message: geoValidation.reason || 'Report rejected: Location is outside the 8 North Eastern Region (NER) states.'
+    };
+  }
+
   try {
     const res = await fetch(`${BACKEND_URL}/api/reports/crowdsourced`, {
       method: 'POST',
@@ -108,7 +122,8 @@ export async function submitCrowdsourcedReport(reportData: {
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to submit report. Server status: ${res.status}`);
+      const errData = await res.json().catch(() => null);
+      throw new Error(errData?.message || `Failed to submit report. Server status: ${res.status}`);
     }
 
     const data = await res.json();
@@ -124,3 +139,4 @@ export async function submitCrowdsourcedReport(reportData: {
     };
   }
 }
+
