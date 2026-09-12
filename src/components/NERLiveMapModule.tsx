@@ -529,6 +529,19 @@ export default function NERLiveMapModule({
       {/* MAP CANVAS CONTAINER */}
       <div className="flex-1 relative w-full h-full overflow-hidden">
         <div ref={mapRef} className="w-full h-full z-10" />
+
+        {/* 🔙 BACK TO DASHBOARD FLOATING ACTION BUTTON */}
+        {onBackToDashboard && (
+          <div className="absolute top-4 left-4 z-[999] flex items-center gap-2">
+            <button
+              onClick={onBackToDashboard}
+              className="px-4 py-2.5 bg-slate-900/95 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-xl border border-slate-700/90 shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-105 flex items-center gap-2 cursor-pointer group ring-2 ring-cyan-500/30"
+            >
+              <span className="text-cyan-400 font-extrabold text-sm group-hover:-translate-x-1 transition-transform">←</span>
+              <span>Back to Dashboard</span>
+            </button>
+          </div>
+        )}
       </div>
 
     </div>

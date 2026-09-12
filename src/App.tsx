@@ -926,7 +926,7 @@ export default function App() {
               focusedTarget={mapFocusedTarget}
               onNavigateTo3DSim={() => setActiveModule('hub')}
               onTriggerSOS={() => setIsSosModalOpen(true)}
-              onBackToDashboard={() => setActiveModule('home')}
+              onBackToDashboard={() => setActiveModule('customdashboard')}
             />
           </div>
         )}
