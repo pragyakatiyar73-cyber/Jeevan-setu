@@ -1,5 +1,39 @@
 [
   {
+    "sosId": "SOS-2026-8611",
+    "distressType": "Trapped in Landslide / Mudflow",
+    "lat": 27.26,
+    "lon": 92.42,
+    "landmark": "सिक्किम।",
+    "personsTrapped": "5 to 15 Persons (Full Convoy / Bus)",
+    "triageLevel": "LEVEL 1 (Immediate Rescue / Air-Drop)",
+    "status": "ACTIVE_DISPATCH",
+    "timestamp": "2026-09-12T11:52:00.253Z",
+    "respondersNotified": [
+      "NDRF 12th Bn",
+      "SDRF Arunachal",
+      "MDoNER Triage Center",
+      "IAF Helicopter Unit Tezpur"
+    ]
+  },
+  {
+    "sosId": "SOS-2026-2324",
+    "distressType": "Trapped in Landslide / Mudflow",
+    "lat": 27.26,
+    "lon": 92.42,
+    "landmark": "हैलो एवरीवन हाउ आर यू?",
+    "personsTrapped": "5 to 15 Persons (Full Convoy / Bus)",
+    "triageLevel": "LEVEL 1 (Immediate Rescue / Air-Drop)",
+    "status": "ACTIVE_DISPATCH",
+    "timestamp": "2026-09-12T11:51:45.797Z",
+    "respondersNotified": [
+      "NDRF 12th Bn",
+      "SDRF Arunachal",
+      "MDoNER Triage Center",
+      "IAF Helicopter Unit Tezpur"
+    ]
+  },
+  {
     "sosId": "SOS-2026-5814",
     "distressType": "Flash Flood / River Breach",
     "lat": 27.26,
