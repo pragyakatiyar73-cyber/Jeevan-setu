@@ -1400,8 +1400,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-800/80">
             
             {/* Left: Brand (Compact) */}
-            <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full bg-slate-900 ring-2 ring-sky-400/70 overflow-hidden flex items-center justify-center shadow-md">
+            <div className="flex items-center gap-3 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.05] cursor-pointer group">
+              <div className="h-9 w-9 rounded-full bg-slate-900 ring-2 ring-sky-400/70 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300">
                 <img
                   src="/jeevan-setu-logo.jpg"
                   alt="Jeevan Setu Logo"
@@ -1413,7 +1413,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <span className="text-sky-400 font-black text-base">JS</span>
               </div>
               <div>
-                <span className="text-base font-black tracking-wider text-white block leading-none">
+                <span className="text-base font-black tracking-wider text-white block leading-none group-hover:text-sky-400 transition duration-300">
                   {language === 'hi' ? 'जीवन सेतु' : 'JEEVAN SETU'}
                 </span>
                 <span className="text-[10px] font-semibold text-sky-400 block mt-0.5">
@@ -1424,13 +1424,13 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
             {/* Center Links (Compact) */}
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs font-semibold text-slate-300">
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition cursor-pointer">{t('footer.privacyPolicy', 'Privacy Policy')}</button>
+              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.privacyPolicy', 'Privacy Policy')}</button>
               <span className="text-slate-700">|</span>
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition cursor-pointer">{t('footer.termsOfUse', 'Terms of Use')}</button>
+              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.termsOfUse', 'Terms of Use')}</button>
               <span className="text-slate-700">|</span>
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition cursor-pointer">{t('footer.help', 'Help')}</button>
+              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.help', 'Help')}</button>
               <span className="text-slate-700">|</span>
-              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition cursor-pointer">{t('footer.contact', 'Contact')}</button>
+              <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer inline-block">{t('footer.contact', 'Contact')}</button>
             </div>
 
             {/* Right: Follow Us (Compact) */}
@@ -1441,17 +1441,30 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   href="https://youtu.be/5GZvqN8GZw8"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 bg-slate-800 hover:bg-sky-600 rounded-lg text-slate-300 hover:text-white transition shadow-sm"
+                  className="p-2 bg-slate-800 hover:bg-red-600 rounded-xl text-slate-300 hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-125 hover:shadow-lg hover:shadow-red-600/40 cursor-pointer"
+                  title="YouTube"
                 >
                   <Youtube className="h-4 w-4" />
                 </a>
-                <a href="#twitter" className="p-1.5 bg-slate-800 hover:bg-sky-600 rounded-lg text-slate-300 hover:text-white transition shadow-sm">
+                <a
+                  href="#twitter"
+                  className="p-2 bg-slate-800 hover:bg-sky-500 rounded-xl text-slate-300 hover:text-slate-950 transition-all duration-300 transform hover:-translate-y-1 hover:scale-125 hover:shadow-lg hover:shadow-sky-500/40 cursor-pointer"
+                  title="Twitter"
+                >
                   <Twitter className="h-4 w-4" />
                 </a>
-                <a href="#instagram" className="p-1.5 bg-slate-800 hover:bg-sky-600 rounded-lg text-slate-300 hover:text-white transition shadow-sm">
+                <a
+                  href="#instagram"
+                  className="p-2 bg-slate-800 hover:bg-pink-600 rounded-xl text-slate-300 hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-125 hover:shadow-lg hover:shadow-pink-600/40 cursor-pointer"
+                  title="Instagram"
+                >
                   <Instagram className="h-4 w-4" />
                 </a>
-                <a href="#linkedin" className="p-1.5 bg-slate-800 hover:bg-sky-600 rounded-lg text-slate-300 hover:text-white transition shadow-sm">
+                <a
+                  href="#linkedin"
+                  className="p-2 bg-slate-800 hover:bg-blue-600 rounded-xl text-slate-300 hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-125 hover:shadow-lg hover:shadow-blue-600/40 cursor-pointer"
+                  title="LinkedIn"
+                >
                   <Linkedin className="h-4 w-4" />
                 </a>
               </div>
