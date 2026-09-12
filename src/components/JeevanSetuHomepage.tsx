@@ -601,12 +601,12 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
         {/* 100% Clean Photographic Background (Zero Baked Text / Zero Misalignment) */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=2600&q=80"
-            alt="Emergency Command Center Cybernetic Telemetry Grid"
-            className="w-full h-full object-cover object-center filter brightness-90 contrast-105"
+            src="/disaster-response-hero.jpg"
+            alt="Jeevan Setu Disaster Response & Rescue Operations"
+            className="w-full h-full object-cover object-right filter brightness-95 contrast-105"
           />
           {/* Smooth Dark Navy Gradient Overlay for Perfect Contrast & Crisp Text */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#070E20]/95 via-[#070E20]/65 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#070E20]/95 via-[#070E20]/60 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#070E20]/80 via-transparent to-transparent" />
         </div>
 
