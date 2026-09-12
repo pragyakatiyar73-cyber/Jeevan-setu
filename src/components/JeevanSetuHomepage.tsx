@@ -612,7 +612,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
 
 
-        <div className="relative z-20 w-full px-4 sm:px-6 lg:px-8 py-12 lg:py-16 flex flex-col justify-between">
+        <div className="relative z-20 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 lg:py-16 flex flex-col justify-between">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             
             {/* Hero Left Content with REAL working interactive React elements */}
@@ -711,8 +711,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {/* ==================================================
           5. WHAT JEEVAN SETU DOES (Clean Section - Light & Dark Mode Compatible)
          ================================================== */}
-      <section className="relative z-20 w-full px-4 sm:px-6 lg:px-8 py-10 bg-[#F8FAFC] dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-300">
-        <div className="w-full">
+      <section className="relative z-20 w-full py-10 text-slate-900 dark:text-slate-100 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
           
           {/* Section Header */}
           <div className="mb-6">
@@ -854,8 +854,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {/* ==================================================
           5 & 6. LIVE SITUATION SECTION (With Interactive Leaflet Map)
          ================================================== */}
-      <section className="w-full px-4 sm:px-6 lg:px-8 w-full mb-16">
-        <div className="bg-[#F4F7FC] dark:bg-[#070d1e] border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 lg:p-8 shadow-sm transition-colors duration-300">
+      <section className="w-full py-10 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
           
           {/* Section Header */}
           <div className="flex items-center justify-between mb-6">
@@ -1172,9 +1172,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {/* ==================================================
           4. HOW JEEVAN SETU WORKS (From data to action — in just a few steps)
           ================================================== */}
-      <section id="how-it-works" className="w-full px-4 sm:px-6 lg:px-8 mb-16 py-2">
-        
-        <div className="bg-white dark:bg-[#070d1e] p-6 sm:p-10 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-md">
+      <section id="how-it-works" className="w-full py-12 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               {t('home.howItWorksTitle', 'How Jeevan Setu Works')}
@@ -1255,33 +1254,35 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {/* ==================================================
           EMERGENCY CTA SECTION
          ================================================== */}
-      <section className="w-full px-4 sm:px-6 lg:px-8 mb-16">
-        <div className="bg-gradient-to-r from-red-950/90 via-rose-950/80 to-slate-900 border border-red-500/30 rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-          <div className="space-y-2 max-w-xl">
-            <div className="inline-flex items-center gap-2 bg-red-500/20 border border-red-400/40 text-red-300 text-xs font-bold px-3 py-1 rounded-full">
-              <ShieldAlert className="h-3.5 w-3.5 text-red-400 animate-pulse" />
-              <span>{t('home.emergencyCoordination', '24x7 Emergency Coordination')}</span>
+      <section className="w-full py-10">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-r from-red-950/90 via-rose-950/80 to-slate-900 border border-red-500/30 rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+            <div className="space-y-2 max-w-xl">
+              <div className="inline-flex items-center gap-2 bg-red-500/20 border border-red-400/40 text-red-300 text-xs font-bold px-3 py-1 rounded-full">
+                <ShieldAlert className="h-3.5 w-3.5 text-red-400 animate-pulse" />
+                <span>{t('home.emergencyCoordination', '24x7 Emergency Coordination')}</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-black tracking-tight">{t('home.needHelpTitle', 'Need help during a disaster?')}</h3>
+              <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
+                {t('home.needHelpDesc', 'Send distress signal, access live emergency maps, locate relief shelters, or connect with command teams.')}
+              </p>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">{t('home.needHelpTitle', 'Need help during a disaster?')}</h3>
-            <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
-              {t('home.needHelpDesc', 'Send distress signal, access live emergency maps, locate relief shelters, or connect with command teams.')}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <button
-              onClick={onOpenSos}
-              className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold shadow-lg shadow-red-600/40 hover:scale-105 transition flex items-center gap-2 cursor-pointer border border-red-400/50"
-            >
-              <PhoneCall className="h-4 w-4 animate-pulse" />
-              <span>{t('home.emergencyHelp', 'Emergency Help')}</span>
-            </button>
-            <button
-              onClick={() => onNavigateModule('reliefcamps')}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center gap-2"
-            >
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>{t('home.exploreResources', 'Explore Resources')}</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <button
+                onClick={onOpenSos}
+                className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold shadow-lg shadow-red-600/40 hover:scale-105 transition flex items-center gap-2 cursor-pointer border border-red-400/50"
+              >
+                <PhoneCall className="h-4 w-4 animate-pulse" />
+                <span>{t('home.emergencyHelp', 'Emergency Help')}</span>
+              </button>
+              <button
+                onClick={() => onNavigateModule('reliefcamps')}
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center gap-2"
+              >
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <span>{t('home.exploreResources', 'Explore Resources')}</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -1289,8 +1290,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {/* ==================================================
           8. TRUSTED DATA SOURCES
          ================================================== */}
-      <section className="w-full bg-slate-50 dark:bg-[#070d1e] border-t border-b border-slate-200/80 dark:border-slate-800 py-8 mb-12 transition-colors duration-300">
-        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <section className="w-full border-t border-b border-slate-200/80 dark:border-slate-800/80 py-8 my-4 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           
           <div>
             <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">
@@ -1331,7 +1332,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           9. FOOTER (Dark Navy matching reference)
          ================================================== */}
       <footer className="w-full bg-[#0B132B] dark:bg-[#040814] text-white pt-12 pb-8 border-t border-slate-800 transition-colors duration-300 mt-auto">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
           
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8 pb-8 border-b border-slate-800/80">
             
