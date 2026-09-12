@@ -421,14 +421,14 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           2. STICKY NAVBAR (Dark Navy matching reference image)
          ================================================== */}
       <header className="sticky top-0 z-[100] w-full bg-[#0B132B] dark:bg-[#070d1e] text-white shadow-lg border-b border-slate-800 transition-colors duration-300">
-        <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="w-full px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           
-          {/* LEFT: Logo & Brand */}
+          {/* LEFT: Logo & Brand (Enlarged) */}
           <div
             onClick={() => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="flex items-center gap-3 cursor-pointer group shrink-0"
+            className="flex items-center gap-3.5 cursor-pointer group shrink-0"
           >
-            <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-sky-400/60 group-hover:scale-105 transition shadow-md shadow-sky-500/20 bg-slate-900 flex items-center justify-center">
+            <div className="relative h-12 w-12 sm:h-13 sm:w-13 rounded-full overflow-hidden ring-2 ring-sky-400/60 group-hover:scale-105 transition shadow-lg shadow-sky-500/25 bg-slate-900 flex items-center justify-center">
               <img
                 src="/jeevan-setu-logo.jpg"
                 alt="Jeevan Setu Logo"
@@ -437,11 +437,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   (e.target as HTMLElement).style.display = 'none';
                 }}
               />
-              <span className="text-sky-400 font-black text-lg">JS</span>
+              <span className="text-sky-400 font-black text-xl">JS</span>
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1">
-                <span className="text-lg font-black tracking-wider text-white leading-none font-sans group-hover:text-sky-300 transition">
+                <span className="text-xl sm:text-2xl font-black tracking-wider text-white leading-none font-sans group-hover:text-sky-300 transition">
                   {language === 'hi' ? (
                     <>जीवन <span className="text-sky-400">सेतु</span></>
                   ) : (
@@ -449,16 +449,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   )}
                 </span>
               </div>
-              <span className="text-[10px] font-semibold text-sky-400/90 tracking-wide leading-tight mt-0.5 hidden sm:block">
+              <span className="text-xs font-bold text-sky-400/90 tracking-wide leading-tight mt-1 hidden sm:block">
                 {t('nav.brandSubtitle', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </span>
             </div>
           </div>
 
-          {/* RIGHT: Navigation Links & Action Tools */}
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            {/* Navigation Links (Right Side) */}
-            <nav className="hidden md:flex items-center gap-1 lg:gap-2 mr-1 sm:mr-2">
+          {/* RIGHT: Navigation Links & Action Tools (Enlarged) */}
+          <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+            {/* Navigation Links (Larger Text & Spacing) */}
+            <nav className="hidden md:flex items-center gap-2 lg:gap-3 mr-2 sm:mr-3">
               {[
                 { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
                 { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
@@ -469,43 +469,43 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   <button
                     key={nav.id}
                     onClick={nav.action}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all relative cursor-pointer ${
+                    className={`px-4 py-2 rounded-xl text-base sm:text-lg font-bold transition-all relative cursor-pointer ${
                       isActive
-                        ? 'text-sky-300 font-bold'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                        ? 'text-sky-300 font-extrabold'
+                        : 'text-slate-200 hover:text-white hover:bg-slate-800/70'
                     }`}
                   >
                     {nav.name}
                     {isActive && (
-                      <span className="absolute bottom-0 left-3 right-3 h-[3px] bg-sky-400 rounded-full shadow-sm shadow-sky-400" />
+                      <span className="absolute bottom-0 left-4 right-4 h-[3.5px] bg-sky-400 rounded-full shadow-md shadow-sky-400" />
                     )}
                   </button>
                 );
               })}
             </nav>
-            {/* Search Icon */}
+
+            {/* Search Icon (Enlarged) */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+              className="p-2.5 rounded-full text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer"
               title="Search"
             >
-              <Search className="h-4 sm:h-5 w-4 sm:w-5" />
+              <Search className="h-5 sm:h-6 w-5 sm:w-6" />
             </button>
 
-
-            {/* Language Selector */}
+            {/* Language Selector (Enlarged) */}
             <div className="relative hidden sm:block">
               <button
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700/60"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-bold text-slate-100 hover:text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700/70 shadow-sm"
               >
-                <Globe className="h-3.5 w-3.5 text-sky-400" />
+                <Globe className="h-4 w-4 text-sky-400" />
                 <span>{language === 'hi' ? 'हिन्दी' : language === 'as' ? 'অসমীয়া' : language === 'bn' ? 'বাংলা' : language === 'ne' ? 'नेपाली' : 'English'}</span>
-                <ChevronDown className="h-3 w-3 text-slate-400" />
+                <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
               </button>
 
               {isLangDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-[#0B132B] dark:bg-[#070d1e] border border-slate-700 rounded-xl shadow-xl py-1 z-50 text-xs font-semibold text-slate-200">
+                <div className="absolute right-0 mt-2 w-44 bg-[#0B132B] dark:bg-[#070d1e] border border-slate-700 rounded-xl shadow-2xl py-1 z-50 text-sm font-semibold text-slate-200">
                   {[
                     { label: 'English', code: 'en' },
                     { label: 'हिन्दी (Hindi)', code: 'hi' },
@@ -519,20 +519,20 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                         setLanguage(lang.code as any);
                         setIsLangDropdownOpen(false);
                       }}
-                      className="w-full text-left px-3 py-2 hover:bg-sky-600/30 hover:text-white transition flex items-center justify-between cursor-pointer"
+                      className="w-full text-left px-3.5 py-2.5 hover:bg-sky-600/30 hover:text-white transition flex items-center justify-between cursor-pointer"
                     >
                       <span>{lang.label}</span>
-                      {language === lang.code && <CheckCircle2 className="h-3 w-3 text-sky-400" />}
+                      {language === lang.code && <CheckCircle2 className="h-4 w-4 text-sky-400" />}
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* NER Pill Badge */}
+            {/* NER Pill Badge (Enlarged) */}
             <button
               onClick={() => onNavigateModule('gov')}
-              className="px-2.5 py-1 rounded-full text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-400/30 hover:bg-sky-500/30 transition cursor-pointer hidden lg:flex items-center gap-1"
+              className="px-3.5 py-1.5 rounded-full text-sm font-black bg-sky-500/20 text-sky-300 border border-sky-400/40 hover:bg-sky-500/30 transition cursor-pointer hidden lg:flex items-center gap-1.5 shadow-sm"
             >
               <span>🏛️</span>
               <span>NER</span>
@@ -544,9 +544,9 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="xl:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+              className="xl:hidden p-2.5 rounded-lg text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer"
             >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
 
