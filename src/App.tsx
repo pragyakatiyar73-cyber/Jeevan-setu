@@ -83,6 +83,7 @@ import DisasterSafetyGuide from './components/DisasterSafetyGuide';
 import ReliefSupplyModule from './components/ReliefSupplyModule';
 import DriverTrackingPage from './components/DriverTrackingPage';
 import SmartEmergencyResponseModule from './components/SmartEmergencyResponseModule';
+import SmartDynamicRoutingModule from './components/SmartDynamicRoutingModule';
 import { useTranslation } from './i18n';
 
 import { incidentStore } from './services/api';
@@ -110,6 +111,7 @@ export default function App() {
     if (hash) return hash;
 
     const path = window.location.pathname.toLowerCase();
+    if (path.includes('/dynamic-routing') || path.includes('/dynamic_routing') || path.includes('/safe-route')) return 'dynamicrouting';
     if (path.includes('/emergency-response') || path.includes('/emergency_response')) return 'emergencyresponse';
     if (path.includes('/driver/tracking') || path.includes('/driver-tracking')) return 'drivertracking';
     if (path.includes('/relief-supply') || path.includes('/relief')) return 'reliefsupply';
@@ -147,6 +149,9 @@ export default function App() {
       url.searchParams.set('tab', mod);
     } else if (mod === 'emergencyresponse') {
       url.pathname = '/emergency-response';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'dynamicrouting') {
+      url.pathname = '/dynamic-routing';
       url.searchParams.set('tab', mod);
     } else if (mod === 'reliefsupply') {
 
@@ -665,13 +670,13 @@ export default function App() {
               {
                 category: t('sidebar.catResponse', '3. Emergency Rescue & Camps'),
                 items: [
+                  { id: 'dynamicrouting', label: 'Smart Dynamic Routing', icon: Navigation, badge: 'SAFE ROUTE', iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
                   { id: 'emergencyresponse', label: 'Smart Emergency Response', icon: ShieldAlert, badge: 'AI MATRIX', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue Points'), icon: HeartPulse, badge: 'OSM LIVE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'reliefsupply', label: 'Relief Supply & Vehicle Tracking', icon: Package, badge: 'REAL GPS', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'drivertracking', label: 'Driver Phone GPS Tracker', icon: Truck, badge: 'MOBILE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
                   { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
                   { id: 'alerts', label: t('navigation.alerts', 'Active Emergency Alerts'), icon: AlertTriangle, badge: 'LIVE', iconColor: 'text-orange-500 dark:text-orange-400 bg-orange-500/10' }
-
                 ]
               },
               {
@@ -1915,6 +1920,13 @@ export default function App() {
               onNavigateToSupply={() => setActiveModule('reliefsupply')}
               onTriggerSOS={() => setIsSosModalOpen(true)}
             />
+          </div>
+        )}
+
+        {/* 7EB. SMART DYNAMIC ROUTING & SAFE ROUTE RECOMMENDATION VIEW */}
+        {activeModule === 'dynamicrouting' && (
+          <div className="h-full overflow-y-auto">
+            <SmartDynamicRoutingModule />
           </div>
         )}
 
