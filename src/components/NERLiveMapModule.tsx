@@ -250,9 +250,9 @@ export default function NERLiveMapModule({
     mapInstanceRef.current = map;
 
     const getTileUrl = (style: string) => {
-      if (style === "topo") return "https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
-      if (style === "osm" || style === "voyager") return "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
-      return "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+      if (style === "topo") return "https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
+      if (style === "osm" || style === "voyager") return "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
+      return "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
     };
 
     const baseTile = L.tileLayer(getTileUrl(baseStyle), {
@@ -395,10 +395,10 @@ export default function NERLiveMapModule({
   // Dynamically update base tile URL on style switch
   useEffect(() => {
     if (!currentTileLayerRef.current) return;
-    let url = "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
-    if (baseStyle === "topo") url = "https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
-    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
-    else url = "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+    let url = "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+    if (baseStyle === "topo") url = "https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
+    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
+    else url = "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
 
     currentTileLayerRef.current.setUrl(url);
   }, [baseStyle]);

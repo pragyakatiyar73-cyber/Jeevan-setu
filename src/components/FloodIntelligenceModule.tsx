@@ -134,8 +134,9 @@ export default function FloodIntelligenceModule({
       attributionControl: false
     }).setView([26.1000, 92.8000], 7);
 
-    L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
+    L.tileLayer("https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
       maxZoom: 18,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
       attribution: "© Google Maps &bull; Jeevan Setu NER Flood GIS"
     }).addTo(map);
 

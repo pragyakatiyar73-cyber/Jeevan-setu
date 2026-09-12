@@ -149,7 +149,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
         attributionControl: false
       }).setView([23.5, 83.5], 5);
 
-      L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+      L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
       }).addTo(map);      sidePanelMapInstanceRef.current = map;
@@ -224,12 +224,12 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   const getTileUrl = (type: 'satellite' | 'dark' | 'topo') => {
     switch (type) {
       case 'dark':
-        return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
+        return 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
       case 'topo':
-        return 'https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
+        return 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
       case 'satellite':
       default:
-        return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
+        return 'https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
     }
   };
 
@@ -256,7 +256,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       attributionControl: false
     }).setView([26.1, 92.8], 7);
 
-    const initialTile = L.tileLayer(getTileUrl(mapTileType), { maxZoom: 18 }).addTo(map);
+    const initialTile = L.tileLayer(getTileUrl(mapTileType), { maxZoom: 18, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(map);
     tileLayerRef.current = initialTile;
 
     // Doppler Radar Layer Overlay
@@ -369,7 +369,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       mapInstanceRef.current.removeLayer(tileLayerRef.current);
     }
 
-    const newLayer = L.tileLayer(getTileUrl(type), { maxZoom: 18 }).addTo(mapInstanceRef.current);
+    const newLayer = L.tileLayer(getTileUrl(type), { maxZoom: 18, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(mapInstanceRef.current);
     tileLayerRef.current = newLayer;
   };
 
