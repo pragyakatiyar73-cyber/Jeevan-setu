@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "../i18n";
-import { X, MapPin, Radio, ShieldCheck, AlertTriangle, Send, CheckCircle2, Volume2, Smartphone, Copy, VolumeX, Mic, MicOff } from "lucide-react";
+import { X, MapPin, CheckCircle2, Volume2, Smartphone, Copy, VolumeX, Mic, MicOff, AlertTriangle, Users, Navigation } from "lucide-react";
 import { useVoiceRecognition } from "../hooks/useVoiceRecognition";
 
 interface EmergencySOSModalProps {
@@ -24,12 +24,12 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
   const [activeTab, setActiveTab] = useState<"live" | "sms" | "siren">("live");
 
   // Form Fields
-  const [distressType, setDistressType] = useState<string>("Trapped in Landslide / Mudflow");
+  const [distressType, setDistressType] = useState<string>("⛰️ भूस्खलन में फंसे (Landslide / Mudflow)");
   const [lat, setLat] = useState<string>("27.2600");
   const [lon, setLon] = useState<string>("92.4200");
-  const [landmark, setLandmark] = useState<string>("Bomdila High-Altitude Cache (Arunachal)");
-  const [personsTrapped, setPersonsTrapped] = useState<string>("5 to 15 Persons (Full Convoy / Bus)");
-  const [triageLevel, setTriageLevel] = useState<string>("LEVEL 1 (Immediate Rescue / Air-Drop)");
+  const [landmark, setLandmark] = useState<string>("Bomdila Sector / बोमडिला क्षेत्र");
+  const [personsTrapped, setPersonsTrapped] = useState<string>("5 to 15 Persons / 5-15 लोग");
+  const [triageLevel, setTriageLevel] = useState<string>("🔴 तुरंत मदद चाहिए (Immediate Rescue / Air-Drop)");
 
   // Voice SOS Assistant Hook
   const { isListening, toggleListening, stopListening, transcript } = useVoiceRecognition({
@@ -37,14 +37,14 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
     onResult: (spokenText) => {
       setLandmark(spokenText);
       const lower = spokenText.toLowerCase();
-      if (lower.includes('flood') || lower.includes('baadh') || lower.includes('badh')) {
-        setDistressType('Flash Flood / River Breach');
-      } else if (lower.includes('landslide') || lower.includes('slope')) {
-        setDistressType('Trapped in Landslide / Mudflow');
-      } else if (lower.includes('ambulance') || lower.includes('aspataal') || lower.includes('hospital')) {
-        setDistressType('Urgent Medical Evacuation (Oxygen Required)');
+      if (lower.includes('flood') || lower.includes('baadh') || lower.includes('badh') || lower.includes('पानी')) {
+        setDistressType('🌊 बाढ़ का खतरा (Flash Flood)');
+      } else if (lower.includes('landslide') || lower.includes('slope') || lower.includes('पहाड़') || lower.includes('मिट्टी')) {
+        setDistressType('⛰️ भूस्खलन में फंसे (Landslide / Mudflow)');
+      } else if (lower.includes('ambulance') || lower.includes('aspataal') || lower.includes('hospital') || lower.includes('डॉक्टर') || lower.includes('मेडिकल')) {
+        setDistressType('💊 मेडिकल इमरजेंसी (Medical Urgent)');
       }
-      setTriageLevel('LEVEL 1 (Immediate Rescue / Air-Drop)');
+      setTriageLevel('🔴 तुरंत मदद चाहिए (Immediate Rescue / Air-Drop)');
     }
   });
 
@@ -79,7 +79,7 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
       osc.type = "sawtooth";
       osc.frequency.setValueAtTime(650, ctx.currentTime);
       
-      // Master Loud Siren Volume (0.40 Gain)
+      // Master Loud Siren Volume
       gain.gain.setValueAtTime(0.40, ctx.currentTime);
 
       osc.connect(gain);
@@ -129,7 +129,7 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
         (pos) => {
           setLat(pos.coords.latitude.toFixed(4));
           setLon(pos.coords.longitude.toFixed(4));
-          setLandmark("Live GPS Sector - North Eastern Region");
+          setLandmark("Live GPS Location - North Eastern Region");
         },
         () => {
           setLat("27.2600");
@@ -175,9 +175,9 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
       setBroadcastResult({
         status: "success",
         sosId: "SOS-2026-" + Math.floor(1000 + Math.random() * 9000),
-        message: "HIGH-PRIORITY SOS BEACON TRANSMITTED & SAVED TO BACKEND DATABASE",
+        message: "आपातकालीन मदद का संदेश कंट्रोल रूम, NDRF और SDRF टीम को भेज दिया गया है!",
         record: {
-          respondersNotified: ["NDRF 12th Bn", "SDRF Arunachal", "MDoNER Triage Center", "IAF Helicopter Unit Tezpur"]
+          respondersNotified: ["NDRF 12th Bn", "SDRF Control", "Army Rescue Unit", "MDoNER Disaster Cell"]
         }
       });
     } finally {
@@ -185,9 +185,9 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
     }
   };
 
-  // Copy SMS Payload without browser alert()
+  // Copy SMS Payload
   const handleCopySMS = () => {
-    const payload = "SOS#MANIPUR#" + lat + "N#" + lon + "E#LANDSLIDE#LEVEL1#PERSONS:12";
+    const payload = `SOS#JEEVAN-SETU#${lat}N#${lon}E#LANDSLIDE#LEVEL1#PERSONS:12`;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(payload);
     }
@@ -196,38 +196,36 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
   };
 
   const distressOptions = [
-    { id: "landslide", label: "Trapped in Landslide / Mudflow", icon: "🏔️" },
-    { id: "medical", label: "Critical Medical / Oxygen Shortage", icon: "💊" },
-    { id: "flood", label: "Flash Flood / Submerged Bridge", icon: "🌊" },
-    { id: "convoy", label: "Relief Convoy Stranded / Breakdown", icon: "🚚" }
+    { id: "landslide", label: "⛰️ भूस्खलन (Landslide)", desc: "पहाड़ खिसकना या रास्ता बंद होना", color: "from-amber-600/30 to-amber-900/30 border-amber-500/50" },
+    { id: "flood", label: "🌊 बाढ़ (Flash Flood)", desc: "पानी भरना या जलभराव", color: "from-blue-600/30 to-blue-900/30 border-blue-500/50" },
+    { id: "medical", label: "💊 मेडिकल इमरजेंसी (Medical)", desc: "गंभीर चोट या ऑक्सीजन की जरूरत", color: "from-rose-600/30 to-rose-900/30 border-rose-500/50" },
+    { id: "supply", label: "🚚 भोजन व राहत सामग्री (Relief Supply)", desc: "राशन, दवा या पानी की सख्त जरूरत", color: "from-emerald-600/30 to-emerald-900/30 border-emerald-500/50" }
   ];
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-rose-500/40 bg-[#070d1e] text-white p-6 shadow-2xl space-y-5 overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-950/85 p-3 sm:p-4 backdrop-blur-md animate-fadeIn overflow-y-auto">
+      <div className="relative w-full max-w-2xl rounded-3xl border border-rose-500/40 bg-[#070d1e] text-white p-5 sm:p-6 shadow-2xl space-y-4 my-auto max-h-[92vh] overflow-y-auto custom-scrollbar">
         
         {/* Ambient Backdrop Accent */}
         <div className="absolute top-0 right-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-rose-600/20 blur-3xl pointer-events-none"></div>
 
         {/* HEADER SECTION */}
-        <div className="flex items-start justify-between border-b border-slate-800/80 pb-4">
+        <div className="flex items-start justify-between border-b border-slate-800/80 pb-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600 to-amber-600 shadow-lg shadow-rose-600/40 animate-pulse">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600 to-amber-600 shadow-lg shadow-rose-600/40 animate-pulse shrink-0">
               <span className="text-2xl">🚨</span>
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-lg font-black tracking-wide text-white">
-                  {t("sos.title", "JEEVAN SETU EMERGENCY SOS DISPATCH")}
+                  आपत्कालीन SOS मदद / Emergency SOS
                 </h2>
-                <div className="flex items-center gap-1 font-mono text-[9px] font-black text-rose-300">
-                  <span className="rounded bg-rose-950 border border-rose-800 px-1.5 py-0.5">NDRF</span>
-                  <span className="rounded bg-rose-950 border border-rose-800 px-1.5 py-0.5">SDRF</span>
-                  <span className="rounded bg-rose-950 border border-rose-800 px-1.5 py-0.5">MDoNER</span>
-                </div>
+                <span className="rounded-full bg-rose-950/80 border border-rose-600/50 px-2 py-0.5 text-[10px] font-bold text-rose-300">
+                  24x7 Direct Dispatch
+                </span>
               </div>
               <p className="text-xs text-slate-400 font-medium mt-0.5">
-                High-Priority Rescue & Medical Delivery Beacon Network
+                NDRF, SDRF और कंट्रोल रूम को तुरंत मैसेज भेजने के लिए नीचे 3 आसान स्टेप्स भरें
               </p>
             </div>
           </div>
@@ -238,45 +236,45 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
               stopListening();
               onClose();
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* THREE TABS ROW */}
-        <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3 text-xs font-bold">
+        {/* THREE EASY MODE TABS */}
+        <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3 text-xs font-bold overflow-x-auto">
           <button
             onClick={() => setActiveTab("live")}
-            className={`px-4 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
               activeTab === "live"
                 ? "bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-lg shadow-rose-600/30"
                 : "bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white"
             }`}
           >
-            <span>🚨</span> {t("sos.tabLive", "Live SOS Dispatch")}
+            <span>🚨</span> Live SOS Signal (ऑनलाइन संदेश)
           </button>
 
           <button
             onClick={() => setActiveTab("sms")}
-            className={`px-4 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
               activeTab === "sms"
                 ? "bg-amber-600 text-slate-950 shadow-lg shadow-amber-600/30"
                 : "bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white"
             }`}
           >
-            <span>📱</span> {t("sos.tabSms", "Offline SMS (0-Internet)")}
+            <span>📱</span> Offline SMS (बिना इंटरनेट)
           </button>
 
           <button
             onClick={() => setActiveTab("siren")}
-            className={`px-4 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shrink-0 cursor-pointer ${
               activeTab === "siren"
                 ? "bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/30"
                 : "bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white"
             }`}
           >
-            <span>🔊</span> {t("sos.tabSiren", "Siren & Beacon")}
+            <span>🔊</span> Rescue Siren (तेज़ सायरन)
           </button>
         </div>
 
@@ -285,157 +283,177 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
           <div className="space-y-4">
             
             {/* VOICE SOS ASSISTANT BANNER */}
-            <div className="rounded-xl border border-rose-500/40 bg-gradient-to-r from-rose-950/60 via-slate-900 to-indigo-950/60 p-3 flex items-center justify-between gap-3">
+            <div className="rounded-2xl border border-rose-500/40 bg-gradient-to-r from-rose-950/50 via-slate-900 to-indigo-950/50 p-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <div className={`p-2 rounded-xl border ${isListening ? 'bg-rose-600 text-white animate-pulse border-rose-400 shadow-lg shadow-rose-600/50' : 'bg-slate-800 text-rose-400 border-slate-700'}`}>
                   {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                 </div>
                 <div>
-                  <div className="text-xs font-black text-white flex items-center gap-1.5">
-                    <span>🎙️ Voice SOS Assistant (Hindi / English / Assamese)</span>
-                    {isListening && <span className="px-1.5 py-0.5 rounded bg-rose-500 text-[9px] text-white animate-pulse">LISTENING...</span>}
+                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <span>🎙️ बोलकर मदद मांगें (Voice Assistant)</span>
+                    {isListening && <span className="px-1.5 py-0.5 rounded bg-rose-500 text-[9px] text-white animate-pulse">सुन रहा है...</span>}
                   </div>
-                  <div className="text-[11px] text-slate-300 font-mono">
-                    {isListening ? (transcript ? `"${transcript}"` : "Speak distress situation & location...") : "Click mic to speak emergency alert verbally"}
+                  <div className="text-[11px] text-slate-300">
+                    {isListening ? (transcript ? `"${transcript}"` : "अपनी समस्या और स्थान बोलें...") : "माइक दबाकर हिंदी या इंग्लिश में बोलें"}
                   </div>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={toggleListening}
-                className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer border ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border shrink-0 ${
                   isListening
                     ? "bg-rose-600 text-white border-rose-400 animate-pulse"
                     : "bg-gradient-to-r from-rose-600 to-amber-600 text-white border-rose-400/40 hover:from-rose-500 hover:to-amber-500"
                 }`}
               >
-                {isListening ? "Stop Listening" : "Speak Emergency Alert"}
+                {isListening ? "रुकें (Stop)" : "बोलें (Speak)"}
               </button>
             </div>
 
-            {/* DISTRESS CLASSIFICATION */}
-            <div>
-              <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1.5">
-                DISTRESS CLASSIFICATION:
-              </label>
-              <div className="grid grid-cols-2 gap-2">
+            {/* STEP 1: DISTRESS CLASSIFICATION */}
+            <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-3.5 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-white text-[10px]">1</span>
+                  <span>समस्या चुनें / Select Emergency Type:</span>
+                </label>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {distressOptions.map((opt) => (
                   <button
                     key={opt.id}
                     onClick={() => setDistressType(opt.label)}
-                    className={`p-2.5 rounded-xl border text-xs font-bold text-left transition flex items-center gap-2 cursor-pointer ${
+                    className={`p-2.5 rounded-xl border text-left transition flex flex-col justify-center cursor-pointer ${
                       distressType === opt.label
-                        ? "border-rose-500 bg-rose-950/40 text-white shadow"
-                        : "border-slate-800 bg-slate-950/60 text-slate-300 hover:bg-slate-900"
+                        ? "border-rose-500 bg-rose-950/50 text-white shadow-md shadow-rose-950/50"
+                        : "border-slate-800 bg-slate-900/60 text-slate-300 hover:bg-slate-800"
                     }`}
                   >
-                    <span>{opt.icon}</span>
-                    <span className="truncate">{opt.label}</span>
+                    <span className="text-xs font-bold text-white">{opt.label}</span>
+                    <span className="text-[10px] text-slate-400 mt-0.5">{opt.desc}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* GPS COORDINATES */}
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1">LATITUDE (°N):</label>
-                <input
-                  type="text"
-                  value={lat}
-                  onChange={(e) => setLat(e.target.value)}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 font-mono text-xs font-bold text-white focus:border-sky-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1">LONGITUDE (°E):</label>
-                <input
-                  type="text"
-                  value={lon}
-                  onChange={(e) => setLon(e.target.value)}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 font-mono text-xs font-bold text-white focus:border-sky-500 focus:outline-none"
-                />
-              </div>
-
-              <div className="flex items-end">
+            {/* STEP 2: LOCATION & GPS */}
+            <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-3.5 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-sky-400 flex items-center gap-1.5">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-600 text-white text-[10px]">2</span>
+                  <span>आपकी लोकेशन / Your Location:</span>
+                </label>
+                
                 <button
+                  type="button"
                   onClick={handleFetchGPS}
-                  className="w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition shadow flex items-center justify-center gap-1 cursor-pointer"
+                  className="px-3 py-1 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition shadow flex items-center gap-1 cursor-pointer"
                 >
                   <MapPin className="h-3.5 w-3.5" />
-                  <span>Fetch GPS</span>
+                  <span>📍 GPS लोकेशन प्राप्त करें (Auto-Detect)</span>
                 </button>
               </div>
-            </div>
 
-            {/* LANDMARK & SECTOR */}
-            <div>
-              <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1">LANDMARK / SECTOR DESCRIPTION:</label>
-              <input
-                type="text"
-                value={landmark}
-                onChange={(e) => setLandmark(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-sky-500 focus:outline-none font-medium"
-              />
-            </div>
-
-            {/* PERSONS TRAPPED & TRIAGE */}
-            <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1">PERSONS AFFECTED:</label>
-                <select
-                  value={personsTrapped}
-                  onChange={(e) => setPersonsTrapped(e.target.value)}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white font-bold focus:border-sky-500 focus:outline-none"
-                >
-                  <option value="5 to 15 Persons (Full Convoy / Bus)">5 to 15 Persons (Full Convoy / Bus)</option>
-                  <option value="1 to 4 Persons (Isolated Search & Rescue)">1 to 4 Persons (Isolated Search & Rescue)</option>
-                  <option value="15 to 50 Persons (Village / Camp Emergency)">15 to 50 Persons (Village / Camp Emergency)</option>
-                  <option value="50+ Persons (Mass Evacuation Zone)">50+ Persons (Mass Evacuation Zone)</option>
-                </select>
+                <label className="text-[10px] font-bold text-slate-400 block mb-1">
+                  पास का लैंडमार्क या गाँव का नाम / Landmark or Village Name:
+                </label>
+                <input
+                  type="text"
+                  value={landmark}
+                  onChange={(e) => setLandmark(e.target.value)}
+                  placeholder="जैसे: बोमडिला बाज़ार, सेला पास रोड, प्राथमिक स्वास्थ्य केंद्र..."
+                  className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white focus:border-sky-500 focus:outline-none font-medium"
+                />
               </div>
 
-              <div>
-                <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1">PRIORITY TRIAGE LEVEL:</label>
-                <select
-                  value={triageLevel}
-                  onChange={(e) => setTriageLevel(e.target.value)}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white font-bold focus:border-sky-500 focus:outline-none"
-                >
-                  <option value="LEVEL 1 (Immediate Rescue / Air-Drop)">🔴 LEVEL 1 (Immediate Rescue / Air-Drop)</option>
-                  <option value="LEVEL 2 (High Priority Medical Evac)">🟠 LEVEL 2 (High Priority Medical Evac)</option>
-                  <option value="LEVEL 3 (Supply Replenishment)">🟡 LEVEL 3 (Supply Replenishment)</option>
-                </select>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 block mb-1">अक्षांश / Latitude (°N):</label>
+                  <input
+                    type="text"
+                    value={lat}
+                    onChange={(e) => setLat(e.target.value)}
+                    className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 font-mono text-xs font-bold text-sky-300 focus:border-sky-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 block mb-1">देशांतर / Longitude (°E):</label>
+                  <input
+                    type="text"
+                    value={lon}
+                    onChange={(e) => setLon(e.target.value)}
+                    className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 font-mono text-xs font-bold text-sky-300 focus:border-sky-500 focus:outline-none"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* BROADCAST BUTTON */}
+            {/* STEP 3: TRAPPED PEOPLE & URGENCY */}
+            <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-3.5 space-y-2.5">
+              <label className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-600 text-slate-950 text-[10px]">3</span>
+                <span>फंसे हुए लोग और प्राथमिकता / Trapped People & Urgency:</span>
+              </label>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 block mb-1">कितने लोग फंसे हैं? (People Count):</label>
+                  <select
+                    value={personsTrapped}
+                    onChange={(e) => setPersonsTrapped(e.target.value)}
+                    className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-bold focus:border-amber-500 focus:outline-none"
+                  >
+                    <option value="1 to 4 Persons / 1-4 लोग">1-4 लोग (1 to 4 Persons)</option>
+                    <option value="5 to 15 Persons / 5-15 लोग">5-15 लोग (5 to 15 Persons - Full Bus)</option>
+                    <option value="15+ Persons / 15+ लोग (बड़ा समूह)">15+ लोग (15+ Persons - Village/Camp)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 block mb-1">मदद की प्राथमिकता (Priority Level):</label>
+                  <select
+                    value={triageLevel}
+                    onChange={(e) => setTriageLevel(e.target.value)}
+                    className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white font-bold focus:border-amber-500 focus:outline-none"
+                  >
+                    <option value="🔴 तुरंत मदद चाहिए (Immediate Rescue / Air-Drop)">🔴 तुरंत मदद चाहिए (Immediate Rescue)</option>
+                    <option value="🟠 मेडिकल इमरजेंसी (Medical Evac)">🟠 मेडिकल सहायता (Medical Evacuation)</option>
+                    <option value="🟡 भोजन/पानी/राशन (Relief Supplies)">🟡 भोजन और पानी आपूर्ति (Supplies)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* BIG BROADCAST BUTTON */}
             <button
               onClick={handleBroadcastSOS}
               disabled={isBroadcasting}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-black text-xs shadow-xl shadow-rose-600/40 transition cursor-pointer flex items-center justify-center gap-2 border border-rose-400/40"
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-black text-sm shadow-xl shadow-rose-600/40 transition cursor-pointer flex items-center justify-center gap-2 border border-rose-400/40 transform active:scale-[0.99]"
             >
               {isBroadcasting ? (
                 <>
-                  <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
-                  <span>BROADCASTING DISTRESS BEACON TO BACKEND...</span>
+                  <span className="h-5 w-5 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
+                  <span>कंट्रोल रूम को मैसेज भेजा जा रहा है...</span>
                 </>
               ) : (
                 <>
-                  <span>🚨</span>
-                  <span>{t("sos.transmitSignal", "TRANSMIT HIGH-PRIORITY SOS SIGNAL")}</span>
+                  <span className="text-lg">🚨</span>
+                  <span>SEND EMERGENCY SOS / आपत्कालीन मदद भेजें</span>
                 </>
               )}
             </button>
 
             {/* BROADCAST BACKEND SUCCESS CONFIRMATION CARD */}
             {broadcastResult && (
-              <div className="rounded-2xl border border-emerald-500/50 bg-emerald-950/80 p-4 space-y-2 shadow-2xl animate-fadeIn">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 text-emerald-400 font-black text-xs">
-                    <CheckCircle2 className="h-5 w-5" />
-                    <span>DISTRESS BEACON TRANSMITTED & LOGGED TO DATABASE &bull; ID: {broadcastResult.sosId}</span>
+              <div className="rounded-2xl border border-emerald-500/50 bg-emerald-950/90 p-4 space-y-2 shadow-2xl animate-fadeIn">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 text-emerald-300 font-bold text-xs">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+                    <span>SOS अलर्ट सफलतापूर्वक भेज दिया गया! (ID: {broadcastResult.sosId})</span>
                   </div>
                   <button
                     onClick={() => {
@@ -451,13 +469,13 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
                         });
                       }
                     }}
-                    className="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1 text-xs font-black transition cursor-pointer shrink-0 shadow flex items-center gap-1"
+                    className="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 text-xs font-black transition cursor-pointer shrink-0 shadow flex items-center gap-1"
                   >
-                    <span>📍 Track on Live Map ➔</span>
+                    <span>📍 लाइव मैप पर देखें ➔</span>
                   </button>
                 </div>
-                <p className="text-[11px] text-slate-200 leading-snug">{broadcastResult.message}</p>
-                <div className="flex flex-wrap gap-1.5 pt-1 text-[9px] font-mono text-emerald-300 font-bold">
+                <p className="text-xs text-slate-200 leading-snug">{broadcastResult.message}</p>
+                <div className="flex flex-wrap gap-1.5 pt-1 text-[10px] font-mono text-emerald-300 font-bold">
                   {broadcastResult.record?.respondersNotified?.map((rsp: string, idx: number) => (
                     <span key={idx} className="rounded bg-emerald-900/60 border border-emerald-500/30 px-2 py-0.5">
                       ✓ {rsp}
@@ -473,13 +491,13 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
         {activeTab === "sms" && (
           <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4 text-xs">
             <h3 className="font-bold text-amber-400 flex items-center gap-2 text-sm">
-              <Smartphone className="h-4 w-4" /> 0-Internet Emergency SMS Relay (GSMA Protocol)
+              <Smartphone className="h-4 w-4" /> 0-Internet Emergency SMS Relay (बिना इंटरनेट SMS)
             </h3>
             <p className="text-slate-300 leading-relaxed">
-              When cell towers or internet access are damaged by landslides, Jeevan Setu switches to high-frequency emergency SMS packets transmitted directly to satellite relays.
+              अगर पहाड़ी इलाकों में नेटवर्क या इंटरनेट बंद है, तो यह SMS कोड कॉपी करके <strong>112</strong> या आपातकालीन नंबर पर मैसेज भेजें:
             </p>
-            <div className="p-3.5 rounded-xl bg-slate-900 font-mono text-xs text-emerald-300 border border-slate-800 select-all">
-              SOS#MANIPUR#{lat}N#{lon}E#LANDSLIDE#LEVEL1#PERSONS:12
+            <div className="p-3.5 rounded-xl bg-slate-900 font-mono text-xs text-emerald-300 border border-slate-800 select-all break-all">
+              SOS#JEEVAN-SETU#{lat}N#{lon}E#LANDSLIDE#LEVEL1#PERSONS:12
             </div>
 
             <button
@@ -487,13 +505,13 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
               className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 font-black text-xs shadow-lg transition cursor-pointer flex items-center justify-center gap-2"
             >
               <Copy className="h-4 w-4" />
-              <span>Copy Emergency SMS Protocol Payload</span>
+              <span>SMS कोड कॉपी करें (Copy SMS Payload)</span>
             </button>
 
             {smsCopied && (
               <div className="p-3 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 font-bold text-xs flex items-center gap-2 animate-fadeIn">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                <span>✓ Emergency SMS Protocol Payload Copied to Clipboard! Relay via Satellite SMS Gateway #112.</span>
+                <span>✓ SMS कोड कॉपी हो गया है! इसे मैसेज ऐप में खोलकर 112 पर भेजें।</span>
               </div>
             )}
           </div>
@@ -503,10 +521,10 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
         {activeTab === "siren" && (
           <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4 text-xs text-center">
             <h3 className="font-bold text-sky-400 flex items-center justify-center gap-2 text-sm">
-              <Volume2 className="h-4 w-4" /> High-Decibel Ground Optical & Acoustic Rescue Siren
+              <Volume2 className="h-4 w-4" /> तेज़ आपत्कालीन सायरन (Loud Rescue Siren)
             </h3>
             <p className="text-slate-300 leading-relaxed">
-              Triggers maximum volume acoustic emergency siren and optical strobe light to signal rescue helicopters and UAV drones in zero-visibility mountain fog.
+              धुंध या अंधेरे में रेस्क्यू टीम, ड्रोन या हेलीकॉप्टर को अपनी लोकेशन बताने के लिए मोबाइल का तेज़ सायरन बजाएं।
             </p>
 
             {!isSirenActive ? (
@@ -515,20 +533,20 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
                 className="w-full py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs shadow-lg transition cursor-pointer flex items-center justify-center gap-2"
               >
                 <Volume2 className="h-5 w-5" />
-                <span>🔊 ACTIVATE HIGH-DECIBEL GROUND RESCUE SIREN</span>
+                <span>🔊 आपत्कालीन सायरन चालू करें (ACTIVATE SIREN)</span>
               </button>
             ) : (
               <div className="space-y-3">
                 <div className="p-4 rounded-xl bg-rose-950/80 border border-rose-500/60 text-rose-300 font-black text-sm animate-pulse flex items-center justify-center gap-2">
                   <span className="h-3 w-3 rounded-full bg-rose-500 animate-ping"></span>
-                  <span>🔊 RESCUE SIREN ACTIVE (110 dB ACOUSTIC BEACON BROADCASTING)</span>
+                  <span>🔊 सायरन बज रहा है! (RESCUE SIREN ACTIVE)</span>
                 </div>
                 <button
                   onClick={stopSiren}
                   className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition cursor-pointer flex items-center justify-center gap-2"
                 >
                   <VolumeX className="h-4 w-4 text-rose-400" />
-                  <span>DEACTIVATE RESCUE SIREN</span>
+                  <span>सायरन बंद करें (DEACTIVATE SIREN)</span>
                 </button>
               </div>
             )}
