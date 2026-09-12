@@ -62,6 +62,7 @@ import {
 import Dashboard from './components/Dashboard';
 import AIDisasterImpactAssessment from './components/AIDisasterImpactAssessment';
 import WeatherIntelligence from './components/WeatherIntelligence';
+import FloodIntelligenceModule from './components/FloodIntelligenceModule';
 import UAVDroneModule from './components/UAVDroneModule';
 import EmergencySOSModal from './components/EmergencySOSModal';
 import MDoNERCommandModule from './components/MDoNERCommandModule';
@@ -106,6 +107,8 @@ export default function App() {
     if (path.includes('/live-map')) return 'map';
     if (path.includes('/risk-assessment')) return 'staterisk';
     if (path.includes('/resources')) return 'reliefcamps';
+    if (path.includes('/flood')) return 'flood';
+    if (path.includes('/weather')) return 'weather';
 
     return 'home';
   });
@@ -2016,6 +2019,15 @@ export default function App() {
         {/* 7. WEATHER INTELLIGENCE VIEW */}
         {activeModule === 'weather' && (
           <WeatherIntelligence
+            onNavigateToMap={() => setActiveModule('map')}
+            onNavigateToReroute={() => setActiveModule('rerouting')}
+            onTriggerSOS={() => setIsSosModalOpen(true)}
+          />
+        )}
+
+        {/* 7B. FLOOD INTELLIGENCE VIEW */}
+        {activeModule === 'flood' && (
+          <FloodIntelligenceModule
             onNavigateToMap={() => setActiveModule('map')}
             onNavigateToReroute={() => setActiveModule('rerouting')}
             onTriggerSOS={() => setIsSosModalOpen(true)}
