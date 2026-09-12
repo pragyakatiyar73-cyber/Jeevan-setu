@@ -91,8 +91,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     }
   };
 
-  // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation)
-  const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | null>(null);
+  // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation, safetyguide, reliefcamps)
+  const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | 'safetyguide' | 'reliefcamps' | null>(null);
 
   // Compact Feature Modal state for hero indicator pills (ai, livedata, gis, risk)
   const [activeFeatureModal, setActiveFeatureModal] = useState<'ai' | 'livedata' | 'gis' | 'risk' | null>(null);
@@ -755,7 +755,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 title: t('home.safetyGuide', 'Disaster Safety Guide & Helplines'),
                 desc: t('home.safetyGuideDesc', 'Official Do’s & Don’ts, 24/7 helplines, and 72-hour survival kit checklist.'),
                 icon: ShieldCheck,
-                action: () => onNavigateModule('safetyguide'),
+                action: () => setActiveSidePanel('safetyguide'),
                 bgColor: 'bg-[#F0FAF5] dark:bg-emerald-950/25',
                 hoverBg: 'hover:bg-[#E0F7EB] dark:hover:bg-emerald-900/40',
                 borderColor: 'border-emerald-200/80 dark:border-emerald-900/40',
@@ -788,7 +788,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 title: t('home.reliefCamps', 'Relief Camps & Supplies'),
                 desc: t('home.reliefCampsDesc', 'Find nearby relief camps, shelter capacity, and emergency supplies.'),
                 icon: Building2,
-                action: () => onNavigateModule('reliefcamps'),
+                action: () => setActiveSidePanel('reliefcamps'),
                 bgColor: 'bg-[#FFFBEB] dark:bg-amber-950/25',
                 hoverBg: 'hover:bg-[#FEF3C7] dark:hover:bg-amber-900/40',
                 borderColor: 'border-amber-200/80 dark:border-amber-900/40',
@@ -1846,6 +1846,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <Activity className="h-5 w-5" />
                   </div>
                 )}
+                {activeSidePanel === 'safetyguide' && (
+                  <div className="h-9 w-9 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                )}
+                {activeSidePanel === 'reliefcamps' && (
+                  <div className="h-9 w-9 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <Building2 className="h-5 w-5" />
+                  </div>
+                )}
                 <div>
                   <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
                     {activeSidePanel === 'report' && '1. Report a Disaster'}
@@ -1853,6 +1863,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     {activeSidePanel === 'risk' && '3. Check Disaster Risk'}
                     {activeSidePanel === 'gethelp' && '4. Emergency Help & Rescue'}
                     {activeSidePanel === 'livesituation' && 'Explore Live Situation'}
+                    {activeSidePanel === 'safetyguide' && 'Disaster Safety Guide & Helplines'}
+                    {activeSidePanel === 'reliefcamps' && 'Relief Camps & Emergency Supplies'}
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                     {activeSidePanel === 'report' && 'AI Incident Submission & Ground Photo Triage'}
@@ -1860,6 +1872,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     {activeSidePanel === 'risk' && '72-Hour Environmental Hazard Radar'}
                     {activeSidePanel === 'gethelp' && '24/7 SOS Rescue Signals & Relief Shelters'}
                     {activeSidePanel === 'livesituation' && 'Real-time Operations & Field Intelligence'}
+                    {activeSidePanel === 'safetyguide' && 'Official Do’s & Don’ts, 24/7 Helplines & Survival Kit Checklist'}
+                    {activeSidePanel === 'reliefcamps' && 'Nearby Operational Shelters, Bed Capacity & Relief Stocks'}
                   </p>
                 </div>
               </div>
@@ -2405,6 +2419,212 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       className="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-slate-950 font-black py-4 rounded-xl shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2 transition cursor-pointer text-sm"
                     >
                       <span>Open Full Operational Dashboard</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PANEL 6: DISASTER SAFETY GUIDE & HELPLINES */}
+              {activeSidePanel === 'safetyguide' && (
+                <div className="space-y-5 text-xs font-medium">
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-emerald-500/10 border border-emerald-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-emerald-600 dark:text-emerald-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Review official Do’s &amp; Don’ts for Landslides, Floods, and Earthquakes.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Keep emergency helpline numbers (<strong>NDRF 1078</strong>, <strong>SDMA 1070</strong>) saved.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Prepare a 72-hour emergency kit with water, food, and first aid.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Follow real-time evacuation advisories issued by disaster authorities.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 24/7 Helplines Grid */}
+                  <div className="space-y-2">
+                    <div className="font-extrabold text-slate-800 dark:text-slate-200">24/7 Official Emergency Helplines</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <a href="tel:1078" className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <div>
+                          <div className="font-bold text-slate-900 dark:text-white">NDRF Control</div>
+                          <div className="text-[11px] text-emerald-500 font-extrabold">1078</div>
+                        </div>
+                        <PhoneCall className="h-4 w-4 text-emerald-500" />
+                      </a>
+                      <a href="tel:1070" className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <div>
+                          <div className="font-bold text-slate-900 dark:text-white">State SDMA</div>
+                          <div className="text-[11px] text-emerald-500 font-extrabold">1070</div>
+                        </div>
+                        <PhoneCall className="h-4 w-4 text-emerald-500" />
+                      </a>
+                      <a href="tel:112" className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <div>
+                          <div className="font-bold text-slate-900 dark:text-white">National Emergency</div>
+                          <div className="text-[11px] text-emerald-500 font-extrabold">112</div>
+                        </div>
+                        <PhoneCall className="h-4 w-4 text-emerald-500" />
+                      </a>
+                      <a href="tel:108" className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <div>
+                          <div className="font-bold text-slate-900 dark:text-white">Medical Ambulance</div>
+                          <div className="text-[11px] text-emerald-500 font-extrabold">108</div>
+                        </div>
+                        <PhoneCall className="h-4 w-4 text-emerald-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* 72-Hour Survival Kit Checklist */}
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-900/40 rounded-2xl space-y-2.5">
+                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-extrabold text-sm">
+                      <ShieldCheck className="h-5 w-5 text-emerald-500" />
+                      <span>72-Hour Survival Kit Checklist</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-700 dark:text-slate-300">
+                      <div className="flex items-center gap-1.5 font-semibold">✓ Drinking Water (3L/person)</div>
+                      <div className="flex items-center gap-1.5 font-semibold">✓ Non-perishable Rations</div>
+                      <div className="flex items-center gap-1.5 font-semibold">✓ Torch &amp; Extra Batteries</div>
+                      <div className="flex items-center gap-1.5 font-semibold">✓ Emergency First-Aid Box</div>
+                      <div className="flex items-center gap-1.5 font-semibold">✓ Whistle &amp; Signal Mirror</div>
+                      <div className="flex items-center gap-1.5 font-semibold">✓ Important ID Documents</div>
+                    </div>
+                  </div>
+
+                  {/* Do's & Don'ts Summary */}
+                  <div className="space-y-2">
+                    <div className="font-extrabold text-slate-800 dark:text-slate-200">Critical Do’s &amp; Don’ts</div>
+                    <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1.5 text-[11px]">
+                      <div className="text-emerald-600 dark:text-emerald-400 font-bold">✅ DO: Stay tuned to IMD/SDMA alerts on radio or phone.</div>
+                      <div className="text-rose-600 dark:text-rose-400 font-bold">❌ DON'T: Cross swollen rivers or landslide-prone mountain curves.</div>
+                    </div>
+                  </div>
+
+                  {/* Full Module Button */}
+                  <div className="pt-2">
+                    <button
+                      onClick={() => {
+                        setActiveSidePanel(null);
+                        onNavigateModule('safetyguide');
+                      }}
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow-md flex items-center justify-center gap-2 cursor-pointer text-xs"
+                    >
+                      <span>Open Full Disaster Safety Guide</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PANEL 7: RELIEF CAMPS & SUPPLIES */}
+              {activeSidePanel === 'reliefcamps' && (
+                <div className="space-y-5 text-xs font-medium">
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-amber-500/10 border border-amber-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-amber-600 dark:text-amber-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>View nearby operational relief shelters and real-time bed capacity.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Check availability of medical supplies, clean drinking water, and rations.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Request shelter allocation or navigate to the nearest active relief camp.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Access emergency supply distribution points across disaster-affected zones.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nearby Operational Relief Camps List */}
+                  <div className="space-y-2">
+                    <div className="font-extrabold text-slate-800 dark:text-slate-200">Nearby Operational Relief Camps</div>
+                    {[
+                      { name: 'Guwahati Stadium Relief Camp', dist: '2.4 km', cap: '340 / 500 Beds', status: 'OPEN', details: 'Rations, Water & Medical' },
+                      { name: 'Shillong Sports Complex Shelter', dist: '5.1 km', cap: '180 / 300 Beds', status: 'OPEN', details: 'Doctors & Oxygen Support' },
+                      { name: 'Gangtok High School Relief Camp', dist: '8.7 km', cap: '95 / 250 Beds', status: 'OPEN', details: 'Air-drop Supply Hub' }
+                    ].map((camp, idx) => (
+                      <div key={idx} className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs">{camp.name}</span>
+                          <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-full">{camp.status}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
+                          <span>Distance: {camp.dist}</span>
+                          <span>Capacity: {camp.cap}</span>
+                        </div>
+                        <div className="text-[10px] text-amber-600 dark:text-amber-400 font-extrabold">
+                          Facilities: {camp.details}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Supply Inventory Summary */}
+                  <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-900/40 rounded-2xl space-y-2.5">
+                    <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300 font-extrabold text-sm">
+                      <Building2 className="h-5 w-5 text-amber-500" />
+                      <span>District Relief Stock Inventory</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800/50">
+                        <div className="text-slate-400 text-[9px] font-bold">DRINKING WATER</div>
+                        <div className="font-black text-slate-900 dark:text-white">8,400 Liters</div>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800/50">
+                        <div className="text-slate-400 text-[9px] font-bold">RATIONS & MEALS</div>
+                        <div className="font-black text-slate-900 dark:text-white">4,200 Packets</div>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800/50">
+                        <div className="text-slate-400 text-[9px] font-bold">FIRST AID KITS</div>
+                        <div className="font-black text-slate-900 dark:text-white">650 Units</div>
+                      </div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800/50">
+                        <div className="text-slate-400 text-[9px] font-bold">TENTS & BLANKETS</div>
+                        <div className="font-black text-slate-900 dark:text-white">1,100 Units</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Full Module Button */}
+                  <div className="pt-2">
+                    <button
+                      onClick={() => {
+                        setActiveSidePanel(null);
+                        onNavigateModule('reliefcamps');
+                      }}
+                      className="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-3.5 rounded-xl shadow-md flex items-center justify-center gap-2 cursor-pointer text-xs"
+                    >
+                      <span>Open Full Relief Camps &amp; Supplies Module</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
