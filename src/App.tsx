@@ -917,6 +917,7 @@ export default function App() {
         {/* 2. FULL EXPANDED MAP VIEW MATCHING SCREENSHOT media_1787754063833.png */}
         {activeModule === 'map' && (
           <NERLiveMapModule
+            hideHeader={true}
             focusedTarget={mapFocusedTarget}
             onNavigateTo3DSim={() => setActiveModule('hub')}
             onTriggerSOS={() => setIsSosModalOpen(true)}
