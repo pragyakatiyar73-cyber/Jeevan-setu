@@ -1312,16 +1312,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       </section>
 
       {/* ==================================================
-          9. FOOTER (Enlarged)
+          9. FOOTER (Compact & Sleek)
           ================================================== */}
-      <footer className="w-full bg-[#0B132B] dark:bg-[#040814] text-white pt-16 pb-10 border-t border-slate-800 transition-colors duration-300 mt-auto">
+      <footer className="w-full bg-[#0B132B] dark:bg-[#040814] text-white pt-8 pb-6 border-t border-slate-800 transition-colors duration-300 mt-auto">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 pb-10 border-b border-slate-800/80">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-800/80">
             
-            {/* Left: Brand (Enlarged) */}
-            <div className="flex items-center gap-4">
-              <div className="h-14 w-14 rounded-full bg-slate-900 ring-2 ring-sky-400/80 overflow-hidden flex items-center justify-center shadow-lg">
+            {/* Left: Brand (Compact) */}
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-full bg-slate-900 ring-2 ring-sky-400/70 overflow-hidden flex items-center justify-center shadow-md">
                 <img
                   src="/jeevan-setu-logo.jpg"
                   alt="Jeevan Setu Logo"
@@ -1330,20 +1330,20 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     (e.target as HTMLElement).style.display = 'none';
                   }}
                 />
-                <span className="text-sky-400 font-black text-2xl">JS</span>
+                <span className="text-sky-400 font-black text-base">JS</span>
               </div>
               <div>
-                <span className="text-2xl sm:text-3xl font-black tracking-wider text-white block leading-none">
+                <span className="text-base font-black tracking-wider text-white block leading-none">
                   {language === 'hi' ? 'जीवन सेतु' : 'JEEVAN SETU'}
                 </span>
-                <span className="text-xs sm:text-sm font-bold text-sky-400 block mt-1">
+                <span className="text-[10px] font-semibold text-sky-400 block mt-0.5">
                   {t('nav.brandSubtitle', 'AI Powered Disaster Response & GIS Intelligence Platform')}
                 </span>
               </div>
             </div>
 
-            {/* Center Links (Enlarged) */}
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-sm sm:text-base font-bold text-slate-200">
+            {/* Center Links (Compact) */}
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs font-semibold text-slate-300">
               <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition cursor-pointer">{t('footer.privacyPolicy', 'Privacy Policy')}</button>
               <span className="text-slate-700">|</span>
               <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition cursor-pointer">{t('footer.termsOfUse', 'Terms of Use')}</button>
@@ -1353,26 +1353,26 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               <button onClick={() => setIsInfoModalOpen(true)} className="hover:text-sky-400 transition cursor-pointer">{t('footer.contact', 'Contact')}</button>
             </div>
 
-            {/* Right: Follow Us (Enlarged) */}
-            <div className="flex items-center gap-4 text-sm sm:text-base font-bold text-slate-200">
+            {/* Right: Follow Us (Compact) */}
+            <div className="flex items-center gap-3 text-xs font-semibold text-slate-300">
               <span>{t('footer.followUs', 'Follow Us')}</span>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <a
                   href="https://youtu.be/5GZvqN8GZw8"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 bg-slate-800 hover:bg-sky-600 rounded-xl text-slate-200 hover:text-white transition shadow-sm"
+                  className="p-1.5 bg-slate-800 hover:bg-sky-600 rounded-lg text-slate-300 hover:text-white transition shadow-sm"
                 >
-                  <Youtube className="h-5 w-5" />
+                  <Youtube className="h-4 w-4" />
                 </a>
-                <a href="#twitter" className="p-2.5 bg-slate-800 hover:bg-sky-600 rounded-xl text-slate-200 hover:text-white transition shadow-sm">
-                  <Twitter className="h-5 w-5" />
+                <a href="#twitter" className="p-1.5 bg-slate-800 hover:bg-sky-600 rounded-lg text-slate-300 hover:text-white transition shadow-sm">
+                  <Twitter className="h-4 w-4" />
                 </a>
-                <a href="#instagram" className="p-2.5 bg-slate-800 hover:bg-sky-600 rounded-xl text-slate-200 hover:text-white transition shadow-sm">
-                  <Instagram className="h-5 w-5" />
+                <a href="#instagram" className="p-1.5 bg-slate-800 hover:bg-sky-600 rounded-lg text-slate-300 hover:text-white transition shadow-sm">
+                  <Instagram className="h-4 w-4" />
                 </a>
-                <a href="#linkedin" className="p-2.5 bg-slate-800 hover:bg-sky-600 rounded-xl text-slate-200 hover:text-white transition shadow-sm">
-                  <Linkedin className="h-5 w-5" />
+                <a href="#linkedin" className="p-1.5 bg-slate-800 hover:bg-sky-600 rounded-lg text-slate-300 hover:text-white transition shadow-sm">
+                  <Linkedin className="h-4 w-4" />
                 </a>
               </div>
             </div>
