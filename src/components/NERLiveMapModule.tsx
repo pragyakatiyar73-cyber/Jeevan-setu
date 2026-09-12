@@ -704,7 +704,10 @@ export default function NERLiveMapModule({
           </span>
         </div>
       </div>
-    `).openPopup();
+    `);
+    if (activeSosLocation) {
+      sosMarker.openPopup();
+    }
 
     return () => {
       clearInterval(interval);
@@ -840,7 +843,7 @@ export default function NERLiveMapModule({
           </div>
         )}
 
-        {/* LEFT FLOATING LAYERS & OVERLAYS INTERACTIVE PANEL MATCHING SCREENSHOT media_1787755898566.png */}
+        {/* LEFT FLOATING LAYERS & OVERLAYS INTERACTIVE PANEL */}
         {isLayersPanelOpen ? (
           <div className="absolute left-4 top-4 z-[1000] w-72 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#070d1e]/95 p-4 shadow-2xl backdrop-blur text-xs space-y-3 transition-colors duration-300">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
@@ -1004,79 +1007,83 @@ export default function NERLiveMapModule({
             </div>
           </div>
         ) : (
-          <button
-            onClick={() => setIsLayersPanelOpen(true)}
-            className="absolute left-4 top-4 z-[1000] rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-2.5 text-xs font-bold text-slate-900 dark:text-white shadow-2xl backdrop-blur flex items-center gap-2 cursor-pointer"
-          >
-            <Layers className="h-4 w-4 text-sky-500 dark:text-sky-400" />
-            <span>Layers Panel</span>
-          </button>
+          !hideHeader && (
+            <button
+              onClick={() => setIsLayersPanelOpen(true)}
+              className="absolute left-4 top-4 z-[1000] rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-2.5 text-xs font-bold text-slate-900 dark:text-white shadow-2xl backdrop-blur flex items-center gap-2 cursor-pointer"
+            >
+              <Layers className="h-4 w-4 text-sky-500 dark:text-sky-400" />
+              <span>Layers Panel</span>
+            </button>
+          )
         )}
 
-        {/* RIGHT FLOATING ZOOM CONTROLS */}
-        <div className="absolute right-4 top-4 z-[1000] flex flex-col gap-2">
-          <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
-            <button
-              onClick={() => mapInstanceRef.current?.zoomIn()}
-              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
-              title="Zoom In"
-            >
-              +
-            </button>
-            <button
-              onClick={() => mapInstanceRef.current?.zoomOut()}
-              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
-              title="Zoom Out"
-            >
-              -
-            </button>
-          </div>
+        {/* RIGHT FLOATING ZOOM CONTROLS (Only in embedded mode) */}
+        {!hideHeader && (
+          <div className="absolute right-4 top-4 z-[1000] flex flex-col gap-2">
+            <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
+              <button
+                onClick={() => mapInstanceRef.current?.zoomIn()}
+                className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
+                title="Zoom In"
+              >
+                +
+              </button>
+              <button
+                onClick={() => mapInstanceRef.current?.zoomOut()}
+                className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-black text-sm flex items-center justify-center cursor-pointer"
+                title="Zoom Out"
+              >
+                -
+              </button>
+            </div>
 
-          <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
-            <button
-              onClick={() => setBaseStyle(baseStyle === "esri" ? "topo" : "esri")}
-              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
-              title="Toggle Satellite / Topo View"
-            >
-              {baseStyle === "esri" ? "⛰️" : "🛰️"}
-            </button>
-            <button
-              onClick={() => mapInstanceRef.current?.flyTo([30.3880, 78.0500], 11, { duration: 1.5 })}
-              className="h-8 w-8 rounded-lg bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-purple-500/30"
-              title="Focus Dehradun to Mussoorie Corridor"
-            >
-              🏔️
-            </button>
-            <button
-              onClick={() => mapInstanceRef.current?.flyTo([26.9157, 70.9083], 8, { duration: 1.5 })}
-              className="h-8 w-8 rounded-lg bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-amber-500/30"
-              title="Focus Rajasthan Thar Desert Sector"
-            >
-              🏜️
-            </button>
-            <button
-              onClick={() => mapInstanceRef.current?.flyTo([34.1526, 77.5771], 8, { duration: 1.5 })}
-              className="h-8 w-8 rounded-lg bg-sky-600 hover:bg-sky-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-sky-500/30"
-              title="Focus J&K & Ladakh High Altitude Pass"
-            >
-              ❄️
-            </button>
-            <button
-              onClick={() => mapInstanceRef.current?.flyTo([28.6139, 77.2090], 11, { duration: 1.5 })}
-              className="h-8 w-8 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-emerald-500/30"
-              title="Focus Delhi (NCT) & Chandigarh Urban Grid"
-            >
-              🏙️
-            </button>
-            <button
-              onClick={() => mapInstanceRef.current?.setView([27.5000, 81.5000], 6)}
-              className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
-              title="Center All-India National Map Overview"
-            >
-              🎯
-            </button>
+            <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#070d1e]/90 p-1.5 shadow-2xl backdrop-blur space-y-1">
+              <button
+                onClick={() => setBaseStyle(baseStyle === "esri" ? "topo" : "esri")}
+                className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
+                title="Toggle Satellite / Topo View"
+              >
+                {baseStyle === "esri" ? "⛰️" : "🛰️"}
+              </button>
+              <button
+                onClick={() => mapInstanceRef.current?.flyTo([30.3880, 78.0500], 11, { duration: 1.5 })}
+                className="h-8 w-8 rounded-lg bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-purple-500/30"
+                title="Focus Dehradun to Mussoorie Corridor"
+              >
+                🏔️
+              </button>
+              <button
+                onClick={() => mapInstanceRef.current?.flyTo([26.9157, 70.9083], 8, { duration: 1.5 })}
+                className="h-8 w-8 rounded-lg bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-amber-500/30"
+                title="Focus Rajasthan Thar Desert Sector"
+              >
+                🏜️
+              </button>
+              <button
+                onClick={() => mapInstanceRef.current?.flyTo([34.1526, 77.5771], 8, { duration: 1.5 })}
+                className="h-8 w-8 rounded-lg bg-sky-600 hover:bg-sky-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-sky-500/30"
+                title="Focus J&K & Ladakh High Altitude Pass"
+              >
+                ❄️
+              </button>
+              <button
+                onClick={() => mapInstanceRef.current?.flyTo([28.6139, 77.2090], 11, { duration: 1.5 })}
+                className="h-8 w-8 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center cursor-pointer text-xs font-bold shadow-lg shadow-emerald-500/30"
+                title="Focus Delhi (NCT) & Chandigarh Urban Grid"
+              >
+                🏙️
+              </button>
+              <button
+                onClick={() => mapInstanceRef.current?.setView([27.5000, 81.5000], 6)}
+                className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold"
+                title="Center All-India National Map Overview"
+              >
+                🎯
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </div>

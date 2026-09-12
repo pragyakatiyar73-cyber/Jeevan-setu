@@ -486,7 +486,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   <button
                     key={nav.id}
                     onClick={nav.action}
-                    className={`px-4 py-2 rounded-xl text-base sm:text-lg font-bold transition-all relative cursor-pointer ${
+                    className={`px-4 py-2 rounded-xl text-base sm:text-lg font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] relative cursor-pointer ${
                       isActive
                         ? 'text-sky-300 font-extrabold'
                         : 'text-slate-200 hover:text-white hover:bg-slate-800/70'
@@ -504,7 +504,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* Search Icon (Enlarged) */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2.5 rounded-full text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+              className="p-2.5 rounded-full text-slate-200 hover:text-white hover:bg-slate-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer"
               title="Search"
             >
               <Search className="h-5 sm:h-6 w-5 sm:w-6" />
@@ -514,7 +514,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <div className="relative hidden sm:block">
               <button
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-bold text-slate-100 hover:text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700/70 shadow-sm"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-bold text-slate-100 hover:text-white hover:bg-slate-800 hover:border-sky-400/80 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.06] hover:shadow-md cursor-pointer border border-slate-700/70 shadow-sm"
               >
                 <Globe className="h-4 w-4 text-sky-400" />
                 <span>{language === 'hi' ? 'हिन्दी' : language === 'as' ? 'অসমীয়া' : language === 'bn' ? 'বাংলা' : language === 'ne' ? 'नेपाली' : 'English'}</span>
@@ -549,7 +549,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* NER Pill Badge (Enlarged) */}
             <button
               onClick={() => onNavigateModule('gov')}
-              className="px-3.5 py-1.5 rounded-full text-sm font-black bg-sky-500/20 text-sky-300 border border-sky-400/40 hover:bg-sky-500/30 transition cursor-pointer hidden lg:flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-1.5 rounded-full text-sm font-black bg-sky-500/20 text-sky-300 border border-sky-400/40 hover:bg-sky-500/30 hover:border-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.1] hover:shadow-lg cursor-pointer hidden lg:flex items-center gap-1.5 shadow-sm"
             >
               <span>🏛️</span>
               <span>NER</span>
@@ -1026,7 +1026,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <div className="bg-slate-900/90 backdrop-blur-md p-1 rounded-xl shadow-lg border border-slate-700/80 flex items-center gap-1">
                   <button
                     onClick={() => changeMapTile('satellite')}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition flex items-center gap-1 cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-md flex items-center gap-1 cursor-pointer ${
                       mapTileType === 'satellite'
                         ? 'bg-sky-600 text-white shadow'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -1036,7 +1036,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   </button>
                   <button
                     onClick={() => changeMapTile('dark')}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition flex items-center gap-1 cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-md flex items-center gap-1 cursor-pointer ${
                       mapTileType === 'dark'
                         ? 'bg-sky-600 text-white shadow'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -1046,7 +1046,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   </button>
                   <button
                     onClick={() => changeMapTile('topo')}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition flex items-center gap-1 cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-md flex items-center gap-1 cursor-pointer ${
                       mapTileType === 'topo'
                         ? 'bg-sky-600 text-white shadow'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -1059,7 +1059,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 {/* Doppler Radar Toggle Button */}
                 <button
                   onClick={toggleDopplerRadar}
-                  className={`px-2.5 py-1.5 rounded-xl text-[10px] font-bold shadow-lg border transition flex items-center gap-1.5 cursor-pointer ${
+                  className={`px-2.5 py-1.5 rounded-xl text-[10px] font-bold shadow-lg border transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-xl flex items-center gap-1.5 cursor-pointer ${
                     showDopplerRadar
                       ? 'bg-emerald-600/90 text-white border-emerald-400 shadow-emerald-900/40'
                       : 'bg-slate-900/90 text-slate-400 border-slate-700 hover:bg-slate-800 hover:text-white'
