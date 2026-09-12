@@ -146,24 +146,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-      }).addTo(map);
-
-      DISASTER_MARKERS.forEach((item) => {
-        const customIcon = L.divIcon({
-          className: 'custom-disaster-marker',
-          html: `
-            <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 26px; height: 26px;">
-              <div style="position: absolute; width: 22px; height: 22px; border-radius: 50%; background-color: ${item.color}; opacity: 0.35; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
-              <div style="width: 14px; height: 14px; border-radius: 50%; background-color: ${item.color}; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.5); z-index: 10;"></div>
-            </div>
-          `,
-          iconSize: [26, 26],
-          iconAnchor: [13, 13]
-        });
-        L.marker([item.lat, item.lon], { icon: customIcon }).addTo(map);
-      });
-
-      sidePanelMapInstanceRef.current = map;
+      }).addTo(map);      sidePanelMapInstanceRef.current = map;
+      map.invalidateSize();
       map.invalidateSize();
     }, 250);
 
