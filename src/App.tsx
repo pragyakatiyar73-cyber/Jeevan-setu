@@ -752,62 +752,58 @@ export default function App() {
       </aside>
 
       {/* 2. RIGHT MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0 max-w-full">
 
-        {/* Top Header Command Bar — Clean, Aesthetic & Functional */}
-        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-3 sm:px-4 lg:px-6 flex items-center justify-between gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0">
+        {/* Top Header Command Bar — Clean, Aesthetic & Perfectly Responsive */}
+        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-3 sm:px-4 lg:px-5 flex items-center justify-between gap-2 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
           
           {/* Left: Breadcrumbs & Regional Network Status Beacon */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="flex items-center gap-2.5">
-              <div className="hidden xl:flex items-center gap-2">
-                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                  MDoNER
-                </span>
-                <span className="text-slate-400 dark:text-slate-600">/</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                <span className="hidden sm:inline">NER Command Grid</span>
-                <span className="hidden sm:inline text-slate-400 dark:text-slate-600">/</span>
-                <span className="text-slate-900 dark:text-white font-bold truncate max-w-[200px] sm:max-w-none">
-                  {activeModule === 'customdashboard' ? 'Risk Dashboard' :
-                   activeModule === 'map' ? 'Live GIS Map' :
-                   activeModule === 'staterisk' ? 'Regional Hazard Matrix' :
-                   activeModule === 'aiimpact' ? 'AI Impact Assessment' :
-                   activeModule === 'facilities' ? 'Emergency Facilities' :
-                   activeModule === 'weather' ? 'Weather & Radar' :
-                   activeModule === 'safetyguide' ? 'Disaster Safety Guide' :
-                   activeModule === 'drone' ? 'Drone Rescue' :
-                   activeModule === 'rescueteams' ? 'Rescue Teams' :
-                   activeModule === 'reliefcamps' ? 'Relief Camps' :
-                   activeModule === 'alerts' ? 'Emergency Alerts' :
-                   activeModule === 'gov' ? 'MDoNER Governance' :
-                   activeModule === 'sitrep' ? 'SITREP' : 'Command Center'}
-                </span>
-              </div>
-              <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 ml-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                <span>8 States Live</span>
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 overflow-hidden shrink">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 min-w-0">
+              <span className="hidden xl:inline shrink-0 font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                MDoNER
+              </span>
+              <span className="hidden xl:inline text-slate-400 dark:text-slate-600 shrink-0">/</span>
+              <span className="hidden md:inline shrink-0 text-slate-600 dark:text-slate-400">NER Grid</span>
+              <span className="hidden md:inline text-slate-400 dark:text-slate-600 shrink-0">/</span>
+              <span className="text-slate-900 dark:text-white font-black truncate max-w-[130px] sm:max-w-[220px] md:max-w-none">
+                {activeModule === 'customdashboard' ? 'Risk Dashboard' :
+                 activeModule === 'map' ? 'Live GIS Map' :
+                 activeModule === 'staterisk' ? 'Hazard Matrix' :
+                 activeModule === 'aiimpact' ? 'AI Assessment' :
+                 activeModule === 'facilities' ? 'Facilities' :
+                 activeModule === 'weather' ? 'Weather & Radar' :
+                 activeModule === 'safetyguide' ? 'Safety Guide' :
+                 activeModule === 'drone' ? 'Drone Rescue' :
+                 activeModule === 'rescueteams' ? 'Rescue Teams' :
+                 activeModule === 'reliefcamps' ? 'Relief Camps' :
+                 activeModule === 'alerts' ? 'Active Alerts' :
+                 activeModule === 'gov' ? 'MDoNER Command' :
+                 activeModule === 'sitrep' ? 'SITREP' : 'Command Center'}
               </span>
             </div>
+            <span className="hidden 2xl:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+              <span>8 States Live</span>
+            </span>
           </div>
 
           {/* Right: Quick Action Controls */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 z-50">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-50 ml-auto">
             {/* 🚨 Emergency SOS Refined Pill */}
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-rose-400 px-3.5 py-2 text-xs font-black text-white shadow-lg shadow-rose-600/25 flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+              className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-rose-400 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-rose-600/25 flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0"
               title="Trigger Emergency SOS"
             >
-              <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
-              <span>{t('navigation.sos', 'Emergency SOS')}</span>
+              <span className="h-2 w-2 rounded-full bg-white animate-ping shrink-0"></span>
+              <span className="whitespace-nowrap">{t('navigation.sos', 'Emergency SOS')}</span>
             </button>
 
             {/* 🤖 AI Impact Pill */}
             <button
               onClick={() => setActiveModule('aiimpact')}
-              className={`rounded-xl px-3 py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border ${
+              className={`rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border ${
                 activeModule === 'aiimpact'
                   ? 'bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-600/25'
                   : 'bg-slate-100 dark:bg-slate-900/80 border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
@@ -815,13 +811,13 @@ export default function App() {
               title="AI Disaster Damage Assessment"
             >
               <span>🤖</span>
-              <span className="hidden sm:inline">{t('header.ai', 'AI Triage')}</span>
+              <span className="hidden xl:inline">{t('header.ai', 'AI Triage')}</span>
             </button>
 
             {/* 📖 Safety Guide Pill */}
             <button
               onClick={() => setActiveModule('safetyguide')}
-              className={`rounded-xl px-3 py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border ${
+              className={`rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border ${
                 activeModule === 'safetyguide'
                   ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-600/25'
                   : 'bg-slate-100 dark:bg-slate-900/80 border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
@@ -829,12 +825,12 @@ export default function App() {
               title="View Disaster Safety Guidelines"
             >
               <span>📖</span>
-              <span className="hidden md:inline">{t('header.safety', 'Guide')}</span>
+              <span className="hidden xl:inline">{t('header.safety', 'Guide')}</span>
             </button>
 
             {/* Live IST Clock */}
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 font-mono text-xs shrink-0">
-              <span className="text-[11px] text-slate-400">IST</span>
+            <div className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 font-mono text-xs shrink-0">
+              <span className="text-[10px] text-slate-400">IST</span>
               <span className="font-bold text-slate-900 dark:text-sky-400">
                 {currentTime || '23:45:11'}
               </span>
@@ -844,7 +840,7 @@ export default function App() {
             <button
               onClick={() => setActiveModule('gov')}
               title="MDoNER Executive Oversight & Command Grid"
-              className={`flex items-center gap-2 rounded-xl border transition cursor-pointer px-2.5 py-1.5 text-xs shrink-0 ${
+              className={`flex items-center gap-1.5 rounded-xl border transition cursor-pointer p-1.5 xl:px-2.5 xl:py-1.5 text-xs shrink-0 ${
                 activeModule === 'gov'
                   ? 'border-emerald-500 bg-emerald-500/20 text-white shadow-md'
                   : 'border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900/60 hover:bg-slate-200 dark:hover:bg-slate-800'
@@ -853,7 +849,7 @@ export default function App() {
               <div className="h-6 w-6 rounded-lg bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center shrink-0">
                 AO
               </div>
-              <div className="text-left hidden lg:block">
+              <div className="text-left hidden 2xl:block">
                 <div className="font-bold text-slate-900 dark:text-white leading-none text-xs">{t('header.adminOfficer', 'Admin Officer')}</div>
                 <div className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5">MDoNER L3</div>
               </div>
@@ -865,7 +861,7 @@ export default function App() {
             </div>
 
             {/* ☀️/🌙 Theme Toggle Switch */}
-            <div className="shrink-0 pr-1">
+            <div className="shrink-0 pr-0.5">
               <ThemeToggle />
             </div>
           </div>

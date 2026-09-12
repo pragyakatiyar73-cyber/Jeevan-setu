@@ -199,7 +199,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
   }, [landslideData, floodData, activeTab]);
 
   return (
-    <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+    <div className="h-full overflow-y-auto overflow-x-hidden p-3 sm:p-5 lg:p-6 space-y-5 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 min-w-0 max-w-full">
       
       {/* 🔴 MODERN EXECUTIVE CRISIS COMMAND HERO BANNER */}
       <div className="relative rounded-3xl p-6 sm:p-7 overflow-hidden border border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-[#0c142b] dark:via-[#090e1d] dark:to-[#060a15] shadow-xl dark:shadow-2xl transition-all">
@@ -261,7 +261,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
         </div>
 
         {/* 8-State Interactive Quick-Filter Chips */}
-        <div className="mt-5 pt-4 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+        <div className="mt-5 pt-4 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar w-full min-w-0">
           <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider shrink-0 mr-1">States:</span>
           
           <button
@@ -303,7 +303,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
       </div>
 
       {/* 📊 4 CORE PILLAR KPI SUMMARY CARDS (Glassmorphism + Dedicated Color Identities) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 min-w-0 max-w-full">
         
         {/* Pillar 1: Landslide Risk */}
         <div
