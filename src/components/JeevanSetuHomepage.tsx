@@ -329,16 +329,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     return () => clearInterval(interval);
   }, []);
 
-  // Map Basemap URLs (Esri & OpenStreetMap Reliable GIS Layers)
+  // Map Basemap URLs (Google Maps Live Telemetry)
   const getTileUrl = (type: 'satellite' | 'dark' | 'topo') => {
     switch (type) {
       case 'dark':
-        return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        return 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
       case 'topo':
-        return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}';
+        return 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
       case 'satellite':
       default:
-        return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+        return 'https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
     }
   };
 
@@ -365,7 +365,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       attributionControl: false
     }).setView([26.1, 92.8], 7);
 
-    const initialTile = L.tileLayer(getTileUrl(mapTileType), { maxZoom: 18 }).addTo(map);
+    const initialTile = L.tileLayer(getTileUrl(mapTileType), {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    }).addTo(map);
     tileLayerRef.current = initialTile;
 
     // Guaranteed full-width rendering across layout shifts

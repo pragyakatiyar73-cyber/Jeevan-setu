@@ -272,15 +272,15 @@ export default function NERLiveMapModule({
     }
 
     const getTileUrl = (style: string) => {
-      if (style === "topo") return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
-      if (style === "osm" || style === "voyager") return "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-      return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+      if (style === "topo") return "https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
+      if (style === "osm" || style === "voyager") return "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
+      return "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
     };
 
     const baseTile = L.tileLayer(getTileUrl(baseStyle), {
-      maxZoom: 19,
-      subdomains: ['a', 'b', 'c'],
-      attribution: "© Esri & OpenStreetMap &bull; Jeevan Setu NER Sovereign GIS"
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: "© Google Maps &bull; Jeevan Setu NER Sovereign GIS"
     }).addTo(map);
     currentTileLayerRef.current = baseTile;
 
@@ -422,10 +422,10 @@ export default function NERLiveMapModule({
   // Dynamically update base tile URL on style switch
   useEffect(() => {
     if (!currentTileLayerRef.current) return;
-    let url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-    if (baseStyle === "topo") url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
-    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-    else url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    let url = "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
+    if (baseStyle === "topo") url = "https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
+    else if (baseStyle === "osm" || baseStyle === "voyager") url = "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
+    else url = "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}";
 
     currentTileLayerRef.current.setUrl(url);
   }, [baseStyle]);
