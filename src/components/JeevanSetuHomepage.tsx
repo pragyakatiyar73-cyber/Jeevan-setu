@@ -817,11 +817,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <div
                   key={i}
                   onClick={card.action}
-                  className={`${card.bgColor} ${card.hoverBg} border ${card.borderColor} rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer group min-h-[145px] relative overflow-hidden`}
+                  className={`${card.bgColor} ${card.hoverBg} border ${card.borderColor} rounded-2xl p-5 shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-[1.04] hover:border-sky-400/80 flex flex-col justify-between cursor-pointer group min-h-[145px] relative overflow-hidden`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <div className={`h-10 w-10 rounded-2xl ${card.iconBg} flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300`}>
+                      <div className={`h-10 w-10 rounded-2xl ${card.iconBg} flex items-center justify-center shadow-md group-hover:scale-125 transition duration-300`}>
                         <Icon className="h-5 w-5" />
                       </div>
                     </div>
@@ -833,7 +833,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     </p>
                   </div>
                   <div className="flex items-center justify-end mt-4">
-                    <div className={`h-7 w-7 rounded-full ${card.iconBg} flex items-center justify-center shadow-sm group-hover:translate-x-1 transition`}>
+                    <div className={`h-7 w-7 rounded-full ${card.iconBg} flex items-center justify-center shadow-sm group-hover:translate-x-1.5 group-hover:scale-110 transition duration-300`}>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </div>
                   </div>
@@ -1275,7 +1275,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       setActiveSidePanel(item.panel);
                     }
                   })}
-                  className="flex flex-col items-center text-center group relative p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl hover:border-sky-400/80 transition duration-300 min-h-[260px] sm:min-h-[290px] justify-between cursor-pointer transform hover:-translate-y-1"
+                  className="flex flex-col items-center text-center group relative p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-md hover:shadow-2xl hover:border-sky-400/80 transition-all duration-300 min-h-[260px] sm:min-h-[290px] justify-between cursor-pointer transform hover:-translate-y-2.5 hover:scale-[1.04]"
                 >
                   {/* Arrow Connector between steps (visible on desktop) */}
                   {idx < 3 && (
