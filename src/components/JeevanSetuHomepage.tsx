@@ -646,8 +646,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 </button>
               </div>
 
-              {/* 4 Feature Indicator Pills (Opens Compact Centered Modal in Middle of Screen) */}
-              <div className="pt-3 flex flex-wrap items-center gap-2 sm:gap-3">
+              {/* 4 Feature Indicator Pills (Single Line Compact Layout) */}
+              <div className="pt-2.5 flex flex-nowrap items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto custom-scrollbar pb-1">
                 {[
                   { label: 'AI Analysis', icon: Cpu, action: () => setActiveFeatureModal('ai') },
                   { label: 'Live Data', icon: CloudRain, action: () => setActiveFeatureModal('livedata') },
@@ -662,10 +662,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       onClick={item.action}
                       title={`Click to preview ${item.label}`}
                       aria-label={`Preview ${item.label}`}
-                      className="bg-slate-950/90 backdrop-blur-xl border border-[#38BDF8]/60 hover:border-[#38BDF8] px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold text-white flex items-center gap-2.5 shadow-lg shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 active:scale-95 cursor-pointer group whitespace-nowrap"
+                      className="bg-slate-950/90 backdrop-blur-xl border border-[#38BDF8]/60 hover:border-[#38BDF8] px-3 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-bold text-white flex items-center gap-1.5 shadow-md shadow-sky-500/20 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 active:scale-95 cursor-pointer group whitespace-nowrap shrink-0"
                     >
-                      <Icon className="h-4 w-4 shrink-0 text-[#38BDF8] group-hover:scale-110 transition duration-300 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]" />
-                      <span className="font-extrabold tracking-wide">{item.label}</span>
+                      <Icon className="h-3.5 w-3.5 shrink-0 text-[#38BDF8] group-hover:scale-110 transition duration-300 drop-shadow-[0_0_6px_rgba(56,189,248,0.6)]" />
+                      <span className="font-bold tracking-wide">{item.label}</span>
                     </button>
                   );
                 })}
