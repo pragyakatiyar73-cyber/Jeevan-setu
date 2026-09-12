@@ -448,88 +448,65 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
     <div className="min-h-screen w-full bg-[#040814] text-slate-100 font-sans flex flex-col pb-24 lg:pb-12 selection:bg-sky-500 selection:text-white transition-colors duration-300">
       
       {/* ==================================================
-          TOP NAVIGATION COMMAND BAR
+          TOP SLEEK SUB-HEADER COMMAND BAR
          ================================================== */}
-      <header className="sticky top-0 z-[100] w-full bg-[#070d1e] border-b border-slate-800 shadow-xl px-3 sm:px-6 py-3 flex items-center justify-between gap-4 backdrop-blur-md">
+      <div className="sticky top-0 z-[80] w-full bg-[#070d1e]/90 backdrop-blur-md border-b border-slate-800/80 shadow-lg px-4 lg:px-6 py-2.5 flex items-center justify-between gap-4 transition-colors duration-300">
         
-        {/* LEFT: Branding & Navigation Tabs */}
-        <div className="flex items-center gap-4 lg:gap-6">
-          <div
-            onClick={() => onNavigateModule ? onNavigateModule("home") : (window.location.href = "/")}
-            className="flex items-center gap-2.5 cursor-pointer group"
-          >
-            <div className="h-9 w-9 rounded-full ring-2 ring-sky-400/60 overflow-hidden bg-slate-900 flex items-center justify-center shadow-md">
-              <img src="/jeevan-setu-logo.jpg" alt="Logo" className="h-full w-full object-cover" onError={(e) => ((e.target as HTMLElement).style.display = "none")} />
-              <span className="text-sky-400 font-black text-sm">JS</span>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base font-black tracking-tight text-white group-hover:text-sky-300 transition">
-                  Jeevan Setu <span className="text-sky-400">Command Center</span>
-                </h1>
-                <span className="bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider hidden sm:inline-block">
-                  LIVE GRID
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-400 font-semibold hidden md:block">
-                Real-time Disaster Intelligence &amp; Emergency Response
-              </p>
-            </div>
+        {/* LEFT: Dashboard Section Title */}
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2">
+            <h1 className="text-sm lg:text-base font-black tracking-tight text-white">
+              Jeevan Setu <span className="text-sky-400">Command Center</span>
+            </h1>
+            <span className="bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider hidden sm:inline-block">
+              LIVE GRID
+            </span>
           </div>
-
-          {/* Desktop Dashboard Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-1 border-l border-slate-800 pl-4">
-            {[
-              { id: "overview", label: "Overview" },
-              { id: "map", label: "Live Map" },
-              { id: "risk", label: "Risk Assessment" },
-              { id: "ai", label: "AI Analysis" },
-              { id: "alerts", label: "Alerts" },
-              { id: "resources", label: "Resources" }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveTab(tab.id);
-                  const targetEl = document.getElementById(`section-${tab.id}`);
-                  targetEl?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer ${
-                  activeTab === tab.id
-                    ? "bg-sky-500/20 text-sky-300 border border-sky-500/40"
-                    : "text-slate-300 hover:text-white hover:bg-slate-800/60"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
         </div>
 
-        {/* RIGHT: Notifications, Language, Theme, SOS */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <button className="relative p-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer">
-            <Bell className="h-4 sm:h-5 w-4 sm:w-5 text-slate-300" />
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping" />
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
-          </button>
+        {/* CENTER: Desktop Section Navigation Pills */}
+        <nav className="flex items-center gap-1.5 overflow-x-auto py-0.5 no-scrollbar">
+          {[
+            { id: "overview", label: t('navigation.overview', 'Overview') },
+            { id: "map", label: t('navigation.map', 'Live Map') },
+            { id: "risk", label: t('navigation.staterisk', 'Risk Assessment') },
+            { id: "ai", label: t('navigation.aiimpact', 'AI Analysis') },
+            { id: "alerts", label: t('navigation.alerts', 'Alerts') },
+            { id: "resources", label: t('navigation.reliefcamps', 'Resources') }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id);
+                const targetEl = document.getElementById(`section-${tab.id}`);
+                targetEl?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer whitespace-nowrap ${
+                activeTab === tab.id
+                  ? "bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
 
-          <div className="hidden sm:block">
-            <LanguageSelector />
-          </div>
+        {/* RIGHT: Live Grid Synchronized Status & Bell */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
+          <span className="inline-flex items-center gap-1.5 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold text-emerald-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+            <span>Grid Synchronized</span>
+          </span>
 
-          <ThemeToggle />
-
-          <button
-            onClick={() => setIsSosOpen(true)}
-            className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-rose-500 text-white px-3.5 py-1.5 rounded-full text-xs font-black shadow-lg shadow-red-600/30 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-red-400/40 animate-pulse"
-          >
-            <span>🚨</span>
-            <span>{t('cmdDashboard.emergencySos', 'Emergency SOS')}</span>
+          <button className="relative p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-slate-800/80 transition cursor-pointer">
+            <Bell className="h-4 w-4 text-slate-300" />
+            <span className="absolute top-0.5 right-0.5 h-2 w-2 rounded-full bg-red-500 animate-ping" />
+            <span className="absolute top-0.5 right-0.5 h-2 w-2 rounded-full bg-red-500" />
           </button>
         </div>
 
-      </header>
+      </div>
 
       <div className="w-full px-3 sm:px-6 lg:px-8 pt-6 space-y-8">
         
