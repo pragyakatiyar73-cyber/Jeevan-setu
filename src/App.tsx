@@ -85,7 +85,9 @@ import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
 import ReliefSupplyModule from './components/ReliefSupplyModule';
 import DriverTrackingPage from './components/DriverTrackingPage';
+import SmartEmergencyResponseModule from './components/SmartEmergencyResponseModule';
 import { useTranslation } from './i18n';
+
 import { incidentStore } from './services/api';
 
 
@@ -111,6 +113,7 @@ export default function App() {
     if (hash) return hash;
 
     const path = window.location.pathname.toLowerCase();
+    if (path.includes('/emergency-response') || path.includes('/emergency_response')) return 'emergencyresponse';
     if (path.includes('/driver/tracking') || path.includes('/driver-tracking')) return 'drivertracking';
     if (path.includes('/relief-supply') || path.includes('/relief')) return 'reliefsupply';
 
@@ -123,6 +126,7 @@ export default function App() {
     if (path.includes('/landslide')) return 'landslide';
     if (path.includes('/facilities') || path.includes('/emergency')) return 'facilities';
     if (path.includes('/incidents') || path.includes('/disaster-reports')) return 'incidents';
+
 
 
     return 'home';
@@ -144,7 +148,11 @@ export default function App() {
     } else if (mod === 'staterisk') {
       url.pathname = '/risk-assessment';
       url.searchParams.set('tab', mod);
+    } else if (mod === 'emergencyresponse') {
+      url.pathname = '/emergency-response';
+      url.searchParams.set('tab', mod);
     } else if (mod === 'reliefsupply') {
+
       url.pathname = '/relief-supply';
       url.searchParams.set('tab', mod);
     } else if (mod === 'drivertracking') {
@@ -660,7 +668,9 @@ export default function App() {
               {
                 category: t('sidebar.catResponse', '3. Emergency Rescue & Camps'),
                 items: [
+                  { id: 'emergencyresponse', label: 'Smart Emergency Response', icon: ShieldAlert, badge: 'AI MATRIX', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue Points'), icon: HeartPulse, badge: 'OSM LIVE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+
                   { id: 'reliefsupply', label: 'Relief Supply & Vehicle Tracking', icon: Package, badge: 'REAL GPS', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'drivertracking', label: 'Driver Phone GPS Tracker', icon: Truck, badge: 'MOBILE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
                   { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, badge: 'SOS CORE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
@@ -1937,6 +1947,18 @@ export default function App() {
             onTriggerSOS={() => setIsSosModalOpen(true)}
           />
         )}
+
+        {/* 7EA. SMART EMERGENCY RESPONSE MODULE VIEW */}
+        {activeModule === 'emergencyresponse' && (
+          <div className="h-full overflow-y-auto p-4 md:p-6">
+            <SmartEmergencyResponseModule
+              onNavigateToMap={() => setActiveModule('map')}
+              onNavigateToSupply={() => setActiveModule('reliefsupply')}
+              onTriggerSOS={() => setIsSosModalOpen(true)}
+            />
+          </div>
+        )}
+
 
         {/* 7F. RELIEF SUPPLY & VEHICLE TRACKING HUB */}
         {activeModule === 'reliefsupply' && (

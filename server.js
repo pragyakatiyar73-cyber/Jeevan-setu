@@ -1585,11 +1585,502 @@ app.get('/api/relief/operations', async (req, res) => {
   }
 });
 
+
+// ====================================================
+// 🚨 SMART EMERGENCY RESPONSE INTELLIGENCE API
+// ====================================================
+
+// Initial Emergency Database Seeding Helper
+async function seedEmergencyDatabase(db) {
+  if (!db) return;
+  try {
+    const emgCol = db.collection('emergency_incidents');
+    const emgCount = await emgCol.countDocuments();
+    if (emgCount === 0) {
+      const now = new Date();
+      const initialIncidents = [
+        {
+          incidentId: 'EMG-2026-101',
+          state: 'Assam',
+          district: 'Cachar',
+          affectedArea: 'Silchar Municipal Sector 4',
+          latitude: 24.8333,
+          longitude: 92.7789,
+          disasterType: 'Flood',
+          peopleAffected: 240,
+          injured: 15,
+          requirements: ['Rescue', 'Drinking Water', 'Medical'],
+          description: 'Barak River water level crossed danger mark by +1.4m. 240 residential structures inundated. Urgent motorboat evacuation and drinking water pouch distribution required.',
+          imageUrl: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=800',
+          priority: 'CRITICAL',
+          status: 'RESPONSE_IN_PROGRESS',
+          aiAssessment: {
+            summary: 'Severe fluvial inundation with high casualty risk due to rapid flow rate.',
+            severity: 'CRITICAL',
+            risks: ['Standing water contamination', 'Submerged road access breach', 'Electrical short-circuit hazard'],
+            confidence: 0.92,
+            recommendations: ['Dispatch NDRF Motorboat Team', 'Deploy 1,500L Drinking Water Unit', 'Set up Emergency Triage at Silchar Civil Hospital']
+          },
+          assignedVehicleId: 'RT-101',
+          assignedVehicleType: '4x4 Heavy Rescue Truck',
+          assignedDepotId: 'DEPOT-GAU-01',
+          assignedSupplies: [{ item: 'Drinking Water 1L Bottles', quantity: 1500 }],
+          timeline: [
+            { timestamp: new Date(now.getTime() - 3600 * 1000).toISOString(), action: 'Emergency reported', detail: 'Report logged by Cachar District Control Room.' },
+            { timestamp: new Date(now.getTime() - 3300 * 1000).toISOString(), action: 'Priority assessed', detail: 'AI Assessment: CRITICAL priority due to 15 injured & river overflow.' },
+            { timestamp: new Date(now.getTime() - 3000 * 1000).toISOString(), action: 'Resources recommended', detail: 'Motorboat Rescue & 1,500L Water Unit recommended.' },
+            { timestamp: new Date(now.getTime() - 2400 * 1000).toISOString(), action: 'Vehicle assigned', detail: 'RT-101 4x4 Heavy Rescue Truck assigned from Guwahati Hub.' },
+            { timestamp: new Date(now.getTime() - 1800 * 1000).toISOString(), action: 'Response in progress', detail: 'RT-101 vehicle en route to Silchar Sector 4.' }
+          ],
+          createdAt: new Date(now.getTime() - 3600 * 1000).toISOString(),
+          updatedAt: new Date(now.getTime() - 1800 * 1000).toISOString()
+        },
+        {
+          incidentId: 'EMG-2026-102',
+          state: 'Meghalaya',
+          district: 'West Jaintia Hills',
+          affectedArea: 'Jowai Bypass NH-6 Breach',
+          latitude: 25.4456,
+          longitude: 92.2045,
+          disasterType: 'Landslide',
+          peopleAffected: 85,
+          injured: 4,
+          requirements: ['Road Clearance', 'Rescue', 'Food'],
+          description: 'Hill slope washed out across 350m stretch of NH-6 highway. 3 heavy freight trucks trapped behind mud debris slurry.',
+          imageUrl: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?w=800',
+          priority: 'HIGH',
+          status: 'RESOURCE_ASSIGNED',
+          aiAssessment: {
+            summary: 'Highway artery blocked by major slope washout. Transport delay expected.',
+            severity: 'HIGH',
+            risks: ['Secondary rockfall hazard', 'Conveyor bottleneck between Assam & Meghalaya'],
+            confidence: 0.88,
+            recommendations: ['Dispatch BRO Heavy Excavator', 'Reroute freight via Sector 9 Jowai Ridge Bypass', 'Supply emergency rations to stranded drivers']
+          },
+          assignedVehicleId: 'RT-102',
+          assignedVehicleType: 'All-Terrain Supply Carrier',
+          assignedDepotId: 'DEPOT-SHL-01',
+          assignedSupplies: [{ item: 'Emergency Rations & Pulses', quantity: 1200 }],
+          timeline: [
+            { timestamp: new Date(now.getTime() - 7200 * 1000).toISOString(), action: 'Emergency reported', detail: 'Highway Patrol reported NH-6 Km 142 mudslide.' },
+            { timestamp: new Date(now.getTime() - 6900 * 1000).toISOString(), action: 'Priority assessed', detail: 'AI Assessment: HIGH priority due to arterial road blockage.' },
+            { timestamp: new Date(now.getTime() - 5400 * 1000).toISOString(), action: 'Resource assigned', detail: 'RT-102 assigned with BRO excavator clearance team.' }
+          ],
+          createdAt: new Date(now.getTime() - 7200 * 1000).toISOString(),
+          updatedAt: new Date(now.getTime() - 5400 * 1000).toISOString()
+        },
+        {
+          incidentId: 'EMG-2026-103',
+          state: 'Mizoram',
+          district: 'Aizawl',
+          affectedArea: 'Zemabawk Ridge Residential Sector',
+          latitude: 23.7271,
+          longitude: 92.7176,
+          disasterType: 'Landslide',
+          peopleAffected: 60,
+          injured: 2,
+          requirements: ['Shelter', 'Medical'],
+          description: 'Soil shear subsidence detected along hillside residential sector. 12 houses advised for immediate evacuation.',
+          priority: 'HIGH',
+          status: 'RESPONSE_RECOMMENDED',
+          aiAssessment: {
+            summary: 'Slope creep destabilization under continuous 65mm precipitation.',
+            severity: 'HIGH',
+            risks: ['Structural house collapse', 'Foundation shift'],
+            confidence: 0.85,
+            recommendations: ['Evacuate Zemabawk Ridge Zone B', 'Open Zemabawk Community Hall Relief Camp']
+          },
+          timeline: [
+            { timestamp: new Date(now.getTime() - 4800 * 1000).toISOString(), action: 'Emergency reported', detail: 'Mizoram Disaster Management Authority logged slope risk.' },
+            { timestamp: new Date(now.getTime() - 4500 * 1000).toISOString(), action: 'Priority assessed', detail: 'AI Assessment: HIGH priority due to residential hazard.' }
+          ],
+          createdAt: new Date(now.getTime() - 4800 * 1000).toISOString(),
+          updatedAt: new Date(now.getTime() - 4500 * 1000).toISOString()
+        }
+      ];
+
+      await emgCol.insertMany(initialIncidents);
+      console.log('🌱 Seeded 3 Initial Emergency Incidents into MongoDB');
+    }
+  } catch (err) {
+    console.warn('Emergency DB seeding warning:', err.message);
+  }
+}
+
+// Trigger Emergency seed check on startup
+getMongoDbConnection().then(db => {
+  if (db) seedEmergencyDatabase(db);
+});
+
+// Priority Calculation Engine Helper
+function calculateEmergencyPriority({ disasterType, peopleAffected, injured, requirements, state }) {
+  const affected = Number(peopleAffected) || 0;
+  const numInjured = Number(injured) || 0;
+  const reqs = Array.isArray(requirements) ? requirements : [];
+
+  let score = 0;
+
+  // Casualty & Impact weights
+  score += numInjured * 10;
+  score += Math.min(affected * 0.5, 50);
+
+  // Disaster Type weights
+  if (disasterType === 'Flood') score += 25;
+  else if (disasterType === 'Landslide') score += 25;
+  else if (disasterType === 'Earthquake') score += 35;
+  else if (disasterType === 'Cyclone') score += 20;
+  else if (disasterType === 'Medical Emergency') score += 30;
+
+  // Requirement weights
+  if (reqs.includes('Rescue')) score += 20;
+  if (reqs.includes('Medical')) score += 15;
+  if (reqs.includes('Evacuation')) score += 15;
+
+  let priority = 'LOW';
+  if (score >= 60 || numInjured >= 10 || (disasterType === 'Flood' && affected >= 200)) {
+    priority = 'CRITICAL';
+  } else if (score >= 35 || numInjured >= 3) {
+    priority = 'HIGH';
+  } else if (score >= 18) {
+    priority = 'MEDIUM';
+  }
+
+  return { priority, score };
+}
+
+// POST /api/emergency - Submit Emergency Report with strict 8 NER states guard
+app.post('/api/emergency', async (req, res) => {
+  const { state, district, affectedArea, location, disasterType, peopleAffected, injured, immediateRequirements, photo, description, lat, lon } = req.body || {};
+
+  if (!state || !isNERState(state)) {
+    return res.status(400).json({
+      status: 'rejected',
+      message: 'This emergency response system is restricted to the North-Eastern Region of India.'
+    });
+  }
+
+  const numLat = Number(lat);
+  const numLon = Number(lon);
+
+  if (!isNaN(numLat) && !isNaN(numLon) && !isPointInNER(numLat, numLon)) {
+    return res.status(400).json({
+      status: 'rejected',
+      message: 'This emergency response system is restricted to the North-Eastern Region of India.'
+    });
+  }
+
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const emgCol = db.collection('emergency_incidents');
+    const now = new Date();
+
+    const affected = Number(peopleAffected) || 10;
+    const numInjured = Number(injured) || 0;
+    const reqsList = Array.isArray(immediateRequirements) ? immediateRequirements : ['Rescue', 'Drinking Water'];
+
+    const { priority, score } = calculateEmergencyPriority({
+      disasterType: disasterType || 'Flood',
+      peopleAffected: affected,
+      injured: numInjured,
+      requirements: reqsList,
+      state
+    });
+
+    const aiAssessment = {
+      summary: `AI-assisted evaluation for ${disasterType} in ${district || 'Sector'}, ${state}. Estimated impact score: ${score}.`,
+      severity: priority,
+      risks: [
+        `${disasterType} exposure risk across local terrain`,
+        numInjured > 0 ? `${numInjured} reported casualties require trauma care` : 'Potential isolated access disruption'
+      ],
+      confidence: 0.89,
+      recommendations: [
+        reqsList.includes('Rescue') ? 'Deploy local NDRF / SDRF Search & Rescue Unit' : 'Dispatch Assessment Team',
+        reqsList.includes('Medical') ? 'Alert Nearest District Hospital Emergency Cell' : 'Setup First-Aid Post'
+      ]
+    };
+
+    const newIncident = {
+      incidentId: `EMG-2026-${Math.floor(100 + Math.random() * 900)}`,
+      state: String(state).trim(),
+      district: district || 'Central District',
+      affectedArea: affectedArea || location || `${district}, ${state}`,
+      latitude: !isNaN(numLat) ? numLat : 26.1445,
+      longitude: !isNaN(numLon) ? numLon : 91.7362,
+      disasterType: disasterType || 'Flood',
+      peopleAffected: affected,
+      injured: numInjured,
+      requirements: reqsList,
+      description: description || 'Emergency distress report submitted by ground operator/citizen.',
+      imageUrl: photo || null,
+      priority: priority,
+      status: 'REPORTED',
+      aiAssessment: aiAssessment,
+      assignedVehicleId: null,
+      assignedVehicleType: null,
+      assignedDepotId: null,
+      assignedSupplies: [],
+      timeline: [
+        { timestamp: now.toISOString(), action: 'Emergency reported', detail: 'Distress report logged into Jeevan Setu Control Grid.' },
+        { timestamp: now.toISOString(), action: 'Priority assessed', detail: `AI-Assisted Priority Assessment: ${priority} (Score: ${score}).` }
+      ],
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString()
+    };
+
+    await emgCol.insertOne(newIncident);
+    console.log('🚨 New Emergency Incident Saved to MongoDB:', newIncident.incidentId, newIncident.state, newIncident.priority);
+
+    res.json({
+      status: 'success',
+      message: 'Emergency distress report submitted successfully. Priority assessed.',
+      incident: newIncident
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// GET /api/emergency - List Emergency Incidents
+app.get('/api/emergency', async (req, res) => {
+  const { state, district, priority, status } = req.query || {};
+
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const emgCol = db.collection('emergency_incidents');
+    const allIncidents = await emgCol.find().sort({ createdAt: -1 }).toArray();
+
+    // Filter strictly 8 NER states
+    const nerIncidents = allIncidents.filter(i => {
+      const matchState = isNERState(i.state);
+      const matchStateFilter = !state || state === 'ALL' || i.state.toLowerCase() === String(state).toLowerCase();
+      const matchPriority = !priority || priority === 'ALL' || i.priority === priority;
+      const matchStatus = !status || status === 'ALL' || i.status === status;
+      return matchState && matchStateFilter && matchPriority && matchStatus;
+    });
+
+    res.json({
+      status: 'success',
+      coverage: 'North Eastern Region — 8 States',
+      count: nerIncidents.length,
+      incidents: nerIncidents
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// GET /api/emergency/:id - Get Emergency Incident Details + Connected Telemetry
+app.get('/api/emergency/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const emgCol = db.collection('emergency_incidents');
+    const incident = await emgCol.findOne({ incidentId: id.toUpperCase() });
+
+    if (!incident) {
+      return res.status(404).json({ status: 'error', message: `Emergency Incident '${id}' not found.` });
+    }
+
+    // Synthesize multi-module telemetry (Weather, River, Highway, Vehicle GPS)
+    const connectedTelemetry = {
+      weather: weatherStore.sectors.shillong || weatherStore.sectors.tawang,
+      highways: weatherStore.highways.filter(h => h.clearanceType === 'CRITICAL' || h.clearanceType === 'CHAINS'),
+      rivers: weatherStore.rivers.filter(r => r.level === 'CRITICAL' || r.level === 'HIGH')
+    };
+
+    res.json({
+      status: 'success',
+      incident,
+      connectedTelemetry
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// PATCH /api/emergency/:id - Update Emergency Incident Status or Workflow
+app.patch('/api/emergency/:id', async (req, res) => {
+
+  const { id } = req.params;
+  const { status, priority, actionDetail } = req.body || {};
+
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const emgCol = db.collection('emergency_incidents');
+    const incident = await emgCol.findOne({ incidentId: id.toUpperCase() });
+
+    if (!incident) {
+      return res.status(404).json({ status: 'error', message: `Emergency Incident '${id}' not found.` });
+    }
+
+    const now = new Date().toISOString();
+    const newStatus = status || incident.status;
+    const newPriority = priority || incident.priority;
+
+    const timelineEntry = {
+      timestamp: now,
+      action: `Status updated to ${newStatus.replace('_', ' ')}`,
+      detail: actionDetail || `Emergency workflow updated to ${newStatus}.`
+    };
+
+    const updateFields = {
+      status: newStatus,
+      priority: newPriority,
+      updatedAt: now
+    };
+
+    if (newStatus === 'RESOLVED') {
+      updateFields.resolvedAt = now;
+    }
+
+    await emgCol.updateOne(
+      { incidentId: id.toUpperCase() },
+      {
+        $set: updateFields,
+        $push: { timeline: timelineEntry }
+      }
+    );
+
+    res.json({
+      status: 'success',
+      message: `Emergency '${id}' status updated to ${newStatus}.`,
+      incidentId: id
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// POST /api/emergency/:id/assess - Re-run AI & Multi-Factor Priority Assessment
+app.post('/api/emergency/:id/assess', async (req, res) => {
+  const { id } = req.params;
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const emgCol = db.collection('emergency_incidents');
+    const incident = await emgCol.findOne({ incidentId: id.toUpperCase() });
+
+    if (!incident) return res.status(404).json({ status: 'error', message: 'Incident not found' });
+
+    const { priority } = calculateEmergencyPriority({
+      disasterType: incident.disasterType,
+      peopleAffected: incident.peopleAffected,
+      injured: incident.injured,
+      requirements: incident.requirements,
+      state: incident.state
+    });
+
+    const now = new Date().toISOString();
+    const updatedAiAssessment = {
+      summary: `AI-assisted multi-module risk calculation for ${incident.disasterType} in ${incident.district}, ${incident.state}.`,
+      severity: priority,
+      risks: [
+        `High precipitation & terrain vulnerability in ${incident.state}`,
+        `${incident.injured || 0} reported injured casualties`,
+        'Road transit bottleneck monitored via telemetry'
+      ],
+      confidence: 0.91,
+      recommendations: [
+        'Dispatch Nearest Operational 4x4 Supply Vehicle',
+        'Alert Regional SDRF / BRO Clearing Command'
+      ]
+    };
+
+    await emgCol.updateOne(
+      { incidentId: id.toUpperCase() },
+      {
+        $set: { priority, aiAssessment: updatedAiAssessment, updatedAt: now },
+        $push: { timeline: { timestamp: now, action: 'AI Assessment updated', detail: `Priority recalculated: ${priority}` } }
+      }
+    );
+
+    res.json({
+      status: 'success',
+      message: 'AI Emergency Priority Assessment completed',
+      priority,
+      aiAssessment: updatedAiAssessment
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// POST /api/emergency/:id/assign - Assign Relief Depot, Vehicle & Supplies to Incident
+app.post('/api/emergency/:id/assign', async (req, res) => {
+  const { id } = req.params;
+  const { vehicleId, depotId, supplies } = req.body || {};
+
+  const db = await getMongoDbConnection();
+  if (!db) return res.status(503).json({ status: 'error', message: 'Database unavailable' });
+
+  try {
+    const emgCol = db.collection('emergency_incidents');
+    const vehiclesCol = db.collection('relief_vehicles');
+
+    const incident = await emgCol.findOne({ incidentId: id.toUpperCase() });
+    if (!incident) return res.status(404).json({ status: 'error', message: 'Incident not found' });
+
+    const selectedVehicle = await vehiclesCol.findOne({ vehicleId: vehicleId }) || await vehiclesCol.findOne();
+    const vehId = selectedVehicle ? selectedVehicle.vehicleId : (vehicleId || 'RT-101');
+    const vehType = selectedVehicle ? selectedVehicle.vehicleType : '4x4 Heavy Rescue Truck';
+
+    const now = new Date().toISOString();
+
+    await emgCol.updateOne(
+      { incidentId: id.toUpperCase() },
+      {
+        $set: {
+          status: 'RESOURCE_ASSIGNED',
+          assignedVehicleId: vehId,
+          assignedVehicleType: vehType,
+          assignedDepotId: depotId || 'DEPOT-GAU-01',
+          assignedSupplies: supplies || [{ item: 'Drinking Water 1L Bottles', quantity: 500 }],
+          updatedAt: now
+        },
+        $push: {
+          timeline: {
+            timestamp: now,
+            action: 'Resources assigned',
+            detail: `Assigned Vehicle ${vehId} (${vehType}) and Depot ${depotId || 'DEPOT-GAU-01'}.`
+          }
+        }
+      }
+    );
+
+    if (selectedVehicle) {
+      await vehiclesCol.updateOne(
+        { vehicleId: vehId },
+        { $set: { destination: `${incident.district}, ${incident.state}`, tripStatus: 'LOADING', updatedAt: now } }
+      );
+    }
+
+    res.json({
+      status: 'success',
+      message: `Resources assigned to Emergency ${id} successfully. Vehicle ${vehId} dispatched for loading.`,
+      assignedVehicleId: vehId
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Jeevan Setu Disaster Intelligence Backend Server running on port ${PORT}`);
 });
+
 
 
 
