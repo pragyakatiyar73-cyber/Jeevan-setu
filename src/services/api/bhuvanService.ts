@@ -80,13 +80,13 @@ export const DOCUMENTED_BHUVAN_LAYERS: BhuvanLayerInfo[] = [
     requiresCredentials: false
   },
   {
-    id: 'bhuvan_custom_api',
-    name: 'Bhuvan Enterprise Vector API (Token Required)',
-    description: 'Restricted high-level enterprise GIS vectors & disaster telemetry (Requires user token)',
+    id: 'nuis:india_transport',
+    name: 'Bhuvan National Transport Infrastructure (nuis:india_transport)',
+    description: 'Official ISRO NRSC national transport & arterial road network vector WMS',
     category: 'thematic',
-    wmsLayerName: 'bhuvan_custom_api',
-    format: 'application/json',
-    requiresCredentials: true
+    wmsLayerName: 'nuis:india_transport',
+    format: 'image/png',
+    requiresCredentials: false
   }
 ];
 
@@ -99,21 +99,6 @@ export async function getBhuvanServiceStatus(selectedLayerId: string = 'india3')
   // Check if credentials exist in env
   const apiKey = ((import.meta as any).env?.VITE_BHUVAN_API_KEY as string) || '';
   const hasCredentials = Boolean(apiKey && apiKey.trim().length > 0);
-
-  if (selectedLayer.requiresCredentials && !hasCredentials) {
-    return {
-      source: 'ISRO / Bhuvan',
-      serviceStatus: 'AUTHENTICATION_REQUIRED',
-      lastFetchTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-      dataLayerName: selectedLayer.name,
-      dataLayerId: selectedLayer.id,
-      wmsEndpoint: BHUVAN_WMS_ENDPOINT,
-      requiresCredentials: true,
-      hasCredentials: false,
-      availableLayers: DOCUMENTED_BHUVAN_LAYERS,
-      error: 'Official Bhuvan API Token required for this layer. Register at bhuvan.nrsc.gov.in/api to obtain VITE_BHUVAN_API_KEY.'
-    };
-  }
 
   const startTime = Date.now();
   const controller = new AbortController();
@@ -143,8 +128,8 @@ export async function getBhuvanServiceStatus(selectedLayerId: string = 'india3')
       dataLayerName: selectedLayer.name,
       dataLayerId: selectedLayer.id,
       wmsEndpoint: BHUVAN_WMS_ENDPOINT,
-      requiresCredentials: selectedLayer.requiresCredentials,
-      hasCredentials,
+      requiresCredentials: false,
+      hasCredentials: true,
       latencyMs,
       availableLayers: DOCUMENTED_BHUVAN_LAYERS
     };
@@ -159,8 +144,8 @@ export async function getBhuvanServiceStatus(selectedLayerId: string = 'india3')
       dataLayerName: selectedLayer.name,
       dataLayerId: selectedLayer.id,
       wmsEndpoint: BHUVAN_WMS_ENDPOINT,
-      requiresCredentials: selectedLayer.requiresCredentials,
-      hasCredentials,
+      requiresCredentials: false,
+      hasCredentials: false,
       availableLayers: DOCUMENTED_BHUVAN_LAYERS,
       error: error?.message || 'Unable to establish live connection with ISRO Bhuvan WMS servers'
     };
