@@ -254,59 +254,6 @@ export default function NERLiveMapModule({
     L.polyline(yamunaWaypoints, { color: "#0ea5e9", weight: 3.5, opacity: 0.95, dashArray: "6, 6" }).addTo(roadsGroupRef.current)
       .bindPopup("<b style='color:#0369a1;'>🌊 Yamuna River Flood Vector</b><br/>Delhi Urban Overflow Watch &bull; Level: 208.6m");
 
-    // 🌊 NEPAL -> BIHAR TRANSBOUNDARY INFLUX RIVERS
-    // 1. Gandak River (Nepal -> Valmikinagar -> West/East Champaran -> Gopalganj -> Saran)
-    const gandakRiverWaypoints: [number, number][] = [
-      [27.70, 83.85],
-      [27.43, 83.90],
-      [27.18, 84.12],
-      [26.78, 84.45],
-      [26.15, 84.95],
-      [25.68, 85.18]
-    ];
-    L.polyline(gandakRiverWaypoints, { color: "#0284c7", weight: 10, opacity: 0.3 }).addTo(roadsGroupRef.current);
-    L.polyline(gandakRiverWaypoints, { color: "#38bdf8", weight: 4, opacity: 0.95, dashArray: "8, 6" })
-      .addTo(roadsGroupRef.current)
-      .bindPopup("<div style='font-family:sans-serif;font-size:12px;color:#0f172a;padding:2px;'><b style='color:#0284c7;'>🌊 Gandak River Flood Influx Vector</b><br/>Origin: Nepal Himalayas &bull; Status: Critical Surge (4.5L+ Cusecs at Valmikinagar Barrage)</div>");
-
-    // 2. Bagmati River (Nepal -> Sitamarhi -> Sheohar -> Muzaffarpur -> Darbhanga)
-    const bagmatiRiverWaypoints: [number, number][] = [
-      [27.70, 85.35],
-      [27.10, 85.30],
-      [26.65, 85.45],
-      [26.25, 85.50],
-      [25.75, 85.90]
-    ];
-    L.polyline(bagmatiRiverWaypoints, { color: "#0284c7", weight: 10, opacity: 0.3 }).addTo(roadsGroupRef.current);
-    L.polyline(bagmatiRiverWaypoints, { color: "#38bdf8", weight: 4, opacity: 0.95, dashArray: "8, 6" })
-      .addTo(roadsGroupRef.current)
-      .bindPopup("<div style='font-family:sans-serif;font-size:12px;color:#0f172a;padding:2px;'><b style='color:#0284c7;'>🌊 Bagmati River Flow Vector</b><br/>Origin: Kathmandu Basin / Nepal &bull; Status: Rising rapidly above danger mark</div>");
-
-    // 3. Kosi River ("Sorrow of Bihar") (Nepal -> Birpur Barrage -> Supaul -> Saharsa -> Khagaria)
-    const kosiRiverWaypoints: [number, number][] = [
-      [27.90, 86.80],
-      [26.85, 87.05],
-      [26.50, 86.95],
-      [26.10, 86.75],
-      [25.40, 87.20]
-    ];
-    L.polyline(kosiRiverWaypoints, { color: "#0369a1", weight: 12, opacity: 0.35 }).addTo(roadsGroupRef.current);
-    L.polyline(kosiRiverWaypoints, { color: "#0ea5e9", weight: 5, opacity: 0.95, dashArray: "8, 6" })
-      .addTo(roadsGroupRef.current)
-      .bindPopup("<div style='font-family:sans-serif;font-size:12px;color:#0f172a;padding:2px;'><b style='color:#0284c7;'>🌊 Kosi River Surge Vector</b><br/>Birpur Barrage Discharge: 5.2L+ Cusecs &bull; Red Alert across Supaul & Saharsa</div>");
-
-    // 4. Mahananda River (Nepal -> Araria -> Kishanganj -> Purnia -> Katihar)
-    const mahanandaRiverWaypoints: [number, number][] = [
-      [27.10, 88.25],
-      [26.45, 88.10],
-      [26.15, 87.85],
-      [25.60, 87.70]
-    ];
-    L.polyline(mahanandaRiverWaypoints, { color: "#0284c7", weight: 10, opacity: 0.3 }).addTo(roadsGroupRef.current);
-    L.polyline(mahanandaRiverWaypoints, { color: "#38bdf8", weight: 4, opacity: 0.95, dashArray: "8, 6" })
-      .addTo(roadsGroupRef.current)
-      .bindPopup("<div style='font-family:sans-serif;font-size:12px;color:#0f172a;padding:2px;'><b style='color:#0284c7;'>🌊 Mahananda River Flow Vector</b><br/>Kishanganj & Purnia riverbank warning</div>");
-
     // 2. TRAFFIC & STATUS LAYER (🚦)
     const bypassBadgeIcon = L.divIcon({
       className: "custom-bypass-badge",
@@ -321,73 +268,6 @@ export default function NERLiveMapModule({
       opacity: 0.45,
       attribution: "NEXRAD Radar"
     }).addTo(weatherGroupRef.current);
-
-    // 4. DISRUPTIONS / LANDSLIDES / BIHAR FLOOD HAZARD LAYER (⚠️)
-    // 🚨 BIHAR-NEPAL RED ALERT FLOOD POLYGON (Northern Border Strip)
-    const biharFloodBorderPolygon: [number, number][] = [
-      [27.45, 83.85],
-      [27.05, 84.50],
-      [26.85, 85.30],
-      [26.70, 86.20],
-      [26.55, 87.10],
-      [26.45, 88.10],
-      [26.05, 88.05],
-      [26.15, 87.35],
-      [26.10, 86.40],
-      [26.18, 85.40],
-      [26.40, 84.60],
-      [27.00, 83.90]
-    ];
-    L.polygon(biharFloodBorderPolygon, {
-      color: "#dc2626",
-      fillColor: "#ef4444",
-      fillOpacity: 0.35,
-      weight: 2.5,
-      dashArray: "6, 4"
-    }).addTo(disruptionsGroupRef.current)
-      .bindPopup("<b>🚨 BIHAR ON HIGH ALERT</b><br/>Nepal Transboundary Flood Influx into Gandak, Bagmati, Kosi & Mahananda Rivers.<br/><b>7 Red Alert Districts &bull; 11 Orange Alert Districts</b>");
-
-    // NEPAL ORIGIN BADGE
-    const nepalOriginIcon = L.divIcon({
-      className: "custom-nepal-badge",
-      html: `
-        <div style="
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: rgba(15, 23, 42, 0.92);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1.5px solid rgba(244, 63, 94, 0.85);
-          border-radius: 9999px;
-          padding: 5px 14px;
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 20px rgba(225, 29, 72, 0.5);
-          white-space: nowrap;
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif;
-          font-size: 11px;
-          font-weight: 800;
-          color: #ffffff;
-          letter-spacing: 0.03em;
-          text-transform: uppercase;
-        ">
-          <span style="font-size: 13px;">🇳🇵</span>
-          <span>Nepal Glacial & Flood Influx Origin</span>
-          <span style="
-            background: rgba(225, 29, 72, 0.3);
-            border: 1px solid rgba(244, 63, 94, 0.6);
-            color: #fecdd3;
-            font-size: 9px;
-            font-weight: 800;
-            padding: 1px 6px;
-            border-radius: 6px;
-          ">3,800m MSL</span>
-        </div>
-      `,
-      iconSize: [280, 28],
-      iconAnchor: [140, 14]
-    });
-    L.marker([27.70, 85.30], { icon: nepalOriginIcon }).addTo(disruptionsGroupRef.current)
-      .bindPopup("<div style='font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:12px;color:#0f172a;padding:2px;'><b style='color:#be123c;'>🇳🇵 Nepal Transboundary Surge Origin</b><br/>Extreme precipitation & glacial runoff feeding downstream into Gandak, Bagmati, Kosi & Mahananda rivers.</div>");
 
     // 🔴 7 RED ALERT BIHAR DISTRICT BADGES (Refined Modern Glassmorphic Micro-Badges)
     const redDistricts = [
