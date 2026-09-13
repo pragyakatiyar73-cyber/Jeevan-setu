@@ -303,6 +303,16 @@ export default function AIDisasterImpactAssessment({
     `).openPopup();
   }, [locationLoc]);
 
+  // Clean up Leaflet map instance on unmount
+  useEffect(() => {
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
+
   // Run Assessment Analysis
   const handleRunFullAnalysis = async () => {
     setIsAnalyzing(true);

@@ -93,8 +93,8 @@ export default function SmartDisasterMonitoring({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchResults, setSearchResults] = useState<GeocodedLocation[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [latInput, setLatInput] = useState<string>('25.5788');
-  const [lonInput, setLonInput] = useState<string>('91.8933');
+  const [latInput, setLatInput] = useState<string>(initialLoc ? initialLoc.lat.toString() : '25.5788');
+  const [lonInput, setLonInput] = useState<string>(initialLoc ? initialLoc.lon.toString() : '91.8933');
 
   // Map & Satellite State
   const [viewMode, setViewMode] = useState<'map' | 'satellite'>('map');
@@ -387,6 +387,16 @@ export default function SmartDisasterMonitoring({
     }).addTo(map);
 
   }, [monitoredLoc, monitoringRadiusKm, selectedMapLayer, viewMode]);
+
+  // Clean up Leaflet map instance on unmount
+  useEffect(() => {
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
 
   // Initialize and Update 72h Trend Chart
   useEffect(() => {
