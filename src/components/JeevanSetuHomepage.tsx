@@ -2468,19 +2468,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 borderColor: 'border-teal-300 dark:border-teal-800/80',
                 iconBg: 'bg-teal-600 text-white',
                 hoverText: 'group-hover:text-teal-700 dark:group-hover:text-teal-300'
-              },
-              {
-                title: 'Disaster Reports & Intelligence',
-                desc: 'Verified disaster incident reports, severity levels, and real-time GIS mapping for the 8 NER states.',
-                icon: ShieldAlert,
-                badge: 'NER 8',
-                badgeColor: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40',
-                action: () => onNavigateModule('incidents'),
-                bgColor: 'bg-[#FFFBEB] dark:bg-amber-950/25',
-                hoverBg: 'hover:bg-[#FEF3C7] dark:hover:bg-amber-900/40',
-                borderColor: 'border-amber-200/80 dark:border-amber-900/40',
-                iconBg: 'bg-amber-500 text-white',
-                hoverText: 'group-hover:text-amber-700 dark:group-hover:text-amber-300'
               }
             ].map((card, i) => {
               const Icon = card.icon;
