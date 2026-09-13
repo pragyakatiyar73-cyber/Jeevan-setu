@@ -48,12 +48,14 @@ import {
   Sliders,
   Eye,
   Truck,
-  Package
+  Package,
+  Mic
 } from 'lucide-react';
 import L from 'leaflet';
 import { useTranslation, SUPPORTED_LANGUAGES } from '../i18n';
 import ThemeToggle from './ThemeToggle';
 import TrustedDataSourcesModal from './TrustedDataSourcesModal';
+import AIChatbotWidget from './AIChatbotWidget';
 
 interface JeevanSetuHomepageProps {
   onNavigateModule: (module: string) => void;
@@ -1582,7 +1584,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
   // Smooth Scroll / Tab highlight
-  const [activeTab, setActiveTab] = useState<'Home' | 'Dashboard' | 'Live Map' | 'Risk Assessment' | 'Resources' | 'About' | 'Contact'>('Home');
+  const [activeTab, setActiveTab] = useState<'Home' | 'Dashboard' | 'Live Map' | 'Risk Assessment' | 'Resources' | 'About' | 'Contact' | 'AIChat'>('Home');
+  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
 
   // Live time ticker
   useEffect(() => {
@@ -1968,23 +1971,64 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-1 lg:gap-1.5 mr-1 sm:mr-2">
               {[
-                { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
-                { id: 'Incidents', name: 'Incidents', action: () => { onNavigateModule('incidents'); } },
-                { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
-                { id: 'Contact', name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setInfoModalTab('contact'); setIsInfoModalOpen(true); } }
+                {
+                  id: 'Home',
+                  name: t('nav.homeNav', 'Home'),
+                  isAiChat: false,
+                  action: () => {
+                    setActiveTab('Home');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                },
+                {
+                  id: 'AIChat',
+                  name: 'AI Chat Box',
+                  isAiChat: true,
+                  action: () => {
+                    setActiveTab('AIChat');
+                    setIsAiChatOpen(true);
+                    if (onOpenAiChatbot) onOpenAiChatbot();
+                  }
+                },
+                {
+                  id: 'About',
+                  name: t('nav.aboutNav', 'About'),
+                  isAiChat: false,
+                  action: () => {
+                    setActiveTab('About');
+                    const el = document.getElementById('how-it-works');
+                    el?.scrollIntoView({ behavior: 'smooth' });
+                  }
+                },
+                {
+                  id: 'Contact',
+                  name: t('nav.contactNav', 'Contact'),
+                  isAiChat: false,
+                  action: () => {
+                    setActiveTab('Contact');
+                    setInfoModalTab('contact');
+                    setIsInfoModalOpen(true);
+                  }
+                }
               ].map((nav) => {
                 const isActive = activeTab === nav.id;
                 return (
                   <button
                     key={nav.id}
                     onClick={nav.action}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 transform hover:-translate-y-0.5 relative cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 transform hover:-translate-y-0.5 relative cursor-pointer flex items-center gap-1.5 ${
                       isActive
                         ? 'text-sky-300 font-bold'
                         : 'text-slate-200 hover:text-white hover:bg-slate-800/70'
                     }`}
                   >
-                    {nav.name}
+                    <span>{nav.name}</span>
+                    {nav.isAiChat && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-sky-500/20 to-indigo-500/20 border border-sky-400/40 text-[10px] font-bold text-sky-300 shadow-sm" title="Voice-to-Text & Voice Search Enabled">
+                        <Mic className="h-3 w-3 text-sky-400 animate-pulse" />
+                        <span className="text-[9px] uppercase tracking-wider hidden lg:inline">Voice</span>
+                      </span>
+                    )}
                     {isActive && (
                       <span className="absolute bottom-0 left-3 right-3 h-[2.5px] bg-sky-400 rounded-full shadow-sm shadow-sky-400" />
                     )}
@@ -2135,6 +2179,15 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <div className="space-y-1">
               {[
                 { name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+                {
+                  name: 'AI Chat Box (Voice Search 🎙️)',
+                  action: () => {
+                    setActiveTab('AIChat');
+                    setIsMobileMenuOpen(false);
+                    setIsAiChatOpen(true);
+                    if (onOpenAiChatbot) onOpenAiChatbot();
+                  }
+                },
                 { name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); setIsMobileMenuOpen(false); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
                 { name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setIsMobileMenuOpen(false); setInfoModalTab('contact'); setIsInfoModalOpen(true); } }
               ].map((nav) => (
@@ -5778,6 +5831,20 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           </div>
         </div>
       )}
+
+      {/* 🤖 Interactive AI Chat Box with Voice-to-Text & Voice Search */}
+      <AIChatbotWidget
+        onNavigateModule={onNavigateModule}
+        onOpenSos={onOpenSos}
+        isOpenControlled={isAiChatOpen}
+        onOpenControlled={() => setIsAiChatOpen(true)}
+        onCloseControlled={() => {
+          setIsAiChatOpen(false);
+          if (activeTab === 'AIChat') {
+            setActiveTab('Home');
+          }
+        }}
+      />
 
     </div>
   );

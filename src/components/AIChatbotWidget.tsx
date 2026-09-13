@@ -119,6 +119,7 @@ export interface AIChatbotWidgetProps {
   isOpenDefault?: boolean;
   isOpenControlled?: boolean;
   onCloseControlled?: () => void;
+  onOpenControlled?: () => void;
 }
 
 export default function AIChatbotWidget({
@@ -126,7 +127,8 @@ export default function AIChatbotWidget({
   onOpenSos,
   isOpenDefault = false,
   isOpenControlled,
-  onCloseControlled
+  onCloseControlled,
+  onOpenControlled
 }: AIChatbotWidgetProps) {
   const { t } = useTranslation();
   const [internalIsOpen, setInternalIsOpen] = useState(isOpenDefault);
@@ -138,6 +140,8 @@ export default function AIChatbotWidget({
     setInternalIsOpen(nextVal);
     if (!nextVal && onCloseControlled) {
       onCloseControlled();
+    } else if (nextVal && onOpenControlled) {
+      onOpenControlled();
     }
   };
 
