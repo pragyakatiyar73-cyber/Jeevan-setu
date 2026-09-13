@@ -28,6 +28,7 @@ import {
   EmergencyFacilityType,
   DataStatus
 } from '../services/api/emergencyFacilitiesService';
+import { NER_STATES_DISTRICTS } from '../services/api/disasterReportsService';
 import { isPointInNER, NER_STATES, NERStateName, MASTER_NER_POLYGON, NER_COVERAGE_LABEL } from '../utils/nerBoundary';
 import { calculateSafeNERRoute } from '../services/api/roadAccessibilityService';
 
@@ -70,6 +71,11 @@ export default function EmergencyFacilitiesModule({
   const [selectedState, setSelectedState] = useState<string>('All');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Reset district filter when state changes
+  useEffect(() => {
+    setSelectedDistrict('All');
+  }, [selectedState]);
 
   // User location state
   const [activeUserLoc, setActiveUserLoc] = useState(PRESET_USER_LOCATIONS[0]);
@@ -457,14 +463,31 @@ export default function EmergencyFacilitiesModule({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">District Search</label>
-            <input
-              type="text"
-              placeholder="e.g. Kamrup Metropolitan, East Khasi Hills, Cachar..."
-              value={selectedDistrict === 'All' ? '' : selectedDistrict}
-              onChange={(e) => setSelectedDistrict(e.target.value || 'All')}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-900 dark:text-white outline-none"
-            />
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Filter District {selectedState !== 'All' ? `(${selectedState})` : ''}
+            </label>
+            <select
+              value={selectedDistrict}
+              onChange={(e) => setSelectedDistrict(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-900 dark:text-white outline-none cursor-pointer hover:border-sky-500 transition"
+            >
+              <option value="All">
+                {selectedState === 'All' ? 'All NER Districts' : `All Districts in ${selectedState}`}
+              </option>
+              {selectedState !== 'All' && NER_STATES_DISTRICTS[selectedState] ? (
+                NER_STATES_DISTRICTS[selectedState].map((dist) => (
+                  <option key={dist} value={dist}>{dist}</option>
+                ))
+              ) : (
+                Object.entries(NER_STATES_DISTRICTS).map(([stName, distList]) => (
+                  <optgroup key={stName} label={`--- ${stName} ---`}>
+                    {distList.map(dist => (
+                      <option key={`${stName}-${dist}`} value={dist}>{dist} ({stName})</option>
+                    ))}
+                  </optgroup>
+                ))
+              )}
+            </select>
           </div>
         </div>
       </div>
