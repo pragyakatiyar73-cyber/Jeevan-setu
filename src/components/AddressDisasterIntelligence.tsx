@@ -37,6 +37,7 @@ import {
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useTranslation } from '../i18n';
+import NERLiveMapModule from './NERLiveMapModule';
 import {
   searchMonitoringLocation,
   reverseGeocodeMonitoring,
@@ -100,11 +101,6 @@ export default function AddressDisasterIntelligence() {
   const [reportGenerated, setReportGenerated] = useState<boolean>(false);
   const [showFullPDFView, setShowFullPDFView] = useState<boolean>(false);
   const [reportId, setReportId] = useState<string>('');
-
-  // Interactive Leaflet Map Reference
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const markerRef = useRef<L.Marker | null>(null);
 
   // Quick Location Sample Click Handler
   const handleQuickLocationSelect = (locName: string, lat: number, lon: number, stateName: string, districtName: string) => {
@@ -244,39 +240,6 @@ export default function AddressDisasterIntelligence() {
       clearTimeout(timerFinal);
     };
   };
-
-  // Initialize Interactive Leaflet Dashboard Map
-  useEffect(() => {
-    if (!mapContainerRef.current) return;
-
-    if (!mapInstanceRef.current) {
-      const map = L.map(mapContainerRef.current).setView([currentLoc.lat, currentLoc.lon], 11);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap'
-      }).addTo(map);
-
-      mapInstanceRef.current = map;
-    } else {
-      mapInstanceRef.current.setView([currentLoc.lat, currentLoc.lon], 11);
-    }
-
-    if (markerRef.current) {
-      mapInstanceRef.current.removeLayer(markerRef.current);
-    }
-
-    const pinIcon = L.divIcon({
-      className: 'custom-location-pin',
-      html: `<div style="background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;padding:6px 12px;border-radius:12px;font-weight:900;font-size:12px;border:2px solid #fff;box-shadow:0 0 20px rgba(3,105,161,0.8);white-space:nowrap;display:flex;align-items:center;gap:4px;">📍 <span>${currentLoc.city || currentLoc.displayName.split(',')[0]}</span></div>`,
-      iconSize: [160, 30],
-      iconAnchor: [80, 15]
-    });
-
-    markerRef.current = L.marker([currentLoc.lat, currentLoc.lon], { icon: pinIcon })
-      .addTo(mapInstanceRef.current)
-      .bindPopup(`<b>📍 ${currentLoc.displayName}</b><br/>Lat: ${currentLoc.lat.toFixed(4)}°, Lon: ${currentLoc.lon.toFixed(4)}°`);
-
-  }, [currentLoc]);
 
   // Print PDF Trigger via window.print()
   const handlePrintPDF = () => {
@@ -579,9 +542,20 @@ End of Location 360° Report — Jeevan Setu Command Engine
                 <Layers className="h-4 w-4 text-sky-400" />
                 <span>Interactive Location GIS Mesh Map</span>
               </h3>
-              <span className="text-[11px] font-mono text-emerald-400">Leaflet OpenStreetMap Active</span>
+              <span className="text-[11px] font-mono text-emerald-400">NER Live Map Connected</span>
             </div>
-            <div ref={mapContainerRef} className="h-96 w-full rounded-xl border border-slate-800 overflow-hidden shadow-inner" />
+            <div className="h-96 sm:h-[420px] w-full rounded-xl border border-slate-800 overflow-hidden shadow-inner relative">
+              <NERLiveMapModule
+                hideHeader={true}
+                focusedTarget={{ coord: [currentLoc.lat, currentLoc.lon], zoom: 11 }}
+                activeSosLocation={{
+                  lat: currentLoc.lat,
+                  lon: currentLoc.lon,
+                  landmark: currentLoc.displayName,
+                  triageLevel: 'HIGH'
+                }}
+              />
+            </div>
           </div>
 
           {/* Bottom Action Bar */}

@@ -236,8 +236,11 @@ export default function NERLiveMapModule({
   useEffect(() => {
     if (focusedTarget && mapInstanceRef.current) {
       mapInstanceRef.current.flyTo(focusedTarget.coord, focusedTarget.zoom, { duration: 1.2 });
+      setTimeout(() => {
+        mapInstanceRef.current?.invalidateSize();
+      }, 300);
     }
-  }, [focusedTarget]);
+  }, [focusedTarget?.coord?.[0], focusedTarget?.coord?.[1], focusedTarget?.zoom]);
 
   // Keyboard shortcut (Escape) to exit full-screen or return to dashboard
   useEffect(() => {
@@ -275,6 +278,10 @@ export default function NERLiveMapModule({
     }).setView([centerLat, centerLon], initialZoom);
 
     mapInstanceRef.current = map;
+
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 250);
 
     const getTileUrl = (style: string) => {
       if (style === "topo") return "https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}";
