@@ -1967,6 +1967,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <nav className="hidden md:flex items-center gap-1 lg:gap-1.5 mr-1 sm:mr-2">
               {[
                 { id: 'Home', name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+                { id: 'Incidents', name: 'Incidents', action: () => { onNavigateModule('incidents'); } },
                 { id: 'About', name: t('nav.aboutNav', 'About'), action: () => { setActiveTab('About'); const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); } },
                 { id: 'Contact', name: t('nav.contactNav', 'Contact'), action: () => { setActiveTab('Contact'); setInfoModalTab('contact'); setIsInfoModalOpen(true); } }
               ].map((nav) => {

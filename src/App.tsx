@@ -83,6 +83,7 @@ import ThemeToggle from './components/ThemeToggle';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
 import AIChatbotWidget from './components/AIChatbotWidget';
+import DisasterReportsModule from './components/DisasterReportsModule';
 import { useTranslation } from './i18n';
 import { incidentStore } from './services/api';
 
@@ -661,6 +662,7 @@ export default function App() {
               {
                 category: t('sidebar.catIntelligence', 'AI & GIS Intelligence'),
                 items: [
+                  { id: 'incidents', label: 'Disaster Reports & Intelligence', icon: ShieldAlert, badge: 'NER 8', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
                   { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
@@ -832,7 +834,18 @@ export default function App() {
         {/* Main Workspace Render */}
         <main className="flex-1 overflow-hidden">
 
-          {/* 📖 DISASTER SAFETY GUIDE */}
+          {/* 🌋 DISASTER REPORTS & INCIDENT INTELLIGENCE */}
+        {(activeModule === 'incidents' || activeModule === 'reports') && (
+          <div className="h-full overflow-y-auto">
+            <DisasterReportsModule
+              onNavigateToReroute={() => setActiveModule('rerouting')}
+              onNavigateToMap={() => setActiveModule('map')}
+              onTriggerSOS={() => setIsSosModalOpen(true)}
+            />
+          </div>
+        )}
+
+        {/* 📖 DISASTER SAFETY GUIDE */}
           {activeModule === 'safetyguide' && (
             <div className="h-full overflow-y-auto p-4 sm:p-6">
               <DisasterSafetyGuide onTriggerSOS={() => setIsSosModalOpen(true)} />
