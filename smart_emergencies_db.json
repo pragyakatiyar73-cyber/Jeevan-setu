@@ -218,7 +218,7 @@
     "description": "Debris fall blocking main artery. Heavy machinery required for clearing boulder obstruction.",
     "priority": "HIGH",
     "priorityLabel": "AI-Assisted Priority Assessment",
-    "status": "RESOURCE ASSIGNED",
+    "status": "RESPONSE RECOMMENDED",
     "reportedTime": "2026-09-13T07:15:00Z",
     "timeline": [
       {
@@ -232,17 +232,25 @@
       {
         "time": "2026-09-13T07:22:00Z",
         "statusText": "Resource Assigned: RT-102 Terrain 4x4 Mini Convoy"
+      },
+      {
+        "time": "2026-09-13T16:01:03.992Z",
+        "statusText": "Recommended Resources: Depot Shillong High-Altitude Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T16:01:05.654Z",
+        "statusText": "Recommended Resources: Depot Shillong High-Altitude Depot & Vehicle RT-101"
       }
     ],
     "assignedResource": {
-      "depotId": "DEPOT-SHL",
-      "depotName": "Shillong High-Altitude Cache",
-      "supplyItem": "Heavy Rescue Tools & Tarpaulins",
-      "vehicleId": "RT-102",
-      "vehicleType": "Terrain 4x4 Mini Convoy",
-      "trackingStatus": "GPS_STALE",
+      "depotId": "DEP-SHL-02",
+      "depotName": "Shillong High-Altitude Depot",
+      "supplyItem": "Road Clearance, Rescue, Shelter Supplies",
+      "vehicleId": "RT-101",
+      "vehicleType": "4x4 All-Terrain Convoy Truck",
+      "trackingStatus": "GPS_CONNECTED",
       "routeStatus": "ROUTE_RECOMMENDED",
-      "lastUpdate": "2026-09-13T02:49:47.305Z"
+      "lastUpdate": "2026-09-13T16:01:05.654Z"
     },
     "connectedContext": {
       "weatherDataStatus": "LIVE DATA",
