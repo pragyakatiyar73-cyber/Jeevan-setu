@@ -82,6 +82,7 @@ import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
+import AIChatbotWidget from './components/AIChatbotWidget';
 import { useTranslation } from './i18n';
 import { incidentStore } from './services/api';
 
@@ -1926,6 +1927,12 @@ export default function App() {
             setIsSosModalOpen(false);
             setActiveModule('map');
           }}
+        />
+
+        {/* 🤖 Jeevan Setu AI Disaster Intelligence Chatbot Widget (Voice & Text) */}
+        <AIChatbotWidget
+          onNavigateModule={(mod) => setActiveModule(mod)}
+          onOpenSos={() => setIsSosModalOpen(true)}
         />
 
       </main>
