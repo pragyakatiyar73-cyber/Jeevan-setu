@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "../i18n";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import {
   ShieldAlert,
   MapPin,
@@ -159,43 +160,46 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    if (!mapInstanceRef.current) {
-      // Fix default Leaflet marker icons
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-        iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png"
-      });
-
-      const map = L.map(mapContainerRef.current).setView([25.8, 92.5], 7);
-
-      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
-        maxZoom: 16,
-        attribution: "Jeevan Setu GIS Telemetry &bull; Esri Dark Canvas"
-      }).addTo(map);
-
-      // Render Master 8-State NER Boundary Polygon
-      const polygonCoords: L.LatLngExpression[] = MASTER_NER_POLYGON.map(([lat, lon]) => [lat, lon]);
-      L.polygon(polygonCoords, {
-        color: "#0284c7",
-        weight: 2,
-        fillColor: "#38bdf8",
-        fillOpacity: 0.08,
-        dashArray: "5, 5"
-      }).addTo(map).bindPopup("<b>📍 North Eastern Region (8 States Boundary)</b>");
-
-      markersGroupRef.current = L.layerGroup().addTo(map);
-      mapInstanceRef.current = map;
+    // Destroy any existing instance before initializing fresh map
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
     }
 
-    // Clear previous markers
-    if (markersGroupRef.current) {
-      markersGroupRef.current.clearLayers();
-    }
+    // Fix default Leaflet marker icons
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+      iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+      shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png"
+    });
 
-    const markers = markersGroupRef.current;
-    if (!markers) return;
+    const map = L.map(mapContainerRef.current, {
+      zoomControl: true,
+      minZoom: 5,
+      maxZoom: 18
+    }).setView([25.8, 92.5], 7);
+
+    // Ultra-reliable Google Maps Satellite/Roads Hybrid tiles
+    L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: "&copy; Google Maps &bull; Jeevan Setu GIS Grid"
+    }).addTo(map);
+
+    // Render Master 8-State NER Boundary Polygon
+    const polygonCoords: L.LatLngExpression[] = MASTER_NER_POLYGON.map(([lat, lon]) => [lat, lon]);
+    L.polygon(polygonCoords, {
+      color: "#0284c7",
+      weight: 2.5,
+      fillColor: "#38bdf8",
+      fillOpacity: 0.1,
+      dashArray: "6, 6"
+    }).addTo(map).bindPopup("<b>📍 North Eastern Region (8 States Sovereign Boundary)</b>");
+
+    const markers = L.layerGroup().addTo(map);
+    markersGroupRef.current = markers;
+    mapInstanceRef.current = map;
 
     // 1. Plot Landslide Sector Markers
     if (landslideData && landslideData.sectors) {
@@ -279,6 +283,21 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
         markers.addLayer(marker);
       });
     }
+
+    // Ensure Leaflet recalculates size smoothly after mount
+    const resizeTimer = setTimeout(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    }, 200);
+
+    return () => {
+      clearTimeout(resizeTimer);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
   }, [landslideData, floodData, earthquakeData, activeTab]);
 
   return (
@@ -761,7 +780,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             )}
           </div>
 
-          <div ref={mapContainerRef} className="h-96 w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner" />
+          <div ref={mapContainerRef} className="h-96 min-h-[384px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner relative z-0" />
 
           <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 font-mono">
             <div className="flex items-center gap-3">
