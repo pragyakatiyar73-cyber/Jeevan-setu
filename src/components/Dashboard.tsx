@@ -560,20 +560,18 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
 
       {/* 🧭 PILLAR SELECTOR TABS BAR (Modern Segmented Control) */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800/80 pb-4">
-        <div className="flex flex-wrap items-center gap-1.5 bg-slate-200/60 dark:bg-[#090e1d] p-1.5 rounded-2xl border border-slate-300/60 dark:border-slate-800">
-          <button
-            onClick={() => setActiveTab('all')}
-            className={`px-4 py-2 rounded-xl text-xs font-black cursor-pointer transition-all ${
-              activeTab === 'all'
-                ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                : 'text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/40 dark:hover:bg-slate-800/60'
-            }`}
-          >
-            Unified Overview (All 4 Pillars)
-          </button>
+        {/* Left: Active State Filter */}
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+          <span>Active State Filter:</span>
+          <span className="text-sky-600 dark:text-sky-400 font-bold bg-sky-500/10 px-2.5 py-1 rounded-lg border border-sky-500/20">
+            {selectedStateFilter}
+          </span>
+        </div>
 
+        {/* Right (at the right side of All): 4 Pillar Selector Tabs */}
+        <div className="flex flex-wrap items-center gap-1.5 bg-slate-200/60 dark:bg-[#090e1d] p-1.5 rounded-2xl border border-slate-300/60 dark:border-slate-800 ml-auto">
           <button
-            onClick={() => setActiveTab('landslide')}
+            onClick={() => setActiveTab(activeTab === 'landslide' ? 'all' : 'landslide')}
             className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5 ${
               activeTab === 'landslide'
                 ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30'
@@ -585,7 +583,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
           </button>
 
           <button
-            onClick={() => setActiveTab('flood')}
+            onClick={() => setActiveTab(activeTab === 'flood' ? 'all' : 'flood')}
             className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5 ${
               activeTab === 'flood'
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
@@ -597,7 +595,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
           </button>
 
           <button
-            onClick={() => setActiveTab('livemap')}
+            onClick={() => setActiveTab(activeTab === 'livemap' ? 'all' : 'livemap')}
             className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5 ${
               activeTab === 'livemap'
                 ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
@@ -609,7 +607,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
           </button>
 
           <button
-            onClick={() => setActiveTab('weather')}
+            onClick={() => setActiveTab(activeTab === 'weather' ? 'all' : 'weather')}
             className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5 ${
               activeTab === 'weather'
                 ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
@@ -619,13 +617,6 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             <span>🌤️</span>
             <span>Weather & Radar</span>
           </button>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-          <span>Active State Filter:</span>
-          <span className="text-sky-600 dark:text-sky-400 font-bold bg-sky-500/10 px-2.5 py-1 rounded-lg border border-sky-500/20">
-            {selectedStateFilter}
-          </span>
         </div>
       </div>
 
