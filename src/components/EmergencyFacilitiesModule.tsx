@@ -273,6 +273,15 @@ export default function EmergencyFacilitiesModule({
 
       markersRef.current.addLayer(marker);
     });
+
+    // Auto-fit map camera bounds to encompass facilities and user location
+    if (facilities.length > 0) {
+      const bounds = L.latLngBounds(facilities.map(f => [f.lat, f.lon]));
+      if (!isLocationOutsideNER) {
+        bounds.extend([activeUserLoc.lat, activeUserLoc.lon]);
+      }
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+    }
   }, [facilities, selectedFacility, activeUserLoc, isLocationOutsideNER]);
 
   // Handle Safe Route Click
