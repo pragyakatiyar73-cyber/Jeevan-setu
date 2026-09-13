@@ -137,6 +137,28 @@ export default function DisasterReportsModule({
     loadIncidents();
   };
 
+  // Reset All Filters & Search Query
+  const handleResetFilters = () => {
+    setSelectedState('All');
+    setSelectedDistrict('All');
+    setSelectedType('All');
+    setSelectedSeverity('All');
+    setSelectedStatus('All');
+    setSearchQuery('');
+  };
+
+// Centroid Coordinates for 8 NER States
+const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> = {
+  'Arunachal Pradesh': { lat: 28.2180, lon: 94.7278, zoom: 8 },
+  'Assam': { lat: 26.2006, lon: 92.9376, zoom: 8 },
+  'Manipur': { lat: 24.6637, lon: 93.9063, zoom: 9 },
+  'Meghalaya': { lat: 25.5788, lon: 91.8933, zoom: 9 },
+  'Mizoram': { lat: 23.1645, lon: 92.9376, zoom: 9 },
+  'Nagaland': { lat: 26.1584, lon: 94.5624, zoom: 9 },
+  'Sikkim': { lat: 27.5330, lon: 88.5122, zoom: 9 },
+  'Tripura': { lat: 23.9408, lon: 91.9882, zoom: 9 }
+};
+
   // Initialize Leaflet Incident Map
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -158,47 +180,108 @@ export default function DisasterReportsModule({
       mapInstanceRef.current = map;
     }
 
-    // Update Map Markers
+    // Update Map Markers & Auto Zoom to State/District Risks
     if (markersGroupRef.current) {
       markersGroupRef.current.clearLayers();
 
+      const bounds = L.latLngBounds([]);
+
       incidents.forEach((item) => {
         let markerColor = '#3b82f6'; // Default Blue
-        if (item.disasterType === 'Landslide') markerColor = '#f97316';
-        else if (item.disasterType === 'Heavy Rain') markerColor = '#0284c7';
-        else if (item.disasterType === 'Storm/Cyclone') markerColor = '#a855f7';
-        else if (item.disasterType === 'Road Block') markerColor = '#ef4444';
-        else if (item.disasterType === 'Earthquake') markerColor = '#eab308';
-        else if (item.disasterType === 'Other Disaster') markerColor = '#f59e0b';
+        let emoji = '⚠️';
+        if (item.disasterType === 'Flood') { markerColor = '#0284c7'; emoji = '🌊'; }
+        else if (item.disasterType === 'Landslide') { markerColor = '#ea580c'; emoji = '⛰️'; }
+        else if (item.disasterType === 'Heavy Rain') { markerColor = '#2563eb'; emoji = '🌧️'; }
+        else if (item.disasterType === 'Storm/Cyclone') { markerColor = '#9333ea'; emoji = '🌪️'; }
+        else if (item.disasterType === 'Road Block') { markerColor = '#dc2626'; emoji = '🚧'; }
+        else if (item.disasterType === 'Earthquake') { markerColor = '#ca8a04'; emoji = '🌋'; }
 
-        const circle = L.circleMarker([item.lat, item.lon], {
-          radius: item.severity === 'CRITICAL' ? 12 : item.severity === 'HIGH' ? 10 : 8,
-          fillColor: markerColor,
-          color: '#ffffff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.85
+        const isCritical = item.severity === 'CRITICAL';
+        const isHigh = item.severity === 'HIGH';
+        const statusBg = item.status === 'RESOLVED' ? '#065f46' : item.status === 'MONITORING' ? '#075985' : '#881337';
+        const statusText = item.status === 'RESOLVED' ? '#34d399' : item.status === 'MONITORING' ? '#38bdf8' : '#fda4af';
+
+        // Custom Pin Icon showing Disaster Type Emoji & Label pointing to exact location
+        const customPinIcon = L.divIcon({
+          className: 'disaster-location-pin',
+          html: `
+            <div style="position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; transform: translate(-50%, -100%);">
+              <div style="
+                display: flex; align-items: center; gap: 5px;
+                background: rgba(15, 23, 42, 0.95);
+                border: 2px solid ${markerColor};
+                border-radius: 12px;
+                padding: 4px 8px;
+                box-shadow: 0 6px 16px rgba(0,0,0,0.7);
+                white-space: nowrap;
+                color: #ffffff;
+                font-family: system-ui, sans-serif;
+                font-size: 11px;
+                font-weight: 800;
+              ">
+                <span style="font-size: 14px;">${emoji}</span>
+                <span style="color: #f8fafc;">${item.disasterType}</span>
+                <span style="
+                  font-size: 9px;
+                  font-weight: 900;
+                  background: ${isCritical ? '#991b1b' : isHigh ? '#9a3412' : '#1e3a8a'};
+                  color: ${isCritical ? '#fca5a5' : isHigh ? '#ffedd5' : '#bfdbfe'};
+                  padding: 1px 5px;
+                  border-radius: 6px;
+                ">${item.severity}</span>
+              </div>
+              <div style="
+                width: 0; height: 0;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-top: 7px solid ${markerColor};
+                margin-top: -1px;
+              "></div>
+            </div>
+          `,
+          iconSize: [0, 0],
+          iconAnchor: [0, 0]
         });
 
-        circle.bindPopup(`
-          <div style="font-family: system-ui, sans-serif; min-width: 190px; padding: 2px;">
-            <div style="font-weight: 800; font-size: 12px; color: ${markerColor}; text-transform: uppercase;">
-              ● ${item.disasterType} (${item.severity})
+        const marker = L.marker([item.lat, item.lon], { icon: customPinIcon });
+
+        marker.bindPopup(`
+          <div style="font-family: system-ui, sans-serif; min-width: 210px; padding: 4px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+              <span style="font-weight: 800; font-size: 11px; color: ${markerColor}; text-transform: uppercase;">
+                ${emoji} ${item.disasterType} (${item.severity})
+              </span>
+              <span style="font-weight: 800; font-size: 9px; background: ${statusBg}; color: ${statusText}; padding: 2px 6px; border-radius: 4px;">
+                ${item.status}
+              </span>
             </div>
-            <div style="font-weight: 700; font-size: 13px; color: #0f172a; margin-top: 2px;">${item.location}</div>
-            <div style="font-size: 11px; color: #475569; margin-top: 2px;">${item.district}, <b>${item.state}</b></div>
-            <div style="font-size: 10px; color: #64748b; margin-top: 4px;">Status: <b>${item.status}</b> | ${item.date} ${item.time}</div>
+            <div style="font-weight: 800; font-size: 13px; color: #0f172a; margin-top: 4px;">${item.location}</div>
+            <div style="font-size: 11px; color: #475569; margin-top: 2px;">📍 ${item.district}, <b>${item.state}</b></div>
+            <div style="font-size: 10px; color: #94a3b8; margin-top: 6px; border-top: 1px solid #e2e8f0; padding-top: 4px;">
+              Status: <b>${item.status}</b> | 🕒 ${item.date} ${item.time}
+            </div>
           </div>
         `);
 
-        circle.on('click', () => {
+        marker.on('click', () => {
           setSelectedIncident(item);
         });
 
-        circle.addTo(markersGroupRef.current!);
+        marker.addTo(markersGroupRef.current!);
+        bounds.extend([item.lat, item.lon]);
       });
+
+      // AUTO-ZOOM ON MAP: Zoom to all risk bounds in target State/District
+      if (mapInstanceRef.current) {
+        if (incidents.length > 0 && bounds.isValid()) {
+          mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+        } else if (selectedState !== 'All' && STATE_CENTERS[selectedState]) {
+          const center = STATE_CENTERS[selectedState];
+          mapInstanceRef.current.flyTo([center.lat, center.lon], center.zoom, { duration: 1.2 });
+        }
+      }
     }
-  }, [incidents]);
+  }, [incidents, selectedState]);
 
   // Handle User Report Submission
   const handleReportSubmit = async (e: React.FormEvent) => {
@@ -286,7 +369,7 @@ export default function DisasterReportsModule({
             className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-sky-900/40 hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer border border-sky-400/40"
           >
             <Plus className="h-4 w-4" />
-            <span>+ Report Incident</span>
+            <span>Report Incident</span>
           </button>
           <button
             onClick={loadIncidents}
@@ -319,6 +402,16 @@ export default function DisasterReportsModule({
           >
             Search
           </button>
+          {(selectedState !== 'All' || selectedDistrict !== 'All' || selectedType !== 'All' || selectedSeverity !== 'All' || selectedStatus !== 'All' || searchQuery) && (
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="px-3.5 py-2.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold rounded-xl border border-rose-500/40 transition cursor-pointer flex items-center gap-1.5 shrink-0"
+            >
+              <X className="h-3.5 w-3.5" />
+              <span>Reset Filters</span>
+            </button>
+          )}
         </form>
 
         {/* Outside-NER Search Rejection Warning */}
@@ -330,17 +423,17 @@ export default function DisasterReportsModule({
         )}
 
         {/* Filter Dropdowns Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           
           {/* Disaster Type Filter */}
-          <div>
-            <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+          <div className="flex flex-col">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
               Disaster Type
             </label>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 cursor-pointer"
+              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">All Types</option>
               <option value="Flood">🌊 Flood</option>
@@ -354,14 +447,14 @@ export default function DisasterReportsModule({
           </div>
 
           {/* State Filter (8 NER States) */}
-          <div>
-            <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+          <div className="flex flex-col">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
               State (NER Only)
             </label>
             <select
               value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 cursor-pointer"
+              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">All NER States (8)</option>
               {NER_STATES.map((st) => (
@@ -371,15 +464,15 @@ export default function DisasterReportsModule({
           </div>
 
           {/* Dynamic District Filter */}
-          <div>
-            <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+          <div className="flex flex-col">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
               District
             </label>
             <select
               value={selectedDistrict}
               onChange={(e) => setSelectedDistrict(e.target.value)}
               disabled={selectedState === 'All'}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 disabled:opacity-50 cursor-pointer"
+              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 disabled:opacity-40 hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">{selectedState === 'All' ? 'Select State First' : 'All Districts'}</option>
               {selectedState !== 'All' && NER_STATES_DISTRICTS[selectedState]?.map((dist) => (
@@ -389,14 +482,14 @@ export default function DisasterReportsModule({
           </div>
 
           {/* Severity Filter */}
-          <div>
-            <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+          <div className="flex flex-col">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
               Severity Level
             </label>
             <select
               value={selectedSeverity}
               onChange={(e) => setSelectedSeverity(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 cursor-pointer"
+              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">All Severities</option>
               <option value="CRITICAL">🔴 CRITICAL</option>
@@ -407,14 +500,14 @@ export default function DisasterReportsModule({
           </div>
 
           {/* Status Filter */}
-          <div>
-            <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+          <div className="flex flex-col">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
               Incident Status
             </label>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 cursor-pointer"
+              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">All Statuses</option>
               <option value="ACTIVE">ACTIVE</option>
@@ -429,28 +522,29 @@ export default function DisasterReportsModule({
       </div>
 
       {/* 🗺️ INTERACTIVE MAP & INCIDENTS GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column: Interactive Incident Map (5 cols) */}
-        <div className="lg:col-span-5 rounded-2xl bg-slate-900 border border-slate-800 p-3 shadow-xl flex flex-col h-[520px]">
-          <div className="flex items-center justify-between px-2 pb-2">
-            <span className="text-xs font-black text-white flex items-center gap-1.5 uppercase tracking-wide">
+        <div className="lg:col-span-5 rounded-2xl bg-slate-900 border border-slate-800 p-4 shadow-2xl flex flex-col h-[580px]">
+          <div className="flex items-center justify-between px-1 pb-3 border-b border-slate-800/80 mb-3">
+            <span className="text-xs font-black text-white flex items-center gap-2 uppercase tracking-wide">
               <MapPin className="h-4 w-4 text-sky-400" />
               NER Disaster Incident Map
             </span>
-            <span className="text-[10px] font-bold text-slate-400">
+            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-800/60">
               Showing {incidents.length} Markers
             </span>
           </div>
 
-          <div ref={mapContainerRef} className="flex-1 w-full rounded-xl overflow-hidden z-10" />
+          <div ref={mapContainerRef} className="flex-1 w-full rounded-xl overflow-hidden shadow-inner border border-slate-800/60 z-10" />
         </div>
 
         {/* Right Column: Incident List / Grid (7 cols) */}
-        <div className="lg:col-span-7 space-y-3">
+        <div className="lg:col-span-7 rounded-2xl bg-slate-900 border border-slate-800 p-4 shadow-2xl flex flex-col h-[580px]">
           
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
+          <div className="flex items-center justify-between px-1 pb-3 border-b border-slate-800/80 mb-3 shrink-0">
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <Activity className="h-4 w-4 text-emerald-400" />
               Active NER Incident Stream ({incidents.length})
             </h3>
             {isError && (
@@ -462,101 +556,127 @@ export default function DisasterReportsModule({
 
           {/* Loading Indicator */}
           {isLoading && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-12 text-center space-y-3">
-              <RefreshCw className="h-8 w-8 text-sky-400 animate-spin mx-auto" />
+            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950/50 p-8 text-center space-y-3">
+              <RefreshCw className="h-8 w-8 text-sky-400 animate-spin" />
               <p className="text-xs text-slate-400 font-bold">Querying official NER incident feeds...</p>
             </div>
           )}
 
           {/* Empty State */}
           {!isLoading && incidents.length === 0 && !isError && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-12 text-center space-y-2">
-              <ShieldAlert className="h-10 w-10 text-slate-600 mx-auto" />
-              <h4 className="text-sm font-bold text-slate-300">No Incidents Found</h4>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                No active hazard reports match your filter criteria across the 8 North Eastern states.
+            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950/50 p-8 text-center space-y-3">
+              <ShieldAlert className="h-10 w-10 text-slate-500" />
+              <h4 className="text-sm font-bold text-slate-300">No Matching Incidents Found</h4>
+              <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
+                Multiple active filters or search terms are filtering out records. Try clearing search text or resetting filters.
               </p>
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="mt-2 px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span>Reset All Filters &amp; Search</span>
+              </button>
             </div>
           )}
 
           {/* Incidents List Cards */}
-          <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
-            {incidents.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setSelectedIncident(item)}
-                className={`rounded-2xl border bg-slate-900/90 p-4 transition-all duration-200 hover:border-sky-500/50 cursor-pointer shadow-lg ${
-                  selectedIncident?.id === item.id ? 'border-sky-500 bg-sky-950/20' : 'border-slate-800'
-                }`}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  
-                  {/* Type Badge & Location */}
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-sky-300 font-black text-xs border border-slate-700 flex items-center gap-1.5">
-                      {item.disasterType === 'Flood' && '🌊'}
-                      {item.disasterType === 'Landslide' && '⛰️'}
-                      {item.disasterType === 'Heavy Rain' && '🌧️'}
-                      {item.disasterType === 'Storm/Cyclone' && '🌪️'}
-                      {item.disasterType === 'Road Block' && '🚧'}
-                      {item.disasterType === 'Earthquake' && '🌋'}
-                      {item.disasterType === 'Other Disaster' && '⚠️'}
-                      {item.disasterType}
-                    </span>
+          {!isLoading && incidents.length > 0 && (
+            <div className="flex-1 overflow-y-auto pr-1 space-y-3 custom-scrollbar">
+              {incidents.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setSelectedIncident(item)}
+                  className={`rounded-xl border bg-slate-950/80 p-4 transition-all duration-200 hover:border-sky-500/60 cursor-pointer shadow-md ${
+                    selectedIncident?.id === item.id ? 'border-sky-500 bg-sky-950/30 ring-1 ring-sky-500/40' : 'border-slate-800 hover:bg-slate-950'
+                  }`}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    
+                    {/* Type Badge & Severity Badge */}
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-lg bg-slate-900 text-sky-300 font-black text-xs border border-slate-700/80 flex items-center gap-1.5 shadow-sm">
+                        {item.disasterType === 'Flood' && '🌊'}
+                        {item.disasterType === 'Landslide' && '⛰️'}
+                        {item.disasterType === 'Heavy Rain' && '🌧️'}
+                        {item.disasterType === 'Storm/Cyclone' && '🌪️'}
+                        {item.disasterType === 'Road Block' && '🚧'}
+                        {item.disasterType === 'Earthquake' && '🌋'}
+                        {item.disasterType === 'Other Disaster' && '⚠️'}
+                        {item.disasterType}
+                      </span>
 
-                    {/* Severity Badge */}
-                    <span
-                      className={`px-2 py-0.5 rounded-md font-extrabold text-[10px] uppercase border ${
-                        item.severity === 'CRITICAL'
-                          ? 'bg-red-500/20 text-red-400 border-red-500/40 animate-pulse'
-                          : item.severity === 'HIGH'
-                          ? 'bg-orange-500/20 text-orange-400 border-orange-500/40'
-                          : item.severity === 'MODERATE'
-                          ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
-                          : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                      }`}
-                    >
-                      {item.severity || 'Not available'}
+                      {/* Severity Badge */}
+                      <span
+                        className={`px-2 py-0.5 rounded-md font-extrabold text-[10px] uppercase border ${
+                          item.severity === 'CRITICAL'
+                            ? 'bg-red-500/20 text-red-400 border-red-500/40 animate-pulse'
+                            : item.severity === 'HIGH'
+                            ? 'bg-orange-500/20 text-orange-400 border-orange-500/40'
+                            : item.severity === 'MODERATE'
+                            ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                            : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                        }`}
+                      >
+                        {item.severity || 'Not available'}
+                      </span>
+
+                      {/* Incident Status Badge */}
+                      <span
+                        className={`px-2 py-0.5 rounded-md font-black text-[10px] uppercase border ${
+                          item.status === 'ACTIVE' || item.status === 'RESPONSE IN PROGRESS'
+                            ? 'bg-rose-500/20 text-rose-300 border-rose-500/50'
+                            : item.status === 'MONITORING'
+                            ? 'bg-sky-500/20 text-sky-300 border-sky-500/50'
+                            : item.status === 'RESOLVED'
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                            : 'bg-slate-800 text-slate-300 border-slate-700'
+                        }`}
+                      >
+                        Status: {item.status || 'ACTIVE'}
+                      </span>
+                    </div>
+
+                    {/* Data Status Tag */}
+                    <span className="px-2 py-0.5 rounded-full bg-slate-900 text-slate-300 border border-slate-800 text-[9px] font-extrabold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                      {item.dataStatus || 'LIVE'}
                     </span>
                   </div>
 
-                  {/* Data Status Tag */}
-                  <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-[9px] font-extrabold">
-                    ● {item.dataStatus || 'STATIC'}
-                  </span>
+                  {/* Location Title */}
+                  <h4 className="text-sm font-black text-white mt-2.5 tracking-tight flex items-center justify-between">
+                    <span>{item.location || 'Not available'}</span>
+                  </h4>
+                  
+                  <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                    {item.description || 'Not available'}
+                  </p>
+
+                  {/* Footer Metadata */}
+                  <div className="mt-3 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
+                    <span className="font-semibold text-slate-300 flex items-center gap-1">
+                      📍 {item.district || 'Not available'}, <b className="text-sky-300 font-bold">{item.state || 'Not available'}</b>
+                    </span>
+                    <span className="text-slate-400 font-medium">
+                      🕒 {item.date || 'Not available'} {item.time || ''}
+                    </span>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        flyToIncidentOnMap(item);
+                      }}
+                      className="text-sky-400 hover:text-sky-300 font-extrabold text-[11px] flex items-center gap-1 cursor-pointer transition hover:translate-x-0.5"
+                    >
+                      View on Map &rarr;
+                    </button>
+                  </div>
                 </div>
-
-                {/* Location Title */}
-                <h4 className="text-sm font-black text-white mt-2.5 tracking-tight">
-                  {item.location || 'Not available'}
-                </h4>
-                
-                <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                  {item.description || 'Not available'}
-                </p>
-
-                {/* Footer Metadata */}
-                <div className="mt-3 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
-                  <span className="font-semibold text-slate-300">
-                    📍 {item.district || 'Not available'}, <b className="text-sky-300">{item.state || 'Not available'}</b>
-                  </span>
-                  <span>
-                    🕒 {item.date || 'Not available'} {item.time || ''}
-                  </span>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      flyToIncidentOnMap(item);
-                    }}
-                    className="text-sky-400 hover:text-sky-300 font-extrabold text-[11px] flex items-center gap-1 cursor-pointer"
-                  >
-                    View on Map &rarr;
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
         </div>
 

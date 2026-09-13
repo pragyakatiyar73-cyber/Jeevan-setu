@@ -12,7 +12,7 @@ export interface DisasterReportItem {
   lat: number;
   lon: number;
   severity: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
-  status: 'ACTIVE' | 'RESOLVED' | 'MONITORING' | 'UNKNOWN';
+  status: 'ACTIVE' | 'RESOLVED' | 'MONITORING' | 'RESPONSE IN PROGRESS' | 'RESOURCE ASSIGNED' | 'REPORTED' | 'UNKNOWN' | string;
   date: string;
   time: string;
   description: string;

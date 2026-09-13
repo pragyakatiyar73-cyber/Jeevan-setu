@@ -19,7 +19,7 @@
     "description": "Rising water level submerging low-lying houses",
     "priority": "CRITICAL",
     "priorityLabel": "AI-Assisted Priority Assessment",
-    "status": "REPORTED",
+    "status": "RESPONSE RECOMMENDED",
     "reportedTime": "2026-09-13T02:50:53.844Z",
     "timeline": [
       {
@@ -89,6 +89,18 @@
       {
         "time": "2026-09-13T03:18:11.303Z",
         "statusText": "Status updated to REPORTED"
+      },
+      {
+        "time": "2026-09-13T11:15:20.375Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T11:15:22.045Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T11:15:22.266Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
       }
     ],
     "assignedResource": {
@@ -99,7 +111,7 @@
       "vehicleType": "4x4 All-Terrain Convoy Truck",
       "trackingStatus": "GPS_CONNECTED",
       "routeStatus": "ROUTE_RECOMMENDED",
-      "lastUpdate": "2026-09-13T03:18:05.036Z"
+      "lastUpdate": "2026-09-13T11:15:22.266Z"
     },
     "connectedContext": {
       "weatherDataStatus": "LIVE DATA",
@@ -233,6 +245,64 @@
       "floodRiskText": "LOW • 0.2m Accumulation",
       "landslideRiskText": "CRITICAL • High Slope Gradient",
       "roadAccessText": "NH-6 Blocked at Km 34 • Single Lane Alternate"
+    }
+  },
+  {
+    "id": "EMG-MNP-2001",
+    "state": "Manipur",
+    "district": "Imphal West",
+    "affectedArea": "Imphal Riverbank & Kwakeithel Sector",
+    "locationDetails": "Low-lying residential zone near Kangla Fort Bypass",
+    "lat": 24.8170,
+    "lon": 93.9368,
+    "disasterType": "Flood",
+    "affectedPeople": 520,
+    "injuredPeople": 15,
+    "requirements": [
+      "Rescue",
+      "Medical",
+      "Drinking Water",
+      "Evacuation"
+    ],
+    "photoUrl": null,
+    "description": "Severe inundation from Imphal River breach. Water levels elevated above 1.5m in Kwakeithel residential areas.",
+    "priority": "CRITICAL",
+    "priorityLabel": "AI-Assisted Priority Assessment",
+    "status": "RESPONSE IN PROGRESS",
+    "reportedTime": "2026-09-13T06:15:00.000Z",
+    "timeline": [
+      {
+        "time": "2026-09-13T06:15:00.000Z",
+        "statusText": "Emergency reported by Imphal Relief Control Room"
+      },
+      {
+        "time": "2026-09-13T06:16:10.000Z",
+        "statusText": "AI Priority Assessed: CRITICAL"
+      },
+      {
+        "time": "2026-09-13T06:20:00.000Z",
+        "statusText": "Resource Match Recommended: Imphal State Relief Cache & RT-103 Convoy"
+      }
+    ],
+    "assignedResource": {
+      "depotId": "DEP-IMP-01",
+      "depotName": "Imphal Central Regional Relief Depot",
+      "supplyItem": "High-Capacity Inflatable Boats & Water Purification",
+      "vehicleId": "RT-103",
+      "vehicleType": "4x4 Heavy Amphibious Convoy",
+      "trackingStatus": "GPS_CONNECTED",
+      "routeStatus": "ROUTE_ACTIVE",
+      "lastUpdate": "2026-09-13T08:10:00.000Z"
+    },
+    "connectedContext": {
+      "weatherDataStatus": "LIVE DATA",
+      "floodRiskStatus": "LIVE DATA",
+      "landslideRiskStatus": "LIVE DATA",
+      "roadAccessibilityStatus": "LIVE DATA",
+      "weatherRiskText": "Torrential Rain • 28mm/h",
+      "floodRiskText": "CRITICAL • 1.6m Water Level",
+      "landslideRiskText": "MODERATE • Saturated Soil",
+      "roadAccessText": "Imphal-Dimapur Highway Open • Inner Ring Submerged"
     }
   }
 ]
