@@ -31,6 +31,7 @@ import {
 import { NER_STATES_DISTRICTS } from '../services/api/disasterReportsService';
 import { isPointInNER, NER_STATES, NERStateName, MASTER_NER_POLYGON, NER_COVERAGE_LABEL } from '../utils/nerBoundary';
 import { calculateSafeNERRoute } from '../services/api/roadAccessibilityService';
+import { SearchSpellingCorrectionPrompt } from './SearchSpellingCorrectionPrompt';
 
 interface EmergencyFacilitiesModuleProps {
   onNavigateToMap?: () => void;
@@ -422,8 +423,14 @@ export default function EmergencyFacilitiesModule({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 pl-10 pr-4 py-2.5 text-xs sm:text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 outline-none"
               />
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3.5 top-3 -translate-y-1/2 h-4 w-4 text-slate-400" />
             </div>
+
+            {/* 💡 SPELLING CORRECTION & "DID YOU MEAN?" OPTION BANNER */}
+            <SearchSpellingCorrectionPrompt
+              query={searchQuery}
+              onSelectSuggestion={(suggestedText) => setSearchQuery(suggestedText)}
+            />
           </div>
         </div>
 

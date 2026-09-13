@@ -8,6 +8,7 @@
  */
 
 import { isPointInNER, NER_STATES, NERStateName } from '../../utils/nerBoundary';
+import { getDidYouMeanSuggestion } from '../../utils/locationSpellCheck';
 
 export type EmergencyFacilityType =
   | 'Hospital'
@@ -1179,23 +1180,32 @@ export async function getNEREmergencyFacilities(
       f.type.toLowerCase().includes(q)
     );
 
-    // Dynamic Search Fallback: If search term matches a district/state with 0 items, generate district facilities!
+    // Dynamic Search Fallback with Fuzzy Spell Correction: If search term has typos or 0 items, check spell correction!
     if (searched.length === 0) {
+      const bestSuggestion = getDidYouMeanSuggestion(searchQuery);
+
       let matchedSt = NER_STATES.find(s => q.includes(s.toLowerCase()) || s.toLowerCase().includes(q));
       let matchedDist = '';
 
-      if (state && state !== 'All' && NER_STATES.includes(state as any)) {
+      if (bestSuggestion) {
+        matchedSt = bestSuggestion.state;
+        matchedDist = bestSuggestion.name;
+      }
+
+      if (!matchedSt && state && state !== 'All' && NER_STATES.includes(state as any)) {
         matchedSt = state as NERStateName;
       }
 
-      if (district && district !== 'All') {
-        matchedDist = district;
-      } else {
-        // Search district keys
-        for (const dKey of Object.keys(DISTRICT_COORDS_MAP)) {
-          if (q.includes(dKey) || dKey.includes(q)) {
-            matchedDist = dKey.charAt(0).toUpperCase() + dKey.slice(1);
-            break;
+      if (!matchedDist) {
+        if (district && district !== 'All') {
+          matchedDist = district;
+        } else {
+          // Search district keys
+          for (const dKey of Object.keys(DISTRICT_COORDS_MAP)) {
+            if (q.includes(dKey) || dKey.includes(q)) {
+              matchedDist = dKey.charAt(0).toUpperCase() + dKey.slice(1);
+              break;
+            }
           }
         }
       }

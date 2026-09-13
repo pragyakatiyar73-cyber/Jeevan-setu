@@ -34,6 +34,7 @@ import {
   isNERCoordinates,
   isNERStateName
 } from '../services/api/disasterReportsService';
+import { SearchSpellingCorrectionPrompt } from './SearchSpellingCorrectionPrompt';
 
 interface DisasterReportsModuleProps {
   onNavigateToReroute?: (origin: string, dest: string) => void;
@@ -413,6 +414,12 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
             </button>
           )}
         </form>
+
+        {/* 💡 SPELLING CORRECTION PROMPT */}
+        <SearchSpellingCorrectionPrompt
+          query={searchQuery}
+          onSelectSuggestion={(suggestedText) => setSearchQuery(suggestedText)}
+        />
 
         {/* Outside-NER Search Rejection Warning */}
         {rejectedSearchNotice && (
