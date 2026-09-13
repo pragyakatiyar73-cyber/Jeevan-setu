@@ -22,7 +22,6 @@ import {
   Building2,
   Package,
   Radio,
-  FileBarChart,
   Sliders,
   Bell,
   Check,
@@ -75,7 +74,6 @@ import NERLiveMapModule from './components/NERLiveMapModule';
 import RescueTeamCommand from './components/RescueTeamCommand';
 import EvacuationPlanner from './components/EvacuationPlanner';
 import ReliefCampManagement from './components/ReliefCampManagement';
-import AISituationReportModule from './components/AISituationReportModule';
 import LifeSavingResponseEngine from './components/LifeSavingResponseEngine';
 import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
@@ -106,9 +104,9 @@ export default function App() {
   const [activeModule, setActiveModuleState] = useState<string>(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab') || params.get('module');
-    if (tab) return tab;
+    if (tab) return tab === 'sitrep' ? 'customdashboard' : tab;
     const hash = window.location.hash.replace('#', '');
-    if (hash) return hash;
+    if (hash) return hash === 'sitrep' ? 'customdashboard' : hash;
 
     const path = window.location.pathname.toLowerCase();
     if (path.includes('/dashboard')) return 'customdashboard';
@@ -195,7 +193,7 @@ export default function App() {
       const params = new URLSearchParams(window.location.search);
       const tab = params.get('tab') || params.get('module');
       if (tab) {
-        setActiveModuleState(tab);
+        setActiveModuleState(tab === 'sitrep' ? 'customdashboard' : tab);
         return;
       }
       if (path.includes('/dashboard')) setActiveModuleState('customdashboard');
@@ -726,11 +724,10 @@ export default function App() {
                 ]
               },
               {
-                category: t('sidebar.catCommand', 'Governance & SITREP'),
+                category: t('sidebar.catCommand', 'Governance & Operations'),
                 items: [
                   { id: 'gov', label: t('navigation.gov', 'MDoNER Command Grid'), icon: Building2, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'weather', label: t('navigation.weather', 'Weather & Doppler Radar'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' },
-                  { id: 'sitrep', label: t('navigation.sitrep', 'AI Situation SITREP'), icon: FileBarChart, badge: 'REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' }
+                  { id: 'weather', label: t('navigation.weather', 'Weather & Doppler Radar'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' }
                 ]
               }
             ].map((section, sIdx) => (
@@ -898,13 +895,6 @@ export default function App() {
                 setActiveModule('smartmonitoring');
               }}
             />
-          </div>
-        )}
-
-        {/* 📊 AI SITUATION REPORT SITREP */}
-        {activeModule === 'sitrep' && (
-          <div className="h-full overflow-y-auto">
-            <AISituationReportModule />
           </div>
         )}
 
