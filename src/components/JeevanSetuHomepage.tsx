@@ -46,7 +46,9 @@ import {
   LayoutDashboard,
   Menu,
   Sliders,
-  Eye
+  Eye,
+  Truck,
+  Package
 } from 'lucide-react';
 import L from 'leaflet';
 import { useTranslation, SUPPORTED_LANGUAGES } from '../i18n';
@@ -2336,9 +2338,35 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </p>
           </div>
 
-          {/* 8 FEATURE CARDS GRID (4 Columns x 2 Rows on Desktop) */}
+          {/* FEATURE CARDS GRID (Included Real-Time Relief Supply & Vehicle Tracking + Smart Emergency Response) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
             {[
+              {
+                title: 'Real-Time Relief Supply & Vehicle Tracking',
+                desc: 'Live database-driven relief supply monitoring & real-time mobile GPS tracking across all 8 North-Eastern states.',
+                icon: Truck,
+                badge: 'LIVE REGIONAL SYSTEM',
+                badgeColor: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/40',
+                action: () => onNavigateModule('relief-supplies'),
+                bgColor: 'bg-[#ECFDF5] dark:bg-emerald-950/30',
+                hoverBg: 'hover:bg-[#D1FAE5] dark:hover:bg-emerald-900/50',
+                borderColor: 'border-emerald-300 dark:border-emerald-800/80',
+                iconBg: 'bg-emerald-600 text-white',
+                hoverText: 'group-hover:text-emerald-700 dark:group-hover:text-emerald-300'
+              },
+              {
+                title: 'Smart Emergency Response System',
+                desc: 'Multi-criteria emergency response priority calculator matching depots, supplies, and live GPS vehicles.',
+                icon: Zap,
+                badge: 'AI PRIORITY',
+                badgeColor: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40',
+                action: () => onNavigateModule('emergency-response'),
+                bgColor: 'bg-[#FFFBEB] dark:bg-amber-950/30',
+                hoverBg: 'hover:bg-[#FEF3C7] dark:hover:bg-amber-900/50',
+                borderColor: 'border-amber-300 dark:border-amber-800/80',
+                iconBg: 'bg-amber-500 text-white',
+                hoverText: 'group-hover:text-amber-700 dark:group-hover:text-amber-300'
+              },
               {
                 title: t('home.reportDisaster', 'Report a Disaster'),
                 desc: t('home.reportDisasterDesc', 'Upload a photo and location to report and analyze a disaster.'),
@@ -2404,28 +2432,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 borderColor: 'border-amber-200/80 dark:border-amber-900/40',
                 iconBg: 'bg-amber-500 text-white',
                 hoverText: 'group-hover:text-amber-700 dark:group-hover:text-amber-300'
-              },
-              {
-                title: t('home.liveMap', 'Live Map'),
-                desc: t('home.liveMapDesc', 'View disaster locations and geographic information.'),
-                icon: Globe,
-                action: () => setActiveSidePanel('livemap'),
-                bgColor: 'bg-[#F0F9FF] dark:bg-sky-950/25',
-                hoverBg: 'hover:bg-[#E0F2FE] dark:hover:bg-sky-900/40',
-                borderColor: 'border-sky-200/80 dark:border-sky-900/40',
-                iconBg: 'bg-sky-500 text-white',
-                hoverText: 'group-hover:text-sky-700 dark:group-hover:text-sky-300'
-              },
-              {
-                title: t('home.emergencyResponse', 'Emergency Response'),
-                desc: t('home.emergencyResponseDesc', 'Get safer routes and nearby emergency resources.'),
-                icon: Navigation,
-                action: () => setActiveSidePanel('gethelp'),
-                bgColor: 'bg-[#FFF1F2] dark:bg-rose-950/25',
-                hoverBg: 'hover:bg-[#FFE4E6] dark:hover:bg-rose-900/40',
-                borderColor: 'border-rose-200/80 dark:border-rose-900/40',
-                iconBg: 'bg-rose-600 text-white',
-                hoverText: 'group-hover:text-rose-700 dark:group-hover:text-rose-300'
               }
             ].map((card, i) => {
               const Icon = card.icon;
@@ -2440,6 +2446,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       <div className={`h-9 w-9 rounded-xl ${card.iconBg} flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300`}>
                         <Icon className="h-4.5 w-4.5" />
                       </div>
+                      {card.badge && (
+                        <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border tracking-wider uppercase ${card.badgeColor || 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/40'}`}>
+                          {card.badge}
+                        </span>
+                      )}
                     </div>
                     <h3 className={`text-sm sm:text-base font-bold text-slate-900 dark:text-white ${card.hoverText} transition leading-snug`}>
                       {card.title}

@@ -33,17 +33,41 @@
       {
         "time": "2026-09-13T02:50:53.927Z",
         "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-102"
+      },
+      {
+        "time": "2026-09-13T03:08:31.349Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T03:08:33.369Z",
+        "statusText": "Status updated to REPORTED"
+      },
+      {
+        "time": "2026-09-13T03:08:34.319Z",
+        "statusText": "Status updated to RESOLVED"
+      },
+      {
+        "time": "2026-09-13T03:08:39.732Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:08:40.679Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:08:41.216Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
       }
     ],
     "assignedResource": {
       "depotId": "DEP-GHY-01",
       "depotName": "Guwahati Regional Relief Depot",
       "supplyItem": "Rescue, Drinking Water, Medical Supplies",
-      "vehicleId": "RT-102",
-      "vehicleType": "Heavy Emergency Relief Carrier",
-      "trackingStatus": "GPS_NOT_CONNECTED",
+      "vehicleId": "RT-101",
+      "vehicleType": "4x4 All-Terrain Convoy Truck",
+      "trackingStatus": "GPS_CONNECTED",
       "routeStatus": "ROUTE_RECOMMENDED",
-      "lastUpdate": "2026-09-13T02:50:53.927Z"
+      "lastUpdate": "2026-09-13T03:08:41.216Z"
     },
     "connectedContext": {
       "weatherDataStatus": "LIVE DATA",
