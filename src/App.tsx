@@ -118,7 +118,8 @@ export default function App() {
     if (path.includes('/flood')) return 'flood';
     if (path.includes('/weather')) return 'weather';
     if (path.includes('/landslide')) return 'landslide';
-    if (path.includes('/facilities') || path.includes('/emergency')) return 'facilities';
+    if (path.includes('/emergency-response')) return 'emergency-response';
+    if (path.includes('/facilities') || path.includes('/emergency-facilities')) return 'facilities';
     if (path.includes('/disaster-reports') || path.includes('/incidents')) return 'disaster-reports';
     if (path.includes('/relief-supplies')) return 'relief-supplies';
     if (path.includes('/vehicle-tracking')) return 'vehicle-tracking';
@@ -155,6 +156,9 @@ export default function App() {
     } else if (mod === 'disaster-reports') {
       url.pathname = '/disaster-reports';
       url.searchParams.set('tab', mod);
+    } else if (mod === 'emergency-response') {
+      url.pathname = '/emergency-response';
+      url.searchParams.set('tab', mod);
     } else if (mod === 'relief-supplies') {
       url.pathname = '/relief-supplies';
       url.searchParams.set('tab', mod);
@@ -190,6 +194,7 @@ export default function App() {
       else if (path.includes('/live-map')) setActiveModuleState('map');
       else if (path.includes('/risk-assessment')) setActiveModuleState('staterisk');
       else if (path.includes('/resources')) setActiveModuleState('reliefcamps');
+      else if (path.includes('/emergency-response')) setActiveModuleState('emergency-response');
       else if (path.includes('/disaster-reports')) setActiveModuleState('disaster-reports');
       else if (path.includes('/relief-supplies')) setActiveModuleState('relief-supplies');
       else if (path.includes('/vehicle-tracking')) setActiveModuleState('vehicle-tracking');
@@ -1485,23 +1490,27 @@ export default function App() {
 
         {/* 4. REAL-TIME RELIEF SUPPLY & VEHICLE TRACKING MODULE */}
         {(activeModule === 'relief-supplies' || activeModule === 'supplies' || activeModule === 'vehicle-tracking' || activeModule === 'driver-tracking' || activeModule === 'relief-operations' || activeModule === 'relief-depots') && (
-          <ReliefSupplyTrackingModule
-            initialTab={
-              activeModule === 'vehicle-tracking' ? 'live-map' :
-              activeModule === 'driver-tracking' ? 'driver-portal' :
-              activeModule === 'relief-operations' ? 'operations' :
-              activeModule === 'relief-depots' ? 'depots' :
-              'supplies'
-            }
-            onNavigateHome={() => setActiveModule('home')}
-          />
+          <div className="h-full overflow-y-auto">
+            <ReliefSupplyTrackingModule
+              initialTab={
+                activeModule === 'vehicle-tracking' ? 'live-map' :
+                activeModule === 'driver-tracking' ? 'driver-portal' :
+                activeModule === 'relief-operations' ? 'operations' :
+                activeModule === 'relief-depots' ? 'depots' :
+                'supplies'
+              }
+              onNavigateHome={() => setActiveModule('home')}
+            />
+          </div>
         )}
 
         {/* SMART EMERGENCY RESPONSE MODULE */}
         {activeModule === 'emergency-response' && (
-          <SmartEmergencyResponseModule
-            onNavigateHome={() => setActiveModule('home')}
-          />
+          <div className="h-full overflow-y-auto">
+            <SmartEmergencyResponseModule
+              onNavigateHome={() => setActiveModule('home')}
+            />
+          </div>
         )}
 
         {/* 5. DYNAMIC ROAD ACCESSIBILITY & SAFE ROUTE INTELLIGENCE */}
