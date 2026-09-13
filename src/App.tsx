@@ -810,34 +810,6 @@ export default function App() {
               <span className="whitespace-nowrap">{t('navigation.sos', 'Emergency SOS')}</span>
             </button>
 
-            {/* 🤖 AI Impact Pill */}
-            <button
-              onClick={() => setActiveModule('aiimpact')}
-              className={`rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border ${
-                activeModule === 'aiimpact'
-                  ? 'bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-600/25'
-                  : 'bg-slate-100 dark:bg-slate-900/80 border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-              title="AI Disaster Damage Assessment"
-            >
-              <span>🤖</span>
-              <span className="hidden xl:inline">{t('header.ai', 'AI Triage')}</span>
-            </button>
-
-            {/* 📖 Safety Guide Pill */}
-            <button
-              onClick={() => setActiveModule('safetyguide')}
-              className={`rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border ${
-                activeModule === 'safetyguide'
-                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-600/25'
-                  : 'bg-slate-100 dark:bg-slate-900/80 border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-              title="View Disaster Safety Guidelines"
-            >
-              <span>📖</span>
-              <span className="hidden xl:inline">{t('header.safety', 'Guide')}</span>
-            </button>
-
 
 
             {/* Live IST Clock */}
