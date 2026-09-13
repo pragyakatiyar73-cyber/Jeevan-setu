@@ -933,7 +933,6 @@ export default function App() {
             <JeevanSetuHomepage
               onNavigateModule={(mod) => setActiveModule(mod)}
               onOpenSos={() => setIsSosModalOpen(true)}
-              onOpenAiChatbot={() => setIsAiChatbotOpen(prev => !prev)}
             />
           </div>
         )}
