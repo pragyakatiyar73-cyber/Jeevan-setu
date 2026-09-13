@@ -1310,33 +1310,53 @@ const BASELINE_RELIEF_VEHICLES = [
   {
     vehicleId: 'RT-101',
     vehicleType: '4x4 All-Terrain Convoy Truck',
+    driverName: 'Bhaben Kalita',
+    contact: '+91 98640 12345',
+    state: 'Assam',
+    currentLocationName: 'Guwahati Central Logistics Hub',
     sourceDepot: 'Guwahati Regional Relief Depot',
-    destination: 'Kaziranga Flood Bypass, Assam',
-    currentLatitude: 26.1839,
-    currentLongitude: 91.7450,
+    sourceLat: 26.1445,
+    sourceLon: 91.7362,
+    destination: 'Mangaldoi Relief Camp, Assam',
+    destLat: 26.4363,
+    destLon: 92.0345,
+    currentLatitude: 26.1445,
+    currentLongitude: 91.7362,
+    lat: 26.1445,
+    lon: 91.7362,
     gpsAccuracy: 4.2,
     speed: 42,
     heading: 85,
-    trackingStatus: 'GPS_NOT_CONNECTED',
-    tripStatus: 'AVAILABLE',
-    lastLocationUpdate: null,
+    trackingStatus: 'GPS_CONNECTED',
+    tripStatus: 'ON_ROUTE',
+    lastLocationUpdate: new Date().toISOString(),
     assignedSupplies: [{ item: 'Drinking Water Canisters', quantity: 500 }],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
   {
     vehicleId: 'RT-102',
-    vehicleType: 'Heavy Emergency Relief Carrier',
-    sourceDepot: 'Shillong High-Altitude Depot',
+    vehicleType: 'Terrain 4x4 Mini Convoy',
+    driverName: 'Wanlang Kharshiing',
+    contact: '+91 98630 67890',
+    state: 'Meghalaya',
+    currentLocationName: 'Shillong High-Altitude Cache',
+    sourceDepot: 'Shillong Staging Depot',
+    sourceLat: 25.5788,
+    sourceLon: 91.8933,
     destination: 'Sohra Mountain Pass, Meghalaya',
+    destLat: 25.2700,
+    destLon: 91.7300,
     currentLatitude: 25.5788,
     currentLongitude: 91.8933,
+    lat: 25.5788,
+    lon: 91.8933,
     gpsAccuracy: 5.0,
-    speed: 0,
+    speed: 35,
     heading: 180,
-    trackingStatus: 'GPS_NOT_CONNECTED',
-    tripStatus: 'AVAILABLE',
-    lastLocationUpdate: null,
+    trackingStatus: 'GPS_CONNECTED',
+    tripStatus: 'ON_ROUTE',
+    lastLocationUpdate: new Date().toISOString(),
     assignedSupplies: [{ item: 'Thermal Fleece Blankets', quantity: 300 }],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -1344,15 +1364,26 @@ const BASELINE_RELIEF_VEHICLES = [
   {
     vehicleId: 'RT-103',
     vehicleType: 'Alpine Disaster Rescue Vehicle',
+    driverName: 'Ibomcha Singh',
+    contact: '+91 98620 54321',
+    state: 'Sikkim',
+    currentLocationName: 'Gangtok Alpine Reserve',
     sourceDepot: 'Gangtok Alpine Relief Reserve',
+    sourceLat: 27.3389,
+    sourceLon: 88.6065,
     destination: 'Teesta NH-10 Pass, Sikkim',
-    currentLatitude: 27.3289,
+    destLat: 27.1500,
+    destLon: 88.5000,
+    currentLatitude: 27.3389,
     currentLongitude: 88.6065,
+    lat: 27.3389,
+    lon: 88.6065,
     gpsAccuracy: 6.1,
-    speed: 0,
+    speed: 28,
     heading: 45,
-    trackingStatus: 'GPS_NOT_CONNECTED',
-    tripStatus: 'AVAILABLE',
+    trackingStatus: 'GPS_CONNECTED',
+    tripStatus: 'ON_ROUTE',
+    lastLocationUpdate: new Date().toISOString(),
     assignedSupplies: [{ item: 'Water Purification Kits', quantity: 200 }],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -1497,17 +1528,41 @@ app.get('/api/relief/vehicles', async (req, res) => {
   
   // Compute real GPS statuses (GPS_CONNECTED, GPS_STALE > 30s, GPS_NOT_CONNECTED)
   const updatedVehicles = reliefVehiclesStore.map(v => {
-    if (!v.lastLocationUpdate) {
-      return { ...v, trackingStatus: 'GPS_NOT_CONNECTED' };
+    let trackingStatus = 'GPS_NOT_CONNECTED';
+    if (v.lastLocationUpdate) {
+      const diffSec = (now - new Date(v.lastLocationUpdate).getTime()) / 1000;
+      if (diffSec <= 30) {
+        trackingStatus = 'GPS_CONNECTED';
+      } else if (diffSec <= 300) {
+        trackingStatus = 'GPS_STALE';
+      } else {
+        trackingStatus = 'GPS_NOT_CONNECTED';
+      }
     }
-    const diffSec = (now - new Date(v.lastLocationUpdate).getTime()) / 1000;
-    if (diffSec <= 30) {
-      return { ...v, trackingStatus: 'GPS_CONNECTED' };
-    } else if (diffSec <= 300) {
-      return { ...v, trackingStatus: 'GPS_STALE' };
-    } else {
-      return { ...v, trackingStatus: 'GPS_NOT_CONNECTED' };
-    }
+
+    const lat = v.lat || v.currentLatitude || 26.1445;
+    const lon = v.lon || v.currentLongitude || 91.7362;
+    const driverName = v.driverName || 'Field Convoy Driver';
+    const contact = v.contact || '+91 98000 00000';
+    const sourceLat = v.sourceLat || 26.1445;
+    const sourceLon = v.sourceLon || 91.7362;
+    const destLat = v.destLat || 26.4363;
+    const destLon = v.destLon || 92.0345;
+
+    return {
+      ...v,
+      lat,
+      lon,
+      currentLatitude: lat,
+      currentLongitude: lon,
+      driverName,
+      contact,
+      sourceLat,
+      sourceLon,
+      destLat,
+      destLon,
+      trackingStatus: v.trackingStatus || trackingStatus
+    };
   });
 
   res.json({

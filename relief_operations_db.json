@@ -7,7 +7,7 @@
     "supplyItem": "Food Grain Packs",
     "quantity": 250,
     "gpsStatus": "GPS_CONNECTED",
-    "tripStatus": "ON_ROUTE",
-    "lastUpdated": "2026-09-13T02:44:10.202Z"
+    "tripStatus": "DELIVERED",
+    "lastUpdated": "2026-09-13T02:51:55.987Z"
   }
 ]

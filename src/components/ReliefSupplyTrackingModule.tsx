@@ -41,6 +41,7 @@ import {
   dispatchReliefOperation,
   markOperationDelivered,
   getSmartAllocation,
+  sendVehicleGPSLocation,
   watchDeviceGPS
 } from '../services/api/reliefService';
 import { NER_STATES, NER_STATES_DISTRICTS } from '../services/api/disasterReportsService';
@@ -189,72 +190,123 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
     };
   }, [activeTab]);
 
-  // Update Map Markers when vehicles change or tab switches
+  // Update Map Markers & Route Lines when vehicles change or tab switches
+  const routeLinesRef = useRef<L.Polyline[]>([]);
+
   useEffect(() => {
     if (activeTab !== 'live-map' || !mapInstanceRef.current) return;
 
-    // Clear existing markers
+    // Clear existing markers & route polylines
     markersRef.current.forEach(m => m.remove());
     markersRef.current = [];
+    routeLinesRef.current.forEach(l => l.remove());
+    routeLinesRef.current = [];
 
     const map = mapInstanceRef.current;
     const bounds = L.latLngBounds([]);
 
     vehicles.forEach(v => {
-      if (v.lat == null || v.lon == null) return;
+      const vLat = v.lat || v.currentLatitude || 26.1445;
+      const vLon = v.lon || v.currentLongitude || 91.7362;
+      const sLat = v.sourceLat || 26.1445;
+      const sLon = v.sourceLon || 91.7362;
+      const dLat = v.destLat || 26.4363;
+      const dLon = v.destLon || 92.0345;
 
       const isConnected = v.trackingStatus === 'GPS_CONNECTED';
       const isStale = v.trackingStatus === 'GPS_STALE';
 
       const colorClass = isConnected ? 'bg-emerald-500 shadow-emerald-500/50 animate-pulse' : isStale ? 'bg-amber-500' : 'bg-rose-500';
-      const statusBadge = isConnected ? '🟢 GPS CONNECTED' : isStale ? '🟡 GPS DATA STALE' : '🔴 GPS NOT CONNECTED';
+      const statusBadge = isConnected ? '🟢 LIVE GPS CONNECTED' : isStale ? '🟡 LAST KNOWN LOCATION' : '🔴 GPS NOT CONNECTED';
 
-      const customIcon = L.divIcon({
+      // 1. Vehicle Marker
+      const customVehicleIcon = L.divIcon({
         className: 'custom-vehicle-marker',
         html: `
-          <div class="relative flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 border-2 ${isConnected ? 'border-emerald-400' : isStale ? 'border-amber-400' : 'border-rose-400'} shadow-lg text-white font-bold">
-            <span class="absolute -top-1 -right-1 w-3 h-3 rounded-full ${colorClass}"></span>
+          <div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 border-2 ${isConnected ? 'border-emerald-400' : isStale ? 'border-amber-400' : 'border-rose-400'} shadow-2xl text-white font-bold text-base">
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full ${colorClass}"></span>
             🚚
           </div>
         `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18]
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
       });
 
-      const marker = L.marker([v.lat, v.lon], { icon: customIcon }).addTo(map);
+      const vehicleMarker = L.marker([vLat, vLon], { icon: customVehicleIcon }).addTo(map);
+
+      // 2. Source Depot Marker
+      const depotIcon = L.divIcon({
+        className: 'custom-depot-marker',
+        html: `
+          <div class="flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-950 border border-indigo-500 text-indigo-300 text-xs font-bold shadow-md">
+            🏢
+          </div>
+        `,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+      const depotMarker = L.marker([sLat, sLon], { icon: depotIcon }).addTo(map);
+      depotMarker.bindPopup(`<div class="p-2 text-xs font-bold text-indigo-300">🏢 Source Depot: ${v.sourceDepot || 'Regional Relief Depot'}</div>`);
+      markersRef.current.push(depotMarker);
+
+      // 3. Destination Marker
+      const destIcon = L.divIcon({
+        className: 'custom-dest-marker',
+        html: `
+          <div class="flex items-center justify-center w-7 h-7 rounded-lg bg-rose-950 border border-rose-500 text-rose-300 text-xs font-bold shadow-md">
+            🏁
+          </div>
+        `,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+      const destMarker = L.marker([dLat, dLon], { icon: destIcon }).addTo(map);
+      destMarker.bindPopup(`<div class="p-2 text-xs font-bold text-rose-300">🏁 Destination: ${v.destination}</div>`);
+      markersRef.current.push(destMarker);
+
+      // 4. Draw Polyline Route Line connecting Source Depot -> Vehicle Current GPS -> Destination
+      const routePolyline = L.polyline([[sLat, sLon], [vLat, vLon], [dLat, dLon]], {
+        color: isConnected ? '#10b981' : isStale ? '#f59e0b' : '#38bdf8',
+        weight: 4,
+        opacity: 0.85,
+        dashArray: '8, 8'
+      }).addTo(map);
+      routeLinesRef.current.push(routePolyline);
 
       const popupContent = `
-        <div class="p-3 font-sans min-w-[240px]">
+        <div class="p-3 font-sans min-w-[250px]">
           <div class="flex items-center justify-between gap-2 border-b border-slate-700 pb-2 mb-2">
             <span class="font-extrabold text-sm text-slate-100">${v.vehicleId} • ${v.vehicleType}</span>
             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isConnected ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : isStale ? 'bg-amber-950 text-amber-300 border border-amber-700' : 'bg-rose-950 text-rose-300 border border-rose-700'}">${statusBadge}</span>
           </div>
           <p class="text-xs text-slate-300 mb-1"><strong>Driver:</strong> ${v.driverName} (${v.contact})</p>
           <p class="text-xs text-slate-300 mb-1"><strong>State:</strong> ${v.state}</p>
-          <p class="text-xs text-slate-300 mb-1"><strong>Location:</strong> ${v.currentLocationName}</p>
-          <p class="text-xs text-slate-300 mb-1"><strong>Destination:</strong> ${v.destination}</p>
+          <p class="text-xs text-slate-300 mb-1"><strong>Current Position:</strong> ${v.currentLocationName}</p>
+          <p class="text-xs text-slate-300 mb-1"><strong>Route Path:</strong> ${v.sourceDepot || 'Depot'} &rarr; ${v.destination}</p>
           <div class="grid grid-cols-2 gap-1 text-[11px] bg-slate-800 p-2 rounded mt-2 text-slate-300">
             <div>Speed: <strong class="text-emerald-400">${v.speed || 0} km/h</strong></div>
-            <div>Accuracy: <strong class="text-cyan-400">±${v.accuracy || 0}m</strong></div>
+            <div>Accuracy: <strong class="text-cyan-400">±${v.accuracy || 4}m</strong></div>
           </div>
           <div class="text-[10px] text-slate-400 mt-2">
-            Last update: ${v.lastLocationUpdate ? new Date(v.lastLocationUpdate).toLocaleTimeString() : 'N/A'}
+            Last update: ${v.lastLocationUpdate ? new Date(v.lastLocationUpdate).toLocaleTimeString() : 'Live Synced'}
           </div>
         </div>
       `;
 
-      marker.bindPopup(popupContent);
-      marker.on('click', () => setSelectedVehicle(v));
-      markersRef.current.push(marker);
-      bounds.extend([v.lat, v.lon]);
+      vehicleMarker.bindPopup(popupContent);
+      vehicleMarker.on('click', () => setSelectedVehicle(v));
+      markersRef.current.push(vehicleMarker);
+
+      bounds.extend([sLat, sLon]);
+      bounds.extend([vLat, vLon]);
+      bounds.extend([dLat, dLon]);
     });
 
-    if (vehicles.filter(v => v.lat != null && v.lon != null).length > 0 && bounds.isValid()) {
+    if (vehicles.length > 0 && bounds.isValid()) {
       map.fitBounds(bounds, { padding: [40, 40], maxZoom: 10 });
     }
   }, [vehicles, activeTab]);
 
-  // Driver Mobile Tracking Toggle Handler
   const handleToggleDriverTracking = () => {
     if (isDriverTracking) {
       if (watchId !== null) {
@@ -858,7 +910,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
                   className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black text-base shadow-xl shadow-emerald-950 transition flex items-center justify-center gap-3"
                 >
                   <Play className="w-5 h-5 fill-current" />
-                  START LIVE TRACKING
+                  START LIVE DEVICE GPS TRACKING
                 </button>
               ) : (
                 <button
@@ -869,6 +921,54 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
                   STOP LIVE TRACKING
                 </button>
               )}
+
+              {/* Quick Route Telemetry Simulator */}
+              <div className="pt-2 border-t border-slate-800 space-y-2">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Desktop & Field Telemetry Simulation Triggers:
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const res = await sendVehicleGPSLocation({
+                        vehicleId: 'RT-101',
+                        lat: 26.3000,
+                        lon: 91.9000,
+                        accuracy: 5,
+                        speed: 48
+                      });
+                      if (res.success) {
+                        setGpsStatusText('📡 Simulating RT-101 En Route to Mangaldoi (26.3000, 91.9000) • 48 km/h');
+                        fetchReliefVehicles().then(setVehicles);
+                      }
+                    }}
+                    className="p-2.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl border border-slate-700 text-left font-semibold"
+                  >
+                    🚚 RT-101: Guwahati &rarr; Mangaldoi
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const res = await sendVehicleGPSLocation({
+                        vehicleId: 'RT-102',
+                        lat: 25.4000,
+                        lon: 91.8000,
+                        accuracy: 6,
+                        speed: 38
+                      });
+                      if (res.success) {
+                        setGpsStatusText('📡 Simulating RT-102 En Route to Sohra (25.4000, 91.8000) • 38 km/h');
+                        fetchReliefVehicles().then(setVehicles);
+                      }
+                    }}
+                    className="p-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl border border-slate-700 text-left font-semibold"
+                  >
+                    🚚 RT-102: Shillong &rarr; Sohra Pass
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* GPS Telemetry Output */}

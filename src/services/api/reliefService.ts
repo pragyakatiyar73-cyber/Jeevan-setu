@@ -23,11 +23,18 @@ export interface ReliefVehicle {
   contact: string;
   state: string;
   currentLocationName: string;
+  sourceDepot?: string;
+  sourceLat?: number | null;
+  sourceLon?: number | null;
+  currentLatitude?: number | null;
+  currentLongitude?: number | null;
   lat: number | null;
   lon: number | null;
   accuracy: number | null;
   speed: number | null;
   destination: string;
+  destLat?: number | null;
+  destLon?: number | null;
   tripStatus: 'IDLE' | 'ASSIGNED' | 'ON_ROUTE' | 'DELIVERED' | 'AVAILABLE';
   trackingStatus: 'GPS_CONNECTED' | 'GPS_STALE' | 'GPS_NOT_CONNECTED';
   lastLocationUpdate: string | null;
