@@ -173,7 +173,7 @@ export default function AIChatbotWidget({ onNavigateModule, onOpenSos, isOpenDef
 
   // Global trigger event listener for top header button
   useEffect(() => {
-    const handleOpenEvent = () => setIsOpen(true);
+    const handleOpenEvent = () => setIsOpen(prev => !prev);
     window.addEventListener('open-ai-chatbot', handleOpenEvent);
     return () => window.removeEventListener('open-ai-chatbot', handleOpenEvent);
   }, []);
@@ -264,7 +264,7 @@ export default function AIChatbotWidget({ onNavigateModule, onOpenSos, isOpenDef
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-[9999] bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center gap-3 border-2 border-white/30 group cursor-pointer"
+          className="fixed bottom-6 right-6 z-[99999] bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center gap-3 border-2 border-white/30 group cursor-pointer"
           title="Open Jeevan Setu AI Disaster Chatbot"
         >
           <div className="relative">
@@ -281,9 +281,17 @@ export default function AIChatbotWidget({ onNavigateModule, onOpenSos, isOpenDef
         </button>
       )}
 
-      {/* 🤖 EXPANDABLE AI CHATBOT PANEL */}
+      {/* 🤖 EXPANDABLE AI CHATBOT PANEL & OVERLAY */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] w-[95vw] sm:w-[420px] max-h-[85vh] h-[600px] bg-slate-950/95 border border-slate-800 rounded-3xl shadow-2xl backdrop-blur-xl flex flex-col overflow-hidden text-slate-100 animate-in fade-in slide-in-from-bottom-6 duration-300">
+        <>
+          {/* Backdrop Overlay */}
+          <div
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[99998] transition-opacity"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Chatbot Window (Positioned Top Right / Below Header) */}
+          <div className="fixed top-16 right-4 sm:top-20 sm:right-6 z-[99999] w-[95vw] sm:w-[420px] max-h-[80vh] h-[580px] bg-slate-950/95 border border-slate-700/80 rounded-3xl shadow-2xl backdrop-blur-xl flex flex-col overflow-hidden text-slate-100 animate-in fade-in slide-in-from-top-4 duration-300">
           
           {/* TOP CHATBOT HEADER */}
           <div className="bg-slate-900/90 px-4 py-3.5 border-b border-slate-800 flex items-center justify-between shrink-0">
@@ -476,6 +484,7 @@ export default function AIChatbotWidget({ onNavigateModule, onOpenSos, isOpenDef
           </div>
 
         </div>
+        </>
       )}
     </>
   );

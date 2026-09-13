@@ -1941,14 +1941,14 @@ export default function App() {
           }}
         />
 
-        {/* 🤖 Jeevan Setu AI Disaster Intelligence Chatbot Widget (Voice & Text) */}
-        <AIChatbotWidget
-          onNavigateModule={(mod) => setActiveModule(mod)}
-          onOpenSos={() => setIsSosModalOpen(true)}
-        />
-
       </main>
     </div>
+
+    {/* 🤖 Jeevan Setu AI Disaster Intelligence Chatbot Widget (Voice & Text) */}
+    <AIChatbotWidget
+      onNavigateModule={(mod) => setActiveModule(mod)}
+      onOpenSos={() => setIsSosModalOpen(true)}
+    />
   </div>
   );
 }
