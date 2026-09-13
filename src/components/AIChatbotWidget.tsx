@@ -117,11 +117,30 @@ export interface AIChatbotWidgetProps {
   onNavigateModule?: (mod: string) => void;
   onOpenSos?: () => void;
   isOpenDefault?: boolean;
+  isOpenControlled?: boolean;
+  onCloseControlled?: () => void;
 }
 
-export default function AIChatbotWidget({ onNavigateModule, onOpenSos, isOpenDefault = false }: AIChatbotWidgetProps) {
+export default function AIChatbotWidget({
+  onNavigateModule,
+  onOpenSos,
+  isOpenDefault = false,
+  isOpenControlled,
+  onCloseControlled
+}: AIChatbotWidgetProps) {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(isOpenDefault);
+  const [internalIsOpen, setInternalIsOpen] = useState(isOpenDefault);
+
+  const isOpen = isOpenControlled !== undefined ? isOpenControlled : internalIsOpen;
+
+  const setIsOpen = (val: boolean | ((prev: boolean) => boolean)) => {
+    const nextVal = typeof val === 'function' ? val(isOpen) : val;
+    setInternalIsOpen(nextVal);
+    if (!nextVal && onCloseControlled) {
+      onCloseControlled();
+    }
+  };
+
   const [inputText, setInputText] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isThinking, setIsThinking] = useState(false);

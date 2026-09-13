@@ -2001,18 +2001,19 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
             {/* 🤖 Top-Right Header AI Chatbot Button (Compact) */}
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 if (onOpenAiChatbot) {
                   onOpenAiChatbot();
-                } else {
-                  window.dispatchEvent(new CustomEvent('open-ai-chatbot'));
                 }
+                window.dispatchEvent(new CustomEvent('open-ai-chatbot'));
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-sky-900/30 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer border border-sky-400/40 shrink-0"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-sky-900/30 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer border border-sky-400/40 shrink-0"
               title="Open AI Disaster Analysis Chatbot (Voice & Text)"
             >
               <Bot className="h-4 w-4 text-sky-200 animate-pulse" />
-              <span className="hidden xs:inline">AI Chatbot</span>
+              <span>AI Chatbot</span>
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>

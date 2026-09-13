@@ -190,6 +190,7 @@ export default function App() {
 
   // SOS Emergency Modal State
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
+  const [isAiChatbotOpen, setIsAiChatbotOpen] = useState(false);
   const [activeSosLocation, setActiveSosLocation] = useState<{
     lat: number;
     lon: number;
@@ -799,7 +800,7 @@ export default function App() {
 
             {/* 🤖 AI Chatbot Top Header Pill */}
             <button
-              onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chatbot'))}
+              onClick={() => setIsAiChatbotOpen(prev => !prev)}
               className="rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white border-sky-400/40 shadow-sm hover:scale-105"
               title="Open AI Disaster Analysis Chatbot (Voice & Text)"
             >
@@ -926,7 +927,7 @@ export default function App() {
             <JeevanSetuHomepage
               onNavigateModule={(mod) => setActiveModule(mod)}
               onOpenSos={() => setIsSosModalOpen(true)}
-              onOpenAiChatbot={() => window.dispatchEvent(new CustomEvent('open-ai-chatbot'))}
+              onOpenAiChatbot={() => setIsAiChatbotOpen(prev => !prev)}
             />
           </div>
         )}
@@ -1946,6 +1947,8 @@ export default function App() {
 
     {/* 🤖 Jeevan Setu AI Disaster Intelligence Chatbot Widget (Voice & Text) */}
     <AIChatbotWidget
+      isOpenControlled={isAiChatbotOpen}
+      onCloseControlled={() => setIsAiChatbotOpen(false)}
       onNavigateModule={(mod) => setActiveModule(mod)}
       onOpenSos={() => setIsSosModalOpen(true)}
     />
