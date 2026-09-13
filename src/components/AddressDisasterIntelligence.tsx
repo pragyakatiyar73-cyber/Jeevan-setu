@@ -255,15 +255,15 @@ export default function AddressDisasterIntelligence() {
 ================================================================================
 GOVERNMENT OF INDIA - MINISTRY OF DEVELOPMENT OF NORTH EASTERN REGION (MDoNER)
 JEEVAN SETU — AI-POWERED DISASTER INTELLIGENCE & EMERGENCY RESPONSE PLATFORM
-LOCATION 360° INTELLIGENCE REPORT
+LOCATION INTELLIGENCE REPORT
 ================================================================================
-REPORT ID: ${reportId || 'JS-360-NER-2026'}
+REPORT ID: ${reportId || 'JS-LOC-NER-2026'}
 LOCATION: ${currentLoc.displayName}
 STATE: ${currentLoc.state || 'North-Eastern Region'}
 COORDINATES: Lat ${currentLoc.lat.toFixed(4)}° N, Lon ${currentLoc.lon.toFixed(4)}° E
 DATE/TIME: ${new Date().toLocaleString()} (IST)
 DATA STATUS: VERIFIED & SIMULATED TELEMETRY MESH
-================================================================================
+===============================================================================
 
 1. LOCATION OVERVIEW:
    - Target Location: ${currentLoc.displayName}
@@ -303,7 +303,7 @@ DATA STATUS: VERIFIED & SIMULATED TELEMETRY MESH
    4. Reroute logistics convoys via verified alternate bypass routes.
 
 ================================================================================
-End of Location 360° Report — Jeevan Setu Command Engine
+End of Location Intelligence Report — Jeevan Setu Command Engine
 ================================================================================
     `;
 
@@ -311,7 +311,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `LOCATION_360_${(currentLoc.city || 'REPORT').toUpperCase()}_${Date.now()}.txt`;
+    link.download = `LOCATION_INTELLIGENCE_${(currentLoc.city || 'REPORT').toUpperCase()}_${Date.now()}.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -324,16 +324,16 @@ End of Location 360° Report — Jeevan Setu Command Engine
         <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-black text-sky-400 border border-sky-500/40 uppercase">
-                LOCATION 360° INTELLIGENCE
+              <span className="rounded bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-bold text-sky-400 border border-sky-500/40 uppercase">
+                LOCATION INTELLIGENCE REPORT
               </span>
               <span className="rounded bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-mono text-emerald-400 border border-emerald-500/30">
                 18 MODULES SYNCHRONIZED
               </span>
             </div>
-            <h1 className="text-2xl font-black text-white mt-1 flex items-center gap-2">
-              <Compass className="h-7 w-7 text-sky-400 animate-spin-slow" />
-              <span>Location 360° Disaster Intelligence & Multi-Page PDF Engine</span>
+            <h1 className="text-2xl font-bold text-white mt-1 flex items-center gap-2">
+              <Compass className="h-7 w-7 text-sky-400 animate-spin-slow shrink-0" />
+              <span>Location Intelligence Report & Multi-Page PDF Engine</span>
             </h1>
             <p className="text-xs text-slate-300 mt-1 max-w-3xl">
               Enter any location in the 8 North-Eastern states of India to instantly collect telemetry across all 18 Jeevan Setu modules and generate an official 9-page Government PDF Location Intelligence Report.
@@ -436,7 +436,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
             </div>
 
             <div>
-              <h3 className="text-base font-black text-white">Collecting Location 360° Data</h3>
+              <h3 className="text-base font-black text-white">Collecting Location Intelligence Data</h3>
               <p className="text-xs text-slate-400 mt-1">Aggregating telemetry across all 18 Jeevan Setu modules...</p>
             </div>
 
@@ -658,7 +658,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
                   EXECUTIVE SUMMARY & DISASTER PROFILE
                 </h4>
                 <p>
-                  This Location 360° Intelligence Report compiles live satellite telemetry, hydrological readings, road accessibility metrics, and citizen distress calls across all 18 Jeevan Setu modules for <b>{currentLoc.displayName}</b>.
+                  This Location Intelligence Report compiles live satellite telemetry, hydrological readings, road accessibility metrics, and citizen distress calls across all 18 Jeevan Setu modules for <b>{currentLoc.displayName}</b>.
                 </p>
                 <div className="p-3 bg-slate-50 border border-slate-300 font-sans">
                   <div className="grid grid-cols-2 gap-4 font-mono text-xs">
@@ -685,7 +685,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
             {/* ========================================================================= */}
             <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
               <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION 360° REPORT</b>
+                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
                 <span>REPORT ID: {reportId}</span>
               </div>
 
@@ -762,7 +762,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
             {/* ========================================================================= */}
             <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
               <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION 360° REPORT</b>
+                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
                 <span>REPORT ID: {reportId}</span>
               </div>
 
@@ -808,7 +808,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
             {/* ========================================================================= */}
             <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
               <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION 360° REPORT</b>
+                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
                 <span>REPORT ID: {reportId}</span>
               </div>
 
@@ -887,7 +887,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
             {/* ========================================================================= */}
             <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
               <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION 360° REPORT</b>
+                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
                 <span>REPORT ID: {reportId}</span>
               </div>
 
@@ -957,7 +957,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
             {/* ========================================================================= */}
             <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
               <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION 360° REPORT</b>
+                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
                 <span>REPORT ID: {reportId}</span>
               </div>
 
@@ -1017,7 +1017,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
             {/* ========================================================================= */}
             <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
               <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION 360° REPORT</b>
+                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
                 <span>REPORT ID: {reportId}</span>
               </div>
 
@@ -1071,7 +1071,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
             {/* ========================================================================= */}
             <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
               <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION 360° REPORT</b>
+                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
                 <span>REPORT ID: {reportId}</span>
               </div>
 
@@ -1113,7 +1113,7 @@ End of Location 360° Report — Jeevan Setu Command Engine
             {/* ========================================================================= */}
             <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
               <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION 360° REPORT</b>
+                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
                 <span>REPORT ID: {reportId}</span>
               </div>
 

@@ -3406,7 +3406,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   }}
                   className="w-full bg-sky-600 hover:bg-sky-700 text-white py-2.5 rounded-xl font-extrabold shadow-md text-center"
                 >
-                  View Location 360° Intelligence →
+                  View Location Intelligence Report →
                 </button>
               </div>
             </div>
@@ -5705,7 +5705,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     }}
                     className="bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold px-5 py-2 rounded-xl shadow-md flex items-center gap-1.5 text-xs transition transform hover:scale-105 cursor-pointer"
                   >
-                    <span>Open Location 360° Intelligence</span>
+                    <span>Open Location Intelligence Report</span>
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </div>

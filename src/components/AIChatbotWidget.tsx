@@ -446,8 +446,10 @@ Key Modules & Capabilities on Jeevan Setu:
     };
   }
 
-  // 13. LOCATION 360° INTELLIGENCE / ADDRESS RISK CHECK / PDF DOSSIER
+  // 13. LOCATION INTELLIGENCE REPORT / ADDRESS RISK CHECK / PDF DOSSIER
   if (
+    q.includes('location intelligence') ||
+    q.includes('location report') ||
     q.includes('location 360') ||
     q.includes('address intelligence') ||
     q.includes('address check') ||
@@ -457,22 +459,22 @@ Key Modules & Capabilities on Jeevan Setu:
     q.includes('download report')
   ) {
     return {
-      answerText: `Location 360° Intelligence offers deep disaster vulnerability auditing for any specific address or coordinates in North East India:
+      answerText: `Location Intelligence Report (under Governance & Operations) provides deep disaster vulnerability auditing and official 9-page government PDF reporting for any specific address or coordinates in North East India:
 
 • Multi-Hazard Vulnerability Scoring: Computes specific risk ratings for slope instability, flood recurrence, seismic zone V exposure, and forest fire danger.
 • Critical Distance Metrics: Measures exact road distance and transit times to the nearest hospital, fire station, police station, and relief camp.
-• Authoritative 360° PDF Dossier: Generates a comprehensive, printable intelligence report suitable for emergency planning, district administrations, and insurance claims.`,
+• Authoritative 9-Page PDF Dossier: Generates a comprehensive, printable intelligence report suitable for emergency planning, district administrations, and insurance claims.`,
       riskLevel: 'INFO',
       detectedLocation,
-      incidentType: 'Location 360° Multi-Hazard Intelligence & PDF Dossier',
+      incidentType: 'Location Intelligence Report & PDF Dossier',
       actionSteps: [
         'Instant Risk Evaluation for Any Address in North East India',
         'Slope Angle, River Distance & Seismic Zone Multi-Factor Analysis',
-        'Export Official 360° Disaster Intelligence PDF Dossier',
+        'Export Official 9-Page Disaster Intelligence PDF Dossier',
         'Proximity Calculation to Hospitals, Fire Stations & Relief Camps'
       ],
       recommendedModule: 'location',
-      recommendedModuleName: 'Open Location 360° Intelligence'
+      recommendedModuleName: 'Open Location Intelligence Report'
     };
   }
 

@@ -706,7 +706,6 @@ export default function App() {
               {
                 category: t('sidebar.catIntelligence', 'AI & GIS Intelligence'),
                 items: [
-                  { id: 'location', label: 'Location 360° Intelligence', icon: Compass, badge: '360° PDF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'smartmonitoring', label: t('navigation.smartmonitoring', 'Smart Disaster Monitoring'), icon: Cpu, badge: 'AI RADAR', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
                   { id: 'incidents', label: 'Disaster Reports & Intelligence', icon: ShieldAlert, badge: 'NER 8', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
@@ -727,7 +726,8 @@ export default function App() {
                 category: t('sidebar.catCommand', 'Governance & Operations'),
                 items: [
                   { id: 'gov', label: t('navigation.gov', 'MDoNER Command Grid'), icon: Building2, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'weather', label: t('navigation.weather', 'Weather & Doppler Radar'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' }
+                  { id: 'weather', label: t('navigation.weather', 'Weather & Doppler Radar'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' },
+                  { id: 'location', label: 'Location Intelligence Report', icon: Compass, badge: 'PDF REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' }
                 ]
               }
             ].map((section, sIdx) => (
