@@ -3361,11 +3361,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <button
                   onClick={() => {
                     setIsRiskModalOpen(false);
-                    onNavigateModule('staterisk');
+                    onNavigateModule('location');
                   }}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-extrabold shadow-md text-center"
+                  className="w-full bg-sky-600 hover:bg-sky-700 text-white py-2.5 rounded-xl font-extrabold shadow-md text-center"
                 >
-                  View Full Regional Risk Matrix →
+                  View Location 360° Intelligence →
                 </button>
               </div>
             </div>
@@ -5660,11 +5660,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   <button
                     onClick={() => {
                       setActiveFeatureModal(null);
-                      onNavigateModule('staterisk');
+                      onNavigateModule('location');
                     }}
-                    className="bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white font-extrabold px-5 py-2 rounded-xl shadow-md shadow-amber-600/30 flex items-center gap-1.5 text-xs transition transform hover:scale-105 cursor-pointer"
+                    className="bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold px-5 py-2 rounded-xl shadow-md flex items-center gap-1.5 text-xs transition transform hover:scale-105 cursor-pointer"
                   >
-                    <span>Open State Risk Matrix</span>
+                    <span>Open Location 360° Intelligence</span>
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </div>

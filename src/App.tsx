@@ -71,8 +71,6 @@ import UAVDroneModule from './components/UAVDroneModule';
 import EmergencySOSModal from './components/EmergencySOSModal';
 import MDoNERCommandModule from './components/MDoNERCommandModule';
 import NERLiveMapModule from './components/NERLiveMapModule';
-import ActionAlertsModule from './components/ActionAlertsModule';
-import StateRiskMatrixSection from './components/StateRiskMatrixSection';
 import RescueTeamCommand from './components/RescueTeamCommand';
 import EvacuationPlanner from './components/EvacuationPlanner';
 import ReliefCampManagement from './components/ReliefCampManagement';
@@ -704,9 +702,9 @@ export default function App() {
               {
                 category: t('sidebar.catIntelligence', 'AI & GIS Intelligence'),
                 items: [
+                  { id: 'location', label: 'Location 360° Intelligence', icon: Compass, badge: '360° PDF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
                   { id: 'incidents', label: 'Disaster Reports & Intelligence', icon: ShieldAlert, badge: 'NER 8', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
-                  { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
                 ]
               },
@@ -717,8 +715,7 @@ export default function App() {
                   { id: 'emergency-response', label: 'Smart Emergency Response', icon: Zap, badge: 'AI PRIORITY', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
                   { id: 'rerouting', label: 'Road Accessibility & Safe Routes', icon: Navigation, badge: 'OSRM ROUTE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
                   { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue'), icon: HeartPulse, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
-                  { id: 'alerts', label: t('navigation.alerts', 'Active Emergency Alerts'), icon: AlertTriangle, badge: 'LIVE', iconColor: 'text-orange-500 dark:text-orange-400 bg-orange-500/10' }
+                  { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' }
                 ]
               },
               {
@@ -921,18 +918,6 @@ export default function App() {
           </div>
         )}
 
-        {/* 📊 DEDICATED REGIONAL STATE RISK MATRIX SECTION */}
-        {activeModule === 'staterisk' && (
-          <div className="h-full overflow-y-auto p-4 lg:p-7 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
-            <StateRiskMatrixSection
-              onFocusState={(coord, zoom) => {
-                setMapFocusedTarget({ coord, zoom });
-                setActiveModule('map');
-              }}
-            />
-          </div>
-        )}
-
         {/* 0. JEEVAN SETU REFERENCE HOMEPAGE */}
         {activeModule === 'home' && (
           <div className="h-full overflow-y-auto">
@@ -954,15 +939,6 @@ export default function App() {
               onBackToDashboard={() => setActiveModule(previousModule || 'home')}
             />
           </div>
-        )}
-
-        {/* 🚨 ACTION ALERTS / REAL-TIME EMERGENCY INCIDENT BROADCAST FEED MATCHING SCREENSHOT media_1787753496813.png */}
-        {activeModule === 'alerts' && (
-          <ActionAlertsModule
-            onNavigateToMap={() => setActiveModule('map')}
-            onNavigateTo3D={() => setActiveModule('hub')}
-            onTriggerSOS={() => setIsSosModalOpen(true)}
-          />
         )}
 
         {/* 3. ROAD MONITORING & ACCESSIBILITY */}
