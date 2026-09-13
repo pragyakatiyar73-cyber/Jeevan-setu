@@ -24,7 +24,8 @@ import {
   Droplets,
   Thermometer,
   Gauge,
-  Calendar
+  Calendar,
+  ChevronDown
 } from "lucide-react";
 
 import { getNERLandslideTelemetry, LandslideTelemetrySummary, EvaluatedLandslideSector } from "../services/api/landslideService";
@@ -806,37 +807,41 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
       {/* ---------------------------------------------------------------------- */}
       {(activeTab === 'all' || activeTab === 'weather') && (
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 sm:p-6 shadow-xl space-y-5 transition-colors duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 gap-3">
-            <div>
-              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-                <CloudRain className="h-5 w-5 text-sky-500" />
-                4. Weather & Doppler Radar Telemetry (Open-Meteo Live API)
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3.5 gap-3.5">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5 tracking-tight">
+                <CloudRain className="h-5 w-5 text-sky-500 shrink-0" />
+                <span>4. Weather &amp; Doppler Radar Telemetry (Open-Meteo Live API)</span>
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
                 Live atmospheric conditions, 24h precipitation, wind speeds, and 7-day forecast.
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <select
-                value={selectedHub.id}
-                onChange={(e) => {
-                  const hub = NER_CAPITAL_HUBS.find(h => h.id === e.target.value);
-                  if (hub) setSelectedHub(hub);
-                }}
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white outline-none cursor-pointer"
-              >
-                {NER_CAPITAL_HUBS.map(h => (
-                  <option key={h.id} value={h.id}>{h.name}</option>
-                ))}
-              </select>
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <div className="relative">
+                <select
+                  value={selectedHub.id}
+                  onChange={(e) => {
+                    const hub = NER_CAPITAL_HUBS.find(h => h.id === e.target.value);
+                    if (hub) setSelectedHub(hub);
+                  }}
+                  className="h-9 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 pl-3 pr-8 text-xs font-bold text-slate-900 dark:text-white outline-none cursor-pointer appearance-none shadow-sm hover:border-slate-400 dark:hover:border-slate-600 transition"
+                >
+                  {NER_CAPITAL_HUBS.map(h => (
+                    <option key={h.id} value={h.id}>{h.name}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+              </div>
 
               {onNavigateModule && (
                 <button
                   onClick={() => onNavigateModule('weather')}
-                  className="px-3.5 py-1.5 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 hover:bg-sky-500/30 text-xs font-black border border-sky-500/30 flex items-center gap-1.5 cursor-pointer shrink-0"
+                  className="h-9 px-3.5 rounded-xl bg-sky-500/15 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 hover:bg-sky-500/30 text-xs font-bold border border-sky-500/30 flex items-center gap-1.5 cursor-pointer shrink-0 transition shadow-sm hover:scale-[1.02] active:scale-95"
                 >
-                  Open Full Weather Module ➔
+                  <span>Open Full Weather Module</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               )}
             </div>
