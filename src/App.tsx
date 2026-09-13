@@ -86,6 +86,7 @@ import DisasterSafetyGuide from './components/DisasterSafetyGuide';
 import DisasterReportsModule from './components/DisasterReportsModule';
 import { ReliefSupplyTrackingModule } from './components/ReliefSupplyTrackingModule';
 import { SmartEmergencyResponseModule } from './components/SmartEmergencyResponseModule';
+import AddressDisasterIntelligence from './components/AddressDisasterIntelligence';
 import { useTranslation } from './i18n';
 import { incidentStore } from './services/api';
 
@@ -126,6 +127,7 @@ export default function App() {
     if (path.includes('/driver/tracking') || path.includes('/driver-tracking')) return 'driver-tracking';
     if (path.includes('/relief-operations')) return 'relief-operations';
     if (path.includes('/relief-depots')) return 'relief-depots';
+    if (path.includes('/location') || path.includes('/address-intelligence')) return 'location';
 
     return 'home';
   });
@@ -174,6 +176,9 @@ export default function App() {
     } else if (mod === 'relief-depots') {
       url.pathname = '/relief-depots';
       url.searchParams.set('tab', mod);
+    } else if (mod === 'location' || mod === 'location-360' || mod === 'addressintelligence') {
+      url.pathname = '/location';
+      url.searchParams.set('tab', mod);
     } else {
       url.searchParams.set('tab', mod);
     }
@@ -201,6 +206,7 @@ export default function App() {
       else if (path.includes('/driver/tracking') || path.includes('/driver-tracking')) setActiveModuleState('driver-tracking');
       else if (path.includes('/relief-operations')) setActiveModuleState('relief-operations');
       else if (path.includes('/relief-depots')) setActiveModuleState('relief-depots');
+      else if (path.includes('/location') || path.includes('/address-intelligence')) setActiveModuleState('location');
       else setActiveModuleState('home');
     };
     window.addEventListener('popstate', handlePopState);
@@ -1524,6 +1530,14 @@ export default function App() {
             onTriggerSOS={() => setIsSosModalOpen(true)}
           />
         )}
+
+        {/* LOCATION 360° INTELLIGENCE MODULE */}
+        {(activeModule === 'location' || activeModule === 'location-360' || activeModule === 'addressintelligence') && (
+          <div className="h-full overflow-y-auto">
+            <AddressDisasterIntelligence />
+          </div>
+        )}
+
 
 
 
