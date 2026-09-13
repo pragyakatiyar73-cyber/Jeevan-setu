@@ -82,7 +82,7 @@ import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
-import AIChatbotWidget from './components/AIChatbotWidget';
+
 import DisasterReportsModule from './components/DisasterReportsModule';
 import { ReliefSupplyTrackingModule } from './components/ReliefSupplyTrackingModule';
 import { SmartEmergencyResponseModule } from './components/SmartEmergencyResponseModule';
@@ -228,7 +228,6 @@ export default function App() {
 
   // SOS Emergency Modal State
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
-  const [isAiChatbotOpen, setIsAiChatbotOpen] = useState(false);
   const [activeSosLocation, setActiveSosLocation] = useState<{
     lat: number;
     lon: number;
@@ -710,6 +709,7 @@ export default function App() {
                 items: [
                   { id: 'relief-supplies', label: 'Relief Supply & Vehicle Tracking', icon: Truck, badge: 'LIVE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'emergency-response', label: 'Smart Emergency Response', icon: Zap, badge: 'AI PRIORITY', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
+                  { id: 'rerouting', label: 'Road Accessibility & Safe Routes', icon: Navigation, badge: 'OSRM ROUTE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
                   { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue'), icon: HeartPulse, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
                   { id: 'alerts', label: t('navigation.alerts', 'Active Emergency Alerts'), icon: AlertTriangle, badge: 'LIVE', iconColor: 'text-orange-500 dark:text-orange-400 bg-orange-500/10' }
@@ -835,16 +835,7 @@ export default function App() {
               <span className="hidden xl:inline">{t('header.safety', 'Guide')}</span>
             </button>
 
-            {/* 🤖 AI Chatbot Top Header Pill */}
-            <button
-              onClick={() => setIsAiChatbotOpen(prev => !prev)}
-              className="rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white border-sky-400/40 shadow-sm hover:scale-105"
-              title="Open AI Disaster Analysis Chatbot (Voice & Text)"
-            >
-              <Bot className="h-4 w-4 text-sky-200" />
-              <span className="hidden xl:inline">AI Chatbot</span>
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            </button>
+
 
             {/* Live IST Clock */}
             <div className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 font-mono text-xs shrink-0">
@@ -1566,13 +1557,7 @@ export default function App() {
       </main>
     </div>
 
-    {/* 🤖 Jeevan Setu AI Disaster Intelligence Chatbot Widget (Voice & Text) */}
-    <AIChatbotWidget
-      isOpenControlled={isAiChatbotOpen}
-      onCloseControlled={() => setIsAiChatbotOpen(false)}
-      onNavigateModule={(mod) => setActiveModule(mod)}
-      onOpenSos={() => setIsSosModalOpen(true)}
-    />
+
   </div>
   );
 }
