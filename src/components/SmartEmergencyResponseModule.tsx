@@ -55,6 +55,8 @@ export const SmartEmergencyResponseModule: React.FC<SmartEmergencyResponseModule
   // Loading & Data States
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<string>('');
+  const [refreshToast, setRefreshToast] = useState<boolean>(false);
   const [metrics, setMetrics] = useState<EmergencyMetrics>({
     activeEmergencies: 0,
     criticalIncidents: 0,
@@ -91,21 +93,39 @@ export const SmartEmergencyResponseModule: React.FC<SmartEmergencyResponseModule
   const markersRef = useRef<L.Marker[]>([]);
 
   // Load All Data
-  const loadData = async () => {
+  const loadData = async (isManualClick: boolean = false) => {
     setLoading(true);
     setErrorMsg(null);
     try {
       const data = await fetchEmergencyData();
       setMetrics(data.metrics);
       setEmergencies(data.emergencies);
-      if (initialEmergencyId) {
-        const item = data.emergencies.find(e => e.id === initialEmergencyId);
-        if (item) {
-          setSelectedEmergency(item);
-          setActiveTab('detail');
-        }
-      } else if (data.emergencies.length > 0 && !selectedEmergency) {
-        setSelectedEmergency(data.emergencies[0]);
+      setLastRefreshed(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+
+      if (data.emergencies.length > 0) {
+        setSelectedEmergency(prev => {
+          if (initialEmergencyId) {
+            const item = data.emergencies.find(e => e.id === initialEmergencyId);
+            if (item) {
+              setActiveTab('detail');
+              return item;
+            }
+          }
+          if (prev) {
+            const match = data.emergencies.find(e => e.id === prev.id);
+            return match || data.emergencies[0];
+          }
+          return data.emergencies[0];
+        });
+      }
+
+      if (mapInstanceRef.current) {
+        setTimeout(() => mapInstanceRef.current?.invalidateSize(), 100);
+      }
+
+      if (isManualClick) {
+        setRefreshToast(true);
+        setTimeout(() => setRefreshToast(false), 2500);
       }
     } catch (e: any) {
       setErrorMsg(e.message || 'Failed to load emergency response telemetry');
@@ -116,7 +136,7 @@ export const SmartEmergencyResponseModule: React.FC<SmartEmergencyResponseModule
 
   useEffect(() => {
     loadData();
-    const timer = setInterval(loadData, 10000);
+    const timer = setInterval(() => loadData(false), 10000);
     return () => clearInterval(timer);
   }, []);
 
@@ -275,12 +295,22 @@ export const SmartEmergencyResponseModule: React.FC<SmartEmergencyResponseModule
           </div>
 
           <div className="flex items-center gap-2">
+            {lastRefreshed && (
+              <span className="hidden sm:inline-block text-[10px] font-mono text-slate-400">
+                Updated: <span className="text-slate-200 font-bold">{lastRefreshed}</span>
+              </span>
+            )}
+            {refreshToast && (
+              <span className="px-2 py-1 bg-emerald-950 text-emerald-300 border border-emerald-700 text-[10px] font-bold rounded-lg animate-pulse">
+                ✓ Data Refreshed!
+              </span>
+            )}
             <button
-              onClick={loadData}
+              onClick={() => loadData(true)}
               disabled={loading}
-              className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-slate-700 text-xs font-semibold"
+              className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-slate-700 text-xs font-semibold active:scale-95 transition"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-rose-400' : ''}`} />
               Refresh
             </button>
             <button

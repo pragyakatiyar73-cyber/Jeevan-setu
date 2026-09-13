@@ -62,7 +62,10 @@ export async function fetchEmergencyData(): Promise<{
   emergencies: EmergencyItem[];
 }> {
   try {
-    const res = await fetch(API_BASE);
+    const res = await fetch(`${API_BASE}?t=${Date.now()}`, {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     return {
@@ -95,7 +98,10 @@ export async function fetchEmergencyData(): Promise<{
 // Fetch single emergency by ID
 export async function fetchEmergencyById(id: string): Promise<EmergencyItem | null> {
   try {
-    const res = await fetch(`${API_BASE}/${id}`);
+    const res = await fetch(`${API_BASE}/${id}?t=${Date.now()}`, {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     return data.emergency || null;

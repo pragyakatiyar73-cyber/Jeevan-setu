@@ -19,7 +19,7 @@
     "description": "Rising water level submerging low-lying houses",
     "priority": "CRITICAL",
     "priorityLabel": "AI-Assisted Priority Assessment",
-    "status": "RESPONSE RECOMMENDED",
+    "status": "RESOURCE ASSIGNED",
     "reportedTime": "2026-09-13T02:50:53.844Z",
     "timeline": [
       {
@@ -101,6 +101,14 @@
       {
         "time": "2026-09-13T11:15:22.266Z",
         "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T15:55:15.576Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T15:55:16.400Z",
+        "statusText": "Status updated to RESOURCE ASSIGNED"
       }
     ],
     "assignedResource": {
@@ -253,7 +261,7 @@
     "district": "Imphal West",
     "affectedArea": "Imphal Riverbank & Kwakeithel Sector",
     "locationDetails": "Low-lying residential zone near Kangla Fort Bypass",
-    "lat": 24.8170,
+    "lat": 24.817,
     "lon": 93.9368,
     "disasterType": "Flood",
     "affectedPeople": 520,
