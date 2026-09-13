@@ -25,8 +25,6 @@ import {
   Mountain,
   Truck,
   Eye,
-  ToggleLeft,
-  ToggleRight,
   Download,
   Printer
 } from 'lucide-react';
@@ -52,10 +50,8 @@ interface AIDisasterImpactAssessmentProps {
 }
 
 export default function AIDisasterImpactAssessment({
- onNavigateToMonitoring, initialLoc }: AIDisasterImpactAssessmentProps) {
+  onNavigateToMonitoring, initialLoc }: AIDisasterImpactAssessmentProps) {
   const { t } = useTranslation();
-  // Demo Mode State
-  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
 
   // Photo & Evidence State
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -315,7 +311,7 @@ export default function AIDisasterImpactAssessment({
       locationLoc.lat,
       locationLoc.lon,
       selectedImage || undefined,
-      isDemoMode
+      false
     );
     setAssessment(result);
     await saveAssessmentRecord(result);
@@ -347,51 +343,36 @@ export default function AIDisasterImpactAssessment({
   return (
     <div className="min-h-screen w-full bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-100 p-5 lg:p-8 space-y-6 font-sans transition-colors duration-300">
       
-      {/* 1. TOP HEADER & DEMO MODE BAR */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
+      {/* 1. TOP HEADER & CROSS-FEATURE NAVIGATION */}
+      <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="rounded-full bg-indigo-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-indigo-500 animate-ping"></span>
-              🤖 AI DISASTER IMPACT ASSESSMENT CENTER
+            <span className="rounded-full bg-indigo-500/15 dark:bg-indigo-500/20 px-3.5 py-1 text-xs font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-500/25 dark:border-indigo-500/30 flex items-center gap-2 tracking-wide uppercase font-display">
+              <span className="h-2 w-2 rounded-full bg-indigo-500 animate-ping"></span>
+              🤖 AI Disaster Impact Assessment Center
             </span>
-            <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs lg:text-sm font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+            <span className="rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 border border-emerald-500/25 dark:border-emerald-500/30">
               Gemini Multimodal & Verified Data Pipeline
             </span>
-            {isDemoMode && (
-              <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs lg:text-sm font-extrabold text-amber-700 dark:text-amber-400 border border-amber-500/40">
-                ⚠️ DEMO DATA ACTIVE
-              </span>
-            )}
           </div>
 
-          <h1 className="mt-2 text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+          <h1 className="mt-2.5 text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight font-display flex items-center gap-3">
             {t("aiimpact.title", "Multimodal Photo Damage Assessment & Impact Analytics")}
           </h1>
-          <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-300 mt-1 font-medium max-w-4xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 font-normal max-w-4xl leading-relaxed">
             {t("aiimpact.subtitle", "Combines disaster imagery with confirmed location context, Gemini visual analysis, and real-world environmental data to compute an explainable impact score.")}
           </p>
         </div>
 
-        {/* Header Actions: Demo Mode Toggle & Cross-Feature Button */}
+        {/* Header Actions: Cross-Feature Navigation Button */}
         <div className="flex items-center gap-3 flex-wrap">
-          <button
-            onClick={() => setIsDemoMode(!isDemoMode)}
-            className={`rounded-xl border px-4 py-2.5 text-xs lg:text-sm font-extrabold flex items-center gap-2 transition cursor-pointer ${
-              isDemoMode ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/40' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-slate-300 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            {isDemoMode ? <ToggleRight className="h-4 w-4 text-amber-500" /> : <ToggleLeft className="h-4 w-4 text-slate-400" />}
-            <span>{isDemoMode ? 'Demo Mode (ON)' : 'Demo Mode (OFF)'}</span>
-          </button>
-
           {onNavigateToMonitoring && (
             <button
               onClick={() => onNavigateToMonitoring({ lat: locationLoc.lat, lon: locationLoc.lon, name: locationLoc.displayName })}
-              className="rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 px-4 py-2.5 text-xs lg:text-sm font-extrabold text-white shadow-lg hover:from-sky-500 hover:to-indigo-500 flex items-center gap-2 cursor-pointer border border-sky-400/40"
+              className="rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-700 hover:from-blue-500 hover:via-indigo-500 hover:to-indigo-600 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/40 flex items-center gap-2.5 cursor-pointer border border-indigo-400/30 transition-all duration-200 active:scale-[0.98] group"
             >
               <span>View in 🛰️ Smart Disaster Monitoring</span>
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </button>
           )}
         </div>

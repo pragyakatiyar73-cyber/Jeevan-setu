@@ -62,6 +62,7 @@ import {
 } from './services/api';
 import Dashboard from './components/Dashboard';
 import AIDisasterImpactAssessment from './components/AIDisasterImpactAssessment';
+import SmartDisasterMonitoring from './components/SmartDisasterMonitoring';
 import WeatherIntelligence from './components/WeatherIntelligence';
 import FloodIntelligenceModule from './components/FloodIntelligenceModule';
 import LandslideRiskIntelligence from './components/LandslideRiskIntelligence';
@@ -126,6 +127,7 @@ export default function App() {
     if (path.includes('/relief-operations')) return 'relief-operations';
     if (path.includes('/relief-depots')) return 'relief-depots';
     if (path.includes('/location') || path.includes('/address-intelligence')) return 'location';
+    if (path.includes('/smart-monitoring') || path.includes('/smartmonitoring')) return 'smartmonitoring';
 
     return 'home';
   });
@@ -177,6 +179,9 @@ export default function App() {
     } else if (mod === 'location' || mod === 'location-360' || mod === 'addressintelligence') {
       url.pathname = '/location';
       url.searchParams.set('tab', mod);
+    } else if (mod === 'smartmonitoring' || mod === 'smart-monitoring') {
+      url.pathname = '/smart-monitoring';
+      url.searchParams.set('tab', mod);
     } else {
       url.searchParams.set('tab', mod);
     }
@@ -205,6 +210,7 @@ export default function App() {
       else if (path.includes('/relief-operations')) setActiveModuleState('relief-operations');
       else if (path.includes('/relief-depots')) setActiveModuleState('relief-depots');
       else if (path.includes('/location') || path.includes('/address-intelligence')) setActiveModuleState('location');
+      else if (path.includes('/smart-monitoring') || path.includes('/smartmonitoring')) setActiveModuleState('smartmonitoring');
       else setActiveModuleState('home');
     };
     window.addEventListener('popstate', handlePopState);
@@ -703,6 +709,7 @@ export default function App() {
                 category: t('sidebar.catIntelligence', 'AI & GIS Intelligence'),
                 items: [
                   { id: 'location', label: 'Location 360° Intelligence', icon: Compass, badge: '360° PDF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
+                  { id: 'smartmonitoring', label: t('navigation.smartmonitoring', 'Smart Disaster Monitoring'), icon: Cpu, badge: 'AI RADAR', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
                   { id: 'incidents', label: 'Disaster Reports & Intelligence', icon: ShieldAlert, badge: 'NER 8', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
                   { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
                   { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
@@ -857,6 +864,7 @@ export default function App() {
         {activeModule === 'aiimpact' && (
           <div className="h-full overflow-y-auto">
             <AIDisasterImpactAssessment
+              initialLoc={sharedMonitoringLoc}
               onNavigateToMonitoring={(loc) => {
                 setSharedMonitoringLoc({ lat: loc.lat, lon: loc.lon, displayName: loc.name, state: 'NER Sector', country: 'India' });
                 setActiveModule('smartmonitoring');
@@ -865,12 +873,31 @@ export default function App() {
           </div>
         )}
 
-
+        {/* 🛰️ SMART DISASTER MONITORING */}
+        {activeModule === 'smartmonitoring' && (
+          <div className="h-full overflow-y-auto">
+            <SmartDisasterMonitoring
+              initialLoc={sharedMonitoringLoc}
+              onNavigateToImpactAssessment={(loc) => {
+                if (loc) {
+                  setSharedMonitoringLoc({ lat: loc.lat, lon: loc.lon, displayName: loc.name, state: 'NER Sector', country: 'India' });
+                }
+                setActiveModule('aiimpact');
+              }}
+            />
+          </div>
+        )}
 
         {/* 📷 AI DAMAGE ASSESSMENT */}
         {activeModule === 'damageassessment' && (
           <div className="h-full overflow-y-auto">
-            <AIDisasterImpactAssessment />
+            <AIDisasterImpactAssessment
+              initialLoc={sharedMonitoringLoc}
+              onNavigateToMonitoring={(loc) => {
+                setSharedMonitoringLoc({ lat: loc.lat, lon: loc.lon, displayName: loc.name, state: 'NER Sector', country: 'India' });
+                setActiveModule('smartmonitoring');
+              }}
+            />
           </div>
         )}
 
