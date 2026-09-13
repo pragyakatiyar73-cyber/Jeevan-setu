@@ -5820,19 +5820,21 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
         </div>
       )}
 
-      {/* 🤖 Interactive AI Chat Box with Voice-to-Text & Voice Search */}
-      <AIChatbotWidget
-        onNavigateModule={onNavigateModule}
-        onOpenSos={onOpenSos}
-        isOpenControlled={isAiChatOpen}
-        onOpenControlled={() => setIsAiChatOpen(true)}
-        onCloseControlled={() => {
-          setIsAiChatOpen(false);
-          if (activeTab === 'AIChat') {
-            setActiveTab('Home');
-          }
-        }}
-      />
+      {/* 🤖 Interactive AI Chat Box with Voice-to-Text & Voice Search (Fallback if not handled by parent) */}
+      {!onOpenAiChatbot && (
+        <AIChatbotWidget
+          onNavigateModule={onNavigateModule}
+          onOpenSos={onOpenSos}
+          isOpenControlled={isAiChatOpen}
+          onOpenControlled={() => setIsAiChatOpen(true)}
+          onCloseControlled={() => {
+            setIsAiChatOpen(false);
+            if (activeTab === 'AIChat') {
+              setActiveTab('Home');
+            }
+          }}
+        />
+      )}
 
     </div>
   );

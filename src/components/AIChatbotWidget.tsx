@@ -16,7 +16,12 @@ import {
   Activity,
   Zap,
   ArrowRight,
-  MessageSquare
+  MessageSquare,
+  Copy,
+  Check,
+  Radio,
+  Layers,
+  Compass
 } from 'lucide-react';
 import { useVoiceRecognition } from '../hooks/useVoiceRecognition';
 import { useTranslation } from '../i18n';
@@ -748,7 +753,26 @@ export interface AIChatbotWidgetProps {
   isOpenControlled?: boolean;
   onCloseControlled?: () => void;
   onOpenControlled?: () => void;
+  activeModule?: string;
 }
+
+const MODULE_NAMES: Record<string, string> = {
+  home: 'Jeevan Setu Homepage',
+  customdashboard: 'Command Center Dashboard',
+  safetyguide: 'Disaster Safety Guide',
+  smartmonitoring: 'Smart Disaster Monitoring',
+  incidents: 'Disaster Reports & Intelligence',
+  aiimpact: 'AI Impact Assessment',
+  map: 'NER Live GIS Map',
+  'relief-supplies': 'Relief Supply & Vehicle Tracking',
+  'emergency-response': 'Smart Emergency Response',
+  rerouting: 'Road Accessibility & Safe Routes',
+  facilities: 'Emergency Facilities & Rescue',
+  drone: 'UAV Drone Dispatcher',
+  gov: 'MDoNER Command Grid',
+  weather: 'Weather & Doppler Radar',
+  location: 'Location Intelligence Report'
+};
 
 export default function AIChatbotWidget({
   onNavigateModule,
@@ -756,7 +780,8 @@ export default function AIChatbotWidget({
   isOpenDefault = false,
   isOpenControlled,
   onCloseControlled,
-  onOpenControlled
+  onOpenControlled,
+  activeModule = 'home'
 }: AIChatbotWidgetProps) {
   const { t } = useTranslation();
   const [internalIsOpen, setInternalIsOpen] = useState(isOpenDefault);
@@ -776,6 +801,17 @@ export default function AIChatbotWidget({
   const [inputText, setInputText] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [activeDetailTab, setActiveDetailTab] = useState<'chat' | 'telemetry'>('chat');
+  const [voiceLang, setVoiceLang] = useState('en-IN');
+  const [copiedMsgId, setCopiedMsgId] = useState<string | null>(null);
+
+  const handleCopyMessage = (msgId: string, text: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedMsgId(msgId);
+      setTimeout(() => setCopiedMsgId(null), 2000);
+    }
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -783,7 +819,7 @@ export default function AIChatbotWidget({
     {
       id: 'msg-welcome',
       sender: 'ai',
-      text: 'Namaste! I am your Jeevan Setu AI Assistant 🤖.\n\nAsk me anything about the Jeevan Setu platform, our Live GIS map, AI damage assessment, emergency SOS, safe routes, relief supplies, or disaster guidance across the 8 North Eastern States. You can type or speak using the 🎙️ microphone!',
+      text: 'Namaste! I am your Jeevan Setu AI Agent 🤖.\n\nAsk me anything about the Jeevan Setu platform, our Live GIS map, AI damage assessment, emergency SOS, safe routes, relief supplies, or disaster guidance across the 8 North Eastern States. You can type, speak using the 🎙️ microphone, or inspect Deep Telemetry!',
       timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       analysis: {
         riskLevel: 'INFO',
@@ -793,7 +829,7 @@ export default function AIChatbotWidget({
           'Ask: "What is Jeevan Setu and what are its features?"',
           'Ask: "How does Emergency SOS or Rescue dispatch work?"',
           'Ask: "How do I use AI Impact Assessment to analyze photos?"',
-          'Speak or type anytime using the 🎙️ voice mic button'
+          'Switch to 📊 Deep Telemetry for real-time sensor diagnostics'
         ],
         recommendedModule: 'customdashboard',
         recommendedModuleName: 'Explore Command Center Dashboard'
@@ -803,7 +839,7 @@ export default function AIChatbotWidget({
 
   // Voice Recognition Hook
   const { isListening, transcript, isSupported, startListening, stopListening } = useVoiceRecognition({
-    language: 'hi-IN',
+    language: voiceLang,
     onResult: (resText) => {
       if (resText && resText.trim()) {
         setInputText(resText);
@@ -974,70 +1010,206 @@ User Question: "${query}"`
           <div className="fixed top-16 right-4 sm:top-20 sm:right-6 z-[99999] w-[95vw] sm:w-[420px] max-h-[80vh] h-[580px] bg-slate-950/95 border border-slate-700/80 rounded-3xl shadow-2xl backdrop-blur-xl flex flex-col overflow-hidden text-slate-100 animate-in fade-in slide-in-from-top-4 duration-300">
           
           {/* TOP CHATBOT HEADER */}
-          <div className="bg-slate-900/90 px-4 py-3.5 border-b border-slate-800 flex items-center justify-between shrink-0">
+          <div className="bg-slate-900/95 px-4 py-3 border-b border-slate-800 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg border border-sky-400/30">
+              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg border border-sky-400/30">
                 <Bot className="h-6 w-6 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-black text-white tracking-tight flex items-center gap-1.5">
-                    Jeevan Setu AI Assistant
+                    Jeevan Setu AI Agent
                   </h3>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-extrabold flex items-center gap-1">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    LIVE NLP
+                    LIVE TELEMETRY
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-400 font-medium">Multilingual Voice &amp; Text Analysis Engine</p>
+                <p className="text-[10px] text-slate-400 font-medium flex items-center gap-1.5">
+                  <span>Context:</span>
+                  <span className="text-sky-400 font-bold">{MODULE_NAMES[activeModule || 'home'] || '18 Modules'}</span>
+                </p>
               </div>
             </div>
 
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setMessages([messages[0]])}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition cursor-pointer"
                 title="Reset Chat"
               >
                 <RotateCcw className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition"
-                title="Close Chatbot"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition cursor-pointer"
+                title="Close AI Agent"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
           </div>
 
-          {/* MESSAGES LIST AREA */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-4 text-xs select-text">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
+          {/* 🔴 DETAIL FEATURE TAB SWITCHER */}
+          <div className="px-3 py-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
+            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-bold">
+              <button
+                onClick={() => setActiveDetailTab('chat')}
+                className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
+                  activeDetailTab === 'chat'
+                    ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow'
+                    : 'text-slate-400 hover:text-white'
+                }`}
               >
-                {/* Message Bubble */}
-                <div
-                  className={`max-w-[88%] rounded-2xl p-3.5 shadow-md ${
-                    msg.sender === 'user'
-                      ? 'bg-sky-600 text-white rounded-br-none'
-                      : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-none space-y-2'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="font-semibold leading-relaxed whitespace-pre-line">{msg.text}</p>
-                    {msg.sender === 'ai' && (
-                      <button
-                        onClick={() => handleSpeakText(msg.text)}
-                        className="text-slate-400 hover:text-sky-400 transition shrink-0 p-0.5"
-                        title="Listen to AI Analysis"
-                      >
-                        {isSpeaking ? <VolumeX className="h-4 w-4 text-amber-400 animate-pulse" /> : <Volume2 className="h-4 w-4" />}
-                      </button>
-                    )}
+                <MessageSquare className="h-3.5 w-3.5" />
+                <span>AI Chat</span>
+              </button>
+
+              <button
+                onClick={() => setActiveDetailTab('telemetry')}
+                className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
+                  activeDetailTab === 'telemetry'
+                    ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Activity className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
+                <span>Deep Telemetry</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+              </button>
+            </div>
+
+            {/* Voice Language Picker */}
+            <div className="flex items-center gap-1 text-[10px] font-mono text-slate-400">
+              <span className="text-slate-500">VOICE:</span>
+              <select
+                value={voiceLang}
+                onChange={(e) => setVoiceLang(e.target.value)}
+                className="bg-slate-950 border border-slate-800 text-sky-400 font-bold rounded-md px-1.5 py-0.5 text-[10px] focus:outline-none cursor-pointer"
+              >
+                <option value="en-IN">EN (English)</option>
+                <option value="hi-IN">HI (हिंदी)</option>
+                <option value="as-IN">AS (অসমীয়া)</option>
+                <option value="bn-IN">BN (বাংলা)</option>
+              </select>
+            </div>
+          </div>
+
+          {activeDetailTab === 'telemetry' ? (
+            /* 📊 DEEP TELEMETRY & DIAGNOSTICS DETAIL PANEL */
+            <div className="flex-1 p-4 overflow-y-auto space-y-4 text-xs select-none">
+              {/* CURRENT SECTOR CONTEXT */}
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-sky-950/60 to-indigo-950/60 border border-sky-500/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-extrabold uppercase text-sky-400 tracking-wider flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    ACTIVE SECTOR TELEMETRY
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[9px] font-bold border border-emerald-500/30">
+                    LIVE CONTEXT
+                  </span>
+                </div>
+                <div className="text-sm font-black text-white">
+                  {MODULE_NAMES[activeModule || 'home'] || 'All 18 Modules Synchronized'}
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Real-time telemetry link active. Multi-spectral sensor fusion, ISRO NavIC satellite tracking, and NDRF battalion readiness online for the 8 North Eastern States.
+                </p>
+              </div>
+
+              {/* 8 NER STATES MULTI-HAZARD MATRIX */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">
+                  PAN-NER SOVEREIGN TELEMETRY GRID
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                    <span className="text-[10px] text-slate-400 block">🛰️ ISRO NavIC Grid</span>
+                    <span className="text-xs font-bold text-emerald-400">14 Sats Locked (99.2%)</span>
                   </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                    <span className="text-[10px] text-slate-400 block">🌧️ Doppler Radar</span>
+                    <span className="text-xs font-bold text-sky-400">Cherrapunji Active</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                    <span className="text-[10px] text-slate-400 block">🛣️ Highway Lifelines</span>
+                    <span className="text-xs font-bold text-amber-400">NH-6 Landslide Watch</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                    <span className="text-[10px] text-slate-400 block">🏥 ICU Bed Capacity</span>
+                    <span className="text-xs font-bold text-emerald-400">1,840 Beds Verified</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* ONE-CLICK DEEP DIAGNOSTIC AUDITS */}
+              <div className="space-y-2 pt-1">
+                <span className="text-[10px] font-extrabold uppercase text-sky-400 tracking-wider block">
+                  ⚡ ONE-CLICK DEEP DIAGNOSTIC ACTIONS
+                </span>
+                <div className="space-y-1.5">
+                  {[
+                    { label: "Audit Active Landslide Chokepoints (NH-6 & NH-29)", query: "Check road status and landslide chokepoints along NH-6 and NH-29" },
+                    { label: "Simulate River Basin Flood Surge in Assam", query: "Show flood vulnerability assessment for Brahmaputra valley and Guwahati" },
+                    { label: "Scan Verified Emergency Care & Oxygen Supplies", query: "Find emergency hospital facilities, blood banks, and ICU beds in NER" },
+                    { label: "Generate Complete 8-State Location SITREP", query: "How do I generate a complete Location Intelligence Report?" }
+                  ].map((action, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setActiveDetailTab('chat');
+                        handleSendMessage(action.query);
+                      }}
+                      className="w-full text-left p-2.5 rounded-xl bg-slate-900/90 hover:bg-sky-950/60 border border-slate-800 hover:border-sky-500/50 text-slate-200 hover:text-white transition flex items-center justify-between text-[11px] font-semibold cursor-pointer group"
+                    >
+                      <span className="truncate">{action.label}</span>
+                      <ArrowRight className="h-3.5 w-3.5 text-sky-400 group-hover:translate-x-1 transition-transform shrink-0 ml-1" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* MESSAGES LIST AREA */
+            <div className="flex-1 p-4 overflow-y-auto space-y-4 text-xs select-text">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
+                >
+                  {/* Message Bubble */}
+                  <div
+                    className={`max-w-[88%] rounded-2xl p-3.5 shadow-md ${
+                      msg.sender === 'user'
+                        ? 'bg-sky-600 text-white rounded-br-none'
+                        : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-none space-y-2'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-semibold leading-relaxed whitespace-pre-line">{msg.text}</p>
+                      {msg.sender === 'ai' && (
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={() => handleCopyMessage(msg.id, msg.text)}
+                            className="text-slate-400 hover:text-sky-400 transition p-0.5 cursor-pointer"
+                            title="Copy AI Briefing to Clipboard"
+                          >
+                            {copiedMsgId === msg.id ? (
+                              <Check className="h-4 w-4 text-emerald-400" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleSpeakText(msg.text)}
+                            className="text-slate-400 hover:text-sky-400 transition shrink-0 p-0.5 cursor-pointer"
+                            title="Listen to AI Analysis"
+                          >
+                            {isSpeaking ? <VolumeX className="h-4 w-4 text-amber-400 animate-pulse" /> : <Volume2 className="h-4 w-4" />}
+                          </button>
+                        </div>
+                      )}
+                    </div>
 
                   {/* AI Structured Analysis Box */}
                   {msg.analysis && (
@@ -1122,6 +1294,7 @@ User Question: "${query}"`
 
             <div ref={messagesEndRef} />
           </div>
+          )}
 
           {/* QUICK PROMPT CHIPS */}
           <div className="px-3 py-2 bg-slate-900/50 border-t border-slate-800/80 flex items-center gap-1.5 overflow-x-auto shrink-0 scrollbar-none">
