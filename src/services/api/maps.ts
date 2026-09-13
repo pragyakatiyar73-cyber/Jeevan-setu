@@ -58,6 +58,30 @@ export const MAP_LAYERS: Record<string, MapLayerProvider> = {
     requiresKey: false
   },
 
+  // Google Satellite Hybrid (Satellite + Labels)
+  googleHybrid: {
+    id: 'googleHybrid',
+    name: 'Google Satellite Hybrid',
+    category: 'satellite',
+    url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps Satellite Imagery',
+    maxZoom: 20,
+    isFree: true,
+    requiresKey: false
+  },
+
+  // Google Pure Satellite (Aerial)
+  googleSatellite: {
+    id: 'googleSatellite',
+    name: 'Google Satellite (Pure Aerial)',
+    category: 'satellite',
+    url: 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps Satellite Imagery',
+    maxZoom: 20,
+    isFree: true,
+    requiresKey: false
+  },
+
   // 4. ISRO Bhuvan (Sovereign Indian Satellite & Disaster Service)
   isroBhuvan: {
     id: 'isroBhuvan',

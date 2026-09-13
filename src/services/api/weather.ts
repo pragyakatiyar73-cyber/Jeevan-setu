@@ -106,9 +106,9 @@ export function getWMOWeatherCondition(code: number): { condition: string; icon:
  * Fetches real-time meteorological metrics & 7-day forecast using Open-Meteo API
  * Enforces geographic boundary validation against the 8 NER states.
  */
-export async function getLiveWeather(lat: number, lon: number): Promise<WeatherData> {
-  // Reject locations outside 8 NER states
-  if (!isPointInNER(lat, lon)) {
+export async function getLiveWeather(lat: number, lon: number, allowAnyLocation: boolean = false): Promise<WeatherData> {
+  // Reject locations outside 8 NER states unless explicitly allowed
+  if (!allowAnyLocation && !isPointInNER(lat, lon)) {
     return {
       latitude: lat,
       longitude: lon,
