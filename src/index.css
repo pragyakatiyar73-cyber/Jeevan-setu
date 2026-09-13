@@ -137,3 +137,36 @@ html, body, #root {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+/* Official SITREP Government Document A4 Print Styles */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #official-sitrep-document,
+  #official-sitrep-document * {
+    visibility: visible !important;
+  }
+  #official-sitrep-document {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 12mm 15mm !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    border: none !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+}
+
