@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   Bell,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
   Clock,
   CloudRain,
@@ -571,32 +572,38 @@ export default function SmartDisasterMonitoring({
           {/* Disaster Type Selector */}
           <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs">
             <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.disasterVector", "Disaster Vector")}</label>
-            <select
-              value={disasterType}
-              onChange={e => setDisasterType(e.target.value)}
-              className="bg-transparent text-slate-900 dark:text-white font-bold cursor-pointer focus:outline-none"
-            >
-              <option value="Landslide & Cloudburst">🌧️ Landslide & Cloudburst</option>
-              <option value="Severe Flash Flood">🌊 Severe Flash Flood</option>
-              <option value="Cyclone & Gale Wind">🌀 Cyclone & Gale Wind</option>
-              <option value="Wildfire & Forest Fire">🔥 Wildfire & Forest Fire</option>
-              <option value="Earthquake & Liquefaction">🌋 Earthquake & Seismic Risk</option>
-            </select>
+            <div className="relative">
+              <select
+                value={disasterType}
+                onChange={e => setDisasterType(e.target.value)}
+                className="w-full bg-transparent text-slate-900 dark:text-white font-bold cursor-pointer focus:outline-none pr-6 appearance-none"
+              >
+                <option value="Landslide & Cloudburst" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1 font-medium">🌧️ Landslide & Cloudburst</option>
+                <option value="Severe Flash Flood" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1 font-medium">🌊 Severe Flash Flood</option>
+                <option value="Cyclone & Gale Wind" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1 font-medium">🌀 Cyclone & Gale Wind</option>
+                <option value="Wildfire & Forest Fire" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1 font-medium">🔥 Wildfire & Forest Fire</option>
+                <option value="Earthquake & Liquefaction" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1 font-medium">🌋 Earthquake & Seismic Risk</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            </div>
           </div>
 
           {/* Disaster Status Selector */}
           <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs">
             <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.statusMode", "Status Mode")}</label>
-            <select
-              value={disasterStatus}
-              onChange={e => setDisasterStatus(e.target.value as any)}
-              className="bg-transparent text-emerald-600 dark:text-emerald-400 font-bold cursor-pointer focus:outline-none"
-            >
-              <option value="ACTIVE">🔴 ACTIVE</option>
-              <option value="ESCALATING">⚠️ ESCALATING</option>
-              <option value="STABLE">🟢 STABLE</option>
-              <option value="MONITORING">🔵 MONITORING</option>
-            </select>
+            <div className="relative">
+              <select
+                value={disasterStatus}
+                onChange={e => setDisasterStatus(e.target.value as any)}
+                className="w-full bg-transparent text-emerald-600 dark:text-emerald-400 font-bold cursor-pointer focus:outline-none pr-6 appearance-none"
+              >
+                <option value="ACTIVE" className="bg-white dark:bg-slate-900 text-rose-500 font-bold py-1">🔴 ACTIVE</option>
+                <option value="ESCALATING" className="bg-white dark:bg-slate-900 text-amber-500 font-bold py-1">⚠️ ESCALATING</option>
+                <option value="STABLE" className="bg-white dark:bg-slate-900 text-emerald-500 font-bold py-1">🟢 STABLE</option>
+                <option value="MONITORING" className="bg-white dark:bg-slate-900 text-sky-500 font-bold py-1">🔵 MONITORING</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            </div>
           </div>
 
           {/* Current Risk Badge */}
@@ -608,10 +615,10 @@ export default function SmartDisasterMonitoring({
       </div>
 
       {/* 2. LOCATION CONTROLS & MONITORING RADIUS BAR */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-4 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-4 items-center transition-colors duration-300">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-4 shadow-xl flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3.5 transition-colors duration-300">
         
         {/* Search Place Address */}
-        <div className="lg:col-span-5 relative">
+        <div className="flex-1 min-w-[260px] max-w-xl relative">
           <form onSubmit={handleLocationSearch} className="flex items-center gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -626,7 +633,7 @@ export default function SmartDisasterMonitoring({
             <button
               type="submit"
               disabled={isSearching}
-              className="rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-indigo-500 shadow"
+              className="rounded-xl bg-indigo-600 hover:bg-indigo-500 px-3.5 py-2 text-xs font-semibold text-white shadow shrink-0 whitespace-nowrap transition cursor-pointer"
             >
               {isSearching ? t('smartmonitoring.searching', 'Searching...') : t('smartmonitoring.searchBtn', 'Search')}
             </button>
@@ -650,52 +657,54 @@ export default function SmartDisasterMonitoring({
           )}
         </div>
 
-        {/* Manual Lat/Lon Coordinates */}
-        <div className="lg:col-span-4">
-          <form onSubmit={handleManualCoordSubmit} className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 flex-1">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">{t("smartmonitoring.latLabel", "Lat:")}</span>
+        {/* Manual Coordinates & Geolocation Controls */}
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
+          {/* Manual Lat/Lon Coordinates */}
+          <form onSubmit={handleManualCoordSubmit} className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono font-medium">{t("smartmonitoring.latLabel", "Lat:")}</span>
               <input
                 type="text"
                 value={latInput}
                 onChange={e => setLatInput(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-1.5 text-xs text-slate-900 dark:text-white font-mono text-center"
+                className="w-20 sm:w-24 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-2 py-1.5 text-xs text-slate-900 dark:text-white font-mono text-center outline-none focus:border-indigo-500"
               />
             </div>
-            <div className="flex items-center gap-1.5 flex-1">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">{t("smartmonitoring.lonLabel", "Lon:")}</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono font-medium">{t("smartmonitoring.lonLabel", "Lon:")}</span>
               <input
                 type="text"
                 value={lonInput}
                 onChange={e => setLonInput(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-1.5 text-xs text-slate-900 dark:text-white font-mono text-center"
+                className="w-20 sm:w-24 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-2 py-1.5 text-xs text-slate-900 dark:text-white font-mono text-center outline-none focus:border-indigo-500"
               />
             </div>
             <button
               type="submit"
-              className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
+              className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 shrink-0 whitespace-nowrap transition cursor-pointer shadow-sm active:scale-95"
             >
               {t("smartmonitoring.updateBtn", "Update")}
             </button>
           </form>
-        </div>
 
-        {/* Geolocation & Radius Selector */}
-        <div className="lg:col-span-3 flex items-center justify-end gap-2">
+          {/* Current GPS Geolocation */}
           <button
+            type="button"
             onClick={handleUseCurrentLocation}
-            className="flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
+            className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 shrink-0 whitespace-nowrap transition cursor-pointer shadow-sm active:scale-95"
           >
-            <Compass className="h-3.5 w-3.5" />
-            {t("smartmonitoring.myLocationBtn", "My Location")}
+            <Compass className="h-3.5 w-3.5 shrink-0" />
+            <span>{t("smartmonitoring.myLocationBtn", "My Location")}</span>
           </button>
 
-          <div className="flex items-center gap-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 p-1">
+          {/* Radius Selector */}
+          <div className="flex items-center gap-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 p-1 shrink-0">
             {[2, 5, 10, 25].map(r => (
               <button
                 key={r}
+                type="button"
                 onClick={() => setMonitoringRadiusKm(r)}
-                className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
+                className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${
                   monitoringRadiusKm === r ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >

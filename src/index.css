@@ -20,6 +20,17 @@
   --border-color: #1e293b;
 }
 
+/* Select & Option cross-browser dark/light text readability */
+select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+.dark select option {
+  background-color: #0b1329;
+  color: #f8fafc;
+}
+
 
 html, body, #root {
   height: 100%;
