@@ -2423,10 +2423,12 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-indigo-700 dark:group-hover:text-indigo-300'
               },
               {
-                title: t('home.reliefCamps', 'Relief Camps & Supplies'),
-                desc: t('home.reliefCampsDesc', 'Find nearby relief camps, shelter capacity, and emergency supplies.'),
-                icon: Building2,
-                action: () => setActiveSidePanel('reliefcamps'),
+                title: 'Disaster Reports & Intelligence',
+                desc: 'Verified disaster incident reports, severity levels, and real-time GIS mapping for the 8 NER states.',
+                icon: ShieldAlert,
+                badge: 'NER 8',
+                badgeColor: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40',
+                action: () => onNavigateModule('incidents'),
                 bgColor: 'bg-[#FFFBEB] dark:bg-amber-950/25',
                 hoverBg: 'hover:bg-[#FEF3C7] dark:hover:bg-amber-900/40',
                 borderColor: 'border-amber-200/80 dark:border-amber-900/40',

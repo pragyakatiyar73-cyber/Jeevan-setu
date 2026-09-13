@@ -711,10 +711,6 @@ export default function App() {
                   { id: 'relief-supplies', label: 'Relief Supply & Vehicle Tracking', icon: Truck, badge: 'LIVE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'emergency-response', label: 'Smart Emergency Response', icon: Zap, badge: 'AI PRIORITY', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
                   { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue'), icon: HeartPulse, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'rescueteams', label: t('navigation.rescueteams', 'Rescue Team Command'), icon: ShieldCheck, badge: 'NDRF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
-                  { id: 'evacuation', label: t('navigation.evacuation', 'Evacuation & Safe Zone'), icon: Navigation, iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
-                  { id: 'reliefcamps', label: t('navigation.reliefcamps', 'Relief Camp Grid'), icon: Building2, iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
                   { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
                   { id: 'alerts', label: t('navigation.alerts', 'Active Emergency Alerts'), icon: AlertTriangle, badge: 'LIVE', iconColor: 'text-orange-500 dark:text-orange-400 bg-orange-500/10' }
                 ]
@@ -903,40 +899,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 🚨 LIFE-SAVING RESPONSE ENGINE */}
-        {activeModule === 'lifesaving' && (
-          <div className="h-full overflow-y-auto">
-            <LifeSavingResponseEngine />
-          </div>
-        )}
 
-        {/* 🚨 CITIZEN SOS TRIAGE */}
-        {activeModule === 'citizensos' && (
-          <div className="h-full overflow-y-auto">
-            <LifeSavingResponseEngine />
-          </div>
-        )}
-
-        {/* 🛡️ RESCUE TEAM COMMAND */}
-        {activeModule === 'rescueteams' && (
-          <div className="h-full overflow-y-auto">
-            <RescueTeamCommand />
-          </div>
-        )}
-
-        {/* 🧭 EVACUATION & SAFE ZONE PLANNER */}
-        {activeModule === 'evacuation' && (
-          <div className="h-full overflow-y-auto">
-            <EvacuationPlanner />
-          </div>
-        )}
-
-        {/* 🏢 RELIEF CAMP MANAGEMENT */}
-        {activeModule === 'reliefcamps' && (
-          <div className="h-full overflow-y-auto">
-            <ReliefCampManagement />
-          </div>
-        )}
 
         {/* 📷 AI DAMAGE ASSESSMENT */}
         {activeModule === 'damageassessment' && (
@@ -1572,10 +1535,7 @@ export default function App() {
           />
         )}
 
-        {/* 8. LIVE RELIEF CAMP & SHELTER FINDER VIEW */}
-        {activeModule === 'reliefcamps' && (
-          <ReliefCampManagement onNavigateToMap={() => setActiveModule('map')} />
-        )}
+
 
         {/* Fallback for other quick tabs */}
         {(activeModule === 'vehicles' || activeModule === 'alerts' || activeModule === 'vehicleselect' || activeModule === 'analytics') && (

@@ -19,7 +19,7 @@
     "description": "Rising water level submerging low-lying houses",
     "priority": "CRITICAL",
     "priorityLabel": "AI-Assisted Priority Assessment",
-    "status": "RESPONSE RECOMMENDED",
+    "status": "REPORTED",
     "reportedTime": "2026-09-13T02:50:53.844Z",
     "timeline": [
       {
@@ -57,6 +57,38 @@
       {
         "time": "2026-09-13T03:08:41.216Z",
         "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:02.650Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:03.652Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:04.176Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:05.036Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:09.286Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T03:18:09.882Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T03:18:10.468Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T03:18:11.303Z",
+        "statusText": "Status updated to REPORTED"
       }
     ],
     "assignedResource": {
@@ -67,7 +99,7 @@
       "vehicleType": "4x4 All-Terrain Convoy Truck",
       "trackingStatus": "GPS_CONNECTED",
       "routeStatus": "ROUTE_RECOMMENDED",
-      "lastUpdate": "2026-09-13T03:08:41.216Z"
+      "lastUpdate": "2026-09-13T03:18:05.036Z"
     },
     "connectedContext": {
       "weatherDataStatus": "LIVE DATA",
