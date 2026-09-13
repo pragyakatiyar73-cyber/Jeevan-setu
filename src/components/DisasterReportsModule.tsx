@@ -645,12 +645,26 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                     </span>
                   </div>
 
-                  {/* Location Title */}
-                  <h4 className="text-sm font-black text-white mt-2.5 tracking-tight flex items-center justify-between">
+                  {/* Location Title & Disaster Type */}
+                  <h4 className="text-sm font-black text-white mt-2.5 tracking-tight flex items-center gap-1.5">
+                    <span className="text-sky-400 font-black text-base">
+                      {item.disasterType === 'Flood' && '🌊'}
+                      {item.disasterType === 'Landslide' && '⛰️'}
+                      {item.disasterType === 'Heavy Rain' && '🌧️'}
+                      {item.disasterType === 'Storm/Cyclone' && '🌪️'}
+                      {item.disasterType === 'Road Block' && '🚧'}
+                      {item.disasterType === 'Earthquake' && '🌋'}
+                      {item.disasterType === 'Other Disaster' && '⚠️'}
+                    </span>
                     <span>{item.location || 'Not available'}</span>
                   </h4>
+
+                  {/* Explicit Disaster Type Callout */}
+                  <div className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] font-extrabold text-amber-300 bg-amber-950/40 border border-amber-500/40 px-2.5 py-0.5 rounded-md">
+                    <span>Active Hazard Type: <b className="text-white">{item.disasterType}</b></span>
+                  </div>
                   
-                  <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">
                     {item.description || 'Not available'}
                   </p>
 
@@ -690,7 +704,14 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
             {/* Header */}
             <div className="bg-slate-950 px-5 py-4 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-black">
+                <span className="px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-black flex items-center gap-1">
+                  {selectedIncident.disasterType === 'Flood' && '🌊'}
+                  {selectedIncident.disasterType === 'Landslide' && '⛰️'}
+                  {selectedIncident.disasterType === 'Heavy Rain' && '🌧️'}
+                  {selectedIncident.disasterType === 'Storm/Cyclone' && '🌪️'}
+                  {selectedIncident.disasterType === 'Road Block' && '🚧'}
+                  {selectedIncident.disasterType === 'Earthquake' && '🌋'}
+                  {selectedIncident.disasterType === 'Other Disaster' && '⚠️'}
                   {selectedIncident.disasterType}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700 text-[10px] font-extrabold">
@@ -709,12 +730,15 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
             <div className="p-5 space-y-4 text-xs">
               
               <div>
-                <h3 className="text-base font-black text-white tracking-tight">
-                  {selectedIncident.location || 'Not available'}
+                <h3 className="text-base font-black text-white tracking-tight flex items-center gap-2">
+                  <span>{selectedIncident.location || 'Not available'}</span>
                 </h3>
                 <p className="text-xs text-sky-400 font-bold mt-0.5">
-                  {selectedIncident.district || 'Not available'}, {selectedIncident.state || 'Not available'} ({selectedIncident.lat.toFixed(4)}° N, {selectedIncident.lon.toFixed(4)}° E)
+                  📍 {selectedIncident.district || 'Not available'}, {selectedIncident.state || 'Not available'} ({selectedIncident.lat.toFixed(4)}° N, {selectedIncident.lon.toFixed(4)}° E)
                 </p>
+                <div className="mt-2 inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-300 bg-amber-950/50 border border-amber-500/50 px-3 py-1 rounded-lg">
+                  <span>Disaster Classification: <b>{selectedIncident.disasterType}</b></span>
+                </div>
               </div>
 
               {/* Badges Grid */}
