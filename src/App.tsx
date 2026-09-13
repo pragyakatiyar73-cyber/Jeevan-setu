@@ -797,6 +797,17 @@ export default function App() {
               <span className="hidden xl:inline">{t('header.safety', 'Guide')}</span>
             </button>
 
+            {/* 🤖 AI Chatbot Top Header Pill */}
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('open-ai-chatbot'))}
+              className="rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 border bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white border-sky-400/40 shadow-sm hover:scale-105"
+              title="Open AI Disaster Analysis Chatbot (Voice & Text)"
+            >
+              <Bot className="h-4 w-4 text-sky-200" />
+              <span className="hidden xl:inline">AI Chatbot</span>
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            </button>
+
             {/* Live IST Clock */}
             <div className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 font-mono text-xs shrink-0">
               <span className="text-[10px] text-slate-400">IST</span>
@@ -915,6 +926,7 @@ export default function App() {
             <JeevanSetuHomepage
               onNavigateModule={(mod) => setActiveModule(mod)}
               onOpenSos={() => setIsSosModalOpen(true)}
+              onOpenAiChatbot={() => window.dispatchEvent(new CustomEvent('open-ai-chatbot'))}
             />
           </div>
         )}

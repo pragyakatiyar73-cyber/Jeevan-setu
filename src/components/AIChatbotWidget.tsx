@@ -171,6 +171,13 @@ export default function AIChatbotWidget({ onNavigateModule, onOpenSos, isOpenDef
     }
   }, [messages, isOpen, isThinking]);
 
+  // Global trigger event listener for top header button
+  useEffect(() => {
+    const handleOpenEvent = () => setIsOpen(true);
+    window.addEventListener('open-ai-chatbot', handleOpenEvent);
+    return () => window.removeEventListener('open-ai-chatbot', handleOpenEvent);
+  }, []);
+
   // Text to Speech Readout
   const handleSpeakText = (text: string) => {
     if (!('speechSynthesis' in window)) return;
