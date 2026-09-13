@@ -1967,9 +1967,9 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           </div>
 
           {/* RIGHT: Navigation Links & Action Tools */}
-          <div className="flex items-center gap-2 sm:gap-3 lg:gap-3 xl:gap-4 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 xl:gap-3.5 shrink-0">
             {/* Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1 lg:gap-1.5 mr-1 sm:mr-2">
+            <nav className="hidden md:flex items-center gap-1 lg:gap-1.5 mr-0.5 sm:mr-1">
               {[
                 {
                   id: 'Home',
@@ -2016,7 +2016,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   <button
                     key={nav.id}
                     onClick={nav.action}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 transform hover:-translate-y-0.5 relative cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-xl text-sm font-semibold transition-all duration-200 transform hover:-translate-y-0.5 relative cursor-pointer flex items-center gap-1.5 ${
                       isActive
                         ? 'text-sky-300 font-bold'
                         : 'text-slate-200 hover:text-white hover:bg-slate-800/70'
@@ -2024,29 +2024,30 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   >
                     <span>{nav.name}</span>
                     {nav.isAiChat && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-sky-500/20 to-indigo-500/20 border border-sky-400/40 text-[10px] font-bold text-sky-300 shadow-sm" title="Voice-to-Text & Voice Search Enabled">
-                        <Mic className="h-3 w-3 text-sky-400 animate-pulse" />
-                        <span className="text-[9px] uppercase tracking-wider hidden lg:inline">Voice</span>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-sky-500/25 to-indigo-500/25 border border-sky-400/50 text-[10px] font-extrabold text-sky-300 shadow-sm leading-none tracking-wider" title="Voice-to-Text & Voice Search Enabled">
+                        <Mic className="h-3 w-3 text-sky-400 animate-pulse shrink-0" />
+                        <span className="text-[9px] uppercase hidden lg:inline">Voice</span>
                       </span>
                     )}
                     {isActive && (
-                      <span className="absolute bottom-0 left-3 right-3 h-[2.5px] bg-sky-400 rounded-full shadow-sm shadow-sky-400" />
+                      <span className="absolute -bottom-1 left-2.5 right-2.5 h-[2.5px] bg-sky-400 rounded-full shadow-sm shadow-sky-400" />
                     )}
                   </button>
                 );
               })}
             </nav>
 
-            {/* Search Icon (Enlarged) */}
+            {/* Subtle Divider */}
+            <div className="h-5 w-[1px] bg-slate-700/60 hidden md:block mx-0.5" />
+
+            {/* Search Icon */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2 sm:p-2.5 rounded-full text-slate-200 hover:text-white hover:bg-slate-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-110 cursor-pointer shrink-0"
+              className="h-9 w-9 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700/70 hover:border-slate-600 transition-all duration-200 transform hover:-translate-y-0.5 hover:scale-105 cursor-pointer shrink-0 shadow-sm"
               title="Search"
             >
-              <Search className="h-5 w-5" />
+              <Search className="h-4 w-4" />
             </button>
-
-
 
             {/* Language Selector (Comprehensive 16 North East & National Languages) */}
             <div className="relative hidden sm:block shrink-0">
@@ -2056,7 +2057,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   <>
                     <button
                       onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                      className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-100 hover:text-white hover:bg-slate-800 hover:border-sky-400/80 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.04] hover:shadow-md cursor-pointer border border-slate-700/70 shadow-sm"
+                      className="h-9 flex items-center gap-2 px-3.5 rounded-full text-xs font-bold text-slate-100 hover:text-white bg-slate-800/60 hover:bg-slate-800 hover:border-sky-400/80 transition-all duration-200 transform hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-md cursor-pointer border border-slate-700/70 shadow-sm shrink-0"
                       title="Select Language / Regional Dialect"
                     >
                       <span className="text-sm leading-none">{currentLangMeta.flag}</span>
@@ -2148,7 +2149,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* NER Coverage Badge */}
             <button
               onClick={() => onNavigateModule('gov')}
-              className="px-2.5 sm:px-3 py-1 rounded-full text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-400/40 hover:bg-sky-500/30 hover:border-sky-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-lg cursor-pointer hidden xl:flex items-center gap-1.5 shadow-sm whitespace-nowrap shrink-0"
+              className="h-9 px-3.5 rounded-full text-xs font-bold bg-sky-500/15 text-sky-300 border border-sky-400/40 hover:bg-sky-500/25 hover:border-sky-400 transition-all duration-200 transform hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-lg cursor-pointer hidden xl:flex items-center gap-1.5 shadow-sm whitespace-nowrap shrink-0"
               title="Data Coverage: North Eastern Region — 8 States"
             >
               <span>🏛️</span>
@@ -2157,7 +2158,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </button>
 
             {/* Theme Toggle Switch */}
-            <div className="shrink-0">
+            <div className="shrink-0 flex items-center">
               <ThemeToggle />
             </div>
 
