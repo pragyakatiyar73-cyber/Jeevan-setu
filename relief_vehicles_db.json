@@ -1,0 +1,67 @@
+[
+  {
+    "vehicleId": "RT-101",
+    "vehicleType": "4x4 All-Terrain Convoy Truck",
+    "sourceDepot": "Guwahati Regional Relief Depot",
+    "destination": "Kaziranga Flood Bypass, Assam",
+    "currentLatitude": 26.1445,
+    "currentLongitude": 91.7362,
+    "gpsAccuracy": 15,
+    "speed": 42,
+    "heading": 0,
+    "trackingStatus": "GPS_CONNECTED",
+    "tripStatus": "AVAILABLE",
+    "lastLocationUpdate": "2026-09-13T02:38:04.990Z",
+    "assignedSupplies": [
+      {
+        "item": "Drinking Water Canisters",
+        "quantity": 500
+      }
+    ],
+    "createdAt": "2026-09-13T02:37:50.560Z",
+    "updatedAt": "2026-09-13T02:38:04.990Z"
+  },
+  {
+    "vehicleId": "RT-102",
+    "vehicleType": "Heavy Emergency Relief Carrier",
+    "sourceDepot": "Shillong High-Altitude Depot",
+    "destination": "Sohra Mountain Pass, Meghalaya",
+    "currentLatitude": 25.5788,
+    "currentLongitude": 91.8933,
+    "gpsAccuracy": 5,
+    "speed": 0,
+    "heading": 180,
+    "trackingStatus": "GPS_NOT_CONNECTED",
+    "tripStatus": "AVAILABLE",
+    "lastLocationUpdate": null,
+    "assignedSupplies": [
+      {
+        "item": "Thermal Fleece Blankets",
+        "quantity": 300
+      }
+    ],
+    "createdAt": "2026-09-13T02:37:50.560Z",
+    "updatedAt": "2026-09-13T02:37:50.560Z"
+  },
+  {
+    "vehicleId": "RT-103",
+    "vehicleType": "Alpine Disaster Rescue Vehicle",
+    "sourceDepot": "Gangtok Alpine Relief Reserve",
+    "destination": "Teesta NH-10 Pass, Sikkim",
+    "currentLatitude": 27.3289,
+    "currentLongitude": 88.6065,
+    "gpsAccuracy": 6.1,
+    "speed": 0,
+    "heading": 45,
+    "trackingStatus": "GPS_NOT_CONNECTED",
+    "tripStatus": "AVAILABLE",
+    "assignedSupplies": [
+      {
+        "item": "Water Purification Kits",
+        "quantity": 200
+      }
+    ],
+    "createdAt": "2026-09-13T02:37:50.560Z",
+    "updatedAt": "2026-09-13T02:37:50.560Z"
+  }
+]
