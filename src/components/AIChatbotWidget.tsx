@@ -754,6 +754,7 @@ export interface AIChatbotWidgetProps {
   onCloseControlled?: () => void;
   onOpenControlled?: () => void;
   activeModule?: string;
+  showFloatingButton?: boolean;
 }
 
 const MODULE_NAMES: Record<string, string> = {
@@ -781,12 +782,14 @@ export default function AIChatbotWidget({
   isOpenControlled,
   onCloseControlled,
   onOpenControlled,
-  activeModule = 'home'
+  activeModule = 'home',
+  showFloatingButton
 }: AIChatbotWidgetProps) {
   const { t } = useTranslation();
   const [internalIsOpen, setInternalIsOpen] = useState(isOpenDefault);
 
   const isOpen = isOpenControlled !== undefined ? isOpenControlled : internalIsOpen;
+  const shouldShowFloating = showFloatingButton !== undefined ? showFloatingButton : (activeModule === 'home');
 
   const setIsOpen = (val: boolean | ((prev: boolean) => boolean)) => {
     const nextVal = typeof val === 'function' ? val(isOpen) : val;
@@ -976,8 +979,8 @@ User Question: "${query}"`
 
   return (
     <>
-      {/* 🔴 FLOATING BOT TOGGLE BUTTON (BOTTOM RIGHT) */}
-      {!isOpen && (
+      {/* 🔴 FLOATING BOT TOGGLE BUTTON (BOTTOM RIGHT - ONLY SHOWN ON HOMEPAGE) */}
+      {!isOpen && shouldShowFloating && (
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-6 right-6 z-[99999] bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center gap-3 border-2 border-white/30 group cursor-pointer"
