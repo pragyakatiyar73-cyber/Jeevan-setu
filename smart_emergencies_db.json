@@ -1,0 +1,182 @@
+[
+  {
+    "id": "EMG-NER-3844",
+    "state": "Assam",
+    "district": "Darrang",
+    "affectedArea": "Mangaldoi Flood Camp",
+    "locationDetails": "Sector 4 Riverbank",
+    "lat": 26.1445,
+    "lon": 91.7362,
+    "disasterType": "Flood",
+    "affectedPeople": 350,
+    "injuredPeople": 8,
+    "requirements": [
+      "Rescue",
+      "Drinking Water",
+      "Medical"
+    ],
+    "photoUrl": null,
+    "description": "Rising water level submerging low-lying houses",
+    "priority": "CRITICAL",
+    "priorityLabel": "AI-Assisted Priority Assessment",
+    "status": "RESPONSE RECOMMENDED",
+    "reportedTime": "2026-09-13T02:50:53.844Z",
+    "timeline": [
+      {
+        "time": "2026-09-13T02:50:53.844Z",
+        "statusText": "Emergency reported and registered in NER Central System"
+      },
+      {
+        "time": "2026-09-13T02:50:53.844Z",
+        "statusText": "AI Priority Assessed: CRITICAL"
+      },
+      {
+        "time": "2026-09-13T02:50:53.927Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-102"
+      }
+    ],
+    "assignedResource": {
+      "depotId": "DEP-GHY-01",
+      "depotName": "Guwahati Regional Relief Depot",
+      "supplyItem": "Rescue, Drinking Water, Medical Supplies",
+      "vehicleId": "RT-102",
+      "vehicleType": "Heavy Emergency Relief Carrier",
+      "trackingStatus": "GPS_NOT_CONNECTED",
+      "routeStatus": "ROUTE_RECOMMENDED",
+      "lastUpdate": "2026-09-13T02:50:53.927Z"
+    },
+    "connectedContext": {
+      "weatherDataStatus": "LIVE DATA",
+      "floodRiskStatus": "LIVE DATA",
+      "landslideRiskStatus": "LIVE DATA",
+      "roadAccessibilityStatus": "LIVE DATA",
+      "weatherRiskText": "Moderate Rain • 14mm/h",
+      "floodRiskText": "HIGH • Water Accumulation",
+      "landslideRiskText": "MODERATE • Slope Saturation",
+      "roadAccessText": "Road Accessible • Caution Advised"
+    },
+    "_id": "6aa60f8d0cf10fa5128ec8ce"
+  },
+  {
+    "id": "EMG-NER-1001",
+    "state": "Assam",
+    "district": "Kamrup Metropolitan",
+    "affectedArea": "Guwahati Zoo Road Inundation Zone",
+    "locationDetails": "Near Central Park, Ward 12",
+    "lat": 26.16,
+    "lon": 91.78,
+    "disasterType": "Flood",
+    "affectedPeople": 450,
+    "injuredPeople": 12,
+    "requirements": [
+      "Rescue",
+      "Drinking Water",
+      "Medical"
+    ],
+    "photoUrl": null,
+    "description": "Flash waterlogging following Brahmaputra surge. 12 elderly residents require medical evacuation.",
+    "priority": "CRITICAL",
+    "priorityLabel": "AI-Assisted Priority Assessment",
+    "status": "RESPONSE IN PROGRESS",
+    "reportedTime": "2026-09-13T07:30:00Z",
+    "timeline": [
+      {
+        "time": "2026-09-13T07:30:00Z",
+        "statusText": "Emergency reported by local relief coordinator"
+      },
+      {
+        "time": "2026-09-13T07:31:30Z",
+        "statusText": "AI Priority Assessed: CRITICAL"
+      },
+      {
+        "time": "2026-09-13T07:33:00Z",
+        "statusText": "Resource Match Recommended: Guwahati Depot & RT-101 Convoy"
+      },
+      {
+        "time": "2026-09-13T07:35:00Z",
+        "statusText": "Resource Assigned: RT-101 Heavy All-Terrain Truck"
+      },
+      {
+        "time": "2026-09-13T07:40:00Z",
+        "statusText": "Live GPS Tracking Active • Convoy En Route"
+      }
+    ],
+    "assignedResource": {
+      "depotId": "DEPOT-GUW",
+      "depotName": "Guwahati Primary Central Depot",
+      "supplyItem": "Drinking Water Canisters & Medical Kits",
+      "vehicleId": "RT-101",
+      "vehicleType": "4x4 All-Terrain Convoy Truck",
+      "trackingStatus": "GPS_CONNECTED",
+      "routeStatus": "ROUTE_ACTIVE",
+      "lastUpdate": "2026-09-13T02:49:47.305Z"
+    },
+    "connectedContext": {
+      "weatherDataStatus": "LIVE DATA",
+      "floodRiskStatus": "LIVE DATA",
+      "landslideRiskStatus": "LIVE DATA",
+      "roadAccessibilityStatus": "LIVE DATA",
+      "weatherRiskText": "Heavy Rain • 18mm/h • Wind 24km/h",
+      "floodRiskText": "CRITICAL • 1.8m Inundation Level",
+      "landslideRiskText": "MODERATE • Slope Saturation 65%",
+      "roadAccessText": "NH-37 Operational • Zoo Road Bypass Active"
+    }
+  },
+  {
+    "id": "EMG-NER-1002",
+    "state": "Meghalaya",
+    "district": "East Khasi Hills",
+    "affectedArea": "Sohra-Shillong Highway Slope Breach",
+    "locationDetails": "Km 34 Cliffside Pass",
+    "lat": 25.5788,
+    "lon": 91.8933,
+    "disasterType": "Landslide",
+    "affectedPeople": 180,
+    "injuredPeople": 4,
+    "requirements": [
+      "Road Clearance",
+      "Rescue",
+      "Shelter"
+    ],
+    "photoUrl": null,
+    "description": "Debris fall blocking main artery. Heavy machinery required for clearing boulder obstruction.",
+    "priority": "HIGH",
+    "priorityLabel": "AI-Assisted Priority Assessment",
+    "status": "RESOURCE ASSIGNED",
+    "reportedTime": "2026-09-13T07:15:00Z",
+    "timeline": [
+      {
+        "time": "2026-09-13T07:15:00Z",
+        "statusText": "Emergency reported via BRO highway patrol"
+      },
+      {
+        "time": "2026-09-13T07:17:00Z",
+        "statusText": "AI Priority Assessed: HIGH"
+      },
+      {
+        "time": "2026-09-13T07:22:00Z",
+        "statusText": "Resource Assigned: RT-102 Terrain 4x4 Mini Convoy"
+      }
+    ],
+    "assignedResource": {
+      "depotId": "DEPOT-SHL",
+      "depotName": "Shillong High-Altitude Cache",
+      "supplyItem": "Heavy Rescue Tools & Tarpaulins",
+      "vehicleId": "RT-102",
+      "vehicleType": "Terrain 4x4 Mini Convoy",
+      "trackingStatus": "GPS_STALE",
+      "routeStatus": "ROUTE_RECOMMENDED",
+      "lastUpdate": "2026-09-13T02:49:47.305Z"
+    },
+    "connectedContext": {
+      "weatherDataStatus": "LIVE DATA",
+      "floodRiskStatus": "LAST KNOWN DATA",
+      "landslideRiskStatus": "LIVE DATA",
+      "roadAccessibilityStatus": "LIVE DATA",
+      "weatherRiskText": "Moderate Rain • 12mm/h",
+      "floodRiskText": "LOW • 0.2m Accumulation",
+      "landslideRiskText": "CRITICAL • High Slope Gradient",
+      "roadAccessText": "NH-6 Blocked at Km 34 • Single Lane Alternate"
+    }
+  }
+]

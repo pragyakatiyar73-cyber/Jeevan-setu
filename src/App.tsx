@@ -85,6 +85,7 @@ import DisasterSafetyGuide from './components/DisasterSafetyGuide';
 import AIChatbotWidget from './components/AIChatbotWidget';
 import DisasterReportsModule from './components/DisasterReportsModule';
 import { ReliefSupplyTrackingModule } from './components/ReliefSupplyTrackingModule';
+import { SmartEmergencyResponseModule } from './components/SmartEmergencyResponseModule';
 import { useTranslation } from './i18n';
 import { incidentStore } from './services/api';
 
@@ -1490,6 +1491,13 @@ export default function App() {
               activeModule === 'relief-depots' ? 'depots' :
               'supplies'
             }
+            onNavigateHome={() => setActiveModule('home')}
+          />
+        )}
+
+        {/* SMART EMERGENCY RESPONSE MODULE */}
+        {activeModule === 'emergency-response' && (
+          <SmartEmergencyResponseModule
             onNavigateHome={() => setActiveModule('home')}
           />
         )}

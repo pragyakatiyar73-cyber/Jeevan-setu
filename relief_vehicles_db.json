@@ -3,23 +3,23 @@
     "vehicleId": "RT-101",
     "vehicleType": "4x4 All-Terrain Convoy Truck",
     "sourceDepot": "Guwahati Regional Relief Depot",
-    "destination": "Kaziranga Flood Bypass, Assam",
+    "destination": "Mangaldoi Relief Camp",
     "currentLatitude": 26.1445,
     "currentLongitude": 91.7362,
     "gpsAccuracy": 15,
     "speed": 42,
     "heading": 0,
     "trackingStatus": "GPS_CONNECTED",
-    "tripStatus": "AVAILABLE",
+    "tripStatus": "ON_ROUTE",
     "lastLocationUpdate": "2026-09-13T02:38:04.990Z",
     "assignedSupplies": [
       {
-        "item": "Drinking Water Canisters",
-        "quantity": 500
+        "item": "Food Grain Packs",
+        "quantity": 250
       }
     ],
     "createdAt": "2026-09-13T02:37:50.560Z",
-    "updatedAt": "2026-09-13T02:38:04.990Z"
+    "updatedAt": "2026-09-13T02:44:10.202Z"
   },
   {
     "vehicleId": "RT-102",

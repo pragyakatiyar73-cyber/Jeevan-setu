@@ -1,0 +1,13 @@
+[
+  {
+    "operationId": "OP-NER-172",
+    "sourceDepot": "Guwahati Regional Relief Depot",
+    "destination": "Mangaldoi Relief Camp",
+    "vehicleId": "RT-101",
+    "supplyItem": "Food Grain Packs",
+    "quantity": 250,
+    "gpsStatus": "GPS_CONNECTED",
+    "tripStatus": "ON_ROUTE",
+    "lastUpdated": "2026-09-13T02:44:10.202Z"
+  }
+]
