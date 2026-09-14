@@ -838,8 +838,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     }
   };
 
-  // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation, safetyguide, reliefcamps, livemap, reliefsupplies, emergencyresponse)
-  const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | 'safetyguide' | 'reliefcamps' | 'livemap' | 'reliefsupplies' | 'emergencyresponse' | null>(null);
+  // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation, safetyguide, reliefcamps, livemap, reliefsupplies, emergencyresponse, roadroutes)
+  const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | 'safetyguide' | 'reliefcamps' | 'livemap' | 'reliefsupplies' | 'emergencyresponse' | 'roadroutes' | null>(null);
 
   // Compact Feature Modal state for hero indicator pills (ai, livedata, gis, risk, resources)
   const [activeFeatureModal, setActiveFeatureModal] = useState<'ai' | 'livedata' | 'gis' | 'risk' | 'resources' | null>(null);
@@ -2561,7 +2561,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 icon: Navigation,
                 badge: 'LIVE ROUTES',
                 badgeColor: 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border-teal-500/40',
-                action: () => onNavigateModule('rerouting'),
+                action: () => setActiveSidePanel('roadroutes'),
                 bgColor: 'bg-[#F0FDF4] dark:bg-teal-950/30',
                 hoverBg: 'hover:bg-[#DCFCE7] dark:hover:bg-teal-900/50',
                 borderColor: 'border-teal-300 dark:border-teal-800/80',
@@ -4223,7 +4223,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           />
 
           {/* Right-Side Drawer Container */}
-          <div className={`fixed top-0 right-0 h-full z-[200] ${activeSidePanel === 'livemap' || activeSidePanel === 'reliefsupplies' || activeSidePanel === 'emergencyresponse' ? 'w-full sm:w-[540px] lg:w-[600px]' : 'w-full sm:w-[480px] lg:w-[540px]'} bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-800 animate-in slide-in-from-right duration-300`}>
+          <div className={`fixed top-0 right-0 h-full z-[200] ${activeSidePanel === 'livemap' || activeSidePanel === 'reliefsupplies' || activeSidePanel === 'emergencyresponse' || activeSidePanel === 'roadroutes' ? 'w-full sm:w-[540px] lg:w-[600px]' : 'w-full sm:w-[480px] lg:w-[540px]'} bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-800 animate-in slide-in-from-right duration-300`}>
             
             {/* Drawer Header */}
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-[#0b132b]">
@@ -4278,6 +4278,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <Zap className="h-5 w-5" />
                   </div>
                 )}
+                {activeSidePanel === 'roadroutes' && (
+                  <div className="h-9 w-9 rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                    <Navigation className="h-5 w-5" />
+                  </div>
+                )}
                 <div>
                   <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
                     {activeSidePanel === 'report' && '1. Report a Disaster'}
@@ -4290,6 +4295,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     {activeSidePanel === 'reliefcamps' && 'Relief Camps & Emergency Supplies'}
                     {activeSidePanel === 'reliefsupplies' && 'Real-Time Relief Supply & Vehicle Tracking'}
                     {activeSidePanel === 'emergencyresponse' && 'Smart Emergency Response System'}
+                    {activeSidePanel === 'roadroutes' && 'Road Accessibility & Safe Route Intelligence'}
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                     {activeSidePanel === 'report' && 'AI Incident Submission & Ground Photo Triage'}
@@ -4302,6 +4308,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     {activeSidePanel === 'reliefcamps' && 'Nearby Operational Shelters, Bed Capacity & Relief Stocks'}
                     {activeSidePanel === 'reliefsupplies' && 'Live Regional Fleet GPS Tracking, Depots & Supply Dispatches'}
                     {activeSidePanel === 'emergencyresponse' && 'Multi-Criteria Emergency Priority Calculator & Live Dispatches'}
+                    {activeSidePanel === 'roadroutes' && 'Live NER Highway Status, Landslide Blockages & AI Safe Rerouting'}
                   </p>
                 </div>
               </div>
@@ -5873,6 +5880,151 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer text-xs transition transform hover:scale-[1.01]"
                     >
                       <span>Open Full Smart Emergency Response System</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PANEL 10: ROAD ACCESSIBILITY & SAFE ROUTE INTELLIGENCE */}
+              {activeSidePanel === 'roadroutes' && (
+                <div className="space-y-5 text-xs font-medium">
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-teal-500/10 border border-teal-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-teal-600 dark:text-teal-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-teal-500/20 text-teal-600 dark:text-teal-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Check real-time passability of key national highways and hill corridors in North-East India.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Detect active road blocks, mudslides, bridge collapses, and single-lane bottlenecks.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Activate AI green corridor rerouting to guide relief convoys around danger zones.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Send automatic reroute instructions to field response vehicles and ambulances.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Highway Corridor Overview Summary */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl text-center">
+                      <div className="text-red-500 text-[10px] font-extrabold uppercase">Blocked</div>
+                      <div className="text-lg font-black text-red-600 dark:text-red-400 mt-0.5">2</div>
+                      <div className="text-[9px] text-slate-400 font-medium">Major Landslides</div>
+                    </div>
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-xl text-center">
+                      <div className="text-amber-500 text-[10px] font-extrabold uppercase">Restricted</div>
+                      <div className="text-lg font-black text-amber-600 dark:text-amber-400 mt-0.5">3</div>
+                      <div className="text-[9px] text-slate-400 font-medium">Single-Lane Only</div>
+                    </div>
+                    <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded-xl text-center">
+                      <div className="text-emerald-500 text-[10px] font-extrabold uppercase">Open / Clear</div>
+                      <div className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">14</div>
+                      <div className="text-[9px] text-slate-400 font-medium">Green Corridors</div>
+                    </div>
+                  </div>
+
+                  {/* Live Highway Status Cards */}
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-extrabold text-slate-800 dark:text-slate-200 text-xs flex items-center gap-1.5">
+                        <Navigation className="h-4 w-4 text-teal-500" />
+                        Critical Corridors &amp; AI Reroute Status
+                      </span>
+                      <span className="text-[10px] font-bold text-teal-600 dark:text-teal-400 bg-teal-500/15 px-2 py-0.5 rounded-full border border-teal-500/30">
+                        Live OSRM Engine
+                      </span>
+                    </div>
+
+                    {[
+                      {
+                        highway: 'NH-29 (Dimapur ➔ Kohima)',
+                        state: 'Nagaland',
+                        status: 'BLOCKED',
+                        statusColor: 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30',
+                        issue: 'Major debris flow at Km-42 (Phesama area)',
+                        reroute: 'AI Detour Active via Jotsoma Hill By-pass (+22 Mins)',
+                        convoys: '4 Emergency Convoys Rerouted'
+                      },
+                      {
+                        highway: 'NH-10 (Siliguri ➔ Gangtok)',
+                        state: 'Sikkim / WB',
+                        status: 'RESTRICTED',
+                        statusColor: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30',
+                        issue: 'Active slope subsidence near 29th Mile',
+                        reroute: 'Single-lane pilot vehicle escort operational',
+                        convoys: 'Light Emergency Vehicles Only'
+                      },
+                      {
+                        highway: 'NH-06 (Guwahati ➔ Shillong)',
+                        state: 'Meghalaya / Assam',
+                        status: 'GREEN CORRIDOR',
+                        statusColor: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+                        issue: 'Fully navigable 4-lane expressway',
+                        reroute: 'Priority Relief Freight Lane Active',
+                        convoys: '8 Relief Convoys Passed in Last 2 Hours'
+                      },
+                      {
+                        highway: 'NH-37 (Jorhat ➔ Dibrugarh)',
+                        state: 'Assam',
+                        status: 'OPEN',
+                        statusColor: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+                        issue: 'Minor surface waterlogging at Demow',
+                        reroute: 'Standard route recommended (No delay)',
+                        convoys: 'Normal Speed 65 km/h'
+                      }
+                    ].map((road, idx) => (
+                      <div key={idx} className="p-3.5 bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 hover:border-teal-500/50 transition">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-slate-900 dark:text-white text-xs">{road.highway}</span>
+                            <span className="text-[10px] text-slate-400">({road.state})</span>
+                          </div>
+                          <span className={`px-2 py-0.5 text-[10px] font-black rounded-full border ${road.statusColor}`}>
+                            {road.status}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
+                          <span className="text-slate-400 font-normal">Condition: </span>{road.issue}
+                        </div>
+                        <div className="text-[10px] text-teal-700 dark:text-teal-300 bg-teal-500/10 px-2 py-1 rounded-lg font-bold flex items-center justify-between">
+                          <span>{road.reroute}</span>
+                          <span className="flex items-center gap-1 text-emerald-500 shrink-0">
+                            <CheckCircle2 className="h-3 w-3" />
+                            Active
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 pt-1 flex items-center justify-between">
+                          <span>Convoy Status:</span>
+                          <strong className="text-slate-700 dark:text-slate-200">{road.convoys}</strong>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Full Module Button */}
+                  <div className="pt-2">
+                    <button
+                      onClick={() => {
+                        setActiveSidePanel(null);
+                        onNavigateModule('rerouting');
+                      }}
+                      className="w-full bg-teal-600 hover:bg-teal-500 text-white font-black py-3.5 rounded-xl shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 cursor-pointer text-xs transition transform hover:scale-[1.01]"
+                    >
+                      <span>Open Full Road Accessibility &amp; Safe Route Module</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
