@@ -28,8 +28,10 @@ import {
   EmergencyFacilityType,
   DataStatus
 } from '../services/api/emergencyFacilitiesService';
+import { NER_STATES_DISTRICTS } from '../services/api/disasterReportsService';
 import { isPointInNER, NER_STATES, NERStateName, MASTER_NER_POLYGON, NER_COVERAGE_LABEL } from '../utils/nerBoundary';
 import { calculateSafeNERRoute } from '../services/api/roadAccessibilityService';
+import { SearchSpellingCorrectionPrompt } from './SearchSpellingCorrectionPrompt';
 
 interface EmergencyFacilitiesModuleProps {
   onNavigateToMap?: () => void;
@@ -70,6 +72,11 @@ export default function EmergencyFacilitiesModule({
   const [selectedState, setSelectedState] = useState<string>('All');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Reset district filter when state changes
+  useEffect(() => {
+    setSelectedDistrict('All');
+  }, [selectedState]);
 
   // User location state
   const [activeUserLoc, setActiveUserLoc] = useState(PRESET_USER_LOCATIONS[0]);
@@ -267,6 +274,15 @@ export default function EmergencyFacilitiesModule({
 
       markersRef.current.addLayer(marker);
     });
+
+    // Auto-fit map camera bounds to encompass facilities and user location
+    if (facilities.length > 0) {
+      const bounds = L.latLngBounds(facilities.map(f => [f.lat, f.lon]));
+      if (!isLocationOutsideNER) {
+        bounds.extend([activeUserLoc.lat, activeUserLoc.lon]);
+      }
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+    }
   }, [facilities, selectedFacility, activeUserLoc, isLocationOutsideNER]);
 
   // Handle Safe Route Click
@@ -407,8 +423,14 @@ export default function EmergencyFacilitiesModule({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 pl-10 pr-4 py-2.5 text-xs sm:text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 outline-none"
               />
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3.5 top-3 -translate-y-1/2 h-4 w-4 text-slate-400" />
             </div>
+
+            {/* 💡 SPELLING CORRECTION & "DID YOU MEAN?" OPTION BANNER */}
+            <SearchSpellingCorrectionPrompt
+              query={searchQuery}
+              onSelectSuggestion={(suggestedText) => setSearchQuery(suggestedText)}
+            />
           </div>
         </div>
 
@@ -457,14 +479,31 @@ export default function EmergencyFacilitiesModule({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">District Search</label>
-            <input
-              type="text"
-              placeholder="e.g. Kamrup Metropolitan, East Khasi Hills, Cachar..."
-              value={selectedDistrict === 'All' ? '' : selectedDistrict}
-              onChange={(e) => setSelectedDistrict(e.target.value || 'All')}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-900 dark:text-white outline-none"
-            />
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Filter District {selectedState !== 'All' ? `(${selectedState})` : ''}
+            </label>
+            <select
+              value={selectedDistrict}
+              onChange={(e) => setSelectedDistrict(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-900 dark:text-white outline-none cursor-pointer hover:border-sky-500 transition"
+            >
+              <option value="All">
+                {selectedState === 'All' ? 'All NER Districts' : `All Districts in ${selectedState}`}
+              </option>
+              {selectedState !== 'All' && NER_STATES_DISTRICTS[selectedState] ? (
+                NER_STATES_DISTRICTS[selectedState].map((dist) => (
+                  <option key={dist} value={dist}>{dist}</option>
+                ))
+              ) : (
+                Object.entries(NER_STATES_DISTRICTS).map(([stName, distList]) => (
+                  <optgroup key={stName} label={`--- ${stName} ---`}>
+                    {distList.map(dist => (
+                      <option key={`${stName}-${dist}`} value={dist}>{dist} ({stName})</option>
+                    ))}
+                  </optgroup>
+                ))
+              )}
+            </select>
           </div>
         </div>
       </div>

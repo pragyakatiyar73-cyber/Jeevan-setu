@@ -11,6 +11,11 @@ import mzoJSON from "./locales/mzo.json";
 import neJSON from "./locales/ne.json";
 import trpJSON from "./locales/trp.json";
 import nagJSON from "./locales/nag.json";
+import adiJSON from "./locales/adi.json";
+import nyiJSON from "./locales/nyi.json";
+import aoJSON from "./locales/ao.json";
+import karJSON from "./locales/kar.json";
+import lepJSON from "./locales/lep.json";
 
 export type LanguageCode =
   | "en"
@@ -24,7 +29,12 @@ export type LanguageCode =
   | "mzo"
   | "ne"
   | "trp"
-  | "nag";
+  | "nag"
+  | "adi"
+  | "nyi"
+  | "ao"
+  | "kar"
+  | "lep";
 
 export interface LanguageMeta {
   code: LanguageCode;
@@ -44,13 +54,18 @@ export const SUPPORTED_LANGUAGES: LanguageMeta[] = [
   { code: "as", label: "Assamese", nativeLabel: "অসমীয়া", region: "Assam", flag: "🌿", isNorthEast: true },
   { code: "bn", label: "Bengali", nativeLabel: "বাংলা", region: "Tripura / Barak", flag: "🌸", isNorthEast: true },
   { code: "brx", label: "Bodo", nativeLabel: "बड़ो", region: "Bodoland, Assam", flag: "🏹", isNorthEast: true },
-  { code: "mni", label: "Manipuri", nativeLabel: "মৈতৈলোন্", region: "Manipur", flag: "🦚", isNorthEast: true },
+  { code: "kar", label: "Karbi", nativeLabel: "Karbi", region: "Karbi Anglong, Assam", flag: "🌾", isNorthEast: true },
+  { code: "adi", label: "Adi", nativeLabel: "Adi", region: "Arunachal Pradesh", flag: "🌄", isNorthEast: true },
+  { code: "nyi", label: "Nyishi", nativeLabel: "Nyishi", region: "Arunachal Pradesh", flag: "🦅", isNorthEast: true },
   { code: "kha", label: "Khasi", nativeLabel: "Ka Ktien Khasi", region: "Meghalaya", flag: "🏔️", isNorthEast: true },
   { code: "grt", label: "Garo", nativeLabel: "A·chik", region: "Meghalaya", flag: "🌲", isNorthEast: true },
+  { code: "mni", label: "Manipuri", nativeLabel: "মৈতৈলোন্", region: "Manipur", flag: "🦚", isNorthEast: true },
   { code: "mzo", label: "Mizo", nativeLabel: "Mizo ṭawng", region: "Mizoram", flag: "🌄", isNorthEast: true },
+  { code: "nag", label: "Nagamese", nativeLabel: "Nagamese", region: "Nagaland", flag: "🏕️", isNorthEast: true },
+  { code: "ao", label: "Ao Naga", nativeLabel: "Ao", region: "Nagaland", flag: "🏹", isNorthEast: true },
   { code: "ne", label: "Nepali", nativeLabel: "नेपाली", region: "Sikkim", flag: "🏔️", isNorthEast: true },
-  { code: "trp", label: "Kokborok", nativeLabel: "ককবরক", region: "Tripura", flag: "🌺", isNorthEast: true },
-  { code: "nag", label: "Nagamese", nativeLabel: "Nagamese", region: "Nagaland", flag: "🦅", isNorthEast: true }
+  { code: "lep", label: "Lepcha", nativeLabel: "Róng", region: "Sikkim", flag: "🌺", isNorthEast: true },
+  { code: "trp", label: "Kokborok", nativeLabel: "ককবরক", region: "Tripura", flag: "🌸", isNorthEast: true }
 ];
 
 interface LanguageContextType {
@@ -71,7 +86,12 @@ const translations: Record<LanguageCode, any> = {
   mzo: mzoJSON,
   ne: neJSON,
   trp: trpJSON,
-  nag: nagJSON
+  nag: nagJSON,
+  adi: adiJSON,
+  nyi: nyiJSON,
+  ao: aoJSON,
+  kar: karJSON,
+  lep: lepJSON
 };
 
 const STORAGE_KEY = "jeevan_setu_language";

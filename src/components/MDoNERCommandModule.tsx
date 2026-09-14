@@ -125,28 +125,34 @@ export default function MDoNERCommandModule() {
     <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
       
       {/* 🔴 TOP EXECUTIVE COMMAND BAR */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-full bg-rose-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-rose-700 dark:text-rose-400 border border-rose-500/30 flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-rose-500 dark:bg-rose-400 animate-ping"></span>
-              EXECUTIVE MDoNER LOGISTICS COMMAND &bull; PAN-NER SOVEREIGN TELEMETRY
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 sm:p-6 shadow-xl dark:shadow-2xl flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-5 transition-colors duration-300">
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-rose-500/15 dark:bg-rose-500/20 px-3 py-1 text-[11px] sm:text-xs font-bold tracking-wider uppercase text-rose-700 dark:text-rose-400 border border-rose-500/30">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+              </span>
+              <span>EXECUTIVE MDoNER LOGISTICS COMMAND &bull; PAN-NER SOVEREIGN TELEMETRY</span>
             </span>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-3">
-            <span>🏛️</span> Ministry of Development of North Eastern Region Command Center
+
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-white mt-2.5 flex items-start sm:items-center gap-3 tracking-tight leading-tight">
+            <span className="shrink-0 text-2xl sm:text-3xl select-none">🏛️</span>
+            <span>Ministry of Development of North Eastern Region Command Center</span>
           </h1>
-          <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium max-w-4xl leading-relaxed">
+
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1.5 font-medium max-w-4xl leading-relaxed">
             {t("mdoner.subtitle", "Administrative logistics oversight & district-level accessibility telemetry for the 8 North Eastern States.")}
           </p>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0 pt-1 2xl:pt-0">
           {/* DATA MODE SELECTOR SEGMENTED CONTROL */}
-          <div className="flex items-center rounded-xl bg-slate-100 dark:bg-slate-950 p-1.5 border border-slate-300 dark:border-slate-800 text-xs font-extrabold shadow-inner">
+          <div className="flex items-center rounded-xl bg-slate-100 dark:bg-slate-950 p-1 border border-slate-300 dark:border-slate-800 text-xs font-bold shadow-inner">
             <button
               onClick={() => setDataMode("LIVE")}
-              className={`px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
                 dataMode === "LIVE"
                   ? "bg-emerald-600 text-white shadow"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -157,7 +163,7 @@ export default function MDoNERCommandModule() {
 
             <button
               onClick={() => setDataMode("VERIFIED")}
-              className={`px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
                 dataMode === "VERIFIED"
                   ? "bg-sky-600 text-white shadow"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -168,7 +174,7 @@ export default function MDoNERCommandModule() {
 
             <button
               onClick={() => setDataMode("SIMULATION")}
-              className={`px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
                 dataMode === "SIMULATION"
                   ? "bg-amber-600 text-white shadow"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -182,7 +188,7 @@ export default function MDoNERCommandModule() {
           <button
             onClick={() => fetchMDoNERData(dataMode)}
             disabled={loading}
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-2 cursor-pointer shadow"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center gap-2 cursor-pointer shadow"
           >
             <RefreshCw className={`h-4 w-4 text-sky-500 dark:text-sky-400 ${loading ? "animate-spin" : ""}`} />
             <span>Refresh Data</span>
@@ -193,7 +199,7 @@ export default function MDoNERCommandModule() {
               setExportToast("📥 MDoNER Executive Report PDF generated and saved successfully!");
               setTimeout(() => setExportToast(null), 5000);
             }}
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer shadow flex items-center gap-1.5"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer shadow flex items-center gap-1.5"
           >
             <span>📥 Export Report</span>
           </button>

@@ -1,0 +1,24 @@
+[
+  {
+    "operationId": "OP-NER-339",
+    "sourceDepot": "Aizawl Ridge Logistics Depot",
+    "destination": "Mangaldoi Relief Camp",
+    "vehicleId": "RT-101",
+    "supplyItem": "Food Grain Packs",
+    "quantity": 250,
+    "gpsStatus": "GPS_CONNECTED",
+    "tripStatus": "ON_ROUTE",
+    "lastUpdated": "2026-09-13T03:12:27.766Z"
+  },
+  {
+    "operationId": "OP-NER-172",
+    "sourceDepot": "Guwahati Regional Relief Depot",
+    "destination": "Mangaldoi Relief Camp",
+    "vehicleId": "RT-101",
+    "supplyItem": "Food Grain Packs",
+    "quantity": 250,
+    "gpsStatus": "GPS_CONNECTED",
+    "tripStatus": "DELIVERED",
+    "lastUpdated": "2026-09-13T02:51:55.987Z"
+  }
+]

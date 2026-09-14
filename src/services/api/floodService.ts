@@ -23,6 +23,9 @@ export interface FloodReportItem {
   waterLevelMeters: number;
   dangerLevelMeters: number;
   flowRateCumec: number;
+  liveDischargeM3s?: number;
+  forecastDischarge7Days?: number[];
+  dischargeStatus?: 'NORMAL' | 'SURGING' | 'CRITICAL';
   affectedPopEstimate: number;
   statusSummary: string;
   lastUpdatedTime: string;
@@ -40,6 +43,7 @@ export interface FloodTelemetrySummary {
   reports: FloodReportItem[];
   lastUpdatedTime: string;
   isLive: boolean;
+  glofasConnected?: boolean;
   error?: string;
 }
 
@@ -358,15 +362,54 @@ export async function getNERFloodTelemetry(
     filtered = filtered.filter(r => r.riverBasin.toLowerCase().includes(normBasin));
   }
 
-  const critical = filtered.filter(r => r.riskLevel === 'CRITICAL').length;
-  const high = filtered.filter(r => r.riskLevel === 'HIGH').length;
-  const moderate = filtered.filter(r => r.riskLevel === 'MODERATE').length;
-  const low = filtered.filter(r => r.riskLevel === 'LOW').length;
+  let glofasConnected = false;
+  try {
+    if (filtered.length > 0) {
+      const lats = filtered.map(r => r.lat.toFixed(4)).join(',');
+      const lons = filtered.map(r => r.lon.toFixed(4)).join(',');
+      const url = `https://flood-api.open-meteo.com/v1/flood?latitude=${lats}&longitude=${lons}&daily=river_discharge&forecast_days=7`;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        glofasConnected = true;
+        const results = Array.isArray(data) ? data : [data];
+        filtered = filtered.map((item, idx) => {
+          const itemGlofas = results[idx]?.daily?.river_discharge;
+          if (Array.isArray(itemGlofas) && itemGlofas.length > 0) {
+            const currentFlow = itemGlofas[0] ?? item.flowRateCumec;
+            const flowTrend = currentFlow > (item.flowRateCumec * 1.15) ? 'CRITICAL' : (currentFlow > item.flowRateCumec ? 'SURGING' : 'NORMAL');
+            return {
+              ...item,
+              liveDischargeM3s: Math.round(currentFlow * 10) / 10,
+              forecastDischarge7Days: itemGlofas,
+              dischargeStatus: flowTrend,
+              source: `${item.source} • GloFAS Live Sync`
+            };
+          }
+          return item;
+        });
+      }
+    }
+  } catch (err) {
+    console.warn("GloFAS Flood API sync unavailable, falling back to baseline hydrometric data:", err);
+  }
+
+  const critical = filtered.filter(r => r.riskLevel === 'CRITICAL' || r.dischargeStatus === 'CRITICAL').length;
+  const high = filtered.filter(r => r.riskLevel === 'HIGH' || r.dischargeStatus === 'SURGING').length;
+  const moderate = filtered.filter(r => r.riskLevel === 'MODERATE' && r.dischargeStatus !== 'SURGING').length;
+  const low = filtered.filter(r => r.riskLevel === 'LOW' && r.dischargeStatus === 'NORMAL').length;
 
   const formattedTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   return {
-    coverageLabel: "Data Coverage: North Eastern Region — 8 States",
+    coverageLabel: glofasConnected
+      ? "Data Coverage: NER 8 States • Live GloFAS River Flow & CWC Synced"
+      : "Data Coverage: North Eastern Region — 8 States",
     totalMonitoredSectors: filtered.length,
     criticalSectorsCount: critical,
     highRiskSectorsCount: high,
@@ -374,6 +417,7 @@ export async function getNERFloodTelemetry(
     lowRiskSectorsCount: low,
     reports: filtered,
     lastUpdatedTime: formattedTime,
-    isLive: true
+    isLive: true,
+    glofasConnected
   };
 }

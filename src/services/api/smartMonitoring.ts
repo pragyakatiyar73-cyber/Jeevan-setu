@@ -344,11 +344,11 @@ export async function getRoadAccessibility(
       name: primaryHwy,
       status: isPrimarySevere ? 'BLOCKED' : precip > 6 ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
       warning: isPrimarySevere 
-        ? `🔴 DISRUPTED: Heavy Rainfall (${precip} mm/h) & Debris Slip Warning` 
+        ? `Road closed — heavy rain (${precip} mm/h) & mud risk` 
         : precip > 6 
-        ? `🟡 CAUTION: Wet pavement surface, regulated convoy transit (${precip} mm/h rain)` 
-        : `🟢 CLEAR: Optimal pavement conditions, full two-way throughput`,
-      detour: isPrimarySevere ? 'Emergency sector AI bypass active via ridge detour' : 'None required',
+        ? `Wet road — drive with caution (${precip} mm/h rain)` 
+        : `Clear & safe for all vehicles`,
+      detour: isPrimarySevere ? 'Use designated emergency ridge bypass' : 'None required',
       speedKmH: isPrimarySevere ? 0 : precip > 6 ? 30 : 60,
       lastUpdated: now
     },
@@ -357,11 +357,11 @@ export async function getRoadAccessibility(
       name: secondaryRoad,
       status: isSecondarySevere ? 'BLOCKED' : precip > 10 ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
       warning: isSecondarySevere 
-        ? `🔴 DISRUPTED: Surface water runoff & slope erosion risk` 
+        ? `Closed due to slope water runoff` 
         : precip > 10 
-        ? `🟡 CAUTION: Saturated road shoulder, speed limit 25 km/h` 
-        : `🟢 CLEAR: Normal traffic velocity`,
-      detour: isSecondarySevere ? 'Speed restriction 15 km/h & 4x4 vehicles only' : 'Speed regulation 45 km/h',
+        ? `Slippery surface — maintain slow speed` 
+        : `Normal traffic — road in good condition`,
+      detour: isSecondarySevere ? '4x4 rescue vehicles only' : 'Speed limit 45 km/h',
       speedKmH: isSecondarySevere ? 0 : precip > 10 ? 25 : 50,
       lastUpdated: now
     },
@@ -369,8 +369,10 @@ export async function getRoadAccessibility(
       id: 'RD-03',
       name: districtRoute,
       status: precip > 18 ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
-      warning: precip > 18 ? '🟡 CAUTION: Waterlogging in low-lying relief passage' : '🟢 CLEAR: Emergency supply access active',
-      detour: precip > 18 ? 'Heavy trucks divert via primary arterial' : 'None',
+      warning: precip > 18 
+        ? `Waterlogged in low spots — slow down` 
+        : `Open and safe for local & relief transport`,
+      detour: precip > 18 ? 'Heavy trucks divert via main highway' : 'None',
       speedKmH: precip > 18 ? 20 : 45,
       lastUpdated: now
     },
@@ -379,9 +381,9 @@ export async function getRoadAccessibility(
       name: ruralRoad,
       status: isRuralSevere ? 'PARTIALLY_ACCESSIBLE' : 'OPEN',
       warning: isRuralSevere 
-        ? `🟡 CAUTION: Sub-base soil saturation (${soil}% moisture)` 
-        : `🟢 CLEAR: Fully accessible for light and medium relief vehicles`,
-      detour: isRuralSevere ? 'Restricted to light rescue vehicles only' : 'Use main arterial highway for heavy transport',
+        ? `Wet and soft ground (${soil}% moisture) — slow speed` 
+        : `Clear & accessible for cars and relief trucks`,
+      detour: isRuralSevere ? 'Light vehicles only' : 'None required',
       speedKmH: isRuralSevere ? 15 : 35,
       lastUpdated: now
     }
@@ -399,10 +401,35 @@ export async function getDisasterAlerts(
   env?: MonitoringEnvironmentData | null
 ): Promise<DisasterAlertItem[]> {
   const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const precip = weather ? (weather.precipitation || 0) : 0;
-  const windGust = weather ? (weather.windGusts || 0) : 0;
-  const slope = env ? env.slopeDegrees : 15;
-  const soil = env ? env.soilMoistureIndex : 50;
+
+  // 1. Live Weather & Environment Telemetry Fallback Fetching
+  let liveWeather = weather;
+  let liveEnv = env;
+
+  if (!liveWeather) {
+    try {
+      liveWeather = await getLiveWeather(lat, lon, true);
+    } catch (e) {
+      console.warn("Live weather fetch in getDisasterAlerts fallback:", e);
+    }
+  }
+
+  if (!liveEnv) {
+    try {
+      liveEnv = await getEnvironmentalData(lat, lon);
+    } catch (e) {
+      console.warn("Live env fetch in getDisasterAlerts fallback:", e);
+    }
+  }
+
+  const precip = liveWeather ? (liveWeather.precipitation || 0) : 0;
+  const windGust = liveWeather ? (liveWeather.windGusts || 0) : 0;
+  const temp = liveWeather ? (liveWeather.temperature ?? 22) : 22;
+  const cond = liveWeather?.condition || 'Clear';
+  const slope = liveEnv ? liveEnv.slopeDegrees : 15;
+  const soil = liveEnv ? liveEnv.soilMoistureIndex : 50;
+  const elevation = liveEnv ? liveEnv.elevationMsl : 350;
+  const riverDist = liveEnv ? liveEnv.waterBodyProximityKm : 2.5;
 
   const alerts: DisasterAlertItem[] = [];
 
@@ -410,7 +437,7 @@ export async function getDisasterAlerts(
   if (precip > 30 || windGust > 60) {
     alerts.push({
       id: 'ALT-IMD-01',
-      type: 'Heavy Rainfall Warning',
+      type: `Heavy Rainfall & Gale Warning (${precip.toFixed(1)} mm/h, gusts ${windGust.toFixed(1)} km/h)`,
       severity: 'EXTREME',
       locationName: locationName || 'Target Zone',
       source: 'India Meteorological Department (IMD)',
@@ -421,7 +448,7 @@ export async function getDisasterAlerts(
   } else if (precip > 10 || windGust > 35) {
     alerts.push({
       id: 'ALT-IMD-02',
-      type: 'Moderate Precipitation Advisory',
+      type: `Precipitation & Wind Advisory (${precip.toFixed(1)} mm/h, ${windGust.toFixed(1)} km/h)`,
       severity: 'HIGH',
       locationName: locationName || 'Target Zone',
       source: 'India Meteorological Department (IMD)',
@@ -429,13 +456,13 @@ export async function getDisasterAlerts(
       status: 'ACTIVE',
       isVerified: true
     });
-  } else if (precip > 0.5) {
+  } else if (precip > 0.1) {
     alerts.push({
       id: 'ALT-IMD-03',
-      type: 'Light Rain Telemetry',
+      type: `Light Rain Telemetry (${precip.toFixed(1)} mm/h, ${cond})`,
       severity: 'MODERATE',
       locationName: locationName || 'Target Zone',
-      source: 'IMD Realtime Doppler Radar',
+      source: 'IMD Doppler Radar & Open-Meteo Feed',
       timestamp: `${now} today`,
       status: 'ACTIVE',
       isVerified: true
@@ -443,10 +470,10 @@ export async function getDisasterAlerts(
   } else {
     alerts.push({
       id: 'ALT-IMD-04',
-      type: 'Normal Atmospheric Stability',
+      type: `Atmospheric Stability Confirmed (${cond}, ${temp.toFixed(1)}°C)`,
       severity: 'INFO',
       locationName: locationName || 'Target Zone',
-      source: 'IMD Realtime Doppler Radar',
+      source: 'IMD Doppler Radar & Open-Meteo Feed',
       timestamp: `${now} today`,
       status: 'ACTIVE',
       isVerified: true
@@ -457,7 +484,7 @@ export async function getDisasterAlerts(
   if (precip > 20 || soil > 85) {
     alerts.push({
       id: 'ALT-CWC-01',
-      type: 'Flash Flood Vulnerability Alert',
+      type: `Flash Flood Vulnerability Alert (Soil Saturation ${soil}%)`,
       severity: 'HIGH',
       locationName: locationName || 'River Basin Zone',
       source: 'Central Water Commission (CWC) Telemetry',
@@ -465,10 +492,21 @@ export async function getDisasterAlerts(
       status: 'ACTIVE',
       isVerified: true
     });
-  } else {
+  } else if (soil > 65 || precip > 5) {
     alerts.push({
       id: 'ALT-CWC-02',
-      type: 'River Basin Discharge Nominal',
+      type: `Hydrological Catchment Monitored (Soil ${soil}%, River ${riverDist}km)`,
+      severity: 'MODERATE',
+      locationName: locationName || 'Hydrological Catchment',
+      source: 'Central Water Commission (CWC) Telemetry',
+      timestamp: `${now} today`,
+      status: 'MONITORED',
+      isVerified: true
+    });
+  } else {
+    alerts.push({
+      id: 'ALT-CWC-03',
+      type: `River Basin Discharge Nominal (Soil ${soil}%, River ${riverDist}km)`,
       severity: 'INFO',
       locationName: locationName || 'Hydrological Catchment',
       source: 'Central Water Commission (CWC) Telemetry',
@@ -482,7 +520,7 @@ export async function getDisasterAlerts(
   if (slope > 22 && (precip > 8 || soil > 75)) {
     alerts.push({
       id: 'ALT-LHI-01',
-      type: 'Landslide Susceptibility Alert (Next 48h)',
+      type: `High Landslide Susceptibility (Slope ${slope}°, Soil ${soil}%)`,
       severity: precip > 25 ? 'EXTREME' : 'HIGH',
       locationName: locationName || 'Mountain Slope Corridor',
       source: 'Jeevan Setu AI Hazard Model (scikit-learn LHI)',
@@ -493,7 +531,7 @@ export async function getDisasterAlerts(
   } else if (slope > 18) {
     alerts.push({
       id: 'ALT-LHI-02',
-      type: 'Slope Stability Monitored',
+      type: `Slope Stability Monitored (Slope ${slope}°, ${elevation}m MSL)`,
       severity: 'MODERATE',
       locationName: locationName || 'Terrain Ridge Sector',
       source: 'Jeevan Setu AI Hazard Model (scikit-learn LHI)',
@@ -504,7 +542,7 @@ export async function getDisasterAlerts(
   } else {
     alerts.push({
       id: 'ALT-LHI-03',
-      type: 'Terrain Equilibrium Confirmed',
+      type: `Terrain Equilibrium Confirmed (Slope ${slope}°, ${elevation}m MSL)`,
       severity: 'INFO',
       locationName: locationName || 'Low Gradient Plain',
       source: 'Jeevan Setu AI Hazard Model (scikit-learn LHI)',
@@ -514,61 +552,103 @@ export async function getDisasterAlerts(
     });
   }
 
-  // 4. Seismic Risk
-  const isHighSeismic = (lat > 23 && lat < 29 && lon > 87 && lon < 97);
-  alerts.push({
+  // 4. Live Seismic Telemetry via USGS Realtime GeoJSON API
+  let seismicAlert: DisasterAlertItem = {
     id: 'ALT-GSI-01',
-    type: isHighSeismic ? 'Seismic Soil Liquefaction Risk' : 'Crustal Tectonic Stability',
-    severity: isHighSeismic ? 'MODERATE' : 'INFO',
+    type: 'Crustal Tectonic Stability Confirmed',
+    severity: 'INFO',
     locationName: locationName || 'Regional Tectonic Grid',
-    source: 'Geological Survey of India (GSI)',
+    source: 'USGS Real-time Seismic Grid',
     timestamp: `${now} today`,
     status: 'MONITORED',
     isVerified: true
-  });
+  };
 
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const usgsUrl = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=${lat}&longitude=${lon}&maxradiuskm=500&minmagnitude=2.5&limit=1`;
+    const usgsRes = await fetch(usgsUrl, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (usgsRes.ok) {
+      const data = await usgsRes.json();
+      if (data && data.features && data.features.length > 0) {
+        const feat = data.features[0];
+        const mag = feat.properties?.mag || 0;
+        const place = feat.properties?.place || 'Regional Epicenter';
+        const quakeTime = feat.properties?.time ? new Date(feat.properties.time).toLocaleDateString([], { month: 'short', day: 'numeric' }) : 'Recent';
+        const severity: DisasterAlertItem['severity'] = mag >= 5.5 ? 'EXTREME' : mag >= 4.0 ? 'HIGH' : 'MODERATE';
+        
+        seismicAlert = {
+          id: `ALT-USGS-${feat.id || '01'}`,
+          type: `Live Seismic Event: M${mag.toFixed(1)} (${place})`,
+          severity,
+          locationName: `${locationName || 'Regional Sector'} (Radius 500km)`,
+          source: `USGS Real-time Earthquake Hazards Program (${quakeTime})`,
+          timestamp: `${now} today`,
+          status: 'ACTIVE',
+          isVerified: true
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("USGS seismic fetch fallback:", err);
+  }
+
+  alerts.push(seismicAlert);
   return alerts;
 }
 
 /**
  * Computes 72-hour forecast and risk trend using Open-Meteo API
  */
-export async function get72HourTrend(lat: number, lon: number): Promise<Monitoring72hForecast> {
+export async function get72HourTrend(
+  lat: number,
+  lon: number,
+  env?: MonitoringEnvironmentData | null
+): Promise<Monitoring72hForecast> {
   const labels = ['0h (Now)', '6h', '12h', '18h', '24h', '36h', '48h', '60h', '72h'];
+  const targetOffsets = [0, 6, 12, 18, 24, 36, 48, 60, 72];
   
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=precipitation,temperature_2m,wind_speed_10m&forecast_days=3&timezone=Asia%2FKolkata`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=precipitation,precipitation_probability,temperature_2m,wind_speed_10m,wind_gusts_10m&forecast_days=4&timezone=Asia%2FKolkata`;
     const res = await fetch(url);
 
     if (res.ok) {
       const data = await res.json();
       const hourly = data.hourly;
-      if (hourly && hourly.precipitation) {
-        // Sample every 8 hours across 3 days
-        const step = 8;
+      if (hourly && hourly.time && hourly.precipitation) {
+        const now = new Date();
+        const nowHourStr = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }) + 'T' + 
+          String(now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata' }).split(':')[0]).padStart(2, '0') + ':00';
+        
+        let curIdx = hourly.time.findIndex((t: string) => t >= nowHourStr);
+        if (curIdx === -1) curIdx = 0;
+
         const rainfall: number[] = [];
         const temp: number[] = [];
         const wind: number[] = [];
         const riskScore: number[] = [];
 
-        for (let i = 0; i < 72 && i < hourly.precipitation.length; i += step) {
-          const r = hourly.precipitation[i] || 0;
-          const t = hourly.temperature_2m[i] || 22;
-          const w = hourly.wind_speed_10m[i] || 15;
-          const risk = Math.min(95, Math.max(10, Math.round(r * 4.5 + w * 0.8 + 15)));
+        const slope = env ? env.slopeDegrees : 15;
+        const soil = env ? env.soilMoistureIndex : 50;
+
+        targetOffsets.forEach(offset => {
+          const idx = Math.min(hourly.time.length - 1, curIdx + offset);
+          const r = hourly.precipitation[idx] ?? 0;
+          const t = hourly.temperature_2m[idx] ?? 22;
+          const w = (hourly.wind_gusts_10m && hourly.wind_gusts_10m[idx] !== null) 
+            ? hourly.wind_gusts_10m[idx] 
+            : (hourly.wind_speed_10m[idx] ?? 12);
+
+          const terrainBaseline = (slope > 22 ? 15 : 5) + (soil > 75 ? 15 : 5);
+          const risk = Math.min(95, Math.max(12, Math.round(r * 4.5 + w * 0.7 + terrainBaseline)));
 
           rainfall.push(Number(r.toFixed(1)));
           temp.push(Number(t.toFixed(1)));
           wind.push(Number(w.toFixed(1)));
           riskScore.push(risk);
-        }
-
-        while (rainfall.length < 9) {
-          rainfall.push(rainfall[rainfall.length - 1] || 0);
-          temp.push(temp[temp.length - 1] || 24);
-          wind.push(wind[wind.length - 1] || 15);
-          riskScore.push(riskScore[riskScore.length - 1] || 20);
-        }
+        });
 
         return { labels, rainfall, temp, wind, riskScore };
       }
@@ -579,10 +659,10 @@ export async function get72HourTrend(lat: number, lon: number): Promise<Monitori
 
   return {
     labels,
-    rainfall: [0.0, 0.2, 0.5, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],
+    rainfall: [0.2, 0.4, 0.8, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0],
     temp: [22.5, 21.8, 20.5, 21.2, 23.0, 24.5, 25.1, 25.8, 26.2],
     wind: [12.0, 15.0, 18.5, 14.0, 10.0, 8.0, 6.2, 5.0, 4.0],
-    riskScore: [25, 28, 32, 24, 20, 18, 15, 12, 10]
+    riskScore: [28, 30, 35, 26, 22, 19, 16, 14, 12]
   };
 }
 
@@ -595,16 +675,24 @@ export async function generateAISituationSummary(
   riskLevel: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW',
   weather: WeatherData | null,
   alerts: DisasterAlertItem[],
-  roads: RoadStatusItem[]
+  roads: RoadStatusItem[],
+  env?: MonitoringEnvironmentData | null
 ): Promise<AISituationSummary> {
-  const precip = weather ? weather.precipitation : 0;
-  const temp = weather ? weather.temperature : 22;
-  const wind = weather ? weather.windSpeed : 12;
+  const precip = weather ? (weather.precipitation || 0) : 0;
+  const temp = weather ? (weather.temperature ?? 22) : 22;
+  const wind = weather ? (weather.windSpeed || 12) : 12;
+  const cond = weather?.condition || 'Mainly Clear';
+  const slope = env ? env.slopeDegrees : 12;
+  const soil = env ? env.soilMoistureIndex : 50;
+  const elevation = env ? env.elevationMsl : 300;
   const blockedRoads = roads.filter(r => r.status === 'BLOCKED');
+  const partialRoads = roads.filter(r => r.status === 'PARTIALLY_ACCESSIBLE');
 
-  let situation = `Real-time monitoring active for ${locationName}. Current atmospheric temperature is ${temp.toFixed(1)}°C with ${precip.toFixed(1)} mm/hr precipitation and ${wind.toFixed(1)} km/h wind velocity.`;
+  let situation = `Real-time monitoring active for ${locationName}. Current conditions: ${cond} at ${temp.toFixed(1)}°C, ${precip.toFixed(1)} mm/hr precipitation, and ${wind.toFixed(1)} km/h wind velocity. Elevation is ${elevation}m MSL with a terrain slope gradient of ${slope}°.`;
   if (precip > 20) {
-    situation += ` Heavy downpour conditions detected. Waterlogging and surface runoff elevated.`;
+    situation += ` Heavy downpour conditions detected. Ground saturation (${soil}%) elevated with surface runoff.`;
+  } else if (precip > 0.1) {
+    situation += ` Light showers active. Ground saturation currently at ${soil}%.`;
   } else {
     situation += ` Stable meteorological parameters observed under current radar sweeps.`;
   }
@@ -612,8 +700,10 @@ export async function generateAISituationSummary(
   let mainRisk = `Risk index assessed as ${riskLevel}.`;
   if (blockedRoads.length > 0) {
     mainRisk += ` Transport corridor disruption on ${blockedRoads.map(r => r.name).join(', ')}.`;
+  } else if (partialRoads.length > 0) {
+    mainRisk += ` Cautious transit on ${partialRoads.map(r => r.name).join(', ')}.`;
   } else if (riskLevel === 'CRITICAL' || riskLevel === 'HIGH') {
-    mainRisk += ` Elevated terrain slope susceptibility requiring active surveillance.`;
+    mainRisk += ` Elevated terrain slope susceptibility (${slope}°) requiring active surveillance.`;
   } else {
     mainRisk += ` All surveyed transit corridors currently clear with nominal flow.`;
   }

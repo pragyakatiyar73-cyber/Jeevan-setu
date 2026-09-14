@@ -1,0 +1,324 @@
+[
+  {
+    "id": "EMG-NER-3844",
+    "state": "Assam",
+    "district": "Darrang",
+    "affectedArea": "Mangaldoi Flood Camp",
+    "locationDetails": "Sector 4 Riverbank",
+    "lat": 26.1445,
+    "lon": 91.7362,
+    "disasterType": "Flood",
+    "affectedPeople": 350,
+    "injuredPeople": 8,
+    "requirements": [
+      "Rescue",
+      "Drinking Water",
+      "Medical"
+    ],
+    "photoUrl": null,
+    "description": "Rising water level submerging low-lying houses",
+    "priority": "CRITICAL",
+    "priorityLabel": "AI-Assisted Priority Assessment",
+    "status": "RESOURCE ASSIGNED",
+    "reportedTime": "2026-09-13T02:50:53.844Z",
+    "timeline": [
+      {
+        "time": "2026-09-13T02:50:53.844Z",
+        "statusText": "Emergency reported and registered in NER Central System"
+      },
+      {
+        "time": "2026-09-13T02:50:53.844Z",
+        "statusText": "AI Priority Assessed: CRITICAL"
+      },
+      {
+        "time": "2026-09-13T02:50:53.927Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-102"
+      },
+      {
+        "time": "2026-09-13T03:08:31.349Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T03:08:33.369Z",
+        "statusText": "Status updated to REPORTED"
+      },
+      {
+        "time": "2026-09-13T03:08:34.319Z",
+        "statusText": "Status updated to RESOLVED"
+      },
+      {
+        "time": "2026-09-13T03:08:39.732Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:08:40.679Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:08:41.216Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:02.650Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:03.652Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:04.176Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:05.036Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T03:18:09.286Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T03:18:09.882Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T03:18:10.468Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T03:18:11.303Z",
+        "statusText": "Status updated to REPORTED"
+      },
+      {
+        "time": "2026-09-13T11:15:20.375Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T11:15:22.045Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T11:15:22.266Z",
+        "statusText": "Recommended Resources: Depot Guwahati Regional Relief Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T15:55:15.576Z",
+        "statusText": "Status updated to ASSESSED"
+      },
+      {
+        "time": "2026-09-13T15:55:16.400Z",
+        "statusText": "Status updated to RESOURCE ASSIGNED"
+      }
+    ],
+    "assignedResource": {
+      "depotId": "DEP-GHY-01",
+      "depotName": "Guwahati Regional Relief Depot",
+      "supplyItem": "Rescue, Drinking Water, Medical Supplies",
+      "vehicleId": "RT-101",
+      "vehicleType": "4x4 All-Terrain Convoy Truck",
+      "trackingStatus": "GPS_CONNECTED",
+      "routeStatus": "ROUTE_RECOMMENDED",
+      "lastUpdate": "2026-09-13T11:15:22.266Z"
+    },
+    "connectedContext": {
+      "weatherDataStatus": "LIVE DATA",
+      "floodRiskStatus": "LIVE DATA",
+      "landslideRiskStatus": "LIVE DATA",
+      "roadAccessibilityStatus": "LIVE DATA",
+      "weatherRiskText": "Moderate Rain • 14mm/h",
+      "floodRiskText": "HIGH • Water Accumulation",
+      "landslideRiskText": "MODERATE • Slope Saturation",
+      "roadAccessText": "Road Accessible • Caution Advised"
+    },
+    "_id": "6aa60f8d0cf10fa5128ec8ce"
+  },
+  {
+    "id": "EMG-NER-1001",
+    "state": "Assam",
+    "district": "Kamrup Metropolitan",
+    "affectedArea": "Guwahati Zoo Road Inundation Zone",
+    "locationDetails": "Near Central Park, Ward 12",
+    "lat": 26.16,
+    "lon": 91.78,
+    "disasterType": "Flood",
+    "affectedPeople": 450,
+    "injuredPeople": 12,
+    "requirements": [
+      "Rescue",
+      "Drinking Water",
+      "Medical"
+    ],
+    "photoUrl": null,
+    "description": "Flash waterlogging following Brahmaputra surge. 12 elderly residents require medical evacuation.",
+    "priority": "CRITICAL",
+    "priorityLabel": "AI-Assisted Priority Assessment",
+    "status": "RESPONSE IN PROGRESS",
+    "reportedTime": "2026-09-13T07:30:00Z",
+    "timeline": [
+      {
+        "time": "2026-09-13T07:30:00Z",
+        "statusText": "Emergency reported by local relief coordinator"
+      },
+      {
+        "time": "2026-09-13T07:31:30Z",
+        "statusText": "AI Priority Assessed: CRITICAL"
+      },
+      {
+        "time": "2026-09-13T07:33:00Z",
+        "statusText": "Resource Match Recommended: Guwahati Depot & RT-101 Convoy"
+      },
+      {
+        "time": "2026-09-13T07:35:00Z",
+        "statusText": "Resource Assigned: RT-101 Heavy All-Terrain Truck"
+      },
+      {
+        "time": "2026-09-13T07:40:00Z",
+        "statusText": "Live GPS Tracking Active • Convoy En Route"
+      }
+    ],
+    "assignedResource": {
+      "depotId": "DEPOT-GUW",
+      "depotName": "Guwahati Primary Central Depot",
+      "supplyItem": "Drinking Water Canisters & Medical Kits",
+      "vehicleId": "RT-101",
+      "vehicleType": "4x4 All-Terrain Convoy Truck",
+      "trackingStatus": "GPS_CONNECTED",
+      "routeStatus": "ROUTE_ACTIVE",
+      "lastUpdate": "2026-09-13T02:49:47.305Z"
+    },
+    "connectedContext": {
+      "weatherDataStatus": "LIVE DATA",
+      "floodRiskStatus": "LIVE DATA",
+      "landslideRiskStatus": "LIVE DATA",
+      "roadAccessibilityStatus": "LIVE DATA",
+      "weatherRiskText": "Heavy Rain • 18mm/h • Wind 24km/h",
+      "floodRiskText": "CRITICAL • 1.8m Inundation Level",
+      "landslideRiskText": "MODERATE • Slope Saturation 65%",
+      "roadAccessText": "NH-37 Operational • Zoo Road Bypass Active"
+    }
+  },
+  {
+    "id": "EMG-NER-1002",
+    "state": "Meghalaya",
+    "district": "East Khasi Hills",
+    "affectedArea": "Sohra-Shillong Highway Slope Breach",
+    "locationDetails": "Km 34 Cliffside Pass",
+    "lat": 25.5788,
+    "lon": 91.8933,
+    "disasterType": "Landslide",
+    "affectedPeople": 180,
+    "injuredPeople": 4,
+    "requirements": [
+      "Road Clearance",
+      "Rescue",
+      "Shelter"
+    ],
+    "photoUrl": null,
+    "description": "Debris fall blocking main artery. Heavy machinery required for clearing boulder obstruction.",
+    "priority": "HIGH",
+    "priorityLabel": "AI-Assisted Priority Assessment",
+    "status": "RESPONSE RECOMMENDED",
+    "reportedTime": "2026-09-13T07:15:00Z",
+    "timeline": [
+      {
+        "time": "2026-09-13T07:15:00Z",
+        "statusText": "Emergency reported via BRO highway patrol"
+      },
+      {
+        "time": "2026-09-13T07:17:00Z",
+        "statusText": "AI Priority Assessed: HIGH"
+      },
+      {
+        "time": "2026-09-13T07:22:00Z",
+        "statusText": "Resource Assigned: RT-102 Terrain 4x4 Mini Convoy"
+      },
+      {
+        "time": "2026-09-13T16:01:03.992Z",
+        "statusText": "Recommended Resources: Depot Shillong High-Altitude Depot & Vehicle RT-101"
+      },
+      {
+        "time": "2026-09-13T16:01:05.654Z",
+        "statusText": "Recommended Resources: Depot Shillong High-Altitude Depot & Vehicle RT-101"
+      }
+    ],
+    "assignedResource": {
+      "depotId": "DEP-SHL-02",
+      "depotName": "Shillong High-Altitude Depot",
+      "supplyItem": "Road Clearance, Rescue, Shelter Supplies",
+      "vehicleId": "RT-101",
+      "vehicleType": "4x4 All-Terrain Convoy Truck",
+      "trackingStatus": "GPS_CONNECTED",
+      "routeStatus": "ROUTE_RECOMMENDED",
+      "lastUpdate": "2026-09-13T16:01:05.654Z"
+    },
+    "connectedContext": {
+      "weatherDataStatus": "LIVE DATA",
+      "floodRiskStatus": "LAST KNOWN DATA",
+      "landslideRiskStatus": "LIVE DATA",
+      "roadAccessibilityStatus": "LIVE DATA",
+      "weatherRiskText": "Moderate Rain • 12mm/h",
+      "floodRiskText": "LOW • 0.2m Accumulation",
+      "landslideRiskText": "CRITICAL • High Slope Gradient",
+      "roadAccessText": "NH-6 Blocked at Km 34 • Single Lane Alternate"
+    }
+  },
+  {
+    "id": "EMG-MNP-2001",
+    "state": "Manipur",
+    "district": "Imphal West",
+    "affectedArea": "Imphal Riverbank & Kwakeithel Sector",
+    "locationDetails": "Low-lying residential zone near Kangla Fort Bypass",
+    "lat": 24.817,
+    "lon": 93.9368,
+    "disasterType": "Flood",
+    "affectedPeople": 520,
+    "injuredPeople": 15,
+    "requirements": [
+      "Rescue",
+      "Medical",
+      "Drinking Water",
+      "Evacuation"
+    ],
+    "photoUrl": null,
+    "description": "Severe inundation from Imphal River breach. Water levels elevated above 1.5m in Kwakeithel residential areas.",
+    "priority": "CRITICAL",
+    "priorityLabel": "AI-Assisted Priority Assessment",
+    "status": "RESPONSE IN PROGRESS",
+    "reportedTime": "2026-09-13T06:15:00.000Z",
+    "timeline": [
+      {
+        "time": "2026-09-13T06:15:00.000Z",
+        "statusText": "Emergency reported by Imphal Relief Control Room"
+      },
+      {
+        "time": "2026-09-13T06:16:10.000Z",
+        "statusText": "AI Priority Assessed: CRITICAL"
+      },
+      {
+        "time": "2026-09-13T06:20:00.000Z",
+        "statusText": "Resource Match Recommended: Imphal State Relief Cache & RT-103 Convoy"
+      }
+    ],
+    "assignedResource": {
+      "depotId": "DEP-IMP-01",
+      "depotName": "Imphal Central Regional Relief Depot",
+      "supplyItem": "High-Capacity Inflatable Boats & Water Purification",
+      "vehicleId": "RT-103",
+      "vehicleType": "4x4 Heavy Amphibious Convoy",
+      "trackingStatus": "GPS_CONNECTED",
+      "routeStatus": "ROUTE_ACTIVE",
+      "lastUpdate": "2026-09-13T08:10:00.000Z"
+    },
+    "connectedContext": {
+      "weatherDataStatus": "LIVE DATA",
+      "floodRiskStatus": "LIVE DATA",
+      "landslideRiskStatus": "LIVE DATA",
+      "roadAccessibilityStatus": "LIVE DATA",
+      "weatherRiskText": "Torrential Rain • 28mm/h",
+      "floodRiskText": "CRITICAL • 1.6m Water Level",
+      "landslideRiskText": "MODERATE • Saturated Soil",
+      "roadAccessText": "Imphal-Dimapur Highway Open • Inner Ring Submerged"
+    }
+  }
+]

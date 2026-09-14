@@ -22,7 +22,6 @@ import {
   Building2,
   Package,
   Radio,
-  FileBarChart,
   Sliders,
   Bell,
   Check,
@@ -62,32 +61,32 @@ import {
 } from './services/api';
 import Dashboard from './components/Dashboard';
 import AIDisasterImpactAssessment from './components/AIDisasterImpactAssessment';
+import SmartDisasterMonitoring from './components/SmartDisasterMonitoring';
 import WeatherIntelligence from './components/WeatherIntelligence';
 import FloodIntelligenceModule from './components/FloodIntelligenceModule';
 import LandslideRiskIntelligence from './components/LandslideRiskIntelligence';
 import RoadAccessibilityModule from './components/RoadAccessibilityModule';
 import EmergencyFacilitiesModule from './components/EmergencyFacilitiesModule';
-import DisasterIncidentsModule from './components/DisasterIncidentsModule';
 import UAVDroneModule from './components/UAVDroneModule';
 import EmergencySOSModal from './components/EmergencySOSModal';
 import MDoNERCommandModule from './components/MDoNERCommandModule';
 import NERLiveMapModule from './components/NERLiveMapModule';
-import ActionAlertsModule from './components/ActionAlertsModule';
-import StateRiskMatrixSection from './components/StateRiskMatrixSection';
 import RescueTeamCommand from './components/RescueTeamCommand';
 import EvacuationPlanner from './components/EvacuationPlanner';
 import ReliefCampManagement from './components/ReliefCampManagement';
-import AISituationReportModule from './components/AISituationReportModule';
 import LifeSavingResponseEngine from './components/LifeSavingResponseEngine';
 import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
-import ReliefSupplyModule from './components/ReliefSupplyModule';
-import DriverTrackingPage from './components/DriverTrackingPage';
+
+import DisasterReportsModule from './components/DisasterReportsModule';
+import { ReliefSupplyTrackingModule } from './components/ReliefSupplyTrackingModule';
+import { SmartEmergencyResponseModule } from './components/SmartEmergencyResponseModule';
+import AddressDisasterIntelligence from './components/AddressDisasterIntelligence';
+import AIChatbotWidget from './components/AIChatbotWidget';
 import { useTranslation } from './i18n';
 import { incidentStore } from './services/api';
-
 
 // NER State Data
 const NER_HUBS = [
@@ -106,14 +105,11 @@ export default function App() {
   const [activeModule, setActiveModuleState] = useState<string>(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab') || params.get('module');
-    if (tab) return tab;
+    if (tab) return tab === 'sitrep' ? 'customdashboard' : tab;
     const hash = window.location.hash.replace('#', '');
-    if (hash) return hash;
+    if (hash) return hash === 'sitrep' ? 'customdashboard' : hash;
 
     const path = window.location.pathname.toLowerCase();
-    if (path.includes('/driver/tracking') || path.includes('/driver-tracking')) return 'drivertracking';
-    if (path.includes('/relief-supply') || path.includes('/relief')) return 'reliefsupply';
-
     if (path.includes('/dashboard')) return 'customdashboard';
     if (path.includes('/live-map')) return 'map';
     if (path.includes('/risk-assessment')) return 'staterisk';
@@ -121,14 +117,25 @@ export default function App() {
     if (path.includes('/flood')) return 'flood';
     if (path.includes('/weather')) return 'weather';
     if (path.includes('/landslide')) return 'landslide';
-    if (path.includes('/facilities') || path.includes('/emergency')) return 'facilities';
-    if (path.includes('/incidents') || path.includes('/disaster-reports')) return 'incidents';
-
+    if (path.includes('/emergency-response')) return 'emergency-response';
+    if (path.includes('/facilities') || path.includes('/emergency-facilities')) return 'facilities';
+    if (path.includes('/disaster-reports') || path.includes('/incidents')) return 'disaster-reports';
+    if (path.includes('/relief-supplies')) return 'relief-supplies';
+    if (path.includes('/vehicle-tracking')) return 'vehicle-tracking';
+    if (path.includes('/driver/tracking') || path.includes('/driver-tracking')) return 'driver-tracking';
+    if (path.includes('/relief-operations')) return 'relief-operations';
+    if (path.includes('/relief-depots')) return 'relief-depots';
+    if (path.includes('/location') || path.includes('/address-intelligence')) return 'location';
+    if (path.includes('/smart-monitoring') || path.includes('/smartmonitoring')) return 'smartmonitoring';
 
     return 'home';
   });
+  const [previousModule, setPreviousModule] = useState<string>('home');
 
   const setActiveModule = (mod: string) => {
+    if (mod !== activeModule && activeModule !== 'map') {
+      setPreviousModule(activeModule);
+    }
     setActiveModuleState(mod);
     const url = new URL(window.location.href);
     if (mod === 'home') {
@@ -144,21 +151,70 @@ export default function App() {
     } else if (mod === 'staterisk') {
       url.pathname = '/risk-assessment';
       url.searchParams.set('tab', mod);
-    } else if (mod === 'reliefsupply') {
-      url.pathname = '/relief-supply';
+    } else if (mod === 'reliefcamps') {
+      url.pathname = '/resources';
       url.searchParams.set('tab', mod);
-    } else if (mod === 'drivertracking') {
+    } else if (mod === 'disaster-reports') {
+      url.pathname = '/disaster-reports';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'emergency-response') {
+      url.pathname = '/emergency-response';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'relief-supplies') {
+      url.pathname = '/relief-supplies';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'vehicle-tracking') {
+      url.pathname = '/vehicle-tracking';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'driver-tracking') {
       url.pathname = '/driver/tracking';
       url.searchParams.set('tab', mod);
-    } else if (mod === 'reliefcamps') {
-
-      url.pathname = '/resources';
+    } else if (mod === 'relief-operations') {
+      url.pathname = '/relief-operations';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'relief-depots') {
+      url.pathname = '/relief-depots';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'location' || mod === 'location-360' || mod === 'addressintelligence') {
+      url.pathname = '/location';
+      url.searchParams.set('tab', mod);
+    } else if (mod === 'smartmonitoring' || mod === 'smart-monitoring') {
+      url.pathname = '/smart-monitoring';
       url.searchParams.set('tab', mod);
     } else {
       url.searchParams.set('tab', mod);
     }
     window.history.pushState(null, '', url.toString());
   };
+
+  // Listen to browser Back / Forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab') || params.get('module');
+      if (tab) {
+        setActiveModuleState(tab === 'sitrep' ? 'customdashboard' : tab);
+        return;
+      }
+      if (path.includes('/dashboard')) setActiveModuleState('customdashboard');
+      else if (path.includes('/live-map')) setActiveModuleState('map');
+      else if (path.includes('/risk-assessment')) setActiveModuleState('staterisk');
+      else if (path.includes('/resources')) setActiveModuleState('reliefcamps');
+      else if (path.includes('/emergency-response')) setActiveModuleState('emergency-response');
+      else if (path.includes('/disaster-reports')) setActiveModuleState('disaster-reports');
+      else if (path.includes('/relief-supplies')) setActiveModuleState('relief-supplies');
+      else if (path.includes('/vehicle-tracking')) setActiveModuleState('vehicle-tracking');
+      else if (path.includes('/driver/tracking') || path.includes('/driver-tracking')) setActiveModuleState('driver-tracking');
+      else if (path.includes('/relief-operations')) setActiveModuleState('relief-operations');
+      else if (path.includes('/relief-depots')) setActiveModuleState('relief-depots');
+      else if (path.includes('/location') || path.includes('/address-intelligence')) setActiveModuleState('location');
+      else if (path.includes('/smart-monitoring') || path.includes('/smartmonitoring')) setActiveModuleState('smartmonitoring');
+      else setActiveModuleState('home');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Reset to 100% Native Pixel-Perfect Responsive Resolution
   useEffect(() => {
@@ -181,6 +237,7 @@ export default function App() {
 
   // SOS Emergency Modal State
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
+  const [isAiAgentOpen, setIsAiAgentOpen] = useState(false);
   const [activeSosLocation, setActiveSosLocation] = useState<{
     lat: number;
     lon: number;
@@ -587,7 +644,7 @@ export default function App() {
 
   if (activeModule === 'home') {
     return (
-      <div className="min-h-screen w-full bg-white dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
         <JeevanSetuHomepage
           onNavigateModule={(mod) => setActiveModule(mod)}
           onOpenSos={() => setIsSosModalOpen(true)}
@@ -639,50 +696,103 @@ export default function App() {
 
           {/* Navigation Items List (User-Friendly 4-Phase Command Workflow) */}
           <nav className="space-y-3 overflow-y-auto max-h-[calc(100vh-175px)] pr-0.5 custom-scrollbar">
+            
+            {/* 🌟 1. STANDALONE PRIMARY HOMEPAGE SECTION (Isolated from feature sections) */}
+            <div className="space-y-1 pb-1.5 border-b border-slate-200 dark:border-slate-800/80">
+              <div className="hidden md:flex items-center justify-between px-2.5 pt-1 pb-1 text-[10px] font-black tracking-wider uppercase text-sky-600 dark:text-sky-400 select-none">
+                <span>MAIN PLATFORM</span>
+                <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 font-black text-[9px] border border-sky-500/30">
+                  PRIMARY
+                </span>
+              </div>
+
+              <button
+                onClick={() => setActiveModule('home')}
+                title={t('navigation.home', 'Jeevan Setu Homepage')}
+                aria-label={t('navigation.home', 'Jeevan Setu Homepage')}
+                className={`w-full flex items-center justify-start gap-2.5 rounded-xl px-2.5 py-2.5 text-xs font-bold transition-all duration-200 group relative min-h-[44px] cursor-pointer ${
+                  activeModule === 'home'
+                    ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-lg shadow-sky-600/30 border border-sky-400 ring-1 ring-sky-400/40'
+                    : 'bg-slate-100 dark:bg-slate-800/70 text-slate-900 dark:text-white hover:bg-sky-500/10 hover:border-sky-500/40 border border-slate-200 dark:border-slate-700/70'
+                }`}
+              >
+                {/* Active Indicator Bar */}
+                {activeModule === 'home' && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-full shadow-sm" />
+                )}
+
+                {/* Icon Container */}
+                <div
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
+                    activeModule === 'home'
+                      ? 'bg-white/20 text-white border border-white/30'
+                      : 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30 group-hover:scale-105'
+                  }`}
+                >
+                  <Home className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                </div>
+
+                {/* Feature Label & Subtitle */}
+                <div className="hidden md:flex flex-col text-left flex-1 min-w-0">
+                  <span className="text-xs font-black truncate leading-tight">
+                    {t('navigation.home', 'Jeevan Setu Homepage')}
+                  </span>
+                  <span className={`text-[10px] font-semibold truncate ${
+                    activeModule === 'home' ? 'text-sky-100' : 'text-slate-500 dark:text-slate-400'
+                  }`}>
+                    Main Command & Primary Hub
+                  </span>
+                </div>
+
+                <span className={`hidden md:inline-flex shrink-0 items-center justify-center rounded-md px-1.5 py-0.5 text-[9px] font-black leading-none ml-auto border transition-colors ${
+                  activeModule === 'home'
+                    ? 'bg-white/20 text-white border-white/30'
+                    : 'bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-500/30'
+                }`}>
+                  MAIN
+                </span>
+              </button>
+            </div>
+
+            {/* 2. FEATURE SECTIONS (Overview, AI & GIS Intelligence, Crisis Response & Logistics, Governance) */}
             {[
               {
-                category: t('sidebar.catOverview', '1. Overview & Safety'),
+                category: t('sidebar.catOverview', 'Overview'),
                 items: [
-                  { id: 'home', label: t('navigation.home', 'Jeevan Setu Homepage'), icon: Home, badge: 'MAIN', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
-                  { id: 'customdashboard', label: t('navigation.customdashboard', 'Command Center Dashboard'), icon: Gauge, badge: 'LIVE GIS', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'safetyguide', label: t('navigation.safetyguide', 'Disaster Safety Guide'), icon: BookOpen, badge: 'GUIDE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' }
+                  { id: 'customdashboard', label: t('navigation.customdashboard', 'Command Center Dashboard'), icon: Gauge, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
+                  { id: 'safetyguide', label: t('navigation.safetyguide', 'Disaster Safety Guide'), icon: BookOpen, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' }
                 ]
               },
               {
-                category: t('sidebar.catIntelligence', '2. AI & GIS Intelligence'),
+                category: t('sidebar.catIntelligence', 'AI & GIS Intelligence'),
                 items: [
-                  { id: 'incidents', label: t('navigation.incidents', 'Disaster Reports & Incident Intelligence'), icon: ShieldAlert, badge: 'LIVE GIS', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, badge: 'VISION AI', iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
-                  { id: 'staterisk', label: t('navigation.staterisk', 'Regional Hazard Matrix'), icon: FileBarChart, badge: '8 STATES', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'smartmonitoring', label: t('navigation.smartmonitoring', 'Smart Disaster Monitoring'), icon: Cpu, badge: 'AI RADAR', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
+                  { id: 'incidents', label: 'Disaster Reports & Intelligence', icon: ShieldAlert, badge: 'NER 8', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
+                  { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
                   { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
                 ]
               },
               {
-                category: t('sidebar.catResponse', '3. Emergency Rescue & Camps'),
+                category: t('sidebar.catResponse', 'Crisis Response & Logistics'),
                 items: [
-                  { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue Points'), icon: HeartPulse, badge: 'OSM LIVE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'reliefsupply', label: 'Relief Supply & Vehicle Tracking', icon: Package, badge: 'REAL GPS', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'drivertracking', label: 'Driver Phone GPS Tracker', icon: Truck, badge: 'MOBILE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
-                  { id: 'lifesaving', label: t('navigation.lifesaving', 'Life-Saving Response'), icon: ShieldAlert, badge: 'SOS CORE', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-
-                  { id: 'rescueteams', label: t('navigation.rescueteams', 'Rescue Team Command'), icon: ShieldCheck, badge: 'NDRF', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' },
-                  { id: 'evacuation', label: t('navigation.evacuation', 'Evacuation & Safe Zone'), icon: Navigation, badge: 'ROUTE C', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
-                  { id: 'reliefcamps', label: t('navigation.reliefcamps', 'Relief Camp Grid'), icon: Building2, iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
-                  { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' },
-                  { id: 'alerts', label: t('navigation.alerts', 'Active Emergency Alerts'), icon: AlertTriangle, badge: 'LIVE', iconColor: 'text-orange-500 dark:text-orange-400 bg-orange-500/10' }
+                  { id: 'relief-supplies', label: 'Relief Supply & Vehicle Tracking', icon: Truck, badge: 'LIVE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
+                  { id: 'emergency-response', label: 'Smart Emergency Response', icon: Zap, badge: 'AI PRIORITY', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
+                  { id: 'rerouting', label: 'Road Accessibility & Safe Routes', icon: Navigation, badge: 'OSRM ROUTE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
+                  { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue'), icon: HeartPulse, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' }
                 ]
               },
               {
-                category: t('sidebar.catCommand', '4. Governance & SITREP'),
+                category: t('sidebar.catCommand', 'Governance & Operations'),
                 items: [
                   { id: 'gov', label: t('navigation.gov', 'MDoNER Command Grid'), icon: Building2, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'weather', label: t('navigation.weather', 'Weather & Doppler Radar'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' },
-                  { id: 'sitrep', label: t('navigation.sitrep', 'AI Situation SITREP'), icon: FileBarChart, badge: 'PDF REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' }
+                  { id: 'location', label: 'Location Intelligence Report', icon: Compass, badge: 'PDF REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' }
                 ]
               }
             ].map((section, sIdx) => (
               <div key={sIdx} className="space-y-1">
-                <div className="hidden md:block px-2.5 pt-1 pb-1 text-[10px] font-black tracking-wider uppercase text-sky-600 dark:text-sky-400 select-none">
+                <div className="hidden md:block px-2.5 pt-2 pb-1 text-[10px] font-extrabold tracking-wider uppercase text-slate-400 select-none">
                   {section.category}
                 </div>
 
@@ -698,38 +808,40 @@ export default function App() {
                         aria-label={tab.label}
                         className={`w-full flex items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-all duration-200 group relative min-h-[42px] cursor-pointer ${
                           active
-                            ? 'bg-gradient-to-r from-indigo-600 via-indigo-600 to-sky-600 text-white shadow-md shadow-indigo-600/25 border border-indigo-500/30'
+                            ? 'bg-sky-500/15 dark:bg-sky-500/20 text-sky-900 dark:text-sky-300 font-bold border border-sky-500/30 dark:border-sky-500/40 shadow-sm shadow-sky-500/10'
                             : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white border border-transparent'
                         }`}
                       >
-                        {/* Active Pill Indicator Bar */}
+                        {/* Active Indicator Bar */}
                         {active && (
-                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.2 h-5 bg-sky-300 rounded-r-full shadow-sm shadow-sky-300" />
+                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-sky-500 rounded-r-full shadow-sm shadow-sky-400" />
                         )}
 
-                        {/* Professional Icon Badge Container */}
+                        {/* Icon Container */}
                         <div
                           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
                             active
-                              ? 'bg-white/20 text-white border border-white/30 backdrop-blur-sm'
+                              ? 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30'
                               : `border border-slate-200/80 dark:border-slate-700/50 ${tab.iconColor} group-hover:border-sky-500/40 group-hover:scale-105`
                           }`}
                         >
                           <Icon className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
                         </div>
 
-                        {/* Complete Readable Feature Label */}
-                        <span className="hidden md:block flex-1 text-left text-xs font-bold leading-snug whitespace-normal tracking-tight">
+                        {/* Feature Label */}
+                        <span className="hidden md:block flex-1 text-left text-xs font-semibold leading-snug whitespace-normal tracking-tight">
                           {tab.label}
                         </span>
 
-                        {/* Aligned Status Badge */}
+                        {/* Aligned Status Badge (Only for live conditions) */}
                         {tab.badge && (
                           <span
                             className={`hidden md:inline-flex shrink-0 items-center justify-center rounded-md px-1.5 py-0.5 text-[9px] font-black leading-none ml-auto border transition-colors ${
-                              active
-                                ? 'bg-white/20 text-white border-white/40'
-                                : 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30 group-hover:bg-sky-500/20'
+                              tab.badge === 'LIVE'
+                                ? 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/40 animate-pulse'
+                                : active
+                                ? 'bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-500/30'
+                                : 'bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
                             }`}
                           >
                             {tab.badge}
@@ -746,90 +858,46 @@ export default function App() {
       </aside>
 
       {/* 2. RIGHT MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0 max-w-full">
 
-        {/* Top Header Command Bar Matching media_1787858147598.png */}
-        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-3 sm:px-4 lg:px-6 flex items-center justify-between gap-2 lg:gap-3 backdrop-blur shadow-sm dark:shadow-md transition-colors duration-300 min-w-0">
-          {/* MDoNER / Regional Title matching media_1787858147598.png */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="text-[10px] sm:text-[11px] font-black leading-tight text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
-                <div>{t('header.titleLine1', 'Ministry of Development')}</div>
-                <div>{t('header.titleLine2', 'of North Eastern Region')}</div>
-                <div>{t('header.titleLine3', '(MDoNER)')}</div>
+        {/* Top Header Command Bar — Clean, Aesthetic & Perfectly Responsive */}
+        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-3 sm:px-4 lg:px-5 flex items-center justify-end gap-2 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
+          {/* Right: Quick Action Controls */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-50 ml-auto">
+            {/* 🤖 Executive AI Agent Button with Extra Detail Feature */}
+            <button
+              onClick={() => setIsAiAgentOpen(prev => !prev)}
+              className="rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-indigo-600/25 flex items-center gap-1.5 sm:gap-2 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border border-sky-400/30 group"
+              title="Open Jeevan Setu AI Agent with Deep Telemetry & Voice Search"
+            >
+              <div className="relative flex items-center justify-center">
+                <Sparkles className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-amber-300 animate-pulse shrink-0" />
+                <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping"></span>
               </div>
-              <div className="hidden 2xl:block text-[11px] font-bold leading-tight text-slate-600 dark:text-slate-300 border-l border-slate-200 dark:border-slate-800 pl-3 whitespace-nowrap">
-                <div>{t('header.councilLine1', 'North Eastern')}</div>
-                <div>{t('header.councilLine2', 'Council (NEC)')}</div>
-                <div>{t('header.councilLine3', 'Command Grid')}</div>
-              </div>
-            </div>
-          </div>
+              <span className="whitespace-nowrap font-bold tracking-tight">AI Agent</span>
+              <span className="hidden md:inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider bg-white/20 px-1.5 py-0.5 rounded-md border border-white/20 text-sky-100">
+                <Mic className="h-2.5 w-2.5 text-sky-200 animate-pulse" />
+                <span>VOICE &bull; TELEMETRY</span>
+              </span>
+            </button>
 
-          {/* Glowing Header Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-50">
-            {/* 🚨 EMERGENCY SOS Glowing Pill Button */}
+            {/* 🚨 Emergency SOS Refined Pill */}
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="rounded-full bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 px-2.5 sm:px-3 py-1.5 text-xs font-black text-white shadow-md hover:scale-105 transition flex items-center gap-1 sm:gap-1.5 border border-rose-400/40 cursor-pointer animate-pulse shrink-0 whitespace-nowrap"
+              className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-rose-400 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-rose-600/25 flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+              title="Trigger Emergency SOS"
             >
-              <span className="text-xs">🚨</span>
-              <span className="hidden sm:inline">{t('navigation.sos', 'Emergency SOS')}</span>
-              <span className="sm:hidden">SOS</span>
-            </button>
-
-            {/* 🤖 AI Pill Button */}
-            <button
-              onClick={() => setActiveModule('aiimpact')}
-              className={`rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-black transition flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0 whitespace-nowrap ${
-                activeModule === 'aiimpact'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-purple-600/40'
-                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <span className="text-xs">🤖</span>
-              <span>{t('header.ai', 'AI')}</span>
-            </button>
-
-            {/* 📖 Safety Guide Pill Button */}
-            <button
-              onClick={() => setActiveModule('safetyguide')}
-              className={`rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-black transition flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0 whitespace-nowrap hidden xl:flex ${
-                activeModule === 'safetyguide'
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-teal-600/40'
-                  : 'bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <span className="text-xs">📖</span>
-              <span>{t('header.safety', 'Safety Guide')}</span>
+              <span className="h-2 w-2 rounded-full bg-white animate-ping shrink-0"></span>
+              <span className="whitespace-nowrap">{t('navigation.sos', 'Emergency SOS')}</span>
             </button>
 
             {/* Live IST Clock */}
-            <div className="hidden xl:flex flex-col text-right font-mono px-1 shrink-0">
-              <span className="text-xs font-black text-slate-900 dark:text-slate-100 tracking-wider whitespace-nowrap">
-                {currentTime || '23:45:11'} IST
+            <div className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 font-mono text-xs shrink-0">
+              <span className="text-[10px] text-slate-400">IST</span>
+              <span className="font-bold text-slate-900 dark:text-sky-400">
+                {currentTime || '23:45:11'}
               </span>
-              <span className="text-[9px] text-slate-500 dark:text-slate-400 font-bold whitespace-nowrap hidden 2xl:inline">2026 NER Grid</span>
             </div>
-
-            {/* User Profile Badge: Admin Officer MDoNER L3 */}
-            <button
-              onClick={() => setActiveModule('gov')}
-              title="Click to Open MDoNER Command / Executive Oversight"
-              className={`flex items-center gap-1.5 sm:gap-2 rounded-full border transition cursor-pointer px-2 sm:px-2.5 py-1.5 text-xs shrink-0 whitespace-nowrap ${
-                activeModule === 'gov'
-                  ? 'border-emerald-400 bg-emerald-900/80 text-white shadow-md shadow-emerald-500/30'
-                  : 'border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
-              }`}
-            >
-              <div className="h-6 w-6 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center shrink-0">
-                AO
-              </div>
-              <div className="text-left hidden 2xl:block">
-                <div className="font-extrabold text-slate-900 dark:text-white leading-none text-xs whitespace-nowrap">{t('header.adminOfficer', 'Admin Officer')}</div>
-                <div className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5 whitespace-nowrap">MDONER L3</div>
-              </div>
-            </button>
 
             {/* 🌐 Language Switcher */}
             <div className="shrink-0">
@@ -837,7 +905,7 @@ export default function App() {
             </div>
 
             {/* ☀️/🌙 Theme Toggle Switch */}
-            <div className="shrink-0 pr-1">
+            <div className="shrink-0 pr-0.5">
               <ThemeToggle />
             </div>
           </div>
@@ -846,7 +914,18 @@ export default function App() {
         {/* Main Workspace Render */}
         <main className="flex-1 overflow-hidden">
 
-          {/* 📖 DISASTER SAFETY GUIDE */}
+          {/* 🌋 DISASTER REPORTS & INCIDENT INTELLIGENCE */}
+        {(activeModule === 'incidents' || activeModule === 'reports') && (
+          <div className="h-full overflow-y-auto">
+            <DisasterReportsModule
+              onNavigateToReroute={() => setActiveModule('rerouting')}
+              onNavigateToMap={() => setActiveModule('map')}
+              onTriggerSOS={() => setIsSosModalOpen(true)}
+            />
+          </div>
+        )}
+
+        {/* 📖 DISASTER SAFETY GUIDE */}
           {activeModule === 'safetyguide' && (
             <div className="h-full overflow-y-auto p-4 sm:p-6">
               <DisasterSafetyGuide onTriggerSOS={() => setIsSosModalOpen(true)} />
@@ -857,6 +936,7 @@ export default function App() {
         {activeModule === 'aiimpact' && (
           <div className="h-full overflow-y-auto">
             <AIDisasterImpactAssessment
+              initialLoc={sharedMonitoringLoc}
               onNavigateToMonitoring={(loc) => {
                 setSharedMonitoringLoc({ lat: loc.lat, lon: loc.lon, displayName: loc.name, state: 'NER Sector', country: 'India' });
                 setActiveModule('smartmonitoring');
@@ -865,52 +945,31 @@ export default function App() {
           </div>
         )}
 
-        {/* 🚨 LIFE-SAVING RESPONSE ENGINE */}
-        {activeModule === 'lifesaving' && (
+        {/* 🛰️ SMART DISASTER MONITORING */}
+        {activeModule === 'smartmonitoring' && (
           <div className="h-full overflow-y-auto">
-            <LifeSavingResponseEngine />
-          </div>
-        )}
-
-        {/* 🚨 CITIZEN SOS TRIAGE */}
-        {activeModule === 'citizensos' && (
-          <div className="h-full overflow-y-auto">
-            <LifeSavingResponseEngine />
-          </div>
-        )}
-
-        {/* 🛡️ RESCUE TEAM COMMAND */}
-        {activeModule === 'rescueteams' && (
-          <div className="h-full overflow-y-auto">
-            <RescueTeamCommand />
-          </div>
-        )}
-
-        {/* 🧭 EVACUATION & SAFE ZONE PLANNER */}
-        {activeModule === 'evacuation' && (
-          <div className="h-full overflow-y-auto">
-            <EvacuationPlanner />
-          </div>
-        )}
-
-        {/* 🏢 RELIEF CAMP MANAGEMENT */}
-        {activeModule === 'reliefcamps' && (
-          <div className="h-full overflow-y-auto">
-            <ReliefCampManagement />
+            <SmartDisasterMonitoring
+              initialLoc={sharedMonitoringLoc}
+              onNavigateToImpactAssessment={(loc) => {
+                if (loc) {
+                  setSharedMonitoringLoc({ lat: loc.lat, lon: loc.lon, displayName: loc.name, state: 'NER Sector', country: 'India' });
+                }
+                setActiveModule('aiimpact');
+              }}
+            />
           </div>
         )}
 
         {/* 📷 AI DAMAGE ASSESSMENT */}
         {activeModule === 'damageassessment' && (
           <div className="h-full overflow-y-auto">
-            <AIDisasterImpactAssessment />
-          </div>
-        )}
-
-        {/* 📊 AI SITUATION REPORT SITREP */}
-        {activeModule === 'sitrep' && (
-          <div className="h-full overflow-y-auto">
-            <AISituationReportModule />
+            <AIDisasterImpactAssessment
+              initialLoc={sharedMonitoringLoc}
+              onNavigateToMonitoring={(loc) => {
+                setSharedMonitoringLoc({ lat: loc.lat, lon: loc.lon, displayName: loc.name, state: 'NER Sector', country: 'India' });
+                setActiveModule('smartmonitoring');
+              }}
+            />
           </div>
         )}
 
@@ -923,48 +982,28 @@ export default function App() {
           </div>
         )}
 
-        {/* 📊 DEDICATED REGIONAL STATE RISK MATRIX SECTION */}
-        {activeModule === 'staterisk' && (
-          <div className="h-full overflow-y-auto p-4 lg:p-7 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
-            <StateRiskMatrixSection
-              onFocusState={(coord, zoom) => {
-                setMapFocusedTarget({ coord, zoom });
-                setActiveModule('map');
-              }}
-            />
-          </div>
-        )}
-
         {/* 0. JEEVAN SETU REFERENCE HOMEPAGE */}
         {activeModule === 'home' && (
           <div className="h-full overflow-y-auto">
             <JeevanSetuHomepage
               onNavigateModule={(mod) => setActiveModule(mod)}
               onOpenSos={() => setIsSosModalOpen(true)}
+              onOpenAiChatbot={() => setIsAiAgentOpen(true)}
             />
           </div>
         )}
 
-        {/* 2. FULL EXPANDED 100% VIEWPORT LIVE MAP (Bypasses Dashboard Sidebar & Header) */}
+        {/* 2. LIVE GIS MAP (Integrated seamlessly into Dashboard layout) */}
         {activeModule === 'map' && (
-          <div className="fixed inset-0 z-[99999] w-screen h-screen bg-[#040814] overflow-hidden">
+          <div className="h-full w-full flex flex-col overflow-hidden">
             <NERLiveMapModule
-              hideHeader={true}
+              hideHeader={false}
               focusedTarget={mapFocusedTarget}
               onNavigateTo3DSim={() => setActiveModule('hub')}
               onTriggerSOS={() => setIsSosModalOpen(true)}
-              onBackToDashboard={() => setActiveModule('home')}
+              onBackToDashboard={() => setActiveModule(previousModule || 'home')}
             />
           </div>
-        )}
-
-        {/* 🚨 ACTION ALERTS / REAL-TIME EMERGENCY INCIDENT BROADCAST FEED MATCHING SCREENSHOT media_1787753496813.png */}
-        {activeModule === 'alerts' && (
-          <ActionAlertsModule
-            onNavigateToMap={() => setActiveModule('map')}
-            onNavigateTo3D={() => setActiveModule('hub')}
-            onTriggerSOS={() => setIsSosModalOpen(true)}
-          />
         )}
 
         {/* 3. ROAD MONITORING & ACCESSIBILITY */}
@@ -1449,419 +1488,28 @@ export default function App() {
           </div>
         )}
 
-        {/* 4. ESSENTIAL SUPPLIES & INTER-STATE STRATEGIC DEPOTS */}
-        {activeModule === 'supplies' && (
-          <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
-            {/* 🔴 TOP EXECUTIVE COMMAND BAR */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors duration-300">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-rose-500/20 px-3.5 py-1 text-xs lg:text-sm font-extrabold text-rose-700 dark:text-rose-400 border border-rose-500/30 flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-rose-500 dark:bg-rose-400 animate-ping"></span>
-                    EXECUTIVE LOGISTICS & DEPOT STOCKPILE TELEMETRY
-                  </span>
-                </div>
-                <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-3">
-                  <span>📦</span> Inter-State Strategic Essential Supply Depots & Forward Caches
-                </h1>
-                <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium max-w-4xl leading-relaxed">
-                  Real-time inventory levels, medical oxygen buffers, food grain silos & emergency fuel reserves synchronized across FCI, Indian Red Cross & State Civil Supplies Directorates for all 8 NER States.
-                </p>
-              </div>
+        {/* 4. REAL-TIME RELIEF SUPPLY & VEHICLE TRACKING MODULE */}
+        {(activeModule === 'relief-supplies' || activeModule === 'supplies' || activeModule === 'vehicle-tracking' || activeModule === 'driver-tracking' || activeModule === 'relief-operations' || activeModule === 'relief-depots') && (
+          <div className="h-full overflow-y-auto">
+            <ReliefSupplyTrackingModule
+              initialTab={
+                activeModule === 'vehicle-tracking' ? 'live-map' :
+                activeModule === 'driver-tracking' ? 'driver-portal' :
+                activeModule === 'relief-operations' ? 'operations' :
+                activeModule === 'relief-depots' ? 'depots' :
+                'supplies'
+              }
+              onNavigateHome={() => setActiveModule('home')}
+            />
+          </div>
+        )}
 
-              <div className="flex items-center gap-3 shrink-0">
-                <button className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 font-extrabold text-white text-xs lg:text-sm shadow-lg shadow-rose-600/30 hover:scale-105 transition flex items-center gap-2 shrink-0 border border-rose-400/40 cursor-pointer">
-                  <span>+</span> Allocate Emergency Supply ➔
-                </button>
-              </div>
-            </div>
-
-            {/* DATA TRANSPARENCY STATUS BANNER */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-4 lg:p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs lg:text-sm font-mono transition-colors duration-300">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="px-3 py-1 rounded-full bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-black flex items-center gap-2 text-xs">
-                  🔵 ✓ VERIFIED STOCKPILE DATA ACTIVE
-                </span>
-                <span className="text-slate-600 dark:text-slate-400 font-sans">
-                  Source: <b className="text-slate-900 dark:text-white font-bold">FCI, Indian Red Cross & State Civil Supplies Directorates</b>
-                </span>
-              </div>
-              <div className="flex items-center gap-4 text-slate-600 dark:text-slate-400 font-sans">
-                <span>Last Updated: <b className="text-slate-900 dark:text-slate-200">12:41:11 AM</b></span>
-                <a href="https://mdoner.gov.in" target="_blank" rel="noopener noreferrer" className="text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1 font-bold">
-                  View Portal 🔗
-                </a>
-              </div>
-            </div>
-
-            {/* Top 4 KPI Stockpile Buffer Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {/* Card 1: Medical Oxygen */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-3 relative overflow-hidden transition-colors duration-300">
-                <div className="flex items-center justify-between text-xs lg:text-sm font-bold text-slate-600 dark:text-slate-400">
-                  <span className="uppercase tracking-wider">MEDICAL OXYGEN</span>
-                  <span className="px-2.5 py-1 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-xs font-extrabold uppercase">Class 1</span>
-                </div>
-                <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">120 Tons</div>
-                <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-                  <div className="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full" style={{ width: '85%' }}></div>
-                </div>
-                <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium pt-1">
-                  <span>4,200 Cylinders</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">14 Days Buffer</span>
-                </div>
-              </div>
-
-              {/* Card 2: Food Grains & Rations */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-3 relative overflow-hidden transition-colors duration-300">
-                <div className="flex items-center justify-between text-xs lg:text-sm font-bold text-slate-600 dark:text-slate-400">
-                  <span className="uppercase tracking-wider">FOOD GRAINS & RATIONS</span>
-                  <span className="px-2.5 py-1 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-extrabold uppercase">Class 2</span>
-                </div>
-                <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">340 Tons</div>
-                <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-                  <div className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full" style={{ width: '70%' }}></div>
-                </div>
-                <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium pt-1">
-                  <span>FCI Regional Silos</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">18 Days Buffer</span>
-                </div>
-              </div>
-
-              {/* Card 3: Emergency Fuel */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-3 relative overflow-hidden transition-colors duration-300">
-                <div className="flex items-center justify-between text-xs lg:text-sm font-bold text-slate-600 dark:text-slate-400">
-                  <span className="uppercase tracking-wider">EMERGENCY FUEL</span>
-                  <span className="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-extrabold uppercase">Class 1</span>
-                </div>
-                <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">85 KL</div>
-                <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-                  <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style={{ width: '90%' }}></div>
-                </div>
-                <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium pt-1">
-                  <span>Diesel & Jet-A1</span>
-                  <span className="text-sky-600 dark:text-sky-400 font-bold">Helicopter / JCB Fleet</span>
-                </div>
-              </div>
-
-              {/* Card 4: Shelter Gear & Tents */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-3 relative overflow-hidden transition-colors duration-300">
-                <div className="flex items-center justify-between text-xs lg:text-sm font-bold text-slate-600 dark:text-slate-400">
-                  <span className="uppercase tracking-wider">SHELTER GEAR & TENTS</span>
-                  <span className="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-xs font-extrabold uppercase">Class 2</span>
-                </div>
-                <div className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mt-1">200 Tons</div>
-                <div className="h-2 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-                  <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" style={{ width: '65%' }}></div>
-                </div>
-                <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium pt-1">
-                  <span>1,200 Relief Tents</span>
-                  <span className="text-indigo-600 dark:text-indigo-300 font-bold">Waterproof Tarps</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Strategic Depots Section Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-3 pt-2">
-              <div>
-                <h2 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-                  <span>📦</span> {t("supplies.title", "Inter-State Strategic Supply Depots & Forward Caches")} <span className="text-xs lg:text-sm font-bold text-slate-500 dark:text-slate-400">(All 8 NER States)</span>
-                </h2>
-                <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium">
-                  {t("supplies.subtitle", "Real-time inventory levels synchronized across FCI, Indian Red Cross & State Civil Supplies Directorates.")}
-                </p>
-              </div>
-              <span className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-mono font-bold shrink-0">
-                8 / 8 State Depots Monitored
-              </span>
-            </div>
-
-            {/* 8 Depot Cards Grid (2 cols x 4 rows) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              {/* Depot 1 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-black text-lg lg:text-xl text-slate-900 dark:text-white">Guwahati Central Mega Depot (Assam)</h3>
-                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Primary Transit Hub & Gateway for Upper Assam, Meghalaya & Nagaland</p>
-                  </div>
-                  <span className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs lg:text-sm font-black shrink-0">
-                    95% Stocked
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Oxygen</span>
-                    <b className="text-rose-600 dark:text-rose-400 block text-sm lg:text-base font-black mt-0.5">45 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Rations</span>
-                    <b className="text-amber-600 dark:text-amber-400 block text-sm lg:text-base font-black mt-0.5">120 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Diesel</span>
-                    <b className="text-sky-600 dark:text-sky-400 block text-sm lg:text-base font-black mt-0.5">30 KL</b>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800/80">
-                  <span className="text-slate-600 dark:text-slate-400 font-medium">📍 Sookreting Staging Base</span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setActiveModule('vehicles')} className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs lg:text-sm font-extrabold shadow cursor-pointer">Dispatch Convoy 🚛</button>
-                    <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Depot 2 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-black text-lg lg:text-xl text-slate-900 dark:text-white">Silchar Civil Medical Staging Post (Cachar, Assam)</h3>
-                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">High-Priority Buffer Depot for Barak Valley, Mizoram (Aizawl) & Tripura Links</p>
-                  </div>
-                  <span className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs lg:text-sm font-black shrink-0">
-                    62% Stocked
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Oxygen</span>
-                    <b className="text-rose-600 dark:text-rose-400 block text-sm lg:text-base font-black mt-0.5">22 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Rations</span>
-                    <b className="text-amber-600 dark:text-amber-400 block text-sm lg:text-base font-black mt-0.5">60 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Blood Units</span>
-                    <b className="text-sky-600 dark:text-sky-400 block text-sm lg:text-base font-black mt-0.5">150 Units</b>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800/80">
-                  <span className="text-amber-600 dark:text-amber-400 font-medium">⚠️ Buffer active for NH-6 blockage</span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Reroute 3D ➔</button>
-                    <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Depot 3 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-black text-lg lg:text-xl text-slate-900 dark:text-white">Bomdila High-Altitude Medical Cache (Arunachal Pradesh)</h3>
-                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Critical Forward Station supporting Sela Tunnel (2,400m) & Tawang Sectors</p>
-                  </div>
-                  <span className="px-3.5 py-1.5 rounded-xl bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-xs lg:text-sm font-black shrink-0 uppercase">
-                    41% LOW STOCK
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Oxygen</span>
-                    <b className="text-rose-600 dark:text-rose-400 block text-sm lg:text-base font-black mt-0.5">8 Tons (Low)</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Antivenom</span>
-                    <b className="text-amber-600 dark:text-amber-400 block text-sm lg:text-base font-black mt-0.5">48 Vials</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Blankets</span>
-                    <b className="text-sky-600 dark:text-sky-400 block text-sm lg:text-base font-black mt-0.5">500 Units</b>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800/80">
-                  <span className="text-slate-800 dark:text-slate-300 font-medium">📍 Resupply Convoy #03 Dispatched</span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setActiveModule('drone')} className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs lg:text-sm font-extrabold cursor-pointer">Air-Drop SOS 🚨</button>
-                    <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Depot 4 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-black text-lg lg:text-xl text-slate-900 dark:text-white">Dibrugarh Forward Depot (Upper Assam)</h3>
-                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Rail-Road Hub and Bridge Head for Eastern Arunachal & Siang Valley</p>
-                  </div>
-                  <span className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs lg:text-sm font-black shrink-0">
-                    84% Stocked
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Oxygen</span>
-                    <b className="text-rose-600 dark:text-rose-400 block text-sm lg:text-base font-black mt-0.5">28 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Rations</span>
-                    <b className="text-amber-600 dark:text-amber-400 block text-sm lg:text-base font-black mt-0.5">85 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Diesel</span>
-                    <b className="text-sky-600 dark:text-sky-400 block text-sm lg:text-base font-black mt-0.5">25 KL</b>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800/80">
-                  <span className="text-slate-600 dark:text-slate-400 font-medium">📍 Regional Railhead Node</span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setActiveModule('vehicles')} className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs lg:text-sm font-extrabold cursor-pointer">Dispatch Fleet 🚚</button>
-                    <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Depot 5 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-black text-lg lg:text-xl text-slate-900 dark:text-white">Shillong Staging Depot (Meghalaya)</h3>
-                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">High-Altitude East Khasi & Jaintia Hills Emergency Stockpile Hub</p>
-                  </div>
-                  <span className="px-3.5 py-1.5 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-black shrink-0">
-                    78% Stocked
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Oxygen</span>
-                    <b className="text-rose-600 dark:text-rose-400 block text-sm lg:text-base font-black mt-0.5">18 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Rations</span>
-                    <b className="text-amber-600 dark:text-amber-400 block text-sm lg:text-base font-black mt-0.5">45 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Fuel</span>
-                    <b className="text-sky-600 dark:text-sky-400 block text-sm lg:text-base font-black mt-0.5">12 KL</b>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800/80">
-                  <span className="text-slate-600 dark:text-slate-400 font-medium">📍 Jowai Sector 9 Detour Active</span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Depot 6 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-black text-lg lg:text-xl text-slate-900 dark:text-white">Gangtok Artery Depot (Sikkim)</h3>
-                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Teesta Basin Emergency Medical & Mountain Survival Cache</p>
-                  </div>
-                  <span className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs lg:text-sm font-black shrink-0">
-                    51% Stocked
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Oxygen</span>
-                    <b className="text-rose-600 dark:text-rose-400 block text-sm lg:text-base font-black mt-0.5">14 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Rations</span>
-                    <b className="text-amber-600 dark:text-amber-400 block text-sm lg:text-base font-black mt-0.5">35 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Fuel</span>
-                    <b className="text-sky-600 dark:text-sky-400 block text-sm lg:text-base font-black mt-0.5">18 KL</b>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800/80">
-                  <span className="text-amber-600 dark:text-amber-400 font-medium">⚠️ NH-10 cutoff bypass active</span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs lg:text-sm font-extrabold cursor-pointer">Reroute 3D ➔</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Depot 7 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-black text-lg lg:text-xl text-slate-900 dark:text-white">Kohima Relief Center (Nagaland)</h3>
-                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">NH-29 Highland Artery Logistics Depot supporting Dimapur & Imphal</p>
-                  </div>
-                  <span className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs lg:text-sm font-black shrink-0">
-                    87% Stocked
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Oxygen</span>
-                    <b className="text-rose-600 dark:text-rose-400 block text-sm lg:text-base font-black mt-0.5">16 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Rations</span>
-                    <b className="text-amber-600 dark:text-amber-400 block text-sm lg:text-base font-black mt-0.5">48 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Fuel</span>
-                    <b className="text-sky-600 dark:text-sky-400 block text-sm lg:text-base font-black mt-0.5">10 KL</b>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800/80">
-                  <span className="text-slate-600 dark:text-slate-400 font-medium">📍 Zubza Slope Regulated</span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setActiveModule('map')} className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-300 text-xs lg:text-sm font-extrabold cursor-pointer">Map 🗺️</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Depot 8 */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-6 shadow-xl space-y-4 relative transition-colors duration-300">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-black text-lg lg:text-xl text-slate-900 dark:text-white">Aizawl Civil Hospital Reserve (Mizoram)</h3>
-                    <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">South NER Critical Care Oxygen & Trauma Stockpile Post</p>
-                  </div>
-                  <span className="px-3.5 py-1.5 rounded-xl bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-xs lg:text-sm font-black shrink-0 uppercase">
-                    48% CRITICAL
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 text-xs lg:text-sm text-slate-700 dark:text-slate-300 pt-1 font-mono">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Oxygen</span>
-                    <b className="text-rose-600 dark:text-rose-400 block text-sm lg:text-base font-black mt-0.5">8 Tons (Buffer)</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Rations</span>
-                    <b className="text-amber-600 dark:text-amber-400 block text-sm lg:text-base font-black mt-0.5">25 Tons</b>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Trauma Kits</span>
-                    <b className="text-sky-600 dark:text-sky-400 block text-sm lg:text-base font-black mt-0.5">100 Kits</b>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 text-xs lg:text-sm border-t border-slate-200 dark:border-slate-800/80">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">📍 Convoy #01 En Route (ETA: 3h 15m)</span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setActiveModule('hub')} className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs lg:text-sm font-extrabold shadow cursor-pointer">Track 3D Convoy ➔</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* SMART EMERGENCY RESPONSE MODULE */}
+        {activeModule === 'emergency-response' && (
+          <div className="h-full overflow-y-auto">
+            <SmartEmergencyResponseModule
+              onNavigateHome={() => setActiveModule('home')}
+            />
           </div>
         )}
 
@@ -1924,44 +1572,15 @@ export default function App() {
           />
         )}
 
-        {/* 7E. DISASTER REPORTS & INCIDENT INTELLIGENCE VIEW */}
-        {activeModule === 'incidents' && (
-          <DisasterIncidentsModule
-            onNavigateToMap={() => setActiveModule('map')}
-            onNavigateToReroute={(origin, dest) => {
-              setRouteStart(origin);
-              setRouteDest(dest);
-              setActiveModule('rerouting');
-            }}
-            onNavigateToFlood={() => setActiveModule('flood')}
-            onNavigateToLandslide={() => setActiveModule('landslide')}
-            onTriggerSOS={() => setIsSosModalOpen(true)}
-          />
-        )}
-
-        {/* 7F. RELIEF SUPPLY & VEHICLE TRACKING HUB */}
-        {activeModule === 'reliefsupply' && (
-          <div className="h-full overflow-y-auto p-4 md:p-6">
-            <ReliefSupplyModule
-              onNavigateToDriverTracking={() => setActiveModule('drivertracking')}
-            />
-          </div>
-        )}
-
-        {/* 7G. DRIVER MOBILE GPS TRACKER PAGE */}
-        {activeModule === 'drivertracking' && (
+        {/* LOCATION 360° INTELLIGENCE MODULE */}
+        {(activeModule === 'location' || activeModule === 'location-360' || activeModule === 'addressintelligence') && (
           <div className="h-full overflow-y-auto">
-            <DriverTrackingPage
-              onBackToHub={() => setActiveModule('reliefsupply')}
-            />
+            <AddressDisasterIntelligence />
           </div>
         )}
 
 
-        {/* 8. LIVE RELIEF CAMP & SHELTER FINDER VIEW */}
-        {activeModule === 'reliefcamps' && (
-          <ReliefCampManagement onNavigateToMap={() => setActiveModule('map')} />
-        )}
+
 
         {/* Fallback for other quick tabs */}
         {(activeModule === 'vehicles' || activeModule === 'alerts' || activeModule === 'vehicleselect' || activeModule === 'analytics') && (
@@ -1989,8 +1608,20 @@ export default function App() {
           }}
         />
 
+        {/* 🤖 Universal AI Agent with Deep Telemetry & Diagnostics */}
+        <AIChatbotWidget
+          isOpenControlled={isAiAgentOpen}
+          onOpenControlled={() => setIsAiAgentOpen(true)}
+          onCloseControlled={() => setIsAiAgentOpen(false)}
+          onNavigateModule={(mod) => setActiveModule(mod as any)}
+          onOpenSos={() => setIsSosModalOpen(true)}
+          activeModule={activeModule}
+        />
+
       </main>
     </div>
+
+
   </div>
   );
 }

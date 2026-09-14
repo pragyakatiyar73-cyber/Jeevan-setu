@@ -1,0 +1,20 @@
+[
+  {
+    "id": "INC-REP-1789266446526",
+    "disasterType": "Flood",
+    "state": "Assam",
+    "district": "Kamrup Metropolitan",
+    "location": "Guwahati Zoo Road Inundation",
+    "lat": 26.16,
+    "lon": 91.78,
+    "severity": "HIGH",
+    "status": "MONITORING",
+    "date": "2026-09-13",
+    "time": "07:57 AM",
+    "description": "Flash waterlogging on Zoo Road corridor.",
+    "source": "Citizen Public Incident Report (Unverified)",
+    "dataStatus": "LIVE",
+    "lastUpdated": "2026-09-13T02:27:26.526Z",
+    "photoUrl": null
+  }
+]

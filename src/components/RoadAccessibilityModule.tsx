@@ -33,7 +33,202 @@ import {
   SafeRouteResult,
   RoadAccessibilityStatus
 } from "../services/api/roadAccessibilityService";
-import { isPointInNER, NER_BOUNDS } from "../utils/nerBoundary";
+import { searchLocation } from "../services/api/routing";
+import { isPointInNER } from "../utils/nerBoundary";
+
+export const NER_DISTRICT_COORDS: Record<string, [number, number]> = {
+  // Assam
+  'baksa': [26.6935, 91.5984],
+  'barpeta': [26.3228, 91.0048],
+  'guwahati': [26.1445, 91.7362],
+  'kamrup': [26.3161, 91.5984],
+  'kamrup metro': [26.1445, 91.7362],
+  'kamrup metropolitan': [26.1445, 91.7362],
+  'cachar': [24.8333, 92.7789],
+  'silchar': [24.8333, 92.7789],
+  'dibrugarh': [27.4728, 94.9120],
+  'jorhat': [26.7509, 94.2037],
+  'nagaon': [26.3462, 92.6840],
+  'tezpur': [26.6338, 92.8006],
+  'sonitpur': [26.6338, 92.8006],
+  'dhemaji': [27.4833, 94.5833],
+  'lakhimpur': [27.2333, 94.1000],
+  'dhubri': [26.0206, 89.9746],
+  'goalpara': [26.1833, 90.6167],
+  'bongaigaon': [26.4769, 90.5584],
+  'tinsukia': [27.4886, 95.3558],
+  'dima hasao': [25.1667, 93.0167],
+  'haflong': [25.1667, 93.0167],
+  'karbi anglong': [25.8450, 93.4350],
+  'karimganj': [24.8667, 92.3500],
+  'hailakandi': [24.6833, 92.5667],
+  'majuli': [26.9500, 94.2167],
+  'kokrajhar': [26.4000, 90.2667],
+  'chirang': [26.5000, 90.5000],
+  'udalguri': [26.7460, 92.1310],
+  'biswanath': [26.7328, 93.1444],
+  'charaideo': [26.9600, 94.9000],
+  'sivasagar': [26.9833, 94.6333],
+  'morigaon': [26.2500, 92.3333],
+  'nalbari': [26.4442, 91.4398],
+  'south salmara': [25.8270, 89.9320],
+  // Meghalaya
+  'shillong': [25.5788, 91.8933],
+  'east khasi hills': [25.5788, 91.8933],
+  'sohra': [25.2702, 91.7323],
+  'cherrapunji': [25.2702, 91.7323],
+  'jowai': [25.4452, 92.2081],
+  'west jaintia hills': [25.4452, 92.2081],
+  'east jaintia hills': [25.3167, 92.4167],
+  'tura': [25.5142, 90.2032],
+  'west garo hills': [25.5142, 90.2032],
+  'east garo hills': [25.6000, 90.5833],
+  'south garo hills': [25.3167, 90.6333],
+  'north garo hills': [25.9000, 90.6000],
+  'south west garo hills': [25.4300, 89.8800],
+  'ri bhoi': [25.9038, 91.8812],
+  'nongpoh': [25.9038, 91.8812],
+  'west khasi hills': [25.5204, 91.2678],
+  'nongstoin': [25.5204, 91.2678],
+  'south west khasi hills': [25.3300, 91.2300],
+  'eastern west khasi hills': [25.5500, 91.4500],
+  // Arunachal Pradesh
+  'itanagar': [27.0844, 93.6053],
+  'papum pare': [27.0844, 93.6053],
+  'tawang': [27.5861, 91.8504],
+  'sela pass': [27.5021, 92.1034],
+  'bomdila': [27.2642, 92.4159],
+  'west kameng': [27.2642, 92.4159],
+  'east kameng': [27.3167, 93.0333],
+  'pasighat': [28.0660, 95.3262],
+  'east siang': [28.0660, 95.3262],
+  'ziro': [27.5947, 93.8385],
+  'lower subansiri': [27.5947, 93.8385],
+  'upper subansiri': [28.0600, 94.1300],
+  'changlang': [27.1268, 95.7337],
+  'tezu': [27.9167, 96.1667],
+  'lohit': [27.9167, 96.1667],
+  'namsai': [27.6667, 95.8667],
+  'tirap': [27.0000, 95.5000],
+  'longding': [26.8500, 95.3500],
+  'upper siang': [28.6167, 94.9500],
+  'dibang valley': [28.8667, 95.8000],
+  'lower dibang valley': [28.1500, 95.8333],
+  'anjaw': [27.9167, 96.8333],
+  'kra daadi': [27.8500, 93.6500],
+  'kurung kumey': [27.9000, 93.3500],
+  'lepa rada': [27.8000, 94.6000],
+  'lower siang': [27.7500, 94.8500],
+  'pakke kessang': [27.1500, 93.2000],
+  'shi yomi': [28.5000, 94.3000],
+  'siang': [28.2000, 95.0000],
+  'kamle': [27.7000, 93.9000],
+  // Nagaland
+  'dimapur': [25.9060, 93.7270],
+  'kohima': [25.6751, 94.1086],
+  'mokokchung': [26.3262, 94.5204],
+  'mon': [26.7500, 95.0667],
+  'tuensang': [26.2833, 94.8333],
+  'wokha': [26.1000, 94.2667],
+  'zunheboto': [25.9667, 94.5167],
+  'phek': [25.6667, 94.4667],
+  'kiphire': [25.9000, 94.7833],
+  'peren': [25.5167, 93.7333],
+  'longleng': [26.4833, 94.8000],
+  'chumoukedima': [25.8200, 93.7700],
+  'niuland': [25.9800, 93.8500],
+  'noklak': [26.2000, 95.0500],
+  'shamator': [26.0500, 94.9500],
+  'tseminyu': [25.9100, 94.2100],
+  // Manipur
+  'imphal': [24.8170, 93.9368],
+  'imphal west': [24.8170, 93.9368],
+  'imphal east': [24.8000, 93.9500],
+  'churachandpur': [24.3333, 93.6833],
+  'noney': [24.7890, 93.6540],
+  'ukhrul': [25.1167, 94.3667],
+  'tamenglong': [24.9833, 93.4833],
+  'senapati': [25.2667, 94.0167],
+  'thoubal': [24.6333, 93.9833],
+  'bishnupur': [24.5500, 93.8000],
+  'chandel': [24.3167, 93.9833],
+  'jiribam': [24.8000, 93.1167],
+  'kakching': [24.4833, 93.9833],
+  'kamjong': [24.8500, 94.5000],
+  'kangpokpi': [25.1500, 93.9700],
+  'pherzawl': [24.1800, 93.3000],
+  'tengnoupal': [24.4000, 94.1500],
+  // Mizoram
+  'aizawl': [23.7271, 92.7176],
+  'lunglei': [22.8833, 92.7333],
+  'champhai': [23.4667, 93.3333],
+  'kolasib': [24.2333, 92.6833],
+  'serchhip': [23.3333, 92.8500],
+  'mamit': [23.9333, 92.4833],
+  'lawngtlai': [22.5333, 92.8833],
+  'saiha': [22.4833, 92.9833],
+  'hnahthial': [22.9667, 92.9333],
+  'khawzawl': [23.5333, 93.1833],
+  'saitual': [23.7000, 92.9833],
+  // Sikkim
+  'gangtok': [27.3389, 88.6065],
+  'east sikkim': [27.3389, 88.6065],
+  'north sikkim': [27.7000, 88.5167],
+  'mangan': [27.5020, 88.5342],
+  'namchi': [27.1667, 88.3500],
+  'south sikkim': [27.1667, 88.3500],
+  'gyalshing': [27.2833, 88.2500],
+  'west sikkim': [27.2833, 88.2500],
+  'pakyong': [27.2400, 88.5900],
+  'soreng': [27.1667, 88.2000],
+  // Tripura
+  'agartala': [23.8315, 91.2868],
+  'west tripura': [23.8315, 91.2868],
+  'dharmanagar': [24.3667, 92.1667],
+  'north tripura': [24.3667, 92.1667],
+  'dhalai': [23.8500, 91.8500],
+  'ambassa': [23.8500, 91.8500],
+  'gomati': [23.5333, 91.4833],
+  'udaipur': [23.5333, 91.4833],
+  'khowai': [24.0667, 91.6000],
+  'sepahijala': [23.6800, 91.3300],
+  'south tripura': [23.1667, 91.5000],
+  'belonia': [23.1667, 91.5000],
+  'unakoti': [24.2833, 92.0167],
+  'kailashahar': [24.2833, 92.0167],
+  // Non-NER Special test
+  'delhi': [28.6139, 77.2090],
+  'lucknow': [26.8467, 80.9462]
+};
+
+async function resolveLocationCoords(query: string, fallbackCoords: [number, number]): Promise<[number, number]> {
+  if (!query || !query.trim()) return fallbackCoords;
+  const q = query.trim().toLowerCase();
+  
+  // 1. Direct dictionary match
+  if (NER_DISTRICT_COORDS[q]) {
+    return NER_DISTRICT_COORDS[q];
+  }
+  
+  // 2. Partial dictionary match
+  for (const [key, coords] of Object.entries(NER_DISTRICT_COORDS)) {
+    if (q.includes(key) || key.includes(q)) {
+      return coords;
+    }
+  }
+
+  // 3. Nominatim Geocoding API Fallback
+  try {
+    const results = await searchLocation(query);
+    if (results && results.length > 0) {
+      return [results[0].lat, results[0].lon];
+    }
+  } catch (e) {
+    console.warn("Geocoding failed for query:", query, e);
+  }
+
+  return fallbackCoords;
+}
 
 interface RoadAccessibilityModuleProps {
   onNavigateToMap?: () => void;
@@ -62,23 +257,78 @@ export default function RoadAccessibilityModule({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const routePolylineRef = useRef<L.Polyline | null>(null);
   const markersGroupRef = useRef<L.LayerGroup>(L.layerGroup());
+  const routeMarkersGroupRef = useRef<L.LayerGroup | null>(null);
 
   // Compute Route
-  const handleComputeRoute = async (sName: string, sLat: number, sLon: number, dName: string, dLat: number, dLon: number) => {
+  const handleComputeRoute = async (sNameCustom?: string, dNameCustom?: string) => {
+    const sName = sNameCustom || startInput;
+    const dName = dNameCustom || destInput;
     setIsComputing(true);
-    setStatusToast(`📡 Computing OSRM Safe Green Corridor from ${sName} to ${dName}...`);
+    setStatusToast(`📡 Resolving location telemetry for ${sName} ➔ ${dName}...`);
 
     try {
+      // 1. Dynamic Geocode Start & Dest
+      const resolvedStart = await resolveLocationCoords(sName, startCoords);
+      const resolvedDest = await resolveLocationCoords(dName, destCoords);
+
+      setStartCoords(resolvedStart);
+      setDestCoords(resolvedDest);
+
+      setStatusToast(`📡 Computing OSRM Safe Green Corridor from ${sName} to ${dName}...`);
+
       const res = await calculateSafeNERRoute({
         startName: sName,
-        startLat: sLat,
-        startLon: sLon,
+        startLat: resolvedStart[0],
+        startLon: resolvedStart[1],
         destName: dName,
-        destLat: dLat,
-        destLon: dLon
+        destLat: resolvedDest[0],
+        destLon: resolvedDest[1]
       });
 
       setRouteResult(res);
+
+      // 2. Render Markers & Auto-Zoom Map
+      if (mapInstanceRef.current) {
+        if (routeMarkersGroupRef.current) {
+          routeMarkersGroupRef.current.clearLayers();
+        } else {
+          routeMarkersGroupRef.current = L.layerGroup().addTo(mapInstanceRef.current);
+        }
+
+        // Start Pin Icon 📍
+        const startIcon = L.divIcon({
+          className: 'custom-start-pin',
+          html: `<div style="background: #10b981; color: white; border: 2px solid white; padding: 4px 8px; border-radius: 12px; font-weight: 900; font-size: 11px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); white-space: nowrap;">📍 ${sName}</div>`,
+          iconSize: [0, 0],
+          iconAnchor: [0, 0]
+        });
+        const startMarker = L.marker(resolvedStart, { icon: startIcon });
+        startMarker.bindPopup(`<b>Start Point:</b> ${sName}`);
+        routeMarkersGroupRef.current.addLayer(startMarker);
+
+        // Destination Pin Icon 🎯
+        const destIcon = L.divIcon({
+          className: 'custom-dest-pin',
+          html: `<div style="background: #0284c7; color: white; border: 2px solid white; padding: 4px 8px; border-radius: 12px; font-weight: 900; font-size: 11px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); white-space: nowrap;">🎯 ${dName}</div>`,
+          iconSize: [0, 0],
+          iconAnchor: [0, 0]
+        });
+        const destMarker = L.marker(resolvedDest, { icon: destIcon });
+        destMarker.bindPopup(`<b>Destination:</b> ${dName}`);
+        routeMarkersGroupRef.current.addLayer(destMarker);
+
+        // Fit map bounds to Start & Destination!
+        const fitBoundsList: L.LatLngExpression[] = [resolvedStart, resolvedDest];
+        if (res.geometry && res.geometry.length > 0) {
+          res.geometry.forEach(pt => fitBoundsList.push(pt));
+        }
+
+        mapInstanceRef.current.fitBounds(L.latLngBounds(fitBoundsList), {
+          padding: [50, 50],
+          maxZoom: 12,
+          duration: 1.2
+        });
+      }
 
       if (!res.isValidNER) {
         setStatusToast(res.warningMessage || `Location outside North Eastern Region.`);
@@ -98,7 +348,7 @@ export default function RoadAccessibilityModule({
 
   // Initial Calculation on Mount
   useEffect(() => {
-    handleComputeRoute(startInput, startCoords[0], startCoords[1], destInput, destCoords[0], destCoords[1]);
+    handleComputeRoute(startInput, destInput);
   }, []);
 
   // Preset Corridor Selection Handlers
@@ -107,7 +357,7 @@ export default function RoadAccessibilityModule({
     setStartCoords([sLat, sLon]);
     setDestInput(dName);
     setDestCoords([dLat, dLon]);
-    handleComputeRoute(sName, sLat, sLon, dName, dLat, dLon);
+    handleComputeRoute(sName, dName);
   };
 
   // Initialize Map
@@ -259,7 +509,7 @@ export default function RoadAccessibilityModule({
           </div>
 
           <button
-            onClick={() => handleComputeRoute(startInput, startCoords[0], startCoords[1], destInput, destCoords[0], destCoords[1])}
+            onClick={() => handleComputeRoute(startInput, destInput)}
             disabled={isComputing}
             className="p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 text-xs font-bold cursor-pointer shrink-0"
           >
@@ -282,6 +532,7 @@ export default function RoadAccessibilityModule({
                 type="text"
                 value={startInput}
                 onChange={(e) => setStartInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleComputeRoute(startInput, destInput); }}
                 placeholder="e.g. Guwahati, Assam"
                 className="w-full bg-transparent focus:outline-none"
               />
@@ -297,6 +548,7 @@ export default function RoadAccessibilityModule({
                 type="text"
                 value={destInput}
                 onChange={(e) => setDestInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleComputeRoute(startInput, destInput); }}
                 placeholder="e.g. Shillong, Meghalaya"
                 className="w-full bg-transparent focus:outline-none"
               />
@@ -306,7 +558,7 @@ export default function RoadAccessibilityModule({
           {/* Calculate Button */}
           <div className="flex items-end">
             <button
-              onClick={() => handleComputeRoute(startInput, startCoords[0], startCoords[1], destInput, destCoords[0], destCoords[1])}
+              onClick={() => handleComputeRoute(startInput, destInput)}
               disabled={isComputing}
               className="w-full lg:w-auto px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer h-[40px]"
             >

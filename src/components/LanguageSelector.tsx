@@ -105,7 +105,7 @@ export default function LanguageSelector() {
               </div>
             </div>
             <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[9px] font-extrabold text-emerald-300 border border-emerald-500/30">
-              10 Regional Langs
+              {nerLanguages.length} Regional Langs
             </span>
           </div>
 
