@@ -5694,7 +5694,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <button
                       onClick={() => {
                         setActiveSidePanel(null);
-                        onNavigateModule('emergency-response');
+                        onNavigateModule('private-tracking');
                       }}
                       className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer text-xs transition transform hover:scale-[1.01]"
                     >

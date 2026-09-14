@@ -82,7 +82,6 @@ import DisasterSafetyGuide from './components/DisasterSafetyGuide';
 
 import DisasterReportsModule from './components/DisasterReportsModule';
 import { ReliefSupplyTrackingModule } from './components/ReliefSupplyTrackingModule';
-import { SmartEmergencyResponseModule } from './components/SmartEmergencyResponseModule';
 import { PrivateSmartEmergencyModule } from './components/PrivateSmartEmergencyModule';
 import AddressDisasterIntelligence from './components/AddressDisasterIntelligence';
 import AIChatbotWidget from './components/AIChatbotWidget';
@@ -118,8 +117,7 @@ export default function App() {
     if (path.includes('/flood')) return 'flood';
     if (path.includes('/weather')) return 'weather';
     if (path.includes('/landslide')) return 'landslide';
-    if (path.includes('/private-tracking') || path.includes('/smart-tracking') || path.includes('/live-tracking')) return 'private-tracking';
-    if (path.includes('/emergency-response')) return 'emergency-response';
+    if (path.includes('/private-tracking') || path.includes('/smart-tracking') || path.includes('/live-tracking') || path.includes('/emergency-response')) return 'private-tracking';
     if (path.includes('/facilities') || path.includes('/emergency-facilities')) return 'facilities';
     if (path.includes('/disaster-reports') || path.includes('/incidents')) return 'disaster-reports';
     if (path.includes('/relief-supplies')) return 'relief-supplies';
@@ -779,7 +777,6 @@ export default function App() {
                 items: [
                   { id: 'private-tracking', label: 'Private Live Tracking', icon: Radio, badge: '1-TO-1 GPS', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'relief-supplies', label: 'Relief Supply & Vehicle Tracking', icon: Truck, badge: 'LIVE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'emergency-response', label: 'Smart Emergency Response', icon: Zap, badge: 'AI PRIORITY', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
                   { id: 'rerouting', label: 'Road Accessibility & Safe Routes', icon: Navigation, badge: 'OSRM ROUTE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
                   { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue'), icon: HeartPulse, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' }
@@ -1508,18 +1505,9 @@ export default function App() {
         )}
 
         {/* PRIVATE SMART EMERGENCY LIVE TRACKING MODULE */}
-        {(activeModule === 'private-tracking' || activeModule === 'smart-tracking' || activeModule === 'live-tracking') && (
+        {(activeModule === 'private-tracking' || activeModule === 'smart-tracking' || activeModule === 'live-tracking' || activeModule === 'emergency-response') && (
           <div className="h-full overflow-y-auto">
             <PrivateSmartEmergencyModule
-              onNavigateHome={() => setActiveModule('home')}
-            />
-          </div>
-        )}
-
-        {/* SMART EMERGENCY RESPONSE MODULE */}
-        {activeModule === 'emergency-response' && (
-          <div className="h-full overflow-y-auto">
-            <SmartEmergencyResponseModule
               onNavigateHome={() => setActiveModule('home')}
             />
           </div>

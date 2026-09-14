@@ -766,7 +766,7 @@ const MODULE_NAMES: Record<string, string> = {
   aiimpact: 'AI Impact Assessment',
   map: 'NER Live GIS Map',
   'relief-supplies': 'Relief Supply & Vehicle Tracking',
-  'emergency-response': 'Smart Emergency Response',
+  'private-tracking': 'Private Live Emergency Tracking',
   rerouting: 'Road Accessibility & Safe Routes',
   facilities: 'Emergency Facilities & Rescue',
   drone: 'UAV Drone Dispatcher',

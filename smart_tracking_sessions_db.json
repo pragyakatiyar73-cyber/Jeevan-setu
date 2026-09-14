@@ -1,6 +1,57 @@
 {
   "requests": [
     {
+      "emergencyRequestId": "JS-EMG-5662",
+      "emergencyType": "Relief",
+      "requirement": "Food",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "MEDIUM",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-REL-001",
+      "trackingSessionId": "SESS-208561",
+      "createdAt": "2026-09-14T14:13:28.561Z",
+      "updatedAt": "2026-09-14T14:13:28.561Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-2604",
+      "emergencyType": "Fire",
+      "requirement": "Fire assistance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "CRITICAL",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-FIRE-001",
+      "trackingSessionId": "SESS-137054",
+      "createdAt": "2026-09-14T14:12:17.054Z",
+      "updatedAt": "2026-09-14T14:12:17.054Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-2303",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-130252",
+      "createdAt": "2026-09-14T14:12:10.252Z",
+      "updatedAt": "2026-09-14T14:12:10.252Z"
+    },
+    {
       "emergencyRequestId": "JS-EMG-6718",
       "emergencyType": "Relief",
       "requirement": "Food",
@@ -240,6 +291,27 @@
     }
   ],
   "sessions": [
+    {
+      "sessionId": "SESS-208561",
+      "emergencyRequestId": "JS-EMG-5662",
+      "vehicleId": "JS-REL-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:13:28.561Z"
+    },
+    {
+      "sessionId": "SESS-137054",
+      "emergencyRequestId": "JS-EMG-2604",
+      "vehicleId": "JS-FIRE-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:12:17.054Z"
+    },
+    {
+      "sessionId": "SESS-130252",
+      "emergencyRequestId": "JS-EMG-2303",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:12:10.252Z"
+    },
     {
       "sessionId": "SESS-098576",
       "emergencyRequestId": "JS-EMG-6718",
