@@ -2143,7 +2143,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           <div className="flex items-center gap-1.5 sm:gap-2 2xl:gap-2.5 shrink-0">
             {/* 🤖 AI AGENT WITH VOICE SEARCH BUTTON */}
             <button
-              onClick={() => setIsAiAgentOpen(true)}
+              onClick={() => {
+                setIsAiChatOpen((prev) => !prev);
+                if (onOpenAiChatbot) onOpenAiChatbot();
+              }}
               className="bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-sky-500/20 hover:shadow-sky-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-sky-400/40 whitespace-nowrap shrink-0 group"
               title="AI Agent and Voice Search"
             >
@@ -4022,187 +4025,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 ));
               })()}
             </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* ==================================================
-          MODAL 5: AI AGENT & VOICE SEARCH MODAL
-         ================================================== */}
-      {isAiAgentOpen && (
-        <div className="fixed inset-0 z-[210] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-[#070d1e] border border-sky-500/40 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl shadow-sky-500/10 relative flex flex-col max-h-[85vh]">
-            
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-sky-500/30">
-                  <Bot className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-black text-white">Jeevan Setu AI Agent</h3>
-                    <span className="bg-sky-500/20 text-sky-300 border border-sky-400/40 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-                      Voice Active
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 font-semibold">
-                    Voice-to-Text Search &amp; Neural Disaster Intelligence Assistant
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  if (isListening && recognitionRef.current) {
-                    recognitionRef.current.stop();
-                    setIsListening(false);
-                  }
-                  setIsAiAgentOpen(false);
-                }}
-                className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Chat / Message Stream */}
-            <div className="flex-1 overflow-y-auto py-4 space-y-3.5 custom-scrollbar min-h-[220px]">
-              {aiMessages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  {msg.role === 'assistant' && (
-                    <div className="h-7 w-7 rounded-xl bg-sky-600/30 border border-sky-400/30 text-sky-300 flex items-center justify-center shrink-0 mt-1">
-                      <Sparkles className="h-3.5 w-3.5" />
-                    </div>
-                  )}
-                  <div
-                    className={`max-w-[82%] rounded-2xl px-4 py-3 text-xs leading-relaxed ${
-                      msg.role === 'user'
-                        ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-slate-950 font-bold shadow-md'
-                        : 'bg-slate-900/90 border border-slate-800 text-slate-200'
-                    }`}
-                  >
-                    <p>{msg.text}</p>
-
-                    {/* Action button if AI suggested a navigation route */}
-                    {msg.actionText && (
-                      <div className="mt-2.5 pt-2 border-t border-slate-700/60 flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            setIsAiAgentOpen(false);
-                            if (msg.actionModule === 'sos') {
-                              onOpenSos();
-                            } else if (msg.actionModule) {
-                              onNavigateModule(msg.actionModule);
-                            }
-                          }}
-                          className="bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1.5 transition cursor-pointer"
-                        >
-                          <span>{msg.actionText}</span>
-                          <ArrowRight className="h-3 w-3" />
-                        </button>
-                        <button
-                          onClick={() => speakText(msg.text)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-sky-300 hover:bg-slate-800 transition cursor-pointer"
-                          title="Read aloud"
-                        >
-                          <Volume2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              {isAiThinking && (
-                <div className="flex items-center gap-2 text-sky-400 text-xs font-bold pl-9">
-                  <Activity className="h-3.5 w-3.5 animate-spin" />
-                  <span>AI Agent is analyzing telemetry...</span>
-                </div>
-              )}
-            </div>
-
-            {/* Voice Listening Active Wave Indicator */}
-            {isListening && (
-              <div className="mb-3 p-3 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-center justify-between animate-pulse">
-                <div className="flex items-center gap-2 text-xs font-bold text-red-400">
-                  <span className="h-2.5 w-2.5 rounded-full bg-red-500 animate-ping" />
-                  <span>Listening... Speak your search or question now</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={toggleVoiceListening}
-                  className="bg-red-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg cursor-pointer"
-                >
-                  Stop
-                </button>
-              </div>
-            )}
-
-            {/* Quick Prompt Suggestions */}
-            <div className="flex flex-wrap gap-1.5 pb-3">
-              {[
-                'Show Live GIS Map',
-                'Check Landslide Risk in Sikkim',
-                'Find Nearest Relief Camps',
-                'Evacuation Route NH-10',
-                'Weather & Cyclone Watch'
-              ].map((suggestion, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleSendAiPrompt(suggestion)}
-                  className="px-2.5 py-1 rounded-full bg-slate-900 hover:bg-sky-600/30 text-slate-300 hover:text-white border border-slate-800 text-[10px] font-semibold transition cursor-pointer"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-
-            {/* Input Bar with Voice to Text Mic Button */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendAiPrompt();
-              }}
-              className="flex items-center gap-2 pt-3 border-t border-slate-800"
-            >
-              {/* Voice-to-Text Microphone Trigger Button */}
-              <button
-                type="button"
-                onClick={toggleVoiceListening}
-                className={`p-3 rounded-2xl transition cursor-pointer flex items-center justify-center ${
-                  isListening
-                    ? 'bg-red-600 text-white ring-4 ring-red-500/40 animate-pulse'
-                    : 'bg-slate-800 hover:bg-sky-500 text-slate-200 hover:text-slate-950 border border-slate-700'
-                }`}
-                title={isListening ? 'Stop Listening' : 'Click to Speak (Voice Search)'}
-              >
-                {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-              </button>
-
-              {/* Text Input Box */}
-              <input
-                type="text"
-                placeholder={isListening ? 'Listening to your voice...' : 'Ask AI Agent or speak via microphone...'}
-                value={aiPrompt}
-                onChange={(e) => setAiPrompt(e.target.value)}
-                className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-4 py-3 text-xs font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500"
-              />
-
-              {/* Send Button */}
-              <button
-                type="submit"
-                disabled={!aiPrompt.trim() && !isListening}
-                className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 disabled:opacity-40 text-slate-950 font-black px-4 py-3 rounded-2xl text-xs flex items-center gap-1.5 transition cursor-pointer"
-              >
-                <span>Search</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-            </form>
 
           </div>
         </div>
@@ -6569,21 +6391,20 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
         </div>
       )}
 
-      {/* 🤖 Interactive AI Chat Box with Voice-to-Text & Voice Search (Fallback if not handled by parent) */}
-      {!onOpenAiChatbot && (
-        <AIChatbotWidget
-          onNavigateModule={onNavigateModule}
-          onOpenSos={onOpenSos}
-          isOpenControlled={isAiChatOpen}
-          onOpenControlled={() => setIsAiChatOpen(true)}
-          onCloseControlled={() => {
-            setIsAiChatOpen(false);
-            if (activeTab === 'AIChat') {
-              setActiveTab('Home');
-            }
-          }}
-        />
-      )}
+      {/* 🤖 Interactive AI Chat Box with Voice-to-Text & Voice Search */}
+      <AIChatbotWidget
+        onNavigateModule={onNavigateModule}
+        onOpenSos={onOpenSos}
+        isOpenControlled={isAiChatOpen}
+        onOpenControlled={() => setIsAiChatOpen(true)}
+        onCloseControlled={() => {
+          setIsAiChatOpen(false);
+          if (activeTab === 'AIChat') {
+            setActiveTab('Home');
+          }
+        }}
+        activeModule="home"
+      />
 
     </div>
   );
