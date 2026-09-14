@@ -2645,24 +2645,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 </p>
               </div>
             </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleOpenDashboard}
-                className="bg-sky-500 hover:bg-sky-400 text-slate-950 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-md shadow-sm cursor-pointer border border-sky-300/40 flex items-center gap-1.5 group"
-              >
-                <span>{t('home.viewFullDashboard', 'View Full Dashboard')}</span>
-                <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition duration-300" />
-              </button>
-
-              <button
-                onClick={() => onNavigateModule('map')}
-                className="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-400 border border-slate-300 dark:border-slate-700 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-md hover:border-sky-400 shadow-sm cursor-pointer flex items-center gap-1.5 group"
-              >
-                <span>{t('home.viewFullMap', 'View Full Map')}</span>
-                <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition duration-300" />
-              </button>
-            </div>
           </div>
 
           {/* 3-Column Grid */}
