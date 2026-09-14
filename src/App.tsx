@@ -775,7 +775,7 @@ export default function App() {
               {
                 category: t('sidebar.catResponse', 'Crisis Response & Logistics'),
                 items: [
-                  { id: 'private-tracking', label: 'Private Live Tracking', icon: Radio, badge: '1-TO-1 GPS', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'private-tracking', label: 'Smart Emergency Response', icon: Radio, badge: '1-TO-1 GPS', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
                   { id: 'relief-supplies', label: 'Relief Supply & Vehicle Tracking', icon: Truck, badge: 'LIVE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { id: 'rerouting', label: 'Road Accessibility & Safe Routes', icon: Navigation, badge: 'OSRM ROUTE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
                   { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue'), icon: HeartPulse, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },

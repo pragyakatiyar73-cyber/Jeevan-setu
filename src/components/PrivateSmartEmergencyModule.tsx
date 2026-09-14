@@ -466,7 +466,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
             </span>
             <div>
               <h1 className="text-xl md:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-                SMART EMERGENCY DISPATCH
+                SMART EMERGENCY RESPONSE
                 <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-700/50 uppercase tracking-widest">
                   PRIVATE 1-TO-1 TRACKING
                 </span>
@@ -773,7 +773,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
                   <h2 className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-2">
-                    PRIVATE LIVE EMERGENCY TRACKING
+                    SMART EMERGENCY RESPONSE
                     <span className="font-mono text-[10px] text-rose-400 bg-rose-950/80 px-2 py-0.5 rounded border border-rose-800">
                       {trackingData.sessionId}
                     </span>

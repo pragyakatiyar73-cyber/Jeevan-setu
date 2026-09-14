@@ -1,6 +1,91 @@
 {
   "requests": [
     {
+      "emergencyRequestId": "JS-EMG-2924",
+      "emergencyType": "Fire",
+      "requirement": "Fire assistance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "CRITICAL",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-FIRE-001",
+      "trackingSessionId": "SESS-891530",
+      "createdAt": "2026-09-14T14:58:11.530Z",
+      "updatedAt": "2026-09-14T14:58:11.530Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-6582",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-884836",
+      "createdAt": "2026-09-14T14:58:04.836Z",
+      "updatedAt": "2026-09-14T14:58:04.836Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-9478",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-429693",
+      "createdAt": "2026-09-14T14:17:09.693Z",
+      "updatedAt": "2026-09-14T14:17:09.693Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-5831",
+      "emergencyType": "Fire",
+      "requirement": "Fire assistance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "CRITICAL",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-FIRE-001",
+      "trackingSessionId": "SESS-415481",
+      "createdAt": "2026-09-14T14:16:55.481Z",
+      "updatedAt": "2026-09-14T14:16:55.481Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-7248",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-408863",
+      "createdAt": "2026-09-14T14:16:48.862Z",
+      "updatedAt": "2026-09-14T14:16:48.862Z"
+    },
+    {
       "emergencyRequestId": "JS-EMG-5662",
       "emergencyType": "Relief",
       "requirement": "Food",
@@ -291,6 +376,41 @@
     }
   ],
   "sessions": [
+    {
+      "sessionId": "SESS-891530",
+      "emergencyRequestId": "JS-EMG-2924",
+      "vehicleId": "JS-FIRE-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:58:11.530Z"
+    },
+    {
+      "sessionId": "SESS-884836",
+      "emergencyRequestId": "JS-EMG-6582",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:58:04.836Z"
+    },
+    {
+      "sessionId": "SESS-429693",
+      "emergencyRequestId": "JS-EMG-9478",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:17:09.693Z"
+    },
+    {
+      "sessionId": "SESS-415481",
+      "emergencyRequestId": "JS-EMG-5831",
+      "vehicleId": "JS-FIRE-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:16:55.481Z"
+    },
+    {
+      "sessionId": "SESS-408863",
+      "emergencyRequestId": "JS-EMG-7248",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:16:48.862Z"
+    },
     {
       "sessionId": "SESS-208561",
       "emergencyRequestId": "JS-EMG-5662",
