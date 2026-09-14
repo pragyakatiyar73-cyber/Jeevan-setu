@@ -45,6 +45,17 @@ import {
 import { isPointInNER, NER_STATES } from '../utils/nerBoundary';
 import { NER_STATES_DISTRICTS } from '../services/api/disasterReportsService';
 
+const NER_STATE_DEFAULT_COORDS: Record<string, [number, number]> = {
+  'Assam': [26.1445, 91.7362],
+  'Arunachal Pradesh': [27.0844, 93.6053],
+  'Manipur': [24.8170, 93.9368],
+  'Meghalaya': [25.5788, 91.8933],
+  'Mizoram': [23.7271, 92.7176],
+  'Nagaland': [25.6751, 94.1086],
+  'Sikkim': [27.3389, 88.6065],
+  'Tripura': [23.8315, 91.2868]
+};
+
 interface Props {
   onNavigateHome?: () => void;
   initialSessionId?: string | null;
@@ -234,14 +245,22 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       requestMapRef.current = null;
     }
 
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
+    });
+
     const map = L.map(requestMapContainerRef.current, {
       center: [userLat, userLon],
-      zoom: 12
+      zoom: 12,
+      zoomControl: true
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
-      attribution: '&copy; OpenStreetMap | Jeevan Setu NER'
+      attribution: '&copy; OpenStreetMap contributors | Jeevan Setu NER'
     }).addTo(map);
 
     const marker = L.marker([userLat, userLon], {
@@ -256,18 +275,27 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
     marker.on('dragend', () => {
       const pos = marker.getLatLng();
-      setUserLat(pos.lat);
-      setUserLon(pos.lng);
+      setUserLat(Number(pos.lat.toFixed(4)));
+      setUserLon(Number(pos.lng.toFixed(4)));
     });
 
     map.on('click', (e) => {
-      setUserLat(e.latlng.lat);
-      setUserLon(e.latlng.lng);
+      setUserLat(Number(e.latlng.lat.toFixed(4)));
+      setUserLon(Number(e.latlng.lng.toFixed(4)));
       marker.setLatLng(e.latlng);
     });
 
     requestMapRef.current = map;
     requestMarkerRef.current = marker;
+
+    // Guaranteed Leaflet layout recalculation on mount
+    [50, 150, 300, 500, 800].forEach(delay => {
+      setTimeout(() => {
+        if (requestMapRef.current) {
+          requestMapRef.current.invalidateSize();
+        }
+      }, delay);
+    });
 
     return () => {
       if (requestMapRef.current) {
@@ -276,6 +304,15 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       }
     };
   }, [locationMode]);
+
+  // Sync request location picker map marker and view when coordinates change
+  useEffect(() => {
+    if (requestMapRef.current && requestMarkerRef.current && locationMode === 'MAP') {
+      requestMapRef.current.setView([userLat, userLon], 12);
+      requestMarkerRef.current.setLatLng([userLat, userLon]);
+      requestMapRef.current.invalidateSize();
+    }
+  }, [userLat, userLon, locationMode]);
 
   // Leaflet Private Live Tracking Map
   useEffect(() => {
@@ -620,9 +657,14 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                   <select
                     value={userState}
                     onChange={e => {
-                      setUserState(e.target.value);
-                      const dists = NER_STATES_DISTRICTS[e.target.value] || [];
-                      setUserDistrict(dists[0] || '');
+                      const selectedState = e.target.value;
+                      setUserState(selectedState);
+                      const dists = NER_STATES_DISTRICTS[selectedState] || [];
+                      const firstDist = dists[0] || '';
+                      setUserDistrict(firstDist);
+                      const coords = NER_STATE_DEFAULT_COORDS[selectedState] || [26.1445, 91.7362];
+                      setUserLat(coords[0]);
+                      setUserLon(coords[1]);
                     }}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white font-semibold"
                   >
@@ -639,7 +681,15 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 <label className="block text-slate-300 font-bold mb-1.5">District Location</label>
                 <select
                   value={userDistrict}
-                  onChange={e => setUserDistrict(e.target.value)}
+                  onChange={e => {
+                    const selectedDist = e.target.value;
+                    setUserDistrict(selectedDist);
+                    const baseCoords = NER_STATE_DEFAULT_COORDS[userState] || [26.1445, 91.7362];
+                    const distIndex = (NER_STATES_DISTRICTS[userState] || []).indexOf(selectedDist);
+                    const distOffset = distIndex > 0 ? distIndex * 0.04 : 0;
+                    setUserLat(Number((baseCoords[0] + distOffset * 0.2).toFixed(4)));
+                    setUserLon(Number((baseCoords[1] + distOffset * 0.3).toFixed(4)));
+                  }}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white font-semibold"
                 >
                   {(NER_STATES_DISTRICTS[userState] || []).map(d => (
@@ -681,11 +731,17 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
                   <button
                     type="button"
-                    onClick={() => setLocationMode('MAP')}
-                    className="flex-1 min-w-[160px] py-3 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition"
+                    onClick={() => {
+                      setLocationMode(prev => (prev === 'MAP' ? 'NONE' : 'MAP'));
+                    }}
+                    className={`flex-1 min-w-[160px] py-3 px-4 font-extrabold rounded-xl border flex items-center justify-center gap-2 transition ${
+                      locationMode === 'MAP'
+                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-950'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                    }`}
                   >
                     <MapPin className="w-4 h-4 text-emerald-400" />
-                    🗺️ SELECT LOCATION ON MAP
+                    🗺️ SELECT LOCATION ON MAP {locationMode === 'MAP' ? '✓' : ''}
                   </button>
                 </div>
 
@@ -711,7 +767,11 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                     <p className="text-[11px] text-amber-400 font-semibold mb-1">
                       Drag the red marker or click on the map to place your exact emergency location:
                     </p>
-                    <div ref={requestMapContainerRef} className="w-full h-56 rounded-xl overflow-hidden border border-slate-800"></div>
+                    <div
+                      ref={requestMapContainerRef}
+                      className="w-full h-64 rounded-xl overflow-hidden border border-slate-800 relative shadow-inner"
+                      style={{ height: '260px', width: '100%', minHeight: '260px', zIndex: 1 }}
+                    ></div>
                   </div>
                 )}
               </div>
