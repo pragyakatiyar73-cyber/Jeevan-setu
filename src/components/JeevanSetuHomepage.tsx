@@ -838,8 +838,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     }
   };
 
-  // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation, safetyguide, reliefcamps, livemap)
-  const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | 'safetyguide' | 'reliefcamps' | 'livemap' | null>(null);
+  // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation, safetyguide, reliefcamps, livemap, reliefsupplies, emergencyresponse)
+  const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | 'safetyguide' | 'reliefcamps' | 'livemap' | 'reliefsupplies' | 'emergencyresponse' | null>(null);
 
   // Compact Feature Modal state for hero indicator pills (ai, livedata, gis, risk, resources)
   const [activeFeatureModal, setActiveFeatureModal] = useState<'ai' | 'livedata' | 'gis' | 'risk' | 'resources' | null>(null);
@@ -2480,7 +2480,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 icon: Truck,
                 badge: 'LIVE REGIONAL SYSTEM',
                 badgeColor: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/40',
-                action: () => onNavigateModule('relief-supplies'),
+                action: () => setActiveSidePanel('reliefsupplies'),
                 bgColor: 'bg-[#ECFDF5] dark:bg-emerald-950/30',
                 hoverBg: 'hover:bg-[#D1FAE5] dark:hover:bg-emerald-900/50',
                 borderColor: 'border-emerald-300 dark:border-emerald-800/80',
@@ -2493,7 +2493,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 icon: Zap,
                 badge: 'AI PRIORITY',
                 badgeColor: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40',
-                action: () => onNavigateModule('emergency-response'),
+                action: () => setActiveSidePanel('emergencyresponse'),
                 bgColor: 'bg-[#FFFBEB] dark:bg-amber-950/30',
                 hoverBg: 'hover:bg-[#FEF3C7] dark:hover:bg-amber-900/50',
                 borderColor: 'border-amber-300 dark:border-amber-800/80',
@@ -4223,7 +4223,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           />
 
           {/* Right-Side Drawer Container */}
-          <div className={`fixed top-0 right-0 h-full z-[200] ${activeSidePanel === 'livemap' ? 'w-full sm:w-[540px] lg:w-[600px]' : 'w-full sm:w-[480px] lg:w-[540px]'} bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-800 animate-in slide-in-from-right duration-300`}>
+          <div className={`fixed top-0 right-0 h-full z-[200] ${activeSidePanel === 'livemap' || activeSidePanel === 'reliefsupplies' || activeSidePanel === 'emergencyresponse' ? 'w-full sm:w-[540px] lg:w-[600px]' : 'w-full sm:w-[480px] lg:w-[540px]'} bg-white dark:bg-[#070d1e] text-slate-900 dark:text-slate-100 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-800 animate-in slide-in-from-right duration-300`}>
             
             {/* Drawer Header */}
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-[#0b132b]">
@@ -4268,6 +4268,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     <Building2 className="h-5 w-5" />
                   </div>
                 )}
+                {activeSidePanel === 'reliefsupplies' && (
+                  <div className="h-9 w-9 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <Truck className="h-5 w-5" />
+                  </div>
+                )}
+                {activeSidePanel === 'emergencyresponse' && (
+                  <div className="h-9 w-9 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <Zap className="h-5 w-5" />
+                  </div>
+                )}
                 <div>
                   <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
                     {activeSidePanel === 'report' && '1. Report a Disaster'}
@@ -4278,6 +4288,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     {activeSidePanel === 'livesituation' && 'Explore Live Situation'}
                     {activeSidePanel === 'safetyguide' && 'Disaster Safety Guide & Helplines'}
                     {activeSidePanel === 'reliefcamps' && 'Relief Camps & Emergency Supplies'}
+                    {activeSidePanel === 'reliefsupplies' && 'Real-Time Relief Supply & Vehicle Tracking'}
+                    {activeSidePanel === 'emergencyresponse' && 'Smart Emergency Response System'}
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                     {activeSidePanel === 'report' && 'AI Incident Submission & Ground Photo Triage'}
@@ -4288,6 +4300,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     {activeSidePanel === 'livesituation' && 'Real-time Operations & Field Intelligence'}
                     {activeSidePanel === 'safetyguide' && 'Official Do’s & Don’ts, 24/7 Helplines & Survival Kit Checklist'}
                     {activeSidePanel === 'reliefcamps' && 'Nearby Operational Shelters, Bed Capacity & Relief Stocks'}
+                    {activeSidePanel === 'reliefsupplies' && 'Live Regional Fleet GPS Tracking, Depots & Supply Dispatches'}
+                    {activeSidePanel === 'emergencyresponse' && 'Multi-Criteria Emergency Priority Calculator & Live Dispatches'}
                   </p>
                 </div>
               </div>
@@ -5596,6 +5610,269 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       className="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-3.5 rounded-xl shadow-md flex items-center justify-center gap-2 cursor-pointer text-xs"
                     >
                       <span>Open Full Relief Camps &amp; Supplies Module</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PANEL 8: REAL-TIME RELIEF SUPPLY & VEHICLE TRACKING */}
+              {activeSidePanel === 'reliefsupplies' && (
+                <div className="space-y-5 text-xs font-medium">
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-emerald-500/10 border border-emerald-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-emerald-600 dark:text-emerald-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Track live GPS coordinates, vehicle speeds, and transit routes across North-East India.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Monitor warehouse depot inventories for clean water, meal packets, and medical kits.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Initiate immediate relief package dispatches matching active distress zones.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Connect with on-ground drivers and view live mobile telemetry updates.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Live Fleet Tracking Status */}
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-extrabold text-slate-800 dark:text-slate-200 text-xs flex items-center gap-1.5">
+                        <Truck className="h-4 w-4 text-emerald-500" />
+                        Active Relief Convoys &amp; Fleet Telemetry
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                        8 NER States Live
+                      </span>
+                    </div>
+
+                    {[
+                      { id: 'JS-TRK-01', type: 'Heavy Supply Truck (10T)', driver: 'Tenzing Norbu', route: 'Guwahati Depot ➔ Shillong Relief Center', speed: '48 km/h', status: 'ON ROUTE', gps: 'GPS Connected', cargo: '4,000 Food Packets + Water' },
+                      { id: 'JS-TRK-04', type: '4x4 Off-Road All-Terrain', driver: 'Bikash Kalita', route: 'Silchar Warehouse ➔ Aizawl District Hub', speed: '34 km/h', status: 'ON ROUTE', gps: 'GPS Connected', cargo: '850 Medical & Trauma Kits' },
+                      { id: 'JS-AMB-02', type: 'Emergency Mobile Medical Van', driver: 'Kevichüsa Angami', route: 'Dimapur Base ➔ Kohima Disaster Zone', speed: '52 km/h', status: 'DISPATCHED', gps: 'GPS Connected', cargo: 'Doctors + Emergency Oxygen' }
+                    ].map((veh, idx) => (
+                      <div key={idx} className="p-3.5 bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 hover:border-emerald-500/50 transition">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="font-black text-slate-900 dark:text-white text-xs">{veh.id}</span>
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">({veh.type})</span>
+                          </div>
+                          <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-full border border-emerald-500/30">
+                            {veh.status}
+                          </span>
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                          <span className="text-slate-400 font-normal">Route: </span>{veh.route}
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-800">
+                          <span>Driver: <strong className="text-slate-700 dark:text-slate-200">{veh.driver}</strong></span>
+                          <span>Speed: <strong className="text-emerald-600 dark:text-emerald-400">{veh.speed}</strong></span>
+                          <span className="text-emerald-500 font-bold flex items-center gap-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                            {veh.gps}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded-lg font-bold">
+                          Cargo: {veh.cargo}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Regional Warehouse Supply Inventory */}
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-900/40 rounded-2xl space-y-2.5">
+                    <div className="flex items-center justify-between text-emerald-800 dark:text-emerald-300 font-extrabold text-sm">
+                      <div className="flex items-center gap-2">
+                        <Package className="h-4.5 w-4.5 text-emerald-500" />
+                        <span>Regional Warehouse Supply Stocks</span>
+                      </div>
+                      <span className="text-[10px] font-bold bg-emerald-500/20 px-2 py-0.5 rounded-md">Live Telemetry</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
+                        <div className="text-slate-400 text-[9px] font-bold uppercase">Potable Drinking Water</div>
+                        <div className="font-black text-slate-900 dark:text-white text-sm mt-0.5">14,250 Liters</div>
+                        <div className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Assam &amp; Meghalaya Hubs</div>
+                      </div>
+                      <div className="p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
+                        <div className="text-slate-400 text-[9px] font-bold uppercase">Ready Meal Rations</div>
+                        <div className="font-black text-slate-900 dark:text-white text-sm mt-0.5">8,600 Packets</div>
+                        <div className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Sikkim &amp; Nagaland Depots</div>
+                      </div>
+                      <div className="p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
+                        <div className="text-slate-400 text-[9px] font-bold uppercase">Trauma &amp; Medical Kits</div>
+                        <div className="font-black text-slate-900 dark:text-white text-sm mt-0.5">1,420 Kits</div>
+                        <div className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Critical Emergency Stock</div>
+                      </div>
+                      <div className="p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
+                        <div className="text-slate-400 text-[9px] font-bold uppercase">Tarps &amp; Winter Blankets</div>
+                        <div className="font-black text-slate-900 dark:text-white text-sm mt-0.5">3,100 Units</div>
+                        <div className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Highland Weather Ready</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Full Module Button */}
+                  <div className="pt-2">
+                    <button
+                      onClick={() => {
+                        setActiveSidePanel(null);
+                        onNavigateModule('relief-supplies');
+                      }}
+                      className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer text-xs transition transform hover:scale-[1.01]"
+                    >
+                      <span>Open Full Real-Time Relief Supply &amp; Vehicle Tracking Module</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PANEL 9: SMART EMERGENCY RESPONSE SYSTEM */}
+              {activeSidePanel === 'emergencyresponse' && (
+                <div className="space-y-5 text-xs font-medium">
+                  {/* Step-by-Step Instructions */}
+                  <div className="bg-amber-500/10 border border-amber-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-black text-amber-600 dark:text-amber-400 text-xs uppercase tracking-wider">
+                        <span>📖</span>
+                        <span>How to Use (Step-by-Step Guide)</span>
+                      </div>
+                      <span className="text-[10px] font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-300 px-2 py-0.5 rounded-md">Step Guide</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Review automated multi-criteria priority rankings for incoming emergency incidents.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Inspect casualty risk, structural damage, and population vulnerability scores.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Match nearest supply depots and dispatch live GPS response vehicles with one click.</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Coordinate multi-agency disaster operations across all 8 North-Eastern states.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Live Emergency Metrics Cards */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl text-center">
+                      <div className="text-red-500 text-[10px] font-extrabold uppercase">Critical</div>
+                      <div className="text-lg font-black text-red-600 dark:text-red-400 mt-0.5">3</div>
+                      <div className="text-[9px] text-slate-400 font-medium">Immediate Action</div>
+                    </div>
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-xl text-center">
+                      <div className="text-amber-500 text-[10px] font-extrabold uppercase">High Priority</div>
+                      <div className="text-lg font-black text-amber-600 dark:text-amber-400 mt-0.5">7</div>
+                      <div className="text-[9px] text-slate-400 font-medium">Under Response</div>
+                    </div>
+                    <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded-xl text-center">
+                      <div className="text-emerald-500 text-[10px] font-extrabold uppercase">Available Units</div>
+                      <div className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">28</div>
+                      <div className="text-[9px] text-slate-400 font-medium">Ready in Depots</div>
+                    </div>
+                  </div>
+
+                  {/* Priority Incident Queue */}
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-extrabold text-slate-800 dark:text-slate-200 text-xs flex items-center gap-1.5">
+                        <Zap className="h-4 w-4 text-amber-500" />
+                        Active Triage Incidents &amp; Auto-Matched Resources
+                      </span>
+                      <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30">
+                        AI Calculated
+                      </span>
+                    </div>
+
+                    {[
+                      {
+                        id: 'EM-NER-042',
+                        type: 'Landslide Road Blockage',
+                        loc: 'NH-29 Kohima Bypass, Nagaland',
+                        priority: 'CRITICAL',
+                        affected: '140+ Commuters Stranded',
+                        assigned: 'NDRF Battalion 12 + Heavy Earthmover',
+                        eta: '14 Mins'
+                      },
+                      {
+                        id: 'EM-NER-038',
+                        type: 'Flash Flood & River Inundation',
+                        loc: 'Silchar Urban Lowlands, Assam',
+                        priority: 'HIGH',
+                        affected: '320 Displaced Residents',
+                        assigned: 'SDRF Inflatable Rescue Boats (4 Units)',
+                        eta: '22 Mins'
+                      },
+                      {
+                        id: 'EM-NER-045',
+                        type: 'Structural Hill Damage',
+                        loc: 'North Sikkim Highway Km-44',
+                        priority: 'CRITICAL',
+                        affected: 'Hill Community Isolated',
+                        assigned: 'Indian Army Quick Response Convoy',
+                        eta: '30 Mins'
+                      }
+                    ].map((inc, idx) => (
+                      <div key={idx} className="p-3.5 bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 hover:border-amber-500/50 transition">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs">{inc.type}</span>
+                          <span className={`px-2 py-0.5 text-[10px] font-black rounded-full border ${
+                            inc.priority === 'CRITICAL'
+                              ? 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30'
+                              : 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                          }`}>
+                            {inc.priority}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
+                          <span className="text-slate-400 font-normal">Location: </span>{inc.loc}
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
+                          <span>Impact: <strong className="text-slate-700 dark:text-slate-200">{inc.affected}</strong></span>
+                          <span className="text-amber-600 dark:text-amber-400 font-bold">ETA: {inc.eta}</span>
+                        </div>
+                        <div className="text-[10px] text-amber-700 dark:text-amber-300 bg-amber-500/10 px-2 py-1 rounded-lg font-bold flex items-center justify-between">
+                          <span>Assigned: {inc.assigned}</span>
+                          <span className="flex items-center gap-1 text-emerald-500">
+                            <CheckCircle2 className="h-3 w-3" />
+                            Dispatched
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Full Module Button */}
+                  <div className="pt-2">
+                    <button
+                      onClick={() => {
+                        setActiveSidePanel(null);
+                        onNavigateModule('emergency-response');
+                      }}
+                      className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer text-xs transition transform hover:scale-[1.01]"
+                    >
+                      <span>Open Full Smart Emergency Response System</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
