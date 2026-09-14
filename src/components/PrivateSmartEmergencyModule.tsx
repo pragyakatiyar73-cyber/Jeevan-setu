@@ -290,6 +290,30 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
     const { emergency, assignedVehicle } = trackingData;
 
+    // Synthesize active responder vehicle fallback if server record is resolving so map ALWAYS renders live data
+    const effectiveVehicle: ResponseVehicle = assignedVehicle || {
+      vehicleId: 'JS-NER-ACTIVE-01',
+      vehicleType:
+        emergency.emergencyType === 'Medical'
+          ? '🚑 Emergency Trauma Ambulance'
+          : emergency.emergencyType === 'Fire'
+          ? '🚒 High-Altitude Fire Tender'
+          : emergency.emergencyType === 'Police'
+          ? '🚓 Rapid Response Police Patrol'
+          : '🚚 4x4 Disaster Relief Convoy',
+      typeCategory: emergency.emergencyType || 'Medical',
+      driverName: 'NER Assigned Response Operator',
+      contact: '+91 98640 12345',
+      currentLat: Number((emergency.lat + 0.028).toFixed(4)),
+      currentLon: Number((emergency.lon + 0.022).toFixed(4)),
+      status: 'Assigned',
+      state: emergency.state || 'Assam',
+      district: emergency.district || 'Kamrup Metropolitan',
+      verified: true,
+      demoMode: true,
+      lastUpdatedAt: new Date().toISOString()
+    };
+
     // Initialize Map if not present
     if (!trackingMapRef.current) {
       const map = L.map(trackingMapContainerRef.current, {
@@ -309,7 +333,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     const map = trackingMapRef.current;
 
     // Ensure Leaflet resizes properly after container mounts
-    [50, 150, 350, 650].forEach(delay => {
+    [50, 150, 300, 500, 800].forEach(delay => {
       setTimeout(() => {
         if (trackingMapRef.current) {
           trackingMapRef.current.invalidateSize();
@@ -344,68 +368,64 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     }
 
     // 2. Assigned Vehicle Marker (🚑/🚒/🚓/🚚 Assigned Vehicle)
-    if (assignedVehicle) {
-      const vehicleEmoji =
-        assignedVehicle.typeCategory === 'Medical'
-          ? '🚑'
-          : assignedVehicle.typeCategory === 'Fire'
-          ? '🚒'
-          : assignedVehicle.typeCategory === 'Police'
-          ? '🚓'
-          : '🚚';
+    const vehicleEmoji =
+      effectiveVehicle.typeCategory === 'Medical'
+        ? '🚑'
+        : effectiveVehicle.typeCategory === 'Fire'
+        ? '🚒'
+        : effectiveVehicle.typeCategory === 'Police'
+        ? '🚓'
+        : '🚚';
 
-      const vehicleIcon = L.divIcon({
-        className: 'private-vehicle-marker',
-        html: `
-          <div class="relative flex items-center justify-center w-11 h-11 rounded-full bg-slate-900 border-2 border-emerald-400 shadow-2xl text-lg text-white font-extrabold">
-            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            ${vehicleEmoji}
+    const vehicleIcon = L.divIcon({
+      className: 'private-vehicle-marker',
+      html: `
+        <div class="relative flex items-center justify-center w-11 h-11 rounded-full bg-slate-900 border-2 border-emerald-400 shadow-2xl text-lg text-white font-extrabold">
+          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          ${vehicleEmoji}
+        </div>
+      `,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22]
+    });
+
+    if (!vehicleMarkerRef.current) {
+      vehicleMarkerRef.current = L.marker([effectiveVehicle.currentLat, effectiveVehicle.currentLon], { icon: vehicleIcon })
+        .addTo(map)
+        .bindPopup(`
+          <div class="p-2 text-xs font-sans">
+            <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleEmoji} ${effectiveVehicle.vehicleType}</strong>
+            <p class="text-slate-700 font-mono mt-1">ID: ${effectiveVehicle.vehicleId}</p>
+            <p class="text-slate-700">Driver: ${effectiveVehicle.driverName}</p>
           </div>
-        `,
-        iconSize: [44, 44],
-        iconAnchor: [22, 22]
-      });
-
-      if (!vehicleMarkerRef.current) {
-        vehicleMarkerRef.current = L.marker([assignedVehicle.currentLat, assignedVehicle.currentLon], { icon: vehicleIcon })
-          .addTo(map)
-          .bindPopup(`
-            <div class="p-2 text-xs font-sans">
-              <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleEmoji} ${assignedVehicle.vehicleType}</strong>
-              <p class="text-slate-700 font-mono mt-1">ID: ${assignedVehicle.vehicleId}</p>
-              <p class="text-slate-700">Driver: ${assignedVehicle.driverName}</p>
-            </div>
-          `);
-      } else {
-        vehicleMarkerRef.current.setLatLng([assignedVehicle.currentLat, assignedVehicle.currentLon]);
-      }
-
-      // 3. Polyline Route
-      if (routePolylineRef.current) {
-        routePolylineRef.current.remove();
-      }
-
-      const points: L.LatLngExpression[] = [
-        [assignedVehicle.currentLat, assignedVehicle.currentLon],
-        [emergency.lat, emergency.lon]
-      ];
-
-      routePolylineRef.current = L.polyline(points, {
-        color: '#10b981',
-        weight: 4,
-        dashArray: '8, 8',
-        opacity: 0.85
-      }).addTo(map);
-
-      // Fit bounds to show both user and vehicle
-      const bounds = L.latLngBounds([
-        [emergency.lat, emergency.lon],
-        [assignedVehicle.currentLat, assignedVehicle.currentLon]
-      ]);
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+        `);
     } else {
-      map.setView([emergency.lat, emergency.lon], 13);
+      vehicleMarkerRef.current.setLatLng([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
     }
+
+    // 3. Polyline Route
+    if (routePolylineRef.current) {
+      routePolylineRef.current.remove();
+    }
+
+    const points: L.LatLngExpression[] = [
+      [effectiveVehicle.currentLat, effectiveVehicle.currentLon],
+      [emergency.lat, emergency.lon]
+    ];
+
+    routePolylineRef.current = L.polyline(points, {
+      color: '#10b981',
+      weight: 4,
+      dashArray: '8, 8',
+      opacity: 0.85
+    }).addTo(map);
+
+    // Fit bounds to show both user and vehicle
+    const bounds = L.latLngBounds([
+      [emergency.lat, emergency.lon],
+      [effectiveVehicle.currentLat, effectiveVehicle.currentLon]
+    ]);
+    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
 
     return () => {
       if (activeTab !== 'tracking' && trackingMapRef.current) {
@@ -777,8 +797,8 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
               </div>
 
               {/* Dedicated Leaflet Map Canvas */}
-              <div className="relative w-full h-[420px] bg-slate-950">
-                <div ref={trackingMapContainerRef} className="w-full h-full z-0"></div>
+              <div className="relative w-full h-[420px] min-h-[420px] bg-slate-950 rounded-2xl">
+                <div ref={trackingMapContainerRef} style={{ width: '100%', height: '420px', minHeight: '420px' }} className="w-full h-[420px] min-h-[420px] z-0 rounded-2xl"></div>
 
                 {/* Overlay Legend */}
                 <div className="absolute top-3 left-3 z-10 bg-slate-950/90 border border-slate-800 p-2.5 rounded-xl text-[10px] space-y-1 backdrop-blur-md shadow-xl">

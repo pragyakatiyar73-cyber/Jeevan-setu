@@ -1,6 +1,74 @@
 {
   "requests": [
     {
+      "emergencyRequestId": "JS-EMG-6718",
+      "emergencyType": "Relief",
+      "requirement": "Food",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Mizoram",
+      "district": "Aizawl",
+      "priority": "MEDIUM",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-REL-001",
+      "trackingSessionId": "SESS-098576",
+      "createdAt": "2026-09-14T14:11:38.576Z",
+      "updatedAt": "2026-09-14T14:11:38.576Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-2883",
+      "emergencyType": "Relief",
+      "requirement": "Food",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Mizoram",
+      "district": "Aizawl",
+      "priority": "MEDIUM",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-REL-001",
+      "trackingSessionId": "SESS-934067",
+      "createdAt": "2026-09-14T14:08:54.067Z",
+      "updatedAt": "2026-09-14T14:08:54.067Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-6191",
+      "emergencyType": "Fire",
+      "requirement": "Fire assistance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Mizoram",
+      "district": "Aizawl",
+      "priority": "CRITICAL",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-FIRE-001",
+      "trackingSessionId": "SESS-922920",
+      "createdAt": "2026-09-14T14:08:42.920Z",
+      "updatedAt": "2026-09-14T14:08:42.920Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-4049",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "ON_THE_WAY",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-905667",
+      "createdAt": "2026-09-14T14:08:25.667Z",
+      "updatedAt": "2026-09-14T14:10:00.656Z"
+    },
+    {
       "emergencyRequestId": "JS-EMG-1230",
       "emergencyType": "Fire",
       "requirement": "Fire assistance",
@@ -11,11 +79,11 @@
       "district": "Kamrup Metropolitan",
       "priority": "CRITICAL",
       "priorityLabel": "AI-Assisted Assessment",
-      "status": "FINDING_VEHICLE",
+      "status": "ON_THE_WAY",
       "assignedVehicleId": null,
       "trackingSessionId": "SESS-803018",
       "createdAt": "2026-09-14T14:06:43.018Z",
-      "updatedAt": "2026-09-14T14:06:43.018Z"
+      "updatedAt": "2026-09-14T14:09:58.327Z"
     },
     {
       "emergencyRequestId": "JS-EMG-1606",
@@ -172,6 +240,34 @@
     }
   ],
   "sessions": [
+    {
+      "sessionId": "SESS-098576",
+      "emergencyRequestId": "JS-EMG-6718",
+      "vehicleId": "JS-REL-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:11:38.576Z"
+    },
+    {
+      "sessionId": "SESS-934067",
+      "emergencyRequestId": "JS-EMG-2883",
+      "vehicleId": "JS-REL-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:08:54.067Z"
+    },
+    {
+      "sessionId": "SESS-922920",
+      "emergencyRequestId": "JS-EMG-6191",
+      "vehicleId": "JS-FIRE-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:08:42.920Z"
+    },
+    {
+      "sessionId": "SESS-905667",
+      "emergencyRequestId": "JS-EMG-4049",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T14:08:25.667Z"
+    },
     {
       "sessionId": "SESS-803018",
       "emergencyRequestId": "JS-EMG-1230",
