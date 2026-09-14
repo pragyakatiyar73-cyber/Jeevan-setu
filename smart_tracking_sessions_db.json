@@ -1,0 +1,78 @@
+{
+  "requests": [
+    {
+      "emergencyRequestId": "JS-EMG-6998",
+      "emergencyType": "Fire",
+      "requirement": "Fire assistance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "CRITICAL",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "COMPLETED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-126006",
+      "createdAt": "2026-09-14T13:55:26.006Z",
+      "updatedAt": "2026-09-14T13:56:01.243Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-1249",
+      "emergencyType": "Fire",
+      "requirement": "Fire assistance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Meghalaya",
+      "district": "South West Khasi Hills",
+      "priority": "CRITICAL",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "ON_THE_WAY",
+      "assignedVehicleId": "JS-FIRE-001",
+      "trackingSessionId": "SESS-035192",
+      "createdAt": "2026-09-14T13:53:55.192Z",
+      "updatedAt": "2026-09-14T13:55:36.221Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-9642",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "COMPLETED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-942527",
+      "createdAt": "2026-09-14T13:52:22.527Z",
+      "updatedAt": "2026-09-14T13:53:15.460Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "SESS-126006",
+      "emergencyRequestId": "JS-EMG-6998",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T13:55:26.006Z"
+    },
+    {
+      "sessionId": "SESS-035192",
+      "emergencyRequestId": "JS-EMG-1249",
+      "vehicleId": "JS-FIRE-001",
+      "active": true,
+      "createdAt": "2026-09-14T13:53:55.192Z"
+    },
+    {
+      "sessionId": "SESS-942527",
+      "emergencyRequestId": "JS-EMG-9642",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T13:52:22.527Z"
+    }
+  ]
+}

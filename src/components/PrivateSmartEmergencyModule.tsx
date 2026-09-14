@@ -281,50 +281,56 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   useEffect(() => {
     if (activeTab !== 'tracking' || !trackingMapContainerRef.current || !trackingData) return;
 
-    const { emergency, assignedVehicle, routeCoordinates } = trackingData;
+    const { emergency, assignedVehicle } = trackingData;
 
-    // Initialize Map if not present
-    if (!trackingMapRef.current) {
-      const map = L.map(trackingMapContainerRef.current, {
-        center: [emergency.lat, emergency.lon],
-        zoom: 13
-      });
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; OpenStreetMap | Jeevan Setu Private Live Tracking'
-      }).addTo(map);
-
-      trackingMapRef.current = map;
+    // Clean up previous map instance to prevent stale/blank containers
+    if (trackingMapRef.current) {
+      trackingMapRef.current.remove();
+      trackingMapRef.current = null;
+      userMarkerRef.current = null;
+      vehicleMarkerRef.current = null;
+      routePolylineRef.current = null;
     }
 
-    const map = trackingMapRef.current;
+    const map = L.map(trackingMapContainerRef.current, {
+      center: [emergency.lat, emergency.lon],
+      zoom: 13,
+      zoomControl: true
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; OpenStreetMap | Jeevan Setu Private Live Tracking'
+    }).addTo(map);
+
+    trackingMapRef.current = map;
+
+    // Force Leaflet container resize recalculation after tab transition
+    setTimeout(() => {
+      if (map) map.invalidateSize();
+    }, 250);
 
     // 1. User Marker (🔴 YOU - My Emergency Location)
-    if (!userMarkerRef.current) {
-      const userIcon = L.divIcon({
-        className: 'private-user-marker',
-        html: `
-          <div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 border-2 border-white shadow-2xl text-white font-black text-xs">
-            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-rose-500 animate-ping"></span>
-            🔴
-          </div>
-        `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 20]
-      });
+    const userIcon = L.divIcon({
+      className: 'private-user-marker',
+      html: `
+        <div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 border-2 border-white shadow-2xl text-white font-black text-xs">
+          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-rose-500 animate-ping"></span>
+          🔴
+        </div>
+      `,
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
+    });
 
-      userMarkerRef.current = L.marker([emergency.lat, emergency.lon], { icon: userIcon })
-        .addTo(map)
-        .bindPopup(`
-          <div class="p-2 text-xs font-sans">
-            <strong class="text-rose-600 font-extrabold text-sm block">🔴 MY EMERGENCY LOCATION</strong>
-            <p class="text-slate-700 mt-1">${emergency.requirement} &bull; ${emergency.district}</p>
-          </div>
-        `);
-    } else {
-      userMarkerRef.current.setLatLng([emergency.lat, emergency.lon]);
-    }
+    userMarkerRef.current = L.marker([emergency.lat, emergency.lon], { icon: userIcon })
+      .addTo(map)
+      .bindPopup(`
+        <div class="p-2 text-xs font-sans">
+          <strong class="text-rose-600 font-extrabold text-sm block">🔴 MY EMERGENCY LOCATION</strong>
+          <p class="text-slate-700 mt-1">${emergency.requirement} &bull; ${emergency.district}</p>
+        </div>
+      `);
 
     // 2. Assigned Vehicle Marker (🚑/🚒/🚓/🚚 Assigned Vehicle)
     if (assignedVehicle) {
@@ -349,25 +355,17 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
         iconAnchor: [22, 22]
       });
 
-      if (!vehicleMarkerRef.current) {
-        vehicleMarkerRef.current = L.marker([assignedVehicle.currentLat, assignedVehicle.currentLon], { icon: vehicleIcon })
-          .addTo(map)
-          .bindPopup(`
-            <div class="p-2 text-xs font-sans">
-              <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleEmoji} ${assignedVehicle.vehicleType}</strong>
-              <p class="text-slate-700 font-mono mt-1">ID: ${assignedVehicle.vehicleId}</p>
-              <p class="text-slate-700">Driver: ${assignedVehicle.driverName}</p>
-            </div>
-          `);
-      } else {
-        vehicleMarkerRef.current.setLatLng([assignedVehicle.currentLat, assignedVehicle.currentLon]);
-      }
+      vehicleMarkerRef.current = L.marker([assignedVehicle.currentLat, assignedVehicle.currentLon], { icon: vehicleIcon })
+        .addTo(map)
+        .bindPopup(`
+          <div class="p-2 text-xs font-sans">
+            <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleEmoji} ${assignedVehicle.vehicleType}</strong>
+            <p class="text-slate-700 font-mono mt-1">ID: ${assignedVehicle.vehicleId}</p>
+            <p class="text-slate-700">Driver: ${assignedVehicle.driverName}</p>
+          </div>
+        `);
 
       // 3. Polyline Route
-      if (routePolylineRef.current) {
-        routePolylineRef.current.remove();
-      }
-
       const points: L.LatLngExpression[] = [
         [assignedVehicle.currentLat, assignedVehicle.currentLon],
         [emergency.lat, emergency.lon]
@@ -387,7 +385,17 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       ]);
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
     }
-  }, [activeTab, trackingData]);
+
+    return () => {
+      if (trackingMapRef.current) {
+        trackingMapRef.current.remove();
+        trackingMapRef.current = null;
+        userMarkerRef.current = null;
+        vehicleMarkerRef.current = null;
+        routePolylineRef.current = null;
+      }
+    };
+  }, [activeTab, trackingData?.sessionId, trackingData?.assignedVehicle?.currentLat, trackingData?.assignedVehicle?.currentLon]);
 
   // Simulation Loop Effect
   useEffect(() => {
