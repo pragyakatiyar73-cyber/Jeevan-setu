@@ -72,7 +72,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const [userDistrict, setUserDistrict] = useState<string>('Kamrup Metropolitan');
   const [userLat, setUserLat] = useState<number>(26.1445);
   const [userLon, setUserLon] = useState<number>(91.7362);
-  const [locationMode, setLocationMode] = useState<'GPS' | 'MAP' | 'NONE'>('NONE');
+  const [locationMode, setLocationMode] = useState<'GPS' | 'MAP' | 'NONE'>('MAP');
   const [locationLoading, setLocationLoading] = useState<boolean>(false);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -99,6 +99,8 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const requestMapContainerRef = useRef<HTMLDivElement>(null);
   const requestMapRef = useRef<L.Map | null>(null);
   const requestMarkerRef = useRef<L.Marker | null>(null);
+  const requestVehicleMarkerRef = useRef<L.Marker | null>(null);
+  const requestRoutePolylineRef = useRef<L.Polyline | null>(null);
 
   const trackingMapContainerRef = useRef<HTMLDivElement>(null);
   const trackingMapRef = useRef<L.Map | null>(null);
@@ -236,14 +238,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     }
   }, [activeTab]);
 
-  // Leaflet Request Location Picker Map
+  // Leaflet Request Location Picker & Live Preview Map
   useEffect(() => {
-    if (locationMode !== 'MAP' || !requestMapContainerRef.current) return;
-
-    if (requestMapRef.current) {
-      requestMapRef.current.remove();
-      requestMapRef.current = null;
-    }
+    if (activeTab !== 'request' || !requestMapContainerRef.current) return;
 
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
@@ -252,41 +249,133 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
     });
 
-    const map = L.map(requestMapContainerRef.current, {
-      center: [userLat, userLon],
-      zoom: 12,
-      zoomControl: true
+    // Reset if map instance container was unmounted
+    if (requestMapRef.current && (requestMapContainerRef.current as any)?._leaflet_id === undefined) {
+      requestMarkerRef.current = null;
+      requestVehicleMarkerRef.current = null;
+      requestRoutePolylineRef.current = null;
+      requestMapRef.current.remove();
+      requestMapRef.current = null;
+    }
+
+    if (!requestMapRef.current) {
+      const map = L.map(requestMapContainerRef.current, {
+        center: [userLat, userLon],
+        zoom: 12,
+        zoomControl: true
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap contributors | Jeevan Setu NER'
+      }).addTo(map);
+
+      requestMapRef.current = map;
+    }
+
+    const map = requestMapRef.current;
+
+    // 1. User Location Red Marker (🔴 YOU)
+    if (!requestMarkerRef.current) {
+      const userMarker = L.marker([userLat, userLon], {
+        draggable: true,
+        icon: L.divIcon({
+          className: 'custom-user-marker',
+          html: `<div class="w-9 h-9 rounded-full bg-rose-600 border-2 border-white flex items-center justify-center text-white font-bold shadow-xl animate-bounce">🔴</div>`,
+          iconSize: [36, 36],
+          iconAnchor: [18, 18]
+        })
+      }).addTo(map);
+
+      userMarker.on('dragend', () => {
+        const pos = userMarker.getLatLng();
+        setUserLat(Number(pos.lat.toFixed(4)));
+        setUserLon(Number(pos.lng.toFixed(4)));
+      });
+
+      map.on('click', (e) => {
+        setUserLat(Number(e.latlng.lat.toFixed(4)));
+        setUserLon(Number(e.latlng.lng.toFixed(4)));
+        userMarker.setLatLng(e.latlng);
+      });
+
+      requestMarkerRef.current = userMarker;
+    } else {
+      requestMarkerRef.current.setLatLng([userLat, userLon]);
+    }
+
+    // 2. Assigned Vehicle Marker (🚑 / 🚒 / 🚓 / 🚚 base on selectedType)
+    const vehicleEmoji =
+      selectedType === 'Medical'
+        ? '🚑'
+        : selectedType === 'Fire'
+        ? '🚒'
+        : selectedType === 'Police'
+        ? '🚓'
+        : '🚚';
+
+    const vehicleTitle =
+      selectedType === 'Medical'
+        ? '🚑 Emergency Trauma Ambulance'
+        : selectedType === 'Fire'
+        ? '🚒 High-Altitude Fire Tender'
+        : selectedType === 'Police'
+        ? '🚓 Rapid Response Police Patrol'
+        : '🚚 4x4 Disaster Relief Convoy';
+
+    const vLat = Number((userLat + 0.024).toFixed(4));
+    const vLon = Number((userLon + 0.018).toFixed(4));
+
+    const vehicleIcon = L.divIcon({
+      className: 'request-vehicle-marker',
+      html: `
+        <div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 border-2 border-emerald-400 shadow-2xl text-base text-white font-extrabold">
+          <span class="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+          ${vehicleEmoji}
+        </div>
+      `,
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; OpenStreetMap contributors | Jeevan Setu NER'
-    }).addTo(map);
+    if (!requestVehicleMarkerRef.current) {
+      requestVehicleMarkerRef.current = L.marker([vLat, vLon], { icon: vehicleIcon })
+        .addTo(map)
+        .bindPopup(`
+          <div class="p-2 text-xs font-sans">
+            <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleTitle}</strong>
+            <p class="text-slate-700 mt-0.5">Assigned for ${selectedType} Emergency</p>
+          </div>
+        `);
+    } else {
+      requestVehicleMarkerRef.current.setIcon(vehicleIcon);
+      requestVehicleMarkerRef.current.setLatLng([vLat, vLon]);
+      requestVehicleMarkerRef.current.setPopupContent(`
+        <div class="p-2 text-xs font-sans">
+          <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleTitle}</strong>
+          <p class="text-slate-700 mt-0.5">Assigned for ${selectedType} Emergency</p>
+        </div>
+      `);
+    }
 
-    const marker = L.marker([userLat, userLon], {
-      draggable: true,
-      icon: L.divIcon({
-        className: 'custom-user-marker',
-        html: `<div class="w-8 h-8 rounded-full bg-rose-600 border-2 border-white flex items-center justify-center text-white font-bold shadow-lg animate-bounce">🔴</div>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
-      })
-    }).addTo(map);
+    // 3. Dashed Polyline Route
+    if (requestRoutePolylineRef.current) {
+      requestRoutePolylineRef.current.remove();
+    }
+    requestRoutePolylineRef.current = L.polyline(
+      [
+        [vLat, vLon],
+        [userLat, userLon]
+      ],
+      {
+        color: '#10b981',
+        weight: 4,
+        dashArray: '8, 8',
+        opacity: 0.85
+      }
+    ).addTo(map);
 
-    marker.on('dragend', () => {
-      const pos = marker.getLatLng();
-      setUserLat(Number(pos.lat.toFixed(4)));
-      setUserLon(Number(pos.lng.toFixed(4)));
-    });
-
-    map.on('click', (e) => {
-      setUserLat(Number(e.latlng.lat.toFixed(4)));
-      setUserLon(Number(e.latlng.lng.toFixed(4)));
-      marker.setLatLng(e.latlng);
-    });
-
-    requestMapRef.current = map;
-    requestMarkerRef.current = marker;
+    map.setView([userLat, userLon], 12);
 
     // Guaranteed Leaflet layout recalculation on mount
     [50, 150, 300, 500, 800].forEach(delay => {
@@ -298,21 +387,15 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     });
 
     return () => {
-      if (requestMapRef.current) {
+      if (activeTab !== 'request' && requestMapRef.current) {
+        requestMarkerRef.current = null;
+        requestVehicleMarkerRef.current = null;
+        requestRoutePolylineRef.current = null;
         requestMapRef.current.remove();
         requestMapRef.current = null;
       }
     };
-  }, [locationMode]);
-
-  // Sync request location picker map marker and view when coordinates change
-  useEffect(() => {
-    if (requestMapRef.current && requestMarkerRef.current && locationMode === 'MAP') {
-      requestMapRef.current.setView([userLat, userLon], 12);
-      requestMarkerRef.current.setLatLng([userLat, userLon]);
-      requestMapRef.current.invalidateSize();
-    }
-  }, [userLat, userLon, locationMode]);
+  }, [activeTab, locationMode, selectedType, userLat, userLon]);
 
   // Leaflet Private Live Tracking Map
   useEffect(() => {
@@ -327,7 +410,15 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
     const { emergency, assignedVehicle } = trackingData;
 
-    // Synthesize active responder vehicle fallback if server record is resolving so map ALWAYS renders live data
+    // Reset if map instance container was unmounted
+    if (trackingMapRef.current && (trackingMapContainerRef.current as any)?._leaflet_id === undefined) {
+      userMarkerRef.current = null;
+      vehicleMarkerRef.current = null;
+      routePolylineRef.current = null;
+      trackingMapRef.current.remove();
+      trackingMapRef.current = null;
+    }
+
     const effectiveVehicle: ResponseVehicle = assignedVehicle || {
       vehicleId: 'JS-NER-ACTIVE-01',
       vehicleType:
@@ -437,6 +528,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
           </div>
         `);
     } else {
+      vehicleMarkerRef.current.setIcon(vehicleIcon);
       vehicleMarkerRef.current.setLatLng([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
     }
 
@@ -711,12 +803,17 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 ></textarea>
               </div>
 
-              {/* LOCATION CAPTURE SECTION */}
-              <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-3">
-                <span className="text-xs font-extrabold uppercase text-slate-300 flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-rose-400" />
-                  Your Emergency Location
-                </span>
+              {/* LIVE MAP & LOCATION CAPTURE SECTION */}
+              <div className="p-5 bg-slate-950 border border-slate-800 rounded-3xl space-y-4 shadow-xl">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-extrabold uppercase text-white flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-rose-400" />
+                    🗺️ Live Emergency Location & Relevant Vehicle Assignment
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800/60 font-mono text-[10px] font-bold animate-pulse">
+                    ● LIVE MAP ACTIVE
+                  </span>
+                </div>
 
                 <div className="flex flex-wrap items-center gap-3">
                   <button
@@ -732,16 +829,18 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                   <button
                     type="button"
                     onClick={() => {
-                      setLocationMode(prev => (prev === 'MAP' ? 'NONE' : 'MAP'));
+                      const coords = NER_STATE_DEFAULT_COORDS[userState] || [26.1445, 91.7362];
+                      setUserLat(coords[0]);
+                      setUserLon(coords[1]);
+                      if (requestMapRef.current) {
+                        requestMapRef.current.setView(coords, 12);
+                        requestMapRef.current.invalidateSize();
+                      }
                     }}
-                    className={`flex-1 min-w-[160px] py-3 px-4 font-extrabold rounded-xl border flex items-center justify-center gap-2 transition ${
-                      locationMode === 'MAP'
-                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-950'
-                        : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
-                    }`}
+                    className="flex-1 min-w-[160px] py-3 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition"
                   >
                     <MapPin className="w-4 h-4 text-emerald-400" />
-                    🗺️ SELECT LOCATION ON MAP {locationMode === 'MAP' ? '✓' : ''}
+                    🎯 RE-CENTER MAP
                   </button>
                 </div>
 
@@ -752,28 +851,37 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                   </div>
                 )}
 
-                <div className="text-[11px] font-mono text-slate-400 flex items-center justify-between pt-1">
-                  <span>
-                    Current Coordinates: <strong className="text-white">{userLat.toFixed(4)}, {userLon.toFixed(4)}</strong>
-                  </span>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-emerald-400 font-bold">
-                    Mode: {locationMode}
-                  </span>
-                </div>
-
-                {/* Map Picker Embed */}
-                {locationMode === 'MAP' && (
-                  <div className="mt-3">
-                    <p className="text-[11px] text-amber-400 font-semibold mb-1">
-                      Drag the red marker or click on the map to place your exact emergency location:
-                    </p>
-                    <div
-                      ref={requestMapContainerRef}
-                      className="w-full h-64 rounded-xl overflow-hidden border border-slate-800 relative shadow-inner"
-                      style={{ height: '260px', width: '100%', minHeight: '260px', zIndex: 1 }}
-                    ></div>
+                {/* CONTINUOUS LIVE MAP EMBED */}
+                <div className="space-y-2 pt-1">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-amber-400 font-semibold flex items-center gap-1">
+                      👆 Drag red pin 🔴 or click on map to set location:
+                    </span>
+                    <span className="text-emerald-400 font-mono font-bold">
+                      {selectedType === 'Medical' ? '🚑 Ambulance' : selectedType === 'Fire' ? '🚒 Fire Tender' : selectedType === 'Police' ? '🚓 Police Patrol' : '🚚 Relief Convoy'} Matched
+                    </span>
                   </div>
-                )}
+
+                  <div
+                    ref={requestMapContainerRef}
+                    className="w-full rounded-2xl overflow-hidden border border-slate-800 relative shadow-2xl z-0"
+                    style={{ height: '300px', width: '100%', minHeight: '300px' }}
+                  ></div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-slate-400 bg-slate-900/90 px-3.5 py-2.5 rounded-xl border border-slate-800">
+                    <div className="flex items-center gap-3">
+                      <span className="flex items-center gap-1 text-white font-bold">
+                        🔴 My Location
+                      </span>
+                      <span className="flex items-center gap-1 text-emerald-400 font-bold">
+                        {selectedType === 'Medical' ? '🚑' : selectedType === 'Fire' ? '🚒' : selectedType === 'Police' ? '🚓' : '🚚'} Vehicle Assigned
+                      </span>
+                    </div>
+                    <div className="text-slate-300">
+                      Lat: <strong className="text-white">{userLat.toFixed(4)}</strong>, Lon: <strong className="text-white">{userLon.toFixed(4)}</strong>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Priority Classification Preview */}
