@@ -51,8 +51,7 @@ import {
   Package,
   Mic,
   MicOff,
-  Volume2,
-  Bot
+  Volume2
 } from 'lucide-react';
 import L from 'leaflet';
 import { useTranslation, SUPPORTED_LANGUAGES } from '../i18n';
@@ -2148,10 +2147,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               title="Search"
             >
               <Search className="h-4 sm:h-5 w-4 sm:w-5" />
-            </button>
-              title="Search"
-            >
-              <Search className="h-4 w-4" />
             </button>
 
             {/* Language Selector (Comprehensive 16 North East & National Languages) */}
