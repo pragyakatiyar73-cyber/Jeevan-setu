@@ -3,23 +3,40 @@
  * Strictly enforces 8 NER States boundary & district mappings.
  */
 
+export interface IncidentLiveTelemetry {
+  temperature?: number;
+  apparentTemperature?: number;
+  precipitation?: number;
+  rain?: number;
+  humidity?: number;
+  windSpeed?: number;
+  windGusts?: number;
+  weatherCode?: number;
+  weatherCondition?: string;
+  riverDischarge?: number;
+  seismicMagnitude?: number;
+  source?: string;
+  isRealtime?: boolean;
+}
+
 export interface DisasterReportItem {
   id: string;
-  disasterType: 'Flood' | 'Landslide' | 'Heavy Rain' | 'Storm/Cyclone' | 'Road Block' | 'Earthquake' | 'Other Disaster';
+  disasterType: 'Flood' | 'Landslide' | 'Heavy Rain' | 'Storm/Cyclone' | 'Road Block' | 'Earthquake' | 'Other Disaster' | string;
   state: string;
   district: string;
   location: string;
   lat: number;
   lon: number;
-  severity: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+  severity: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL' | string;
   status: 'ACTIVE' | 'RESOLVED' | 'MONITORING' | 'RESPONSE IN PROGRESS' | 'RESOURCE ASSIGNED' | 'REPORTED' | 'UNKNOWN' | string;
   date: string;
   time: string;
   description: string;
   source: string;
-  dataStatus: 'LIVE' | 'RECENT' | 'STATIC' | 'MODELLED' | 'UNAVAILABLE';
+  dataStatus: 'LIVE' | 'RECENT' | 'STATIC' | 'MODELLED' | 'UNAVAILABLE' | string;
   lastUpdated: string;
   photoUrl?: string | null;
+  liveTelemetry?: IncidentLiveTelemetry;
 }
 
 export interface IncidentFilterOptions {
@@ -100,6 +117,13 @@ export async function fetchDisasterIncidents(filters: IncidentFilterOptions = {}
   incidents: DisasterReportItem[];
   message?: string;
   rejectedSearch?: boolean;
+  telemetryMeta?: {
+    isRealtime?: boolean;
+    source?: string;
+    lastSynced?: string;
+    seismicEventsCount?: number;
+    weatherStationsCount?: number;
+  };
 }> {
   const queryParams = new URLSearchParams();
   if (filters.state) queryParams.set('state', filters.state);
@@ -117,7 +141,8 @@ export async function fetchDisasterIncidents(filters: IncidentFilterOptions = {}
       success: true,
       incidents: data.incidents || [],
       message: data.message,
-      rejectedSearch: data.rejectedSearch || false
+      rejectedSearch: data.rejectedSearch || false,
+      telemetryMeta: data.telemetryMeta
     };
   } catch (err) {
     console.warn('Disaster Incident API unreachable, falling back to local dataset:', err);
