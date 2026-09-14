@@ -281,56 +281,65 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   useEffect(() => {
     if (activeTab !== 'tracking' || !trackingMapContainerRef.current || !trackingData) return;
 
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
+    });
+
     const { emergency, assignedVehicle } = trackingData;
 
-    // Clean up previous map instance to prevent stale/blank containers
-    if (trackingMapRef.current) {
-      trackingMapRef.current.remove();
-      trackingMapRef.current = null;
-      userMarkerRef.current = null;
-      vehicleMarkerRef.current = null;
-      routePolylineRef.current = null;
+    // Initialize Map if not present
+    if (!trackingMapRef.current) {
+      const map = L.map(trackingMapContainerRef.current, {
+        center: [emergency.lat, emergency.lon],
+        zoom: 13,
+        zoomControl: true
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors | Jeevan Setu Private Live Tracking'
+      }).addTo(map);
+
+      trackingMapRef.current = map;
     }
 
-    const map = L.map(trackingMapContainerRef.current, {
-      center: [emergency.lat, emergency.lon],
-      zoom: 13,
-      zoomControl: true
-    });
+    const map = trackingMapRef.current;
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; OpenStreetMap | Jeevan Setu Private Live Tracking'
-    }).addTo(map);
-
-    trackingMapRef.current = map;
-
-    // Force Leaflet container resize recalculation after tab transition
+    // Ensure Leaflet resizes properly after container mounts
     setTimeout(() => {
-      if (map) map.invalidateSize();
-    }, 250);
+      if (trackingMapRef.current) {
+        trackingMapRef.current.invalidateSize();
+      }
+    }, 150);
 
     // 1. User Marker (🔴 YOU - My Emergency Location)
-    const userIcon = L.divIcon({
-      className: 'private-user-marker',
-      html: `
-        <div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 border-2 border-white shadow-2xl text-white font-black text-xs">
-          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-rose-500 animate-ping"></span>
-          🔴
-        </div>
-      `,
-      iconSize: [40, 40],
-      iconAnchor: [20, 20]
-    });
+    if (!userMarkerRef.current) {
+      const userIcon = L.divIcon({
+        className: 'private-user-marker',
+        html: `
+          <div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 border-2 border-white shadow-2xl text-white font-black text-xs">
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-rose-500 animate-ping"></span>
+            🔴
+          </div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+      });
 
-    userMarkerRef.current = L.marker([emergency.lat, emergency.lon], { icon: userIcon })
-      .addTo(map)
-      .bindPopup(`
-        <div class="p-2 text-xs font-sans">
-          <strong class="text-rose-600 font-extrabold text-sm block">🔴 MY EMERGENCY LOCATION</strong>
-          <p class="text-slate-700 mt-1">${emergency.requirement} &bull; ${emergency.district}</p>
-        </div>
-      `);
+      userMarkerRef.current = L.marker([emergency.lat, emergency.lon], { icon: userIcon })
+        .addTo(map)
+        .bindPopup(`
+          <div class="p-2 text-xs font-sans">
+            <strong class="text-rose-600 font-extrabold text-sm block">🔴 MY EMERGENCY LOCATION</strong>
+            <p class="text-slate-700 mt-1">${emergency.requirement} &bull; ${emergency.district}</p>
+          </div>
+        `);
+    } else {
+      userMarkerRef.current.setLatLng([emergency.lat, emergency.lon]);
+    }
 
     // 2. Assigned Vehicle Marker (🚑/🚒/🚓/🚚 Assigned Vehicle)
     if (assignedVehicle) {
@@ -355,17 +364,25 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
         iconAnchor: [22, 22]
       });
 
-      vehicleMarkerRef.current = L.marker([assignedVehicle.currentLat, assignedVehicle.currentLon], { icon: vehicleIcon })
-        .addTo(map)
-        .bindPopup(`
-          <div class="p-2 text-xs font-sans">
-            <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleEmoji} ${assignedVehicle.vehicleType}</strong>
-            <p class="text-slate-700 font-mono mt-1">ID: ${assignedVehicle.vehicleId}</p>
-            <p class="text-slate-700">Driver: ${assignedVehicle.driverName}</p>
-          </div>
-        `);
+      if (!vehicleMarkerRef.current) {
+        vehicleMarkerRef.current = L.marker([assignedVehicle.currentLat, assignedVehicle.currentLon], { icon: vehicleIcon })
+          .addTo(map)
+          .bindPopup(`
+            <div class="p-2 text-xs font-sans">
+              <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleEmoji} ${assignedVehicle.vehicleType}</strong>
+              <p class="text-slate-700 font-mono mt-1">ID: ${assignedVehicle.vehicleId}</p>
+              <p class="text-slate-700">Driver: ${assignedVehicle.driverName}</p>
+            </div>
+          `);
+      } else {
+        vehicleMarkerRef.current.setLatLng([assignedVehicle.currentLat, assignedVehicle.currentLon]);
+      }
 
       // 3. Polyline Route
+      if (routePolylineRef.current) {
+        routePolylineRef.current.remove();
+      }
+
       const points: L.LatLngExpression[] = [
         [assignedVehicle.currentLat, assignedVehicle.currentLon],
         [emergency.lat, emergency.lon]
@@ -387,15 +404,15 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     }
 
     return () => {
-      if (trackingMapRef.current) {
-        trackingMapRef.current.remove();
-        trackingMapRef.current = null;
+      if (activeTab !== 'tracking' && trackingMapRef.current) {
         userMarkerRef.current = null;
         vehicleMarkerRef.current = null;
         routePolylineRef.current = null;
+        trackingMapRef.current.remove();
+        trackingMapRef.current = null;
       }
     };
-  }, [activeTab, trackingData?.sessionId, trackingData?.assignedVehicle?.currentLat, trackingData?.assignedVehicle?.currentLon]);
+  }, [activeTab, trackingData]);
 
   // Simulation Loop Effect
   useEffect(() => {
