@@ -700,11 +700,6 @@ app.get('/api/mdoner/data', async (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🌉 Jeevan Setu Disaster Intelligence Backend running on http://localhost:${PORT}`);
-});
-
 // ----------------------------------------------------
 // 🗺️ REAL-TIME GIS MAP LAYERS & OVERLAYS BACKEND API
 // ----------------------------------------------------
@@ -1524,13 +1519,11 @@ app.get('/api/disaster-incidents', async (req, res) => {
       }
 
       // Live sensor description
-      let baseDesc = item.description;
+      let baseDesc = item.description || '';
       // Strip any previous sensor notes
       if (baseDesc.includes('[Live Telemetry:')) {
         baseDesc = baseDesc.split('[Live Telemetry:')[0].trim();
       }
-      const telemetrySummary = `[Live Telemetry: ${live.temperature}°C, ${live.weatherCondition}, Rain: ${live.precipitation} mm/h, Wind: ${live.windSpeed} km/h, Humidity: ${live.humidity}%]`;
-      const enrichedDescription = `${baseDesc} ${telemetrySummary}`;
 
       return {
         ...item,
@@ -1539,7 +1532,7 @@ app.get('/api/disaster-incidents', async (req, res) => {
         time: liveTimeStr,
         dataStatus: 'REALTIME LIVE',
         lastUpdated: now.toISOString(),
-        description: enrichedDescription,
+        description: baseDesc,
         liveTelemetry: {
           ...live,
           ...(item.liveTelemetry || {})
@@ -2803,7 +2796,7 @@ app.post('/api/smart-tracking/simulate-step', (req, res) => {
   });
 });
 
-const serverPort = process.env.PORT || 5000;
+const serverPort = process.env.PORT || 5001;
 app.listen(serverPort, () => {
   console.log(`🚀 Jeevan Setu Backend Server running on http://localhost:${serverPort}`);
 });

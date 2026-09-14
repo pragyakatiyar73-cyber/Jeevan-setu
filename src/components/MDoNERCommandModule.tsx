@@ -38,7 +38,7 @@ export default function MDoNERCommandModule() {
   const fetchMDoNERData = async (mode: "LIVE" | "VERIFIED" | "SIMULATION") => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/mdoner/data?mode=" + mode);
+      const res = await fetch("http://localhost:5001/api/mdoner/data?mode=" + mode);
       const json = await res.json();
       setDataPayload(json);
       setLastRefreshed(new Date().toLocaleTimeString('en-US', { hour12: true }));

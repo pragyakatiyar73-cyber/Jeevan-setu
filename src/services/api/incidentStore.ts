@@ -748,7 +748,7 @@ class IncidentStoreService {
     }
 
     // Try posting to backend API if available
-    fetch('http://localhost:5000/api/sos/submit', {
+    fetch('http://localhost:5001/api/sos/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newSos)

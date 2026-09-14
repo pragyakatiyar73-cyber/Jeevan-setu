@@ -252,7 +252,7 @@ export default function App() {
   useEffect(() => {
     const syncSosAlerts = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/sos/alerts');
+        const res = await fetch('http://localhost:5001/api/sos/alerts');
         if (res.ok) {
           const data = await res.json();
           if (data?.alerts && data.alerts.length > 0) {

@@ -38,7 +38,7 @@ export default function ActionAlertsModule({
   useEffect(() => {
     const fetchLiveAlerts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/sos/alerts");
+        const res = await fetch("http://localhost:5001/api/sos/alerts");
         if (res.ok) {
           const data = await res.json();
           if (data?.alerts && Array.isArray(data.alerts)) {

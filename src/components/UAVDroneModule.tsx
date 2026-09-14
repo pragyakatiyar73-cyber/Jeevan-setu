@@ -298,7 +298,7 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
     setMissionStatus("VALIDATING");
 
     try {
-      const res = await fetch("http://localhost:5000/api/uav/missions", {
+      const res = await fetch("http://localhost:5001/api/uav/missions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -333,7 +333,7 @@ export default function UAVDroneModule({ onNavigateToMonitoring }: UAVDroneModul
 
     if (missionId) {
       try {
-        await fetch("http://localhost:5000/api/uav/missions/" + missionId + "/abort", {
+        await fetch("http://localhost:5001/api/uav/missions/" + missionId + "/abort", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reason })
