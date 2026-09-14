@@ -1,6 +1,91 @@
 {
   "requests": [
     {
+      "emergencyRequestId": "JS-EMG-1249",
+      "emergencyType": "Police",
+      "requirement": "Police/security assistance",
+      "description": "",
+      "lat": 26.1524,
+      "lon": 91.695,
+      "state": "Assam",
+      "district": "Dima Hasao",
+      "priority": "MEDIUM",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "ON_THE_WAY",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-118218",
+      "createdAt": "2026-09-14T15:35:18.218Z",
+      "updatedAt": "2026-09-14T15:35:33.441Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-4408",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.2325,
+      "lon": 91.8682,
+      "state": "Assam",
+      "district": "Dima Hasao",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "ARRIVED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-944959",
+      "createdAt": "2026-09-14T15:32:24.959Z",
+      "updatedAt": "2026-09-14T15:35:16.787Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-3250",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1483,
+      "lon": 91.7739,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "ON_THE_WAY",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-907822",
+      "createdAt": "2026-09-14T15:31:47.822Z",
+      "updatedAt": "2026-09-14T15:32:22.681Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-7185",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1483,
+      "lon": 91.7739,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "ON_THE_WAY",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-854339",
+      "createdAt": "2026-09-14T15:30:54.339Z",
+      "updatedAt": "2026-09-14T15:31:47.306Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-2127",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1483,
+      "lon": 91.7739,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "ON_THE_WAY",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-808933",
+      "createdAt": "2026-09-14T15:30:08.933Z",
+      "updatedAt": "2026-09-14T15:30:52.140Z"
+    },
+    {
       "emergencyRequestId": "JS-EMG-7621",
       "emergencyType": "Medical",
       "requirement": "Ambulance",
@@ -597,6 +682,41 @@
     }
   ],
   "sessions": [
+    {
+      "sessionId": "SESS-118218",
+      "emergencyRequestId": "JS-EMG-1249",
+      "vehicleId": "JS-POL-001",
+      "active": true,
+      "createdAt": "2026-09-14T15:35:18.218Z"
+    },
+    {
+      "sessionId": "SESS-944959",
+      "emergencyRequestId": "JS-EMG-4408",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T15:32:24.959Z"
+    },
+    {
+      "sessionId": "SESS-907822",
+      "emergencyRequestId": "JS-EMG-3250",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T15:31:47.822Z"
+    },
+    {
+      "sessionId": "SESS-854339",
+      "emergencyRequestId": "JS-EMG-7185",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T15:30:54.339Z"
+    },
+    {
+      "sessionId": "SESS-808933",
+      "emergencyRequestId": "JS-EMG-2127",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T15:30:08.933Z"
+    },
     {
       "sessionId": "SESS-575409",
       "emergencyRequestId": "JS-EMG-7621",
