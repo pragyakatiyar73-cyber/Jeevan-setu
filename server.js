@@ -2212,48 +2212,369 @@ app.post('/api/emergency-response/status', (req, res) => {
   });
 });
 
-// POST /api/emergency-response/recommend - AI Resource Matcher Recommendation
-app.post('/api/emergency-response/recommend', (req, res) => {
-  const { emergencyId } = req.body;
+// ==========================================
+// 🚨 SMART EMERGENCY RESPONSE & PRIVATE LIVE TRACKING API
+// ==========================================
 
-  const item = smartEmergenciesStore.find(e => e.id === emergencyId);
-  if (!item) {
-    return res.status(404).json({ status: 'error', message: 'Emergency incident not found' });
+const smartTrackingSessionsDbFile = 'smart_tracking_sessions_db.json';
+let smartTrackingRequestsStore = [];
+let smartTrackingSessionsStore = [];
+
+const smartTrackingVehiclesStore = [
+  {
+    vehicleId: 'JS-AMB-001',
+    vehicleType: '🚑 Emergency Trauma Ambulance',
+    typeCategory: 'Medical',
+    driverName: 'Bhaben Kalita',
+    contact: '+91 98640 12345',
+    currentLat: 26.1820,
+    currentLon: 91.7510,
+    status: 'Available',
+    state: 'Assam',
+    district: 'Kamrup Metropolitan',
+    verified: true,
+    demoMode: true,
+    lastUpdatedAt: new Date().toISOString()
+  },
+  {
+    vehicleId: 'JS-FIRE-001',
+    vehicleType: '🚒 High-Altitude Fire Tender',
+    typeCategory: 'Fire',
+    driverName: 'Wanlang Kharshiing',
+    contact: '+91 98630 67890',
+    currentLat: 25.5910,
+    currentLon: 91.9120,
+    status: 'Available',
+    state: 'Meghalaya',
+    district: 'East Khasi Hills',
+    verified: true,
+    demoMode: true,
+    lastUpdatedAt: new Date().toISOString()
+  },
+  {
+    vehicleId: 'JS-POL-001',
+    vehicleType: '🚓 Rapid Response Police Patrol',
+    typeCategory: 'Police',
+    driverName: 'Ibomcha Singh',
+    contact: '+91 98620 54321',
+    currentLat: 24.8310,
+    currentLon: 93.9520,
+    status: 'Available',
+    state: 'Manipur',
+    district: 'Imphal West',
+    verified: true,
+    demoMode: true,
+    lastUpdatedAt: new Date().toISOString()
+  },
+  {
+    vehicleId: 'JS-REL-001',
+    vehicleType: '🚚 4x4 Disaster Relief Convoy',
+    typeCategory: 'Relief',
+    driverName: 'Biplab Deb',
+    contact: '+91 98610 98765',
+    currentLat: 23.8510,
+    currentLon: 91.3020,
+    status: 'Available',
+    state: 'Tripura',
+    district: 'West Tripura',
+    verified: true,
+    demoMode: true,
+    lastUpdatedAt: new Date().toISOString()
+  }
+];
+
+try {
+  if (fs.existsSync(smartTrackingSessionsDbFile)) {
+    const data = JSON.parse(fs.readFileSync(smartTrackingSessionsDbFile, 'utf-8'));
+    smartTrackingRequestsStore = data.requests || [];
+    smartTrackingSessionsStore = data.sessions || [];
+  }
+} catch (e) {
+  console.error('Error loading smart_tracking_sessions_db.json:', e);
+}
+
+function saveSmartTrackingDb() {
+  try {
+    fs.writeFileSync(
+      smartTrackingSessionsDbFile,
+      JSON.stringify({ requests: smartTrackingRequestsStore, sessions: smartTrackingSessionsStore }, null, 2),
+      'utf-8'
+    );
+  } catch (e) {}
+}
+
+function calculateHaversineDistanceServer(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Number((R * c).toFixed(2));
+}
+
+// 1. POST /api/smart-tracking/request - Create Emergency Request
+app.post('/api/smart-tracking/request', (req, res) => {
+  const { emergencyType, requirement, description, lat, lon, state, district } = req.body || {};
+
+  const reqType = emergencyType || 'Medical';
+  const eLat = typeof lat === 'number' ? lat : 26.1445;
+  const eLon = typeof lon === 'number' ? lon : 91.7362;
+  const nowIso = new Date().toISOString();
+
+  const reqId = `JS-EMG-${Math.floor(1000 + Math.random() * 9000)}`;
+  const sessId = `SESS-${Date.now().toString().slice(-6)}`;
+
+  // Priority classification
+  let priority = 'MEDIUM';
+  const descLower = String(description || '').toLowerCase();
+  if (reqType === 'Fire' || descLower.includes('severe') || descLower.includes('critical') || descLower.includes('injured')) {
+    priority = 'CRITICAL';
+  } else if (reqType === 'Medical') {
+    priority = 'HIGH';
   }
 
-  // Find Depot
-  const depot = reliefDepotsStore.find(d => String(d.state).toLowerCase() === String(item.state).toLowerCase()) || reliefDepotsStore[0];
+  // Find nearest suitable vehicle matching emergency type
+  let suitableVehicles = smartTrackingVehiclesStore.filter(
+    v => v.typeCategory === reqType && v.status === 'Available'
+  );
+  if (suitableVehicles.length === 0) {
+    suitableVehicles = smartTrackingVehiclesStore.filter(v => v.status === 'Available');
+  }
 
-  // Find Available Vehicle
-  const vehicle = reliefVehiclesStore.find(v => v.tripStatus === 'AVAILABLE') || reliefVehiclesStore[0];
+  let assignedVehicle = null;
+  if (suitableVehicles.length > 0) {
+    suitableVehicles.sort((a, b) => {
+      const distA = calculateHaversineDistanceServer(eLat, eLon, a.currentLat, a.currentLon);
+      const distB = calculateHaversineDistanceServer(eLat, eLon, b.currentLat, b.currentLon);
+      return distA - distB;
+    });
+    assignedVehicle = suitableVehicles[0];
+    assignedVehicle.status = 'Assigned';
+    assignedVehicle.lastUpdatedAt = nowIso;
+  }
 
-  const assignedResource = {
-    depotId: depot.depotId,
-    depotName: depot.depotName,
-    supplyItem: `${item.requirements.join(', ')} Supplies`,
-    vehicleId: vehicle.vehicleId,
-    vehicleType: vehicle.vehicleType,
-    trackingStatus: vehicle.trackingStatus || 'GPS_CONNECTED',
-    routeStatus: 'ROUTE_RECOMMENDED',
-    lastUpdate: new Date().toISOString()
+  const newRequest = {
+    emergencyRequestId: reqId,
+    emergencyType: reqType,
+    requirement: requirement || 'Emergency Assistance',
+    description: description || '',
+    lat: eLat,
+    lon: eLon,
+    state: state || 'Assam',
+    district: district || 'Kamrup Metropolitan',
+    priority,
+    priorityLabel: 'AI-Assisted Assessment',
+    status: assignedVehicle ? 'VEHICLE_ASSIGNED' : 'FINDING_VEHICLE',
+    assignedVehicleId: assignedVehicle ? assignedVehicle.vehicleId : null,
+    trackingSessionId: sessId,
+    createdAt: nowIso,
+    updatedAt: nowIso
   };
 
-  item.assignedResource = assignedResource;
-  item.status = 'RESPONSE RECOMMENDED';
-  item.timeline.push({
-    time: new Date().toISOString(),
-    statusText: `Recommended Resources: Depot ${depot.depotName} & Vehicle ${vehicle.vehicleId}`
-  });
+  const newSession = {
+    sessionId: sessId,
+    emergencyRequestId: reqId,
+    vehicleId: assignedVehicle ? assignedVehicle.vehicleId : null,
+    active: true,
+    createdAt: nowIso
+  };
 
-  try {
-    fs.writeFileSync(smartEmergenciesDbFile, JSON.stringify(smartEmergenciesStore, null, 2), 'utf-8');
-  } catch (e) {}
+  smartTrackingRequestsStore.unshift(newRequest);
+  smartTrackingSessionsStore.unshift(newSession);
+  saveSmartTrackingDb();
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Emergency request created and relevant vehicle matched.',
+    trackingSessionId: sessId,
+    emergency: newRequest
+  });
+});
+
+// 2. GET /api/smart-tracking/private/:sessionId - Private 1-to-1 Live Tracking Endpoint
+app.get('/api/smart-tracking/private/:sessionId', (req, res) => {
+  const { sessionId } = req.params;
+
+  const session = smartTrackingSessionsStore.find(s => s.sessionId === sessionId);
+  if (!session) {
+    return res.status(404).json({ status: 'error', error: 'Private tracking session not found or expired.' });
+  }
+
+  const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === session.emergencyRequestId);
+  if (!emergency) {
+    return res.status(404).json({ status: 'error', error: 'Emergency request record not found.' });
+  }
+
+  const assignedVehicle = smartTrackingVehiclesStore.find(v => v.vehicleId === emergency.assignedVehicleId) || null;
+
+  let distanceKm = 0;
+  let etaMinutes = 0;
+
+  if (assignedVehicle) {
+    distanceKm = calculateHaversineDistanceServer(
+      emergency.lat,
+      emergency.lon,
+      assignedVehicle.currentLat,
+      assignedVehicle.currentLon
+    );
+    etaMinutes = Math.max(1, Math.round((distanceKm / 35) * 60));
+  }
+
+  // SECURITY: Returns ONLY the user's emergency & assigned vehicle (1-to-1 isolation)
+  res.json({
+    sessionId: session.sessionId,
+    emergencyRequestId: emergency.emergencyRequestId,
+    active: session.active,
+    emergency,
+    assignedVehicle,
+    routeCoordinates: assignedVehicle
+      ? [
+          [assignedVehicle.currentLat, assignedVehicle.currentLon],
+          [emergency.lat, emergency.lon]
+        ]
+      : [],
+    distanceKm,
+    etaMinutes,
+    lastUpdated: new Date().toISOString()
+  });
+});
+
+// 3. GET /api/smart-tracking/driver/requests - Driver Queue
+app.get('/api/smart-tracking/driver/requests', (req, res) => {
+  res.json({
+    status: 'success',
+    emergencies: smartTrackingRequestsStore,
+    vehicles: smartTrackingVehiclesStore
+  });
+});
+
+// 4. POST /api/smart-tracking/driver/accept - Driver Accept Request
+app.post('/api/smart-tracking/driver/accept', (req, res) => {
+  const { emergencyRequestId, vehicleId } = req.body || {};
+
+  const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === emergencyRequestId);
+  if (!emergency) {
+    return res.status(404).json({ status: 'error', error: 'Emergency request not found' });
+  }
+
+  emergency.status = 'DRIVER_ACCEPTED';
+  emergency.assignedVehicleId = vehicleId || emergency.assignedVehicleId;
+  emergency.updatedAt = new Date().toISOString();
+
+  const vehicle = smartTrackingVehiclesStore.find(v => v.vehicleId === emergency.assignedVehicleId);
+  if (vehicle) {
+    vehicle.status = 'Assigned';
+    vehicle.lastUpdatedAt = new Date().toISOString();
+  }
+
+  saveSmartTrackingDb();
+  res.json({ status: 'success', message: 'Driver accepted emergency dispatch.' });
+});
+
+// 5. POST /api/smart-tracking/driver/location - Update Driver GPS Coordinates
+app.post('/api/smart-tracking/driver/location', (req, res) => {
+  const { vehicleId, lat, lon } = req.body || {};
+
+  const vehicle = smartTrackingVehiclesStore.find(v => v.vehicleId === vehicleId);
+  if (!vehicle) {
+    return res.status(404).json({ status: 'error', error: 'Vehicle not found' });
+  }
+
+  if (typeof lat === 'number' && typeof lon === 'number') {
+    vehicle.currentLat = lat;
+    vehicle.currentLon = lon;
+    vehicle.lastUpdatedAt = new Date().toISOString();
+  }
+
+  res.json({ status: 'success', message: 'Driver GPS location updated' });
+});
+
+// 6. POST /api/smart-tracking/driver/status - Update Workflow Status
+app.post('/api/smart-tracking/driver/status', (req, res) => {
+  const { emergencyRequestId, status } = req.body || {};
+
+  const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === emergencyRequestId);
+  if (!emergency) {
+    return res.status(404).json({ status: 'error', error: 'Emergency request not found' });
+  }
+
+  emergency.status = status;
+  emergency.updatedAt = new Date().toISOString();
+
+  if (status === 'COMPLETED') {
+    const vehicle = smartTrackingVehiclesStore.find(v => v.vehicleId === emergency.assignedVehicleId);
+    if (vehicle) {
+      vehicle.status = 'Available';
+      vehicle.lastUpdatedAt = new Date().toISOString();
+    }
+  }
+
+  saveSmartTrackingDb();
+  res.json({ status: 'success', message: `Emergency status updated to ${status}` });
+});
+
+// 7. POST /api/smart-tracking/simulate-step - Step Simulation in Demo Mode
+app.post('/api/smart-tracking/simulate-step', (req, res) => {
+  const { sessionId } = req.body || {};
+
+  const session = smartTrackingSessionsStore.find(s => s.sessionId === sessionId);
+  if (!session) {
+    return res.status(404).json({ status: 'error', error: 'Session not found' });
+  }
+
+  const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === session.emergencyRequestId);
+  if (!emergency) {
+    return res.status(404).json({ status: 'error', error: 'Emergency not found' });
+  }
+
+  const vehicle = smartTrackingVehiclesStore.find(v => v.vehicleId === emergency.assignedVehicleId);
+  if (!vehicle) {
+    return res.status(404).json({ status: 'error', error: 'No vehicle assigned to simulate' });
+  }
+
+  // Move vehicle ~500m closer to emergency coordinates
+  const stepLat = (emergency.lat - vehicle.currentLat) * 0.25;
+  const stepLon = (emergency.lon - vehicle.currentLon) * 0.25;
+
+  vehicle.currentLat += stepLat;
+  vehicle.currentLon += stepLon;
+  vehicle.status = 'On the Way';
+  vehicle.lastUpdatedAt = new Date().toISOString();
+
+  const dist = calculateHaversineDistanceServer(emergency.lat, emergency.lon, vehicle.currentLat, vehicle.currentLon);
+  if (dist < 0.2) {
+    emergency.status = 'ARRIVED';
+  } else {
+    emergency.status = 'ON_THE_WAY';
+  }
+  emergency.updatedAt = new Date().toISOString();
+
+  saveSmartTrackingDb();
+
+  const eta = Math.max(1, Math.round((dist / 35) * 60));
 
   res.json({
     status: 'success',
-    message: 'Emergency response resource recommendation generated',
-    emergency: item,
-    recommendedResource: assignedResource
+    message: `Vehicle moved 500m closer. Remaining distance: ${dist}km`,
+    data: {
+      sessionId: session.sessionId,
+      emergencyRequestId: emergency.emergencyRequestId,
+      active: session.active,
+      emergency,
+      assignedVehicle: vehicle,
+      routeCoordinates: [
+        [vehicle.currentLat, vehicle.currentLon],
+        [emergency.lat, emergency.lon]
+      ],
+      distanceKm: dist,
+      etaMinutes: eta,
+      lastUpdated: new Date().toISOString()
+    }
   });
 });
 
