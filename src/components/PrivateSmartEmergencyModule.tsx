@@ -309,11 +309,13 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     const map = trackingMapRef.current;
 
     // Ensure Leaflet resizes properly after container mounts
-    setTimeout(() => {
-      if (trackingMapRef.current) {
-        trackingMapRef.current.invalidateSize();
-      }
-    }, 150);
+    [50, 150, 350, 650].forEach(delay => {
+      setTimeout(() => {
+        if (trackingMapRef.current) {
+          trackingMapRef.current.invalidateSize();
+        }
+      }, delay);
+    });
 
     // 1. User Marker (🔴 YOU - My Emergency Location)
     if (!userMarkerRef.current) {
@@ -401,6 +403,8 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
         [assignedVehicle.currentLat, assignedVehicle.currentLon]
       ]);
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+    } else {
+      map.setView([emergency.lat, emergency.lon], 13);
     }
 
     return () => {

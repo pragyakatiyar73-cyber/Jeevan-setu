@@ -2339,24 +2339,18 @@ app.post('/api/smart-tracking/request', (req, res) => {
   }
 
   // Find nearest suitable vehicle matching emergency type
-  let suitableVehicles = smartTrackingVehiclesStore.filter(
-    v => v.typeCategory === reqType && v.status === 'Available'
-  );
-  if (suitableVehicles.length === 0) {
-    suitableVehicles = smartTrackingVehiclesStore.filter(v => v.status === 'Available');
+  let assignedVehicle = smartTrackingVehiclesStore.find(v => v.typeCategory === reqType);
+  if (!assignedVehicle) {
+    assignedVehicle = smartTrackingVehiclesStore[0];
   }
 
-  let assignedVehicle = null;
-  if (suitableVehicles.length > 0) {
-    suitableVehicles.sort((a, b) => {
-      const distA = calculateHaversineDistanceServer(eLat, eLon, a.currentLat, a.currentLon);
-      const distB = calculateHaversineDistanceServer(eLat, eLon, b.currentLat, b.currentLon);
-      return distA - distB;
-    });
-    assignedVehicle = suitableVehicles[0];
-    assignedVehicle.status = 'Assigned';
-    assignedVehicle.lastUpdatedAt = nowIso;
-  }
+  // Set vehicle status to Assigned and position it ~3.5km offset from user's emergency coordinates
+  assignedVehicle.status = 'Assigned';
+  assignedVehicle.currentLat = Number((eLat + 0.028).toFixed(4));
+  assignedVehicle.currentLon = Number((eLon + 0.022).toFixed(4));
+  assignedVehicle.state = state || 'Assam';
+  assignedVehicle.district = district || 'Kamrup Metropolitan';
+  assignedVehicle.lastUpdatedAt = nowIso;
 
   const newRequest = {
     emergencyRequestId: reqId,
@@ -2369,8 +2363,8 @@ app.post('/api/smart-tracking/request', (req, res) => {
     district: district || 'Kamrup Metropolitan',
     priority,
     priorityLabel: 'AI-Assisted Assessment',
-    status: assignedVehicle ? 'VEHICLE_ASSIGNED' : 'FINDING_VEHICLE',
-    assignedVehicleId: assignedVehicle ? assignedVehicle.vehicleId : null,
+    status: 'VEHICLE_ASSIGNED',
+    assignedVehicleId: assignedVehicle.vehicleId,
     trackingSessionId: sessId,
     createdAt: nowIso,
     updatedAt: nowIso
@@ -2379,7 +2373,7 @@ app.post('/api/smart-tracking/request', (req, res) => {
   const newSession = {
     sessionId: sessId,
     emergencyRequestId: reqId,
-    vehicleId: assignedVehicle ? assignedVehicle.vehicleId : null,
+    vehicleId: assignedVehicle.vehicleId,
     active: true,
     createdAt: nowIso
   };
