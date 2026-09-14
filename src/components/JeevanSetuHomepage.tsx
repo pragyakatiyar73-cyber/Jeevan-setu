@@ -51,13 +51,15 @@ import {
   Package,
   Mic,
   MicOff,
-  Volume2
+  Volume2,
+  RefreshCw
 } from 'lucide-react';
 import L from 'leaflet';
 import { useTranslation, SUPPORTED_LANGUAGES } from '../i18n';
 import ThemeToggle from './ThemeToggle';
 import TrustedDataSourcesModal from './TrustedDataSourcesModal';
 import AIChatbotWidget from './AIChatbotWidget';
+import { NER_HIGHWAY_SEGMENTS } from '../services/api/roadAccessibilityService';
 
 interface JeevanSetuHomepageProps {
   onNavigateModule: (module: string) => void;
@@ -840,6 +842,19 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
   // Side Panel Drawer state (report, aianalysis, risk, gethelp, livesituation, safetyguide, reliefcamps, livemap, reliefsupplies, emergencyresponse, roadroutes)
   const [activeSidePanel, setActiveSidePanel] = useState<'report' | 'aianalysis' | 'risk' | 'gethelp' | 'livesituation' | 'safetyguide' | 'reliefcamps' | 'livemap' | 'reliefsupplies' | 'emergencyresponse' | 'roadroutes' | null>(null);
+
+  // Dynamic Road Accessibility Telemetry state
+  const [roadFilter, setRoadFilter] = useState<'ALL' | 'BLOCKED' | 'RESTRICTED' | 'ACCESSIBLE'>('ALL');
+  const [roadTelemetrySyncTime, setRoadTelemetrySyncTime] = useState<string>(() => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  const [isRoadTelemetrySyncing, setIsRoadTelemetrySyncing] = useState<boolean>(false);
+
+  const handleSyncRoadTelemetry = () => {
+    setIsRoadTelemetrySyncing(true);
+    setTimeout(() => {
+      setRoadTelemetrySyncTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      setIsRoadTelemetrySyncing(false);
+    }, 450);
+  };
 
   // Compact Feature Modal state for hero indicator pills (ai, livedata, gis, risk, resources)
   const [activeFeatureModal, setActiveFeatureModal] = useState<'ai' | 'livedata' | 'gis' | 'risk' | 'resources' | null>(null);
@@ -5918,102 +5933,145 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                     </div>
                   </div>
 
-                  {/* Highway Corridor Overview Summary */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl text-center">
-                      <div className="text-red-500 text-[10px] font-extrabold uppercase">Blocked</div>
-                      <div className="text-lg font-black text-red-600 dark:text-red-400 mt-0.5">2</div>
-                      <div className="text-[9px] text-slate-400 font-medium">Major Landslides</div>
-                    </div>
-                    <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-xl text-center">
-                      <div className="text-amber-500 text-[10px] font-extrabold uppercase">Restricted</div>
-                      <div className="text-lg font-black text-amber-600 dark:text-amber-400 mt-0.5">3</div>
-                      <div className="text-[9px] text-slate-400 font-medium">Single-Lane Only</div>
-                    </div>
-                    <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded-xl text-center">
-                      <div className="text-emerald-500 text-[10px] font-extrabold uppercase">Open / Clear</div>
-                      <div className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">14</div>
-                      <div className="text-[9px] text-slate-400 font-medium">Green Corridors</div>
-                    </div>
-                  </div>
+                  {/* Dynamic Highway Corridor Overview Summary */}
+                  {(() => {
+                    const blockedCount = NER_HIGHWAY_SEGMENTS.filter(s => s.status === 'Blocked').length;
+                    const restrictedCount = NER_HIGHWAY_SEGMENTS.filter(s => s.status === 'High Risk' || s.status === 'Caution').length;
+                    const accessibleCount = NER_HIGHWAY_SEGMENTS.filter(s => s.status === 'Accessible').length;
+                    const filtered = NER_HIGHWAY_SEGMENTS.filter(s => {
+                      if (roadFilter === 'BLOCKED') return s.status === 'Blocked';
+                      if (roadFilter === 'RESTRICTED') return s.status === 'High Risk' || s.status === 'Caution';
+                      if (roadFilter === 'ACCESSIBLE') return s.status === 'Accessible';
+                      return true;
+                    });
 
-                  {/* Live Highway Status Cards */}
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-slate-800 dark:text-slate-200 text-xs flex items-center gap-1.5">
-                        <Navigation className="h-4 w-4 text-teal-500" />
-                        Critical Corridors &amp; AI Reroute Status
-                      </span>
-                      <span className="text-[10px] font-bold text-teal-600 dark:text-teal-400 bg-teal-500/15 px-2 py-0.5 rounded-full border border-teal-500/30">
-                        Live OSRM Engine
-                      </span>
-                    </div>
+                    return (
+                      <>
+                        {/* Highway Corridor Overview Summary (Interactive Filters) */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setRoadFilter(roadFilter === 'BLOCKED' ? 'ALL' : 'BLOCKED')}
+                            className={`p-3 rounded-xl text-center border transition cursor-pointer ${
+                              roadFilter === 'BLOCKED'
+                                ? 'bg-red-500/20 border-red-500 ring-2 ring-red-500/40'
+                                : 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/50 hover:border-red-400'
+                            }`}
+                          >
+                            <div className="text-red-500 text-[10px] font-extrabold uppercase">Blocked</div>
+                            <div className="text-lg font-black text-red-600 dark:text-red-400 mt-0.5">{blockedCount}</div>
+                            <div className="text-[9px] text-slate-400 font-medium">Click to Filter</div>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setRoadFilter(roadFilter === 'RESTRICTED' ? 'ALL' : 'RESTRICTED')}
+                            className={`p-3 rounded-xl text-center border transition cursor-pointer ${
+                              roadFilter === 'RESTRICTED'
+                                ? 'bg-amber-500/20 border-amber-500 ring-2 ring-amber-500/40'
+                                : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/50 hover:border-amber-400'
+                            }`}
+                          >
+                            <div className="text-amber-500 text-[10px] font-extrabold uppercase">Restricted</div>
+                            <div className="text-lg font-black text-amber-600 dark:text-amber-400 mt-0.5">{restrictedCount}</div>
+                            <div className="text-[9px] text-slate-400 font-medium">Click to Filter</div>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setRoadFilter(roadFilter === 'ACCESSIBLE' ? 'ALL' : 'ACCESSIBLE')}
+                            className={`p-3 rounded-xl text-center border transition cursor-pointer ${
+                              roadFilter === 'ACCESSIBLE'
+                                ? 'bg-emerald-500/20 border-emerald-500 ring-2 ring-emerald-500/40'
+                                : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/50 hover:border-emerald-400'
+                            }`}
+                          >
+                            <div className="text-emerald-500 text-[10px] font-extrabold uppercase">Open / Clear</div>
+                            <div className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">{accessibleCount}</div>
+                            <div className="text-[9px] text-slate-400 font-medium">Click to Filter</div>
+                          </button>
+                        </div>
 
-                    {[
-                      {
-                        highway: 'NH-29 (Dimapur ➔ Kohima)',
-                        state: 'Nagaland',
-                        status: 'BLOCKED',
-                        statusColor: 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30',
-                        issue: 'Major debris flow at Km-42 (Phesama area)',
-                        reroute: 'AI Detour Active via Jotsoma Hill By-pass (+22 Mins)',
-                        convoys: '4 Emergency Convoys Rerouted'
-                      },
-                      {
-                        highway: 'NH-10 (Siliguri ➔ Gangtok)',
-                        state: 'Sikkim / WB',
-                        status: 'RESTRICTED',
-                        statusColor: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30',
-                        issue: 'Active slope subsidence near 29th Mile',
-                        reroute: 'Single-lane pilot vehicle escort operational',
-                        convoys: 'Light Emergency Vehicles Only'
-                      },
-                      {
-                        highway: 'NH-06 (Guwahati ➔ Shillong)',
-                        state: 'Meghalaya / Assam',
-                        status: 'GREEN CORRIDOR',
-                        statusColor: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
-                        issue: 'Fully navigable 4-lane expressway',
-                        reroute: 'Priority Relief Freight Lane Active',
-                        convoys: '8 Relief Convoys Passed in Last 2 Hours'
-                      },
-                      {
-                        highway: 'NH-37 (Jorhat ➔ Dibrugarh)',
-                        state: 'Assam',
-                        status: 'OPEN',
-                        statusColor: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
-                        issue: 'Minor surface waterlogging at Demow',
-                        reroute: 'Standard route recommended (No delay)',
-                        convoys: 'Normal Speed 65 km/h'
-                      }
-                    ].map((road, idx) => (
-                      <div key={idx} className="p-3.5 bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 hover:border-teal-500/50 transition">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900 dark:text-white text-xs">{road.highway}</span>
-                            <span className="text-[10px] text-slate-400">({road.state})</span>
+                        {/* Live Highway Status Cards */}
+                        <div className="space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-extrabold text-slate-800 dark:text-slate-200 text-xs flex items-center gap-1.5">
+                              <Navigation className="h-4 w-4 text-teal-500" />
+                              Critical Corridors &amp; AI Reroute Status ({filtered.length})
+                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[10px] font-bold text-teal-600 dark:text-teal-400 bg-teal-500/15 px-2 py-0.5 rounded-full border border-teal-500/30 flex items-center gap-1">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Live • {roadTelemetrySyncTime}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={handleSyncRoadTelemetry}
+                                title="Sync live telemetry"
+                                className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer"
+                              >
+                                <RefreshCw className={`h-3 w-3 ${isRoadTelemetrySyncing ? 'animate-spin text-teal-400' : ''}`} />
+                              </button>
+                            </div>
                           </div>
-                          <span className={`px-2 py-0.5 text-[10px] font-black rounded-full border ${road.statusColor}`}>
-                            {road.status}
-                          </span>
+
+                          {/* Filter Reset pill if active */}
+                          {roadFilter !== 'ALL' && (
+                            <div className="flex items-center justify-between bg-slate-100 dark:bg-slate-900/80 px-2.5 py-1 rounded-lg text-[10px]">
+                              <span className="text-slate-400 font-medium">
+                                Showing filter: <strong className="text-teal-400">{roadFilter}</strong>
+                              </span>
+                              <button
+                                onClick={() => setRoadFilter('ALL')}
+                                className="text-sky-400 hover:underline font-bold cursor-pointer"
+                              >
+                                Clear Filter
+                              </button>
+                            </div>
+                          )}
+
+                          {filtered.map((road) => {
+                            const isBlocked = road.status === 'Blocked';
+                            const isRestricted = road.status === 'High Risk' || road.status === 'Caution';
+                            const statusBadgeStyle = isBlocked
+                              ? 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30'
+                              : isRestricted
+                              ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                              : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30';
+
+                            return (
+                              <div key={road.id} className="p-3.5 bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 hover:border-teal-500/50 transition">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-slate-900 dark:text-white text-xs">{road.highwayCode}: {road.name}</span>
+                                    <span className="text-[10px] text-slate-400 font-normal">({road.state})</span>
+                                  </div>
+                                  <span className={`px-2 py-0.5 text-[10px] font-black rounded-full border ${statusBadgeStyle}`}>
+                                    {road.status.toUpperCase()}
+                                  </span>
+                                </div>
+                                <div className="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
+                                  <span className="text-slate-400 font-normal">Condition: </span>{road.statusDetails}
+                                </div>
+                                <div className="text-[10px] text-teal-700 dark:text-teal-300 bg-teal-500/10 px-2 py-1 rounded-lg font-bold flex items-center justify-between">
+                                  <span>{isBlocked ? 'AI Detour Corridor Active' : isRestricted ? 'Single-Lane Escort Active' : 'Green Corridor Active'}</span>
+                                  <span className="flex items-center gap-1 text-emerald-500 shrink-0">
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    Live
+                                  </span>
+                                </div>
+                                <div className="text-[10px] text-slate-500 dark:text-slate-400 pt-1 flex items-center justify-between border-t border-slate-200/60 dark:border-slate-800">
+                                  <span className="truncate max-w-[240px]">Source: <strong className="text-slate-700 dark:text-slate-200">{road.source}</strong></span>
+                                  <span className="flex items-center gap-1 text-teal-600 dark:text-teal-400 font-bold shrink-0">
+                                    <Clock className="h-3 w-3" />
+                                    {road.lastUpdated || roadTelemetrySyncTime}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                        <div className="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
-                          <span className="text-slate-400 font-normal">Condition: </span>{road.issue}
-                        </div>
-                        <div className="text-[10px] text-teal-700 dark:text-teal-300 bg-teal-500/10 px-2 py-1 rounded-lg font-bold flex items-center justify-between">
-                          <span>{road.reroute}</span>
-                          <span className="flex items-center gap-1 text-emerald-500 shrink-0">
-                            <CheckCircle2 className="h-3 w-3" />
-                            Active
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 pt-1 flex items-center justify-between">
-                          <span>Convoy Status:</span>
-                          <strong className="text-slate-700 dark:text-slate-200">{road.convoys}</strong>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      </>
+                    );
+                  })()}
 
                   {/* Full Module Button */}
                   <div className="pt-2">
