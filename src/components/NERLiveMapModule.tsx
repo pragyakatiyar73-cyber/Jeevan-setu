@@ -19,6 +19,10 @@ import {
   Search,
   Sparkles,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause,
   ArrowLeft,
   Waves,
   CloudRain,
@@ -678,6 +682,15 @@ export default function NERLiveMapModule({
   const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [selectedHotspot, setSelectedHotspot] = useState<NERHazardHotspot | null>(null);
+  const [showRiskZones, setShowRiskZones] = useState<boolean>(false);
+
+  // Ticker Slideshow States & Refs
+  const [activeTickerIndex, setActiveTickerIndex] = useState<number>(0);
+  const [isTickerAutoPlaying, setIsTickerAutoPlaying] = useState<boolean>(true);
+  const [isTickerHovered, setIsTickerHovered] = useState<boolean>(false);
+  const [tickerProgress, setTickerProgress] = useState<number>(0);
+  const tickerContainerRef = useRef<HTMLDivElement>(null);
+  const tickerCardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Layer Groups Refs
   const floodGroupRef = useRef<L.LayerGroup>(L.layerGroup());
@@ -755,6 +768,86 @@ export default function NERLiveMapModule({
       }, 300);
     }
   }, [focusedTarget]);
+
+  // Hotspot Ticker Slideshow Auto-Cycle (6-second progression)
+  useEffect(() => {
+    if (!isTickerOpen || !isTickerAutoPlaying || isTickerHovered || NER_DISASTER_HOTSPOTS.length <= 1) {
+      return;
+    }
+
+    const stepMs = 100;
+    const durationMs = 6000;
+    const increment = (stepMs / durationMs) * 100;
+
+    const timer = setInterval(() => {
+      setTickerProgress((prev) => {
+        if (prev >= 100) {
+          setActiveTickerIndex((prevIdx) => {
+            const nextIdx = (prevIdx + 1) % NER_DISASTER_HOTSPOTS.length;
+            const targetHotspot = NER_DISASTER_HOTSPOTS[nextIdx];
+            if (targetHotspot) {
+              setSelectedHotspot(targetHotspot);
+              if (mapInstanceRef.current) {
+                mapInstanceRef.current.flyTo(targetHotspot.coord, Math.max(mapInstanceRef.current.getZoom(), 9.5), { duration: 0.9 });
+              }
+            }
+            return nextIdx;
+          });
+          return 0;
+        }
+        return prev + increment;
+      });
+    }, stepMs);
+
+    return () => clearInterval(timer);
+  }, [isTickerOpen, isTickerAutoPlaying, isTickerHovered]);
+
+  // Smoothly center active ticker card in view when activeTickerIndex changes
+  useEffect(() => {
+    const targetCard = tickerCardRefs.current[activeTickerIndex];
+    if (targetCard && tickerContainerRef.current) {
+      targetCard.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+  }, [activeTickerIndex]);
+
+  const handleNextTickerSlide = () => {
+    const nextIdx = (activeTickerIndex + 1) % NER_DISASTER_HOTSPOTS.length;
+    setActiveTickerIndex(nextIdx);
+    setTickerProgress(0);
+    const target = NER_DISASTER_HOTSPOTS[nextIdx];
+    if (target) {
+      setSelectedHotspot(target);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.flyTo(target.coord, 10, { duration: 0.9 });
+      }
+    }
+  };
+
+  const handlePrevTickerSlide = () => {
+    const prevIdx = (activeTickerIndex - 1 + NER_DISASTER_HOTSPOTS.length) % NER_DISASTER_HOTSPOTS.length;
+    setActiveTickerIndex(prevIdx);
+    setTickerProgress(0);
+    const target = NER_DISASTER_HOTSPOTS[prevIdx];
+    if (target) {
+      setSelectedHotspot(target);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.flyTo(target.coord, 10, { duration: 0.9 });
+      }
+    }
+  };
+
+  const handleSelectTickerSlide = (idx: number, hotspot: NERHazardHotspot) => {
+    setActiveTickerIndex(idx);
+    setTickerProgress(0);
+    setSelectedHotspot(hotspot);
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.flyTo(hotspot.coord, 10.5, { duration: 1.0 });
+    }
+  };
 
   // Initialize Leaflet Map Instance
   useEffect(() => {
@@ -900,20 +993,23 @@ export default function NERLiveMapModule({
     highwayGroupRef.current.clearLayers();
     helipadGroupRef.current.clearLayers();
 
-    // 1. FILTER & RENDER HAZARD HOTSPOTS
+    // 1. FILTER & RENDER HAZARD HOTSPOTS (Decluttered & Tactical)
     const filteredHotspots = NER_DISASTER_HOTSPOTS.filter(h => {
       if (selectedStateId !== 'all' && h.stateId !== selectedStateId) return false;
       if (selectedCategory !== 'all' && h.category !== selectedCategory) return false;
       return true;
     });
 
-    filteredHotspots.forEach(hotspot => {
+    const allCoords = filteredHotspots.map(h => h.coord);
+
+    filteredHotspots.forEach((hotspot, idx) => {
       const isFlood = hotspot.category === 'FLOOD';
       const isLandslide = hotspot.category === 'LANDSLIDE';
       const isStorm = hotspot.category === 'STORM';
 
       const isCrit = hotspot.severity === 'CRITICAL';
       const isHigh = hotspot.severity === 'HIGH';
+      const isSelected = selectedHotspot?.id === hotspot.id;
 
       // Colors
       const mainColor = isFlood 
@@ -926,52 +1022,16 @@ export default function NERLiveMapModule({
 
       const iconEmoji = isFlood ? '🌊' : isLandslide ? '⛰️' : isStorm ? '🌧️' : '⚡';
 
-      // Visual Risk Buffer Circle on Map
-      const circle = L.circle(hotspot.coord, {
-        radius: hotspot.radiusMeters,
-        color: mainColor,
-        weight: isCrit ? 2.5 : 1.5,
-        dashArray: isCrit ? '4, 4' : undefined,
-        fillColor: mainColor,
-        fillOpacity: isCrit ? 0.22 : 0.14
-      });
-
-      // Custom Marker with Pulse Beacon for Critical Hazards
-      const markerIcon = L.divIcon({
-        className: 'custom-hazard-marker',
-        html: `
-          <div style="
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: ${isCrit ? '34px' : '28px'};
-            height: ${isCrit ? '34px' : '28px'};
-            background: ${mainColor};
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            box-shadow: 0 0 ${isCrit ? '16px' : '8px'} ${mainColor};
-            cursor: pointer;
-            transition: transform 0.2s ease;
-          ">
-            <span style="font-size: ${isCrit ? '16px' : '13px'};">${iconEmoji}</span>
-            ${isCrit ? `
-              <div style="
-                position: absolute;
-                inset: -6px;
-                border-radius: 50%;
-                border: 2px solid ${mainColor};
-                opacity: 0.8;
-                animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-              "></div>
-            ` : ''}
-          </div>
-        `,
-        iconSize: [isCrit ? 34 : 28, isCrit ? 34 : 28],
-        iconAnchor: [isCrit ? 17 : 14, isCrit ? 17 : 14]
-      });
-
-      const marker = L.marker(hotspot.coord, { icon: markerIcon });
+      // Subtle Golden-Angle Spatial De-collision to prevent overlapping pins in tight valleys (e.g. Sikkim & Guwahati)
+      const closeNeighbors = allCoords.filter((c, i) => i !== idx && Math.hypot(c[0] - hotspot.coord[0], c[1] - hotspot.coord[1]) < 0.16);
+      let renderCoord: [number, number] = hotspot.coord;
+      if (closeNeighbors.length > 0) {
+        const angle = (idx * 137.5 * Math.PI) / 180;
+        renderCoord = [
+          hotspot.coord[0] + Math.sin(angle) * 0.05,
+          hotspot.coord[1] + Math.cos(angle) * 0.05
+        ];
+      }
 
       // Live Weather Radar Telemetry for this hotspot's state
       const stWeather = weatherTelemetry[hotspot.stateId];
@@ -1050,30 +1110,103 @@ export default function NERLiveMapModule({
         </div>
       `;
 
-      marker.bindPopup(popupHtml);
-      circle.bindPopup(popupHtml);
+      // ⭕ Visual Risk Buffer Zone (Drawn selectively: only when showRiskZones is ON or this hotspot is Selected)
+      if (showRiskZones || isSelected) {
+        const circle = L.circle(hotspot.coord, {
+          radius: hotspot.radiusMeters,
+          color: isSelected ? '#38bdf8' : mainColor,
+          weight: isSelected ? 2.5 : 1.2,
+          dashArray: isSelected ? '5, 5' : '3, 4',
+          fillColor: mainColor,
+          fillOpacity: isSelected ? 0.18 : 0.05
+        });
 
-      marker.on('click', () => setSelectedHotspot(hotspot));
-      circle.on('click', () => setSelectedHotspot(hotspot));
+        circle.bindPopup(popupHtml);
+        circle.on('click', () => setSelectedHotspot(hotspot));
+
+        if (isFlood) circle.addTo(floodGroupRef.current);
+        else if (isLandslide) circle.addTo(landslideGroupRef.current);
+        else if (isStorm) circle.addTo(stormGroupRef.current);
+        else circle.addTo(seismicGroupRef.current);
+      }
+
+      // 🎯 Sleek Tactical Micro-Marker (Compact, non-intrusive, focused)
+      const pinSize = isSelected ? 34 : isCrit ? 26 : 22;
+      const iconFontSize = isSelected ? 16 : isCrit ? 13 : 11;
+
+      const markerIcon = L.divIcon({
+        className: 'custom-hazard-marker',
+        html: `
+          <div style="
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: ${pinSize}px;
+            height: ${pinSize}px;
+            background: rgba(15, 23, 42, 0.94);
+            border: ${isSelected ? '2.5px solid #38bdf8' : `2px solid ${mainColor}`};
+            border-radius: 50%;
+            box-shadow: ${isSelected 
+              ? '0 0 22px rgba(56, 189, 248, 0.9), 0 4px 14px rgba(0,0,0,0.9)' 
+              : `0 2px 8px rgba(0,0,0,0.7), 0 0 8px ${mainColor}55`};
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: ${isSelected ? 'scale(1.1)' : 'scale(1)'};
+            z-index: ${isSelected ? 9999 : isCrit ? 500 : 100};
+          ">
+            <span style="font-size: ${iconFontSize}px; line-height: 1;">${iconEmoji}</span>
+            ${isSelected ? `
+              <span style="
+                position: absolute;
+                inset: -6px;
+                border-radius: 50%;
+                border: 2px solid #38bdf8;
+                opacity: 0.85;
+                animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+              "></span>
+            ` : ''}
+            <span style="
+              position: absolute;
+              top: -2px;
+              right: -2px;
+              width: 7px;
+              height: 7px;
+              border-radius: 50%;
+              background: ${isCrit ? '#ef4444' : isHigh ? '#f97316' : '#eab308'};
+              border: 1px solid #0f172a;
+            "></span>
+          </div>
+        `,
+        iconSize: [pinSize, pinSize],
+        iconAnchor: [pinSize / 2, pinSize / 2]
+      });
+
+      const marker = L.marker(renderCoord, { icon: markerIcon });
+      marker.bindPopup(popupHtml);
+      marker.on('click', () => {
+        setSelectedHotspot(hotspot);
+        const hIdx = NER_DISASTER_HOTSPOTS.findIndex(h => h.id === hotspot.id);
+        if (hIdx !== -1) {
+          setActiveTickerIndex(hIdx);
+          setTickerProgress(0);
+        }
+      });
 
       // Add to corresponding category group
       if (isFlood) {
-        circle.addTo(floodGroupRef.current);
         marker.addTo(floodGroupRef.current);
       } else if (isLandslide) {
-        circle.addTo(landslideGroupRef.current);
         marker.addTo(landslideGroupRef.current);
       } else if (isStorm) {
-        circle.addTo(stormGroupRef.current);
         marker.addTo(stormGroupRef.current);
       } else {
-        circle.addTo(seismicGroupRef.current);
         marker.addTo(seismicGroupRef.current);
       }
     });
 
-    // 2. RENDER ACTIVE TECTONIC FAULT LINES
-    if (selectedCategory === 'all' || selectedCategory === 'SEISMIC') {
+    // 2. RENDER ACTIVE TECTONIC FAULT LINES (Strictly in SEISMIC category view)
+    if (selectedCategory === 'SEISMIC') {
       const faultLines = [
         {
           name: "Kopili Fault Zone (Zone V Active Intraplate Fault)",
@@ -1097,8 +1230,10 @@ export default function NERLiveMapModule({
           opacity: 0.85
         }).bindTooltip(`⚡ ${fault.name}`, { permanent: false }).addTo(seismicGroupRef.current);
       });
+    }
 
-      // 3. RENDER LIVE USGS EARTHQUAKES IN NER
+    // 3. RENDER LIVE USGS EARTHQUAKES IN NER
+    if (selectedCategory === 'all' || selectedCategory === 'SEISMIC') {
       liveQuakes.forEach((quake: any) => {
         const coords: [number, number] = [quake.geometry.coordinates[1], quake.geometry.coordinates[0]];
         const mag = quake.properties.mag || 0;
@@ -1109,24 +1244,24 @@ export default function NERLiveMapModule({
           className: 'custom-quake-marker',
           html: `
             <div style="
-              width: 30px;
-              height: 30px;
+              width: 26px;
+              height: 26px;
               background: #eab308;
-              border: 2px solid #ffffff;
+              border: 1.5px solid #ffffff;
               border-radius: 50%;
-              box-shadow: 0 0 14px #eab308;
+              box-shadow: 0 0 10px #eab308;
               display: flex;
               align-items: center;
               justify-content: center;
               font-weight: 900;
-              font-size: 10px;
+              font-size: 9px;
               color: #000;
             ">
               M${mag.toFixed(1)}
             </div>
           `,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15]
+          iconSize: [26, 26],
+          iconAnchor: [13, 13]
         });
 
         L.marker(coords, { icon: quakeIcon }).bindPopup(`
@@ -1142,8 +1277,8 @@ export default function NERLiveMapModule({
       });
     }
 
-    // 4. RENDER STRATEGIC HIGHWAY LIFELINES
-    if (selectedCategory === 'all' || selectedCategory === 'HIGHWAY') {
+    // 4. RENDER STRATEGIC HIGHWAY LIFELINES (Strictly in HIGHWAY category view)
+    if (selectedCategory === 'HIGHWAY') {
       NER_HIGHWAY_LIFELINES.forEach(hwy => {
         const isCritical = hwy.status === 'CRITICAL';
         const isCaution = hwy.status === 'CAUTION';
@@ -1165,8 +1300,8 @@ export default function NERLiveMapModule({
       });
     }
 
-    // 5. RENDER EMERGENCY HELIPADS & RELIEF AIR HUBS
-    if (selectedCategory === 'all' || selectedCategory === 'DEPOT') {
+    // 5. RENDER EMERGENCY HELIPADS & RELIEF AIR HUBS (Strictly in DEPOT category view)
+    if (selectedCategory === 'DEPOT') {
       NER_HELIPADS_AND_DEPOS.forEach(heli => {
         const heliIcon = L.divIcon({
           className: 'custom-helipad-marker',
@@ -1198,7 +1333,7 @@ export default function NERLiveMapModule({
         `).addTo(helipadGroupRef.current);
       });
     }
-  }, [selectedStateId, selectedCategory, liveQuakes, weatherTelemetry]);
+  }, [selectedStateId, selectedCategory, liveQuakes, weatherTelemetry, selectedHotspot, showRiskZones]);
 
   // Handle State Selection & Camera FlyTo
   const handleStateSelect = (stateId: string) => {
@@ -1233,7 +1368,7 @@ export default function NERLiveMapModule({
   const seismicCount = NER_DISASTER_HOTSPOTS.filter(h => h.category === 'SEISMIC').length + liveQuakes.length;
 
   return (
-    <div className={`h-full w-full relative flex flex-col select-none bg-[#040814] text-slate-100 font-sans overflow-hidden min-w-0 ${isFullscreen ? 'fixed inset-0 z-[99999] w-screen h-screen' : ''}`}>
+    <div className={`h-full w-full relative flex flex-col select-none bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans overflow-hidden min-w-0 transition-colors duration-300 ${isFullscreen ? 'fixed inset-0 z-[99999] w-screen h-screen' : ''}`}>
       
       {/* 🟢 TOP HEADER BAR SCOPED EXCLUSIVELY TO 8 NER STATES */}
       {!hideHeader && (
@@ -1331,61 +1466,73 @@ export default function NERLiveMapModule({
 
       {/* 🔴 INTERACTIVE HAZARD CATEGORY FILTER BAR OVERLAY */}
       <div className="absolute top-[68px] left-4 right-4 z-[1000] pointer-events-none flex flex-wrap items-center justify-between gap-2">
-        <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-slate-700/60 shadow-2xl">
+        <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-white/90 dark:bg-slate-950/85 backdrop-blur-md border border-slate-200/90 dark:border-slate-700/60 shadow-xl dark:shadow-2xl">
           <button
             onClick={() => setSelectedCategory('all')}
             className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'all' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              selectedCategory === 'all'
+                ? 'bg-sky-600 text-white shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
             }`}
           >
             <span>All Hazards</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-black/40 text-[10px]">{NER_DISASTER_HOTSPOTS.length}</span>
+            <span className="px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-black/40 text-slate-800 dark:text-slate-200 text-[10px] font-bold">{NER_DISASTER_HOTSPOTS.length}</span>
           </button>
 
           <button
             onClick={() => setSelectedCategory('FLOOD')}
             className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'FLOOD' ? 'bg-cyan-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              selectedCategory === 'FLOOD'
+                ? 'bg-cyan-600 text-white shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
             }`}
           >
             <span>🌊 Floods</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-cyan-950 text-cyan-300 text-[10px]">{floodCount}</span>
+            <span className="px-1.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 text-[10px] font-bold">{floodCount}</span>
           </button>
 
           <button
             onClick={() => setSelectedCategory('LANDSLIDE')}
             className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'LANDSLIDE' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              selectedCategory === 'LANDSLIDE'
+                ? 'bg-rose-600 text-white shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
             }`}
           >
             <span>⛰️ Landslides</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-rose-950 text-rose-300 text-[10px]">{landslideCount}</span>
+            <span className="px-1.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 text-[10px] font-bold">{landslideCount}</span>
           </button>
 
           <button
             onClick={() => setSelectedCategory('STORM')}
             className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'STORM' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              selectedCategory === 'STORM'
+                ? 'bg-purple-600 text-white shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
             }`}
           >
             <span>🌧️ Severe Storms</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-purple-950 text-purple-300 text-[10px]">{stormCount}</span>
+            <span className="px-1.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 text-[10px] font-bold">{stormCount}</span>
           </button>
 
           <button
             onClick={() => setSelectedCategory('SEISMIC')}
             className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'SEISMIC' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              selectedCategory === 'SEISMIC'
+                ? 'bg-amber-600 text-white shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
             }`}
           >
             <span>⚡ Seismic &amp; Faults</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-amber-950 text-amber-300 text-[10px]">{seismicCount}</span>
+            <span className="px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">{seismicCount}</span>
           </button>
 
           <button
             onClick={() => setSelectedCategory('HIGHWAY')}
             className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'HIGHWAY' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              selectedCategory === 'HIGHWAY'
+                ? 'bg-emerald-600 text-white shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
             }`}
           >
             <span>🛣️ Lifelines</span>
@@ -1394,7 +1541,9 @@ export default function NERLiveMapModule({
           <button
             onClick={() => setSelectedCategory('DEPOT')}
             className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'DEPOT' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              selectedCategory === 'DEPOT'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
             }`}
           >
             <span>🚁 Helipads</span>
@@ -1404,16 +1553,16 @@ export default function NERLiveMapModule({
         {/* Live Telemetry & USGS Tremor Badges */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Live Sync Status Pill */}
-          <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-950/85 border border-emerald-500/40 text-emerald-400 text-xs font-bold backdrop-blur shadow-md">
+          <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-xl bg-white/90 dark:bg-slate-950/85 border border-emerald-500/40 text-emerald-700 dark:text-emerald-400 text-xs font-bold backdrop-blur shadow-md">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             <span className="hidden sm:inline">Live Radar &amp; USGS:</span>
-            <span className="text-slate-300 font-mono text-[11px]">
+            <span className="text-slate-700 dark:text-slate-300 font-mono text-[11px]">
               {lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
             </span>
-            <span className="text-[10px] text-emerald-400/80 font-normal">(60s cycle)</span>
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-normal">(60s cycle)</span>
           </div>
 
           {/* Live USGS Tremor Badge */}
@@ -1426,10 +1575,16 @@ export default function NERLiveMapModule({
                 }
               }}
               title="Click to zoom to live USGS quake location"
-              className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold backdrop-blur cursor-pointer transition"
+              className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-xl bg-white/90 dark:bg-slate-950/85 hover:bg-amber-50 dark:hover:bg-slate-900 border border-amber-500/40 text-xs font-bold backdrop-blur shadow-md cursor-pointer transition"
             >
-              <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping"></span>
-              <span>Live USGS: {liveQuakes[0].properties.title}</span>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+              </span>
+              <span className="text-amber-600 dark:text-amber-400 font-extrabold">Live USGS:</span>
+              <span className="text-slate-800 dark:text-slate-200 font-medium font-mono text-[11px] truncate max-w-[260px] sm:max-w-none">
+                {liveQuakes[0].properties.title}
+              </span>
             </button>
           )}
         </div>
@@ -1442,15 +1597,15 @@ export default function NERLiveMapModule({
         {/* 📋 FLOATING TACTICAL LEGEND (Collapsible on left) */}
         <div className="absolute top-[125px] left-4 z-[1000] pointer-events-auto">
           {isLegendOpen ? (
-            <div className="w-56 p-3.5 rounded-2xl bg-slate-950/85 border border-slate-700/60 backdrop-blur-md shadow-2xl space-y-2.5 text-xs text-slate-300 animate-fadeIn">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="font-extrabold text-white text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-                  <Compass className="h-3.5 w-3.5 text-sky-400" />
+            <div className="w-56 p-3.5 rounded-2xl bg-white/95 dark:bg-slate-950/85 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md shadow-2xl space-y-2.5 text-xs text-slate-700 dark:text-slate-300 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="font-extrabold text-slate-900 dark:text-white text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                  <Compass className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
                   Tactical Hazard Legend
                 </span>
                 <button
                   onClick={() => setIsLegendOpen(false)}
-                  className="text-slate-400 hover:text-white text-xs font-bold p-0.5"
+                  className="text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold p-0.5"
                 >
                   ✕
                 </button>
@@ -1481,7 +1636,7 @@ export default function NERLiveMapModule({
                   <span className="h-3 w-3 rounded bg-blue-600 border border-white flex items-center justify-center text-[8px]">🚁</span>
                   <span>Emergency Helipad / LZ</span>
                 </div>
-                <div className="flex items-center gap-2 border-t border-slate-800 pt-1.5 text-[10px] text-sky-400 font-mono">
+                <div className="flex items-center gap-2 border-t border-slate-200 dark:border-slate-800 pt-1.5 text-[10px] text-sky-600 dark:text-sky-400 font-mono">
                   <span className="h-0.5 w-4 border-b-2 border-dashed border-sky-400"></span>
                   <span>8 NER Sovereign Boundary</span>
                 </div>
@@ -1490,92 +1645,209 @@ export default function NERLiveMapModule({
           ) : (
             <button
               onClick={() => setIsLegendOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-300 hover:text-white shadow-lg flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-950/80 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-lg flex items-center gap-1.5"
             >
-              <Compass className="h-3.5 w-3.5 text-sky-400" />
+              <Compass className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
               <span>Legend</span>
             </button>
           )}
         </div>
 
-        {/* ⚡ BOTTOM ACTIVE RISK HOTSPOTS TICKER & QUICK INSPECTOR */}
+        {/* 🛠️ TACTICAL MAP HUD CONTROLS (Right side) */}
+        <div className="absolute top-[125px] right-4 z-[1000] pointer-events-auto flex items-center gap-2">
+          {/* Risk Zones Toggle */}
+          <button
+            type="button"
+            onClick={() => setShowRiskZones(!showRiskZones)}
+            className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 shadow-xl backdrop-blur-md cursor-pointer ${
+              showRiskZones
+                ? 'bg-sky-600 border-sky-400 text-white shadow-sky-500/20'
+                : 'bg-white/95 dark:bg-slate-950/85 border-slate-200/90 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
+            }`}
+            title="Toggle 15-30km Risk Buffer Zone Overlays"
+          >
+            <span>{showRiskZones ? '⭕ Impact Zones: ON' : '⭕ Impact Zones: OFF'}</span>
+          </button>
+
+          {/* Fit All NER States */}
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedStateId('all');
+              setSelectedHotspot(null);
+              mapInstanceRef.current?.flyToBounds([[21.9000, 88.0000], [29.5000, 97.4000]], { duration: 1.2 });
+            }}
+            className="px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-950/85 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-xl flex items-center gap-1.5 transition cursor-pointer"
+            title="Reset Map to Full 8 NER States Overview"
+          >
+            <Maximize2 className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
+            <span className="hidden sm:inline">Fit NER</span>
+          </button>
+        </div>
+
+        {/* ⚡ BOTTOM ACTIVE RISK HOTSPOTS SLIDESHOW REEL & INSPECTOR */}
         {isTickerOpen ? (
-          <div className="absolute bottom-4 left-4 right-4 z-[1000] pointer-events-auto">
-            <div className="p-3 rounded-2xl bg-slate-950/90 border border-slate-700/60 backdrop-blur-md shadow-2xl space-y-2">
-              <div className="flex items-center justify-between">
+          <div 
+            className="absolute bottom-4 left-4 right-4 z-[1000] pointer-events-auto"
+            onMouseEnter={() => setIsTickerHovered(true)}
+            onMouseLeave={() => setIsTickerHovered(false)}
+          >
+            <div className="p-3 rounded-2xl bg-white/95 dark:bg-slate-950/90 border border-slate-200/90 dark:border-slate-700/70 backdrop-blur-xl shadow-2xl space-y-2">
+              
+              {/* Slideshow Top Navigation Header */}
+              <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
-                  <span className="text-xs font-black uppercase tracking-wider text-white">
-                    Critical Disaster Risk Hotspots (Click to Inspect)
+                  <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
+                  <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>🎞️</span>
+                    <span>Risk Hotspots Slideshow</span>
                   </span>
-                  <span className="rounded-full bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-400 border border-rose-500/30">
-                    {NER_DISASTER_HOTSPOTS.filter(h => h.severity === 'CRITICAL').length} High Vulnerability
+                  <span className="text-slate-400 dark:text-slate-600 font-bold">•</span>
+                  <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[10px] font-black text-sky-600 dark:text-sky-400">
+                    Slide {activeTickerIndex + 1} of {NER_DISASTER_HOTSPOTS.length}
+                  </span>
+                  <span className="hidden sm:inline-flex rounded-full bg-rose-500/15 dark:bg-rose-500/20 px-2 py-0.5 text-[10px] font-extrabold text-rose-700 dark:text-rose-400 border border-rose-500/30">
+                    {NER_DISASTER_HOTSPOTS.filter(h => h.severity === 'CRITICAL').length} Critical Alerts
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  {/* Auto-Play Toggle Button */}
                   <button
-                    onClick={() => setIsTickerOpen(false)}
-                    className="text-slate-400 hover:text-white text-xs font-bold px-2 py-0.5 rounded-lg hover:bg-slate-800"
+                    type="button"
+                    onClick={() => setIsTickerAutoPlaying(!isTickerAutoPlaying)}
+                    title={isTickerAutoPlaying ? "Pause Auto-Cycle (6s)" : "Resume Auto-Cycle"}
+                    className={`px-2 py-1 rounded-lg text-[10px] font-extrabold border transition flex items-center gap-1 cursor-pointer ${
+                      isTickerAutoPlaying
+                        ? 'bg-emerald-500/15 dark:bg-emerald-950/70 border-emerald-500/40 text-emerald-800 dark:text-emerald-300'
+                        : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    }`}
                   >
-                    Hide Ticker
+                    {isTickerAutoPlaying ? <Pause className="h-3 w-3 text-emerald-600 dark:text-emerald-400" /> : <Play className="h-3 w-3 text-sky-600 dark:text-sky-400" />}
+                    <span>{isTickerAutoPlaying ? 'Auto 6s' : 'Paused'}</span>
+                  </button>
+
+                  {/* Prev / Next Step Buttons */}
+                  <button
+                    type="button"
+                    onClick={handlePrevTickerSlide}
+                    title="Previous Hotspot Slide"
+                    className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 transition cursor-pointer"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNextTickerSlide}
+                    title="Next Hotspot Slide"
+                    className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 transition cursor-pointer"
+                  >
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsTickerOpen(false)}
+                    className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-[11px] font-extrabold px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition cursor-pointer"
+                  >
+                    Hide
                   </button>
                 </div>
               </div>
 
-              {/* Horizontal Scrollable Hotspot Cards */}
-              <div className="flex items-center gap-2.5 overflow-x-auto pb-1 text-xs">
-                {NER_DISASTER_HOTSPOTS.map(h => {
-                  const isCrit = h.severity === 'CRITICAL';
-                  const isFlood = h.category === 'FLOOD';
-                  const isLandslide = h.category === 'LANDSLIDE';
-                  const isStorm = h.category === 'STORM';
-                  const icon = isFlood ? '🌊' : isLandslide ? '⛰️' : isStorm ? '🌧️' : '⚡';
+              {/* Horizontal Slideshow Reel with Vignette Fades & Zero Scrollbars */}
+              <div className="relative group">
+                <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white/95 dark:from-slate-950/95 to-transparent z-10 rounded-l-xl" />
+                <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white/95 dark:from-slate-950/95 to-transparent z-10 rounded-r-xl" />
 
-                  return (
-                    <div
-                      key={h.id}
-                      onClick={() => handleFlyToHotspot(h)}
-                      className={`shrink-0 w-64 p-2.5 rounded-xl border cursor-pointer transition-all hover:scale-[1.02] ${
-                        selectedHotspot?.id === h.id
-                          ? 'bg-sky-950/80 border-sky-500 shadow-lg'
-                          : isCrit
-                          ? 'bg-slate-900/80 border-rose-500/40 hover:border-rose-500'
-                          : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="font-bold text-white text-xs truncate flex items-center gap-1.5">
-                          <span>{icon}</span>
-                          <span className="truncate">{h.name}</span>
-                        </span>
-                        <span className={`px-1.5 py-0.2 rounded text-[9px] font-extrabold uppercase shrink-0 ${
-                          isCrit ? 'bg-rose-500 text-white' : 'bg-amber-500 text-slate-950'
-                        }`}>
-                          {h.severity}
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-slate-400 truncate flex items-center justify-between gap-1">
-                        <span className="truncate">{h.state} &bull; {h.metricValue}</span>
-                        {weatherTelemetry[h.stateId] && (
-                          <span className="text-sky-400 font-mono text-[9.5px] shrink-0 font-bold">
-                            🌧️ {weatherTelemetry[h.stateId].rain.toFixed(1)} mm/h
+                <div
+                  ref={tickerContainerRef}
+                  className="flex items-center gap-2.5 overflow-x-auto py-1 px-1 scroll-smooth scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                >
+                  {NER_DISASTER_HOTSPOTS.map((h, idx) => {
+                    const isCrit = h.severity === 'CRITICAL';
+                    const isHigh = h.severity === 'HIGH';
+                    const isFlood = h.category === 'FLOOD';
+                    const isLandslide = h.category === 'LANDSLIDE';
+                    const isStorm = h.category === 'STORM';
+                    const icon = isFlood ? '🌊' : isLandslide ? '⛰️' : isStorm ? '🌧️' : '⚡';
+
+                    const isSelected = selectedHotspot?.id === h.id || activeTickerIndex === idx;
+                    const isCompleted = idx < activeTickerIndex;
+
+                    return (
+                      <div
+                        key={h.id}
+                        ref={(el) => { tickerCardRefs.current[idx] = el; }}
+                        onClick={() => handleSelectTickerSlide(idx, h)}
+                        className={`relative shrink-0 w-64 p-3 rounded-2xl border cursor-pointer transition-all duration-200 overflow-hidden select-none ${
+                          isSelected
+                            ? 'bg-sky-50 dark:bg-sky-950/90 border-sky-500 dark:border-sky-400 ring-2 ring-sky-400/40 shadow-xl shadow-sky-500/20 scale-[1.02] text-slate-900 dark:text-white'
+                            : isCrit
+                            ? 'bg-white dark:bg-slate-950/85 border-rose-300 dark:border-rose-500/40 hover:border-rose-400 hover:bg-rose-50/50 dark:hover:bg-slate-900/90 text-slate-800 dark:text-slate-200 shadow-sm'
+                            : 'bg-white dark:bg-slate-950/85 border-slate-200 dark:border-slate-800/90 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/90 text-slate-700 dark:text-slate-300 shadow-sm'
+                        }`}
+                      >
+                        {/* Story/Slideshow Top Progress Bar Line */}
+                        <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-slate-200 dark:bg-slate-800/80 overflow-hidden">
+                          <div
+                            className={`h-full transition-all ease-linear ${
+                              isSelected
+                                ? 'bg-gradient-to-r from-sky-400 to-emerald-400 duration-100'
+                                : isCompleted
+                                ? 'bg-sky-500/70 w-full'
+                                : 'w-0'
+                            }`}
+                            style={{
+                              width: isSelected ? `${tickerProgress}%` : isCompleted ? '100%' : '0%'
+                            }}
+                          />
+                        </div>
+
+                        {/* Top Row: Slide # + Emoji + Title + Severity */}
+                        <div className="flex items-center justify-between gap-1 mb-1.5 pt-0.5">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <span className={`text-[9px] font-mono font-black ${isSelected ? 'text-sky-600 dark:text-sky-300' : 'text-slate-400 dark:text-slate-500'}`}>
+                              #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
+                            </span>
+                            <span className="text-xs">{icon}</span>
+                            <span className={`font-extrabold text-xs truncate ${isSelected ? 'text-sky-950 dark:text-white' : 'text-slate-900 dark:text-white'}`}>
+                              {h.name}
+                            </span>
+                          </div>
+                          <span className={`px-1.5 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider shrink-0 ${
+                            isCrit ? 'bg-rose-500 text-white shadow-xs' : isHigh ? 'bg-orange-500 text-white' : 'bg-amber-500 text-slate-950'
+                          }`}>
+                            {h.severity}
                           </span>
-                        )}
+                        </div>
+
+                        {/* Bottom Row: State & Metric & Realtime Weather */}
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center justify-between gap-1 font-semibold">
+                          <span className="truncate">
+                            <b className={isSelected ? 'text-sky-700 dark:text-sky-200' : 'text-slate-800 dark:text-slate-300'}>{h.state}</b> &bull; {h.metricValue}
+                          </span>
+                          {weatherTelemetry[h.stateId] && (
+                            <span className="text-sky-700 dark:text-sky-400 font-mono text-[9px] shrink-0 font-extrabold bg-sky-100 dark:bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-200 dark:border-sky-800/40">
+                              🌧️ {weatherTelemetry[h.stateId].rain.toFixed(1)} mm/h
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
+
             </div>
           </div>
         ) : (
           <div className="absolute bottom-4 left-4 z-[1000] pointer-events-auto">
             <button
               onClick={() => setIsTickerOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-slate-950/85 border border-slate-700/60 backdrop-blur-md text-xs font-bold text-white shadow-xl flex items-center gap-2 hover:bg-slate-900"
+              className="px-3.5 py-2 rounded-xl bg-white/95 dark:bg-slate-950/85 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-800 dark:text-white shadow-xl flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-900 transition"
             >
-              <AlertTriangle className="h-4 w-4 text-rose-400" />
+              <AlertTriangle className="h-4 w-4 text-rose-500 dark:text-rose-400" />
               <span>Show Critical Risk Hotspots Ticker</span>
             </button>
           </div>
@@ -1587,9 +1859,9 @@ export default function NERLiveMapModule({
             <button
               type="button"
               onClick={isFullscreen ? () => setIsFullscreen(false) : onBackToDashboard}
-              className="pointer-events-auto flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-950/90 hover:bg-slate-900 text-white font-bold text-xs shadow-2xl border border-white/20 backdrop-blur-md transition cursor-pointer"
+              className="pointer-events-auto flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/95 dark:bg-slate-950/90 hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-800 dark:text-white font-bold text-xs shadow-2xl border border-slate-200 dark:border-white/20 backdrop-blur-md transition cursor-pointer"
             >
-              <ArrowLeft className="h-4 w-4 text-sky-400" />
+              <ArrowLeft className="h-4 w-4 text-sky-600 dark:text-sky-400" />
               <span>{isFullscreen ? "Exit Fullscreen" : "Back to Home"}</span>
             </button>
           </div>
