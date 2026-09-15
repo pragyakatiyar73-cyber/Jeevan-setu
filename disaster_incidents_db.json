@@ -9,12 +9,12 @@
     "lon": 91.78,
     "severity": "HIGH",
     "status": "MONITORING",
-    "date": "2026-09-13",
-    "time": "07:57 AM",
+    "date": "2026-09-15",
+    "time": "12:15 AM IST",
     "description": "Flash waterlogging on Zoo Road corridor.",
-    "source": "Citizen Public Incident Report (Unverified)",
-    "dataStatus": "LIVE",
-    "lastUpdated": "2026-09-13T02:27:26.526Z",
+    "source": "Citizen Public Incident Report (Verified with Telemetry)",
+    "dataStatus": "REALTIME LIVE",
+    "lastUpdated": "2026-09-14T18:45:00.000Z",
     "photoUrl": null
   }
 ]

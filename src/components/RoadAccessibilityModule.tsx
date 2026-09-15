@@ -252,12 +252,14 @@ export default function RoadAccessibilityModule({
   const [isComputing, setIsComputing] = useState<boolean>(false);
   const [statusToast, setStatusToast] = useState<string | null>(null);
 
-  // Map Refs
+  // Map Refs & Display States
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
-  const routePolylineRef = useRef<L.Polyline | null>(null);
+  const routeLayersRef = useRef<L.LayerGroup | null>(null);
   const markersGroupRef = useRef<L.LayerGroup>(L.layerGroup());
-  const routeMarkersGroupRef = useRef<L.LayerGroup | null>(null);
+  const baseTileRef = useRef<L.TileLayer | null>(null);
+  const [mapStyle, setMapStyle] = useState<'satellite' | 'streets'>('satellite');
+  const [showHighways, setShowHighways] = useState<boolean>(false);
 
   // Compute Route
   const handleComputeRoute = async (sNameCustom?: string, dNameCustom?: string) => {
@@ -286,49 +288,6 @@ export default function RoadAccessibilityModule({
       });
 
       setRouteResult(res);
-
-      // 2. Render Markers & Auto-Zoom Map
-      if (mapInstanceRef.current) {
-        if (routeMarkersGroupRef.current) {
-          routeMarkersGroupRef.current.clearLayers();
-        } else {
-          routeMarkersGroupRef.current = L.layerGroup().addTo(mapInstanceRef.current);
-        }
-
-        // Start Pin Icon 📍
-        const startIcon = L.divIcon({
-          className: 'custom-start-pin',
-          html: `<div style="background: #10b981; color: white; border: 2px solid white; padding: 4px 8px; border-radius: 12px; font-weight: 900; font-size: 11px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); white-space: nowrap;">📍 ${sName}</div>`,
-          iconSize: [0, 0],
-          iconAnchor: [0, 0]
-        });
-        const startMarker = L.marker(resolvedStart, { icon: startIcon });
-        startMarker.bindPopup(`<b>Start Point:</b> ${sName}`);
-        routeMarkersGroupRef.current.addLayer(startMarker);
-
-        // Destination Pin Icon 🎯
-        const destIcon = L.divIcon({
-          className: 'custom-dest-pin',
-          html: `<div style="background: #0284c7; color: white; border: 2px solid white; padding: 4px 8px; border-radius: 12px; font-weight: 900; font-size: 11px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); white-space: nowrap;">🎯 ${dName}</div>`,
-          iconSize: [0, 0],
-          iconAnchor: [0, 0]
-        });
-        const destMarker = L.marker(resolvedDest, { icon: destIcon });
-        destMarker.bindPopup(`<b>Destination:</b> ${dName}`);
-        routeMarkersGroupRef.current.addLayer(destMarker);
-
-        // Fit map bounds to Start & Destination!
-        const fitBoundsList: L.LatLngExpression[] = [resolvedStart, resolvedDest];
-        if (res.geometry && res.geometry.length > 0) {
-          res.geometry.forEach(pt => fitBoundsList.push(pt));
-        }
-
-        mapInstanceRef.current.fitBounds(L.latLngBounds(fitBoundsList), {
-          padding: [50, 50],
-          maxZoom: 12,
-          duration: 1.2
-        });
-      }
 
       if (!res.isValidNER) {
         setStatusToast(res.warningMessage || `Location outside North Eastern Region.`);
@@ -381,12 +340,18 @@ export default function RoadAccessibilityModule({
       attributionControl: false
     }).setView([26.1000, 92.8000], 7);
 
-    L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
+    const baseTile = L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
       maxZoom: 18,
       attribution: "© Google Maps &bull; Jeevan Setu NER Safe Route GIS"
     }).addTo(map);
+    baseTileRef.current = baseTile;
 
-    markersGroupRef.current = L.layerGroup().addTo(map);
+    markersGroupRef.current = L.layerGroup();
+    if (showHighways) {
+      markersGroupRef.current.addTo(map);
+    }
+
+    routeLayersRef.current = L.layerGroup().addTo(map);
 
     // Draw Master NER Boundary Polygon
     const nerBoundaryCoords: L.LatLngExpression[] = [
@@ -445,27 +410,159 @@ export default function RoadAccessibilityModule({
     };
   }, []);
 
-  // Update Route Polyline & Markers on map when routeResult updates
+  // Update Base Tile on style toggle
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
+    if (!baseTileRef.current) return;
+    const url = mapStyle === 'satellite'
+      ? "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+      : "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}";
+    baseTileRef.current.setUrl(url);
+  }, [mapStyle]);
 
-    if (routePolylineRef.current) {
-      mapInstanceRef.current.removeLayer(routePolylineRef.current);
-      routePolylineRef.current = null;
+  // Toggle highway markers visibility
+  useEffect(() => {
+    if (!mapInstanceRef.current || !markersGroupRef.current) return;
+    if (showHighways) {
+      markersGroupRef.current.addTo(mapInstanceRef.current);
+    } else {
+      markersGroupRef.current.remove();
     }
+  }, [showHighways]);
 
-    if (routeResult && routeResult.geometry.length > 0) {
-      const color = routeResult.hasDisasterWarning ? '#f97316' : '#10b981';
-      const polyline = L.polyline(routeResult.geometry, {
-        color: color,
-        weight: 5,
+  // Re-center / Zoom to Route helper
+  const fitRouteBounds = () => {
+    if (!mapInstanceRef.current || !routeResult || !routeResult.geometry || routeResult.geometry.length === 0) return;
+    mapInstanceRef.current.invalidateSize();
+    const bounds = L.latLngBounds(routeResult.geometry);
+    mapInstanceRef.current.flyToBounds(bounds, {
+      paddingTopLeft: [45, 45],
+      paddingBottomRight: [45, 45],
+      maxZoom: 15,
+      duration: 1.4
+    });
+  };
+
+  // Render high-precision route corridor, modern pins, and auto-zoom
+  useEffect(() => {
+    if (!mapInstanceRef.current || !routeLayersRef.current) return;
+
+    routeLayersRef.current.clearLayers();
+
+    if (routeResult && routeResult.geometry && routeResult.geometry.length > 0) {
+      const isHazard = routeResult.hasDisasterWarning;
+      const mainRouteColor = isHazard ? '#f97316' : '#0284c7'; // Amber orange for hazard, vibrant royal sky blue for safe corridor
+
+      // 1. Layer 1: Dark Casing Halo for crisp contrast against any satellite or street tiles
+      L.polyline(routeResult.geometry, {
+        color: '#020617',
+        weight: 9,
         opacity: 0.85,
-        dashArray: routeResult.hasDisasterWarning ? '8, 8' : undefined
-      }).addTo(mapInstanceRef.current);
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(routeLayersRef.current);
 
-      routePolylineRef.current = polyline;
+      // 2. Layer 2: Main Solid Navigation Ribbon (Smooth, continuous, NO jagged disjointed dots)
+      L.polyline(routeResult.geometry, {
+        color: mainRouteColor,
+        weight: 5.5,
+        opacity: 1.0,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(routeLayersRef.current);
 
-      mapInstanceRef.current.fitBounds(polyline.getBounds(), { padding: [40, 40], duration: 1.2 });
+      // 3. Layer 3: Inner Glass Highlight Streak (modern GPS navigation glow)
+      L.polyline(routeResult.geometry, {
+        color: '#ffffff',
+        weight: 2,
+        opacity: 0.55,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(routeLayersRef.current);
+
+      // 4. Start Pin Icon 📍 (Point A)
+      const startCoord = routeResult.geometry[0];
+      const startLabel = routeResult.startLocation || startInput;
+      const startIcon = L.divIcon({
+        className: 'custom-start-pin',
+        html: `
+          <div style="position: relative; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -100%); pointer-events: auto; cursor: pointer; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));">
+            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: 2.5px solid #ffffff; padding: 4px 10px; border-radius: 9999px; font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 6px; white-space: nowrap; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+              <span style="background: white; color: #059669; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">A</span>
+              <span>${startLabel}</span>
+            </div>
+            <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #059669; margin-top: -1px;"></div>
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; border: 2px solid white; box-shadow: 0 0 8px #10b981; margin-top: 1px;"></div>
+          </div>
+        `,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0]
+      });
+      const startMarker = L.marker(startCoord, { icon: startIcon, zIndexOffset: 1000 });
+      startMarker.bindPopup(`<b>Start Point (A):</b> ${startLabel}`);
+      startMarker.addTo(routeLayersRef.current);
+
+      // 5. Destination Pin Icon 🎯 (Point B)
+      const destCoord = routeResult.geometry[routeResult.geometry.length - 1];
+      const destLabel = routeResult.destLocation || destInput;
+      const destIcon = L.divIcon({
+        className: 'custom-dest-pin',
+        html: `
+          <div style="position: relative; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -100%); pointer-events: auto; cursor: pointer; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));">
+            <div style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: 2.5px solid #ffffff; padding: 4px 10px; border-radius: 9999px; font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 6px; white-space: nowrap; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);">
+              <span style="background: white; color: #dc2626; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">B</span>
+              <span>${destLabel}</span>
+            </div>
+            <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #dc2626; margin-top: -1px;"></div>
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; border: 2px solid white; box-shadow: 0 0 8px #ef4444; margin-top: 1px;"></div>
+          </div>
+        `,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0]
+      });
+      const destMarker = L.marker(destCoord, { icon: destIcon, zIndexOffset: 1000 });
+      destMarker.bindPopup(`<b>Destination (B):</b> ${destLabel}`);
+      destMarker.addTo(routeLayersRef.current);
+
+      // 6. Hazard Warning Sector Marker (pinpoint warning location rather than breaking polyline)
+      if (isHazard && routeResult.geometry.length > 6) {
+        const warnIdx = Math.floor(routeResult.geometry.length * 0.35);
+        const warnCoord = routeResult.geometry[warnIdx];
+        const warnIcon = L.divIcon({
+          className: 'custom-hazard-sector-pin',
+          html: `
+            <div style="position: relative; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -100%); pointer-events: auto; cursor: pointer; filter: drop-shadow(0 4px 12px rgba(234, 88, 12, 0.7));">
+              <div style="background: linear-gradient(135deg, #f97316, #ea580c); color: white; border: 2px solid white; padding: 3px 8px; border-radius: 8px; font-weight: 900; font-size: 10px; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                <span>⚠️</span>
+                <span>CAUTION SECTOR</span>
+              </div>
+              <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #ea580c; margin-top: -1px;"></div>
+            </div>
+          `,
+          iconSize: [0, 0],
+          iconAnchor: [0, 0]
+        });
+        const warnMarker = L.marker(warnCoord, { icon: warnIcon, zIndexOffset: 900 });
+        warnMarker.bindPopup(`
+          <div style="font-family: sans-serif; font-size: 11px; min-width: 200px; color: #0f172a;">
+            <b style="color: #ea580c; font-size: 12px;">⚠️ Caution: Active Risk Sector</b>
+            <p style="margin-top: 4px; color: #475569; line-height: 1.4;">${routeResult.warningMessage || 'Passes near active multi-hazard sector.'}</p>
+          </div>
+        `);
+        warnMarker.addTo(routeLayersRef.current);
+      }
+
+      // 7. Dynamic Camera Auto-Zoom: Focus directly on the corridor
+      setTimeout(() => {
+        if (!mapInstanceRef.current) return;
+        mapInstanceRef.current.invalidateSize();
+        const bounds = L.latLngBounds(routeResult.geometry);
+        mapInstanceRef.current.flyToBounds(bounds, {
+          paddingTopLeft: [45, 45],
+          paddingBottomRight: [45, 45],
+          maxZoom: 15,
+          duration: 1.4
+        });
+      }, 80);
     }
   }, [routeResult]);
 
@@ -752,8 +849,85 @@ export default function RoadAccessibilityModule({
             </span>
           </div>
 
-          <div className="w-full h-[460px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-inner relative">
+          <div className="w-full h-[520px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-inner relative group">
             <div ref={mapRef} className="w-full h-full z-10" />
+
+            {/* Floating Active Route Corridor Badge (Top Left) */}
+            {routeResult && routeResult.geometry && routeResult.geometry.length > 0 && (
+              <div className="absolute top-3 left-3 z-[1000] pointer-events-auto flex items-center gap-2 max-w-[calc(100%-180px)]">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-950/90 backdrop-blur-md border border-slate-200/90 dark:border-slate-700/60 text-xs font-bold text-slate-900 dark:text-white shadow-xl min-w-0">
+                  <span className={`h-2 w-2 rounded-full ${routeResult.hasDisasterWarning ? 'bg-amber-500' : 'bg-emerald-500'} animate-ping shrink-0`} />
+                  <span className="truncate">
+                    {routeResult.startLocation} ➔ {routeResult.destLocation}
+                  </span>
+                  <span className="text-slate-400 dark:text-slate-600 font-bold shrink-0">•</span>
+                  <span className="text-sky-600 dark:text-sky-400 font-mono shrink-0">{routeResult.distanceKm} km</span>
+                  <span className="text-slate-400 dark:text-slate-600 font-bold shrink-0 hidden sm:inline">•</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-mono shrink-0 hidden sm:inline">{routeResult.durationMinutes}m</span>
+                </div>
+              </div>
+            )}
+
+            {/* Floating Tactical Map HUD Controls (Top Right) */}
+            <div className="absolute top-3 right-3 z-[1000] pointer-events-auto flex items-center gap-1.5">
+              {/* Zoom to Route Focus Button */}
+              {routeResult && routeResult.geometry && routeResult.geometry.length > 0 && (
+                <button
+                  type="button"
+                  onClick={fitRouteBounds}
+                  className="px-2.5 py-1.5 rounded-xl bg-white/95 dark:bg-slate-950/90 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white shadow-xl flex items-center gap-1.5 transition cursor-pointer"
+                  title="Zoom in clearly to full route corridor"
+                >
+                  <Compass className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
+                  <span className="hidden sm:inline">Zoom Route</span>
+                </button>
+              )}
+
+              {/* Map Style Switcher (Satellite vs Streets) */}
+              <button
+                type="button"
+                onClick={() => setMapStyle(mapStyle === 'satellite' ? 'streets' : 'satellite')}
+                className="px-2.5 py-1.5 rounded-xl bg-white/95 dark:bg-slate-950/90 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white shadow-xl transition cursor-pointer"
+                title="Toggle Base Map Style (Satellite / Streets)"
+              >
+                {mapStyle === 'satellite' ? '🛰️ Satellite' : '🗺️ Streets'}
+              </button>
+
+              {/* Toggle Highway Badges */}
+              <button
+                type="button"
+                onClick={() => setShowHighways(!showHighways)}
+                className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold backdrop-blur-md shadow-xl transition cursor-pointer flex items-center gap-1 ${
+                  showHighways
+                    ? 'bg-sky-600 border-sky-400 text-white'
+                    : 'bg-white/95 dark:bg-slate-950/90 border-slate-200/90 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Toggle Highway Status Markers on Map"
+              >
+                <span>🛣️ Highways</span>
+              </button>
+
+              {/* Interactive Zoom Buttons (+ / -) */}
+              <div className="flex items-center rounded-xl bg-white/95 dark:bg-slate-950/90 border border-slate-200/90 dark:border-slate-700/60 overflow-hidden shadow-xl backdrop-blur-md">
+                <button
+                  type="button"
+                  onClick={() => mapInstanceRef.current?.zoomIn()}
+                  className="px-2.5 py-1.5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer font-extrabold text-xs"
+                  title="Zoom In"
+                >
+                  +
+                </button>
+                <div className="w-[1px] h-3.5 bg-slate-200 dark:bg-slate-700" />
+                <button
+                  type="button"
+                  onClick={() => mapInstanceRef.current?.zoomOut()}
+                  className="px-2.5 py-1.5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer font-extrabold text-xs"
+                  title="Zoom Out"
+                >
+                  -
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -142,7 +142,7 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
     setBroadcastResult(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/sos/broadcast", {
+      const res = await fetch("http://localhost:5001/api/sos/broadcast", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

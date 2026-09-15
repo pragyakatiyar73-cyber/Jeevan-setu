@@ -9,19 +9,19 @@
     "sourceDepot": "Guwahati Regional Relief Depot",
     "sourceLat": 26.1445,
     "sourceLon": 91.7362,
-    "destination": "Mangaldoi Relief Camp",
-    "destLat": 26.4363,
-    "destLon": 92.0345,
-    "currentLatitude": 26.1445,
-    "currentLongitude": 91.7362,
-    "lat": 26.1445,
-    "lon": 91.7362,
-    "gpsAccuracy": 4.2,
-    "speed": 42,
-    "heading": 85,
+    "destination": "Dimapur Flood Staging Camp",
+    "destLat": 26.58432,
+    "destLon": 80.26903,
+    "currentLatitude": 26.549195034615728,
+    "currentLongitude": 80.2270101917739,
+    "lat": 26.549195034615728,
+    "lon": 80.2270101917739,
+    "gpsAccuracy": 35,
+    "speed": 0,
+    "heading": 0,
     "trackingStatus": "GPS_CONNECTED",
     "tripStatus": "ON_ROUTE",
-    "lastLocationUpdate": "2026-09-13T08:24:00Z",
+    "lastLocationUpdate": "2026-09-15T00:21:45.311Z",
     "assignedSupplies": [
       {
         "item": "Food Grain Packs",
@@ -29,7 +29,41 @@
       }
     ],
     "createdAt": "2026-09-13T08:24:00Z",
-    "updatedAt": "2026-09-13T03:12:27.766Z"
+    "updatedAt": "2026-09-15T00:21:45.311Z",
+    "dispatchedRoute": {
+      "destination": "Dimapur Flood Staging Camp",
+      "destLat": 26.58432,
+      "destLon": 80.26903,
+      "routePolyline": [
+        [
+          26.549322128557527,
+          80.22703074072301
+        ],
+        [
+          26.5626,
+          80.22838
+        ],
+        [
+          26.57882,
+          80.23003
+        ],
+        [
+          26.58185,
+          80.25148
+        ],
+        [
+          26.58432,
+          80.26903
+        ]
+      ],
+      "distanceKm": 6.2,
+      "distance": "6.2 km",
+      "etaMinutes": 14,
+      "eta": "14 mins",
+      "hazardWarning": "Flooding reported on NH-27; rerouted via Narangi - Chandrapur Bypass corridor.",
+      "notes": "Safe Bypass corridor authorized by MDoNER Logistics Command.",
+      "dispatchedAt": "2026-09-15T00:20:25.446Z"
+    }
   },
   {
     "vehicleId": "RT-102",

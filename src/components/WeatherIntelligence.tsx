@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "../i18n";
+import { useTheme } from "../theme/ThemeContext";
 import {
   CloudRain,
   MapPin,
@@ -125,6 +126,7 @@ export default function WeatherIntelligence({
   onTriggerSOS
 }: WeatherIntelligenceProps) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   // State Selection
   const [selectedState, setSelectedState] = useState<string>("Assam");
@@ -293,6 +295,7 @@ export default function WeatherIntelligence({
     let angle = 0;
 
     const renderRadar = () => {
+      const isDark = theme === 'dark' || document.documentElement.classList.contains('dark');
       const w = canvas.width;
       const h = canvas.height;
       const cx = w / 2;
@@ -302,13 +305,13 @@ export default function WeatherIntelligence({
       ctx.clearRect(0, 0, w, h);
 
       // Radar Outer Ring & Grid
-      ctx.strokeStyle = "#1e3a8a";
+      ctx.strokeStyle = isDark ? "#1e3a8a" : "#93c5fd";
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.stroke();
 
-      ctx.strokeStyle = "#0f2b61";
+      ctx.strokeStyle = isDark ? "#0f2b61" : "#cbd5e1";
       ctx.lineWidth = 1;
       [0.25, 0.5, 0.75].forEach((r) => {
         ctx.beginPath();
@@ -317,6 +320,7 @@ export default function WeatherIntelligence({
       });
 
       // Axis Crosshairs
+      ctx.strokeStyle = isDark ? "#0f2b61" : "#94a3b8";
       ctx.beginPath();
       ctx.moveTo(cx - radius, cy);
       ctx.lineTo(cx + radius, cy);
@@ -325,8 +329,8 @@ export default function WeatherIntelligence({
       ctx.stroke();
 
       // Range Labels
-      ctx.fillStyle = "#38bdf8";
-      ctx.font = "9px monospace";
+      ctx.fillStyle = isDark ? "#38bdf8" : "#0284c7";
+      ctx.font = "bold 9px monospace";
       ctx.fillText("50km", cx + 5, cy - radius * 0.25);
       ctx.fillText("100km", cx + 5, cy - radius * 0.5);
       ctx.fillText("150km", cx + 5, cy - radius * 0.75);
@@ -334,9 +338,9 @@ export default function WeatherIntelligence({
 
       // Storm Echo Cells (Simulated dBZ Blobs)
       const echoBlobs = [
-        { x: cx + radius * 0.45, y: cy - radius * 0.35, r: 24, col: "rgba(239, 68, 68, 0.7)" },
-        { x: cx + radius * 0.5, y: cy - radius * 0.3, r: 14, col: "rgba(245, 158, 11, 0.8)" },
-        { x: cx + radius * 0.1, y: cy + radius * 0.55, r: 20, col: "rgba(14, 165, 233, 0.6)" }
+        { x: cx + radius * 0.45, y: cy - radius * 0.35, r: 24, col: "rgba(239, 68, 68, 0.75)" },
+        { x: cx + radius * 0.5, y: cy - radius * 0.3, r: 14, col: "rgba(245, 158, 11, 0.85)" },
+        { x: cx + radius * 0.1, y: cy + radius * 0.55, r: 20, col: isDark ? "rgba(14, 165, 233, 0.6)" : "rgba(2, 132, 199, 0.6)" }
       ];
       echoBlobs.forEach((b) => {
         const grad = ctx.createRadialGradient(b.x, b.y, 2, b.x, b.y, b.r);
@@ -360,14 +364,20 @@ export default function WeatherIntelligence({
       ctx.closePath();
 
       const sweepGrad = ctx.createConicGradient(angle, cx, cy);
-      sweepGrad.addColorStop(0, "rgba(14, 165, 233, 0.35)");
-      sweepGrad.addColorStop(0.1, "rgba(14, 165, 233, 0.05)");
-      sweepGrad.addColorStop(1, "rgba(14, 165, 233, 0)");
+      if (isDark) {
+        sweepGrad.addColorStop(0, "rgba(14, 165, 233, 0.35)");
+        sweepGrad.addColorStop(0.1, "rgba(14, 165, 233, 0.05)");
+        sweepGrad.addColorStop(1, "rgba(14, 165, 233, 0)");
+      } else {
+        sweepGrad.addColorStop(0, "rgba(2, 132, 199, 0.25)");
+        sweepGrad.addColorStop(0.1, "rgba(2, 132, 199, 0.05)");
+        sweepGrad.addColorStop(1, "rgba(2, 132, 199, 0)");
+      }
       ctx.fillStyle = sweepGrad;
       ctx.fill();
 
       // Sweep Beam Line
-      ctx.strokeStyle = "#38bdf8";
+      ctx.strokeStyle = isDark ? "#38bdf8" : "#0284c7";
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
@@ -384,7 +394,7 @@ export default function WeatherIntelligence({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [isScanning]);
+  }, [isScanning, theme]);
 
   return (
     <div className="h-full overflow-y-auto p-5 lg:p-8 space-y-6 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
@@ -733,7 +743,7 @@ export default function WeatherIntelligence({
                 ref={canvasRef}
                 width={260}
                 height={260}
-                className="rounded-2xl bg-[#020617] border border-blue-900/60 shadow-inner"
+                className="rounded-2xl bg-slate-100 dark:bg-[#020617] border border-slate-200 dark:border-blue-900/60 shadow-inner"
               />
             </div>
 

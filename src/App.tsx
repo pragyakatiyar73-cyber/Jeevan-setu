@@ -105,7 +105,11 @@ export default function App() {
   const [activeModule, setActiveModuleState] = useState<string>(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab') || params.get('module');
-    if (tab) return tab === 'sitrep' ? 'customdashboard' : tab;
+    if (tab) {
+      if (tab === 'sitrep') return 'customdashboard';
+      if (tab === 'driver' || tab === 'driver-portal') return 'driver-tracking';
+      return tab;
+    }
     const hash = window.location.hash.replace('#', '');
     if (hash) return hash === 'sitrep' ? 'customdashboard' : hash;
 
@@ -252,7 +256,7 @@ export default function App() {
   useEffect(() => {
     const syncSosAlerts = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/sos/alerts');
+        const res = await fetch('http://localhost:5001/api/sos/alerts');
         if (res.ok) {
           const data = await res.json();
           if (data?.alerts && data.alerts.length > 0) {
@@ -668,8 +672,8 @@ export default function App() {
   return (
     <div className="flex h-screen w-full max-w-full bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
       
-      {/* 1. LEFT SIDEBAR NAVIGATION BAR (Sleek & Perfectly Sized) */}
-      <aside className="w-16 md:w-60 lg:w-64 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] flex flex-col justify-between p-2.5 md:p-3 shadow-xl dark:shadow-2xl z-50 select-none transition-colors duration-300">
+      {/* 1. LEFT SIDEBAR NAVIGATION BAR (Sleek & Perfectly Sized - Hidden in Driver Mobile View) */}
+      <aside className={`${activeModule === 'driver-tracking' ? 'hidden' : 'w-16 md:w-60 lg:w-64'} shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] flex flex-col justify-between p-2.5 md:p-3 shadow-xl dark:shadow-2xl z-50 select-none transition-colors duration-300`}>
         <div className="space-y-3">
           
           {/* Logo & Brand Header (Sleek & Compact) */}
