@@ -232,16 +232,36 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
   const [routeAlertToast, setRouteAlertToast] = useState<string | null>(null);
   const [isClearingRoute, setIsClearingRoute] = useState(false);
 
-  // Auto-detect current public URL so the QR/link modal always shows the live working link.
-  // When the laptop is accessed via Pinggy/Cloudflare tunnel the hostname is the tunnel host.
-  // When accessed locally it falls back to the LAN IP:port.
-  const driverPortalUrl = typeof window !== 'undefined'
-    ? `${window.location.protocol}//${window.location.host}/?tab=driver`
-    : 'http://localhost:3000/?tab=driver';
+  // Smart URL detection for QR/phone link modal.
+  // - On tunnel (Pinggy/Cloudflare): window.location.host IS the public tunnel host → use it directly
+  // - On localhost: fetch LAN IP from backend so the QR code links to the LAN address phones can reach
+  const [lanUrl, setLanUrl] = useState<string | null>(null);
 
-  const localDriverUrl = typeof window !== 'undefined'
-    ? `http://${window.location.hostname}:3000/?tab=driver`
-    : 'http://localhost:3000/?tab=driver';
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // On local dev — fetch LAN IP from backend
+      fetch('/api/server-info')
+        .then(r => r.json())
+        .then(data => { if (data.lanUrl) setLanUrl(data.lanUrl); })
+        .catch(() => {});
+    }
+  }, []);
+
+  // Public-facing URL the phone should open (works from any network)
+  const isLocalhost = typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+  // Option A: HTTPS tunnel URL (best for GPS, works on mobile data too)
+  // If on tunnel host already → use current URL. If on localhost → LAN IP (Wi-Fi only).
+  const driverPortalUrl = isLocalhost
+    ? (lanUrl ? `${lanUrl}/?tab=driver` : 'http://localhost:3000/?tab=driver')
+    : `${window.location.protocol}//${window.location.host}/?tab=driver`;
+
+  // Option B: always LAN IP (requires same Wi-Fi network)
+  const localDriverUrl = lanUrl
+    ? `${lanUrl}/?tab=driver`
+    : `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:3000/?tab=driver`;
 
   // Smart Allocation States
   const [allocState, setAllocState] = useState('Assam');

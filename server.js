@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import os from 'os';
 import { MongoClient } from 'mongodb';
 
 dotenv.config();
@@ -2110,6 +2111,32 @@ app.post('/api/relief/supplies/request', async (req, res) => {
     status: 'success',
     message: 'Relief supply request created successfully in MongoDB',
     request: newRequest
+  });
+});
+
+// GET /api/server-info - Returns the server's LAN IP for phone QR code generation
+app.get('/api/server-info', (req, res) => {
+  const port = process.env.PORT || 5001;
+  const frontendPort = 3000;
+
+  // Find the first non-loopback IPv4 address (LAN IP like 192.168.x.x or 10.x.x.x)
+  const nets = os.networkInterfaces();
+  let lanIp = null;
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      if (net.family === 'IPv4' && !net.internal) {
+        lanIp = net.address;
+        break;
+      }
+    }
+    if (lanIp) break;
+  }
+
+  res.json({
+    lanIp: lanIp || '127.0.0.1',
+    lanUrl: lanIp ? `http://${lanIp}:${frontendPort}` : null,
+    backendPort: port,
+    frontendPort
   });
 });
 
