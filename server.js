@@ -2543,7 +2543,7 @@ const smartTrackingSessionsDbFile = 'smart_tracking_sessions_db.json';
 let smartTrackingRequestsStore = [];
 let smartTrackingSessionsStore = [];
 
-const smartTrackingVehiclesStore = [
+let smartTrackingVehiclesStore = [
   {
     vehicleId: 'JS-AMB-001',
     vehicleType: '🚑 Emergency Trauma Ambulance',
@@ -2801,9 +2801,6 @@ app.get('/api/smart-tracking/private/:sessionId', (req, res) => {
         ]
       : [],
     distanceKm,
-    etaMinutes,
-    lastUpdated: session.lastUpdatedAt || new Date().toISOString()
-  });
     etaMinutes,
     lastUpdated: session.lastUpdatedAt || new Date().toISOString()
   });
