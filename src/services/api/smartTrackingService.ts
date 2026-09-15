@@ -55,10 +55,23 @@ export interface ResponseVehicle {
   lastUpdatedAt: string;
 }
 
+export interface RealLocationData {
+  lat: number;
+  lon: number;
+  accuracy: number;
+  speed: number | null;
+  heading: number | null;
+  timestamp: number;
+}
+
 export interface TrackingSessionData {
   sessionId: string;
+  token?: string;
   emergencyRequestId: string;
   active: boolean;
+  status?: 'WAITING_FOR_GPS' | 'LIVE' | 'STALE' | 'STOPPED' | 'EXPIRED';
+  mode?: 'REAL' | 'SIMULATION';
+  realLocation?: RealLocationData | null;
   emergency: SmartEmergencyRequest;
   assignedVehicle: ResponseVehicle | null;
   routeCoordinates: Array<[number, number]>;
@@ -237,5 +250,72 @@ export async function simulateVehicleStep(
     return { success: true, data: json.data, message: json.message };
   } catch (err: any) {
     return { success: false, message: err.message };
+  }
+}
+
+// 8. Create QR Real Phone Session
+export async function createQRLiveTrackingSession(
+  baseAppUrl?: string
+): Promise<{ success: boolean; sessionId?: string; token?: string; trackingUrl?: string; error?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/create-qr-session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ baseAppUrl })
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to create QR session');
+    return {
+      success: true,
+      sessionId: json.sessionId,
+      token: json.token,
+      trackingUrl: json.trackingUrl
+    };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Network error' };
+  }
+}
+
+// 9. Send Real Mobile Phone GPS Telemetry (Phone A -> Backend)
+export async function sendRealGPSUpdate(payload: {
+  sessionId: string;
+  token: string;
+  lat: number;
+  lon: number;
+  accuracy: number;
+  speed?: number | null;
+  heading?: number | null;
+  timestamp: number;
+}): Promise<{ success: boolean; sessionStatus?: string; error?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/update-location`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to update GPS location');
+    return { success: true, sessionStatus: json.sessionStatus };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'GPS transmission error' };
+  }
+}
+
+// 10. Stop Sharing GPS (Phone A -> Backend)
+export async function stopQRLiveTrackingSession(
+  sessionId: string,
+  token: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/stop-session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, token })
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to stop tracking session');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Network error' };
   }
 }

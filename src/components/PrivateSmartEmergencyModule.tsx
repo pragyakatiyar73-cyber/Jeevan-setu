@@ -25,6 +25,7 @@ import {
   Info
 } from 'lucide-react';
 import L from 'leaflet';
+import QRCode from 'qrcode';
 import {
   EmergencyType,
   PriorityLevel,
@@ -33,6 +34,7 @@ import {
   ResponseVehicle,
   TrackingSessionData,
   createSmartEmergencyRequest,
+  createQRLiveTrackingSession,
   getPrivateTrackingSession,
   getDriverRequests,
   acceptDriverRequest,
@@ -95,6 +97,24 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   // Simulation State
   const [simulatingAuto, setSimulatingAuto] = useState<boolean>(false);
 
+  // QR Code Real Phone Modal State
+  const [showQrModal, setShowQrModal] = useState<boolean>(false);
+  const [qrAppUrl, setQrAppUrl] = useState<string>(() => {
+    return (
+      (import.meta as any).env?.VITE_APP_URL ||
+      process.env.VITE_APP_URL ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      window.location.origin
+    );
+  });
+  const [qrSessionData, setQrSessionData] = useState<{
+    sessionId: string;
+    token: string;
+    trackingUrl: string;
+  } | null>(null);
+  const [qrImageSrc, setQrImageSrc] = useState<string>('');
+  const [qrLoading, setQrLoading] = useState<boolean>(false);
+
   // Map Refs
   const requestMapContainerRef = useRef<HTMLDivElement>(null);
   const requestMapRef = useRef<L.Map | null>(null);
@@ -107,6 +127,35 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const userMarkerRef = useRef<L.Marker | null>(null);
   const vehicleMarkerRef = useRef<L.Marker | null>(null);
   const routePolylineRef = useRef<L.Polyline | null>(null);
+  const realAccuracyCircleRef = useRef<L.Circle | null>(null);
+
+  const handleOpenQrModal = async () => {
+    setShowQrModal(true);
+    setQrLoading(true);
+    const res = await createQRLiveTrackingSession(qrAppUrl);
+    setQrLoading(false);
+    if (res.success && res.sessionId && res.token && res.trackingUrl) {
+      setQrSessionData({
+        sessionId: res.sessionId,
+        token: res.token,
+        trackingUrl: res.trackingUrl
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (qrSessionData) {
+      const baseUrl = qrAppUrl || window.location.origin;
+      const targetUrl = `${baseUrl.replace(/\/$/, '')}/?shareSession=${qrSessionData.sessionId}&token=${qrSessionData.token}`;
+      QRCode.toDataURL(targetUrl, {
+        width: 280,
+        margin: 2,
+        color: { dark: '#10b981', light: '#0f172a' }
+      })
+        .then(url => setQrImageSrc(url))
+        .catch(err => console.error('QR rendering error:', err));
+    }
+  }, [qrSessionData, qrAppUrl]);
 
   // Priority Calculator
   const calculatedPriority: PriorityLevel = React.useMemo(() => {
@@ -671,6 +720,14 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
               🔒 My Private Tracking ({activeSessionId})
             </button>
           )}
+
+          <button
+            onClick={handleOpenQrModal}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-emerald-950 text-emerald-300 hover:bg-emerald-900 border border-emerald-800/80 shadow-lg shadow-emerald-950/40"
+          >
+            <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+            📱 Share Real Mobile GPS (QR Code)
+          </button>
 
           <button
             onClick={() => setActiveTab('driver')}
@@ -1269,6 +1326,114 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 Submit an emergency request first to start simulation mode.
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* REAL ANDROID PHONE QR CODE SHARE MODAL */}
+      {showQrModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full space-y-5 shadow-2xl relative my-8">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <span className="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
+                  <Radio className="w-5 h-5 animate-pulse" />
+                </span>
+                <div>
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
+                    Real Android GPS Tracking (QR Code)
+                  </h3>
+                  <p className="text-[11px] text-slate-400">Scan from Phone A to share actual GPS telemetry</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowQrModal(false)}
+                className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Configurable App URL Field */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-extrabold text-slate-300">
+                Application Domain / HTTPS Tunnel URL:
+              </label>
+              <input
+                type="text"
+                value={qrAppUrl}
+                onChange={e => setQrAppUrl(e.target.value)}
+                placeholder="https://YOUR-DEPLOYED-DOMAIN or https://xxx.loca.lt"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-mono text-emerald-300 focus:ring-2 focus:ring-emerald-500 outline-none"
+              />
+              <p className="text-[10px] text-slate-400">
+                ⚠️ Android Chrome requires <strong>HTTPS</strong> for Geolocation API. For local mobile testing, expose port 3000 using Localtunnel or Ngrok e.g. <code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded">npx localtunnel --port 3000</code> and paste the HTTPS URL above.
+              </p>
+            </div>
+
+            {/* QR Code Container */}
+            <div className="bg-slate-950 border border-slate-800 p-5 rounded-3xl text-center flex flex-col items-center justify-center space-y-3 shadow-inner">
+              {qrLoading ? (
+                <div className="py-12 text-slate-400 text-xs flex items-center justify-center gap-2">
+                  <RefreshCw className="w-5 h-5 animate-spin text-emerald-400" />
+                  Generating secure real-phone tracking QR code...
+                </div>
+              ) : qrImageSrc ? (
+                <>
+                  <div className="p-3 bg-slate-900 border-2 border-emerald-500/40 rounded-2xl shadow-xl">
+                    <img src={qrImageSrc} alt="Real GPS Tracking QR Code" className="w-56 h-56 rounded-xl" />
+                  </div>
+                  <div className="text-[11px] font-mono text-emerald-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 break-all max-w-full">
+                    {qrSessionData?.trackingUrl}
+                  </div>
+                </>
+              ) : (
+                <button
+                  onClick={handleOpenQrModal}
+                  className="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs"
+                >
+                  Generate QR Code
+                </button>
+              )}
+            </div>
+
+            {/* Step-by-Step Test Guide */}
+            <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl text-xs space-y-2 text-slate-300">
+              <strong className="text-amber-400 font-bold block flex items-center gap-1.5">
+                <Info className="w-4 h-4 text-amber-400" />
+                Real Phone Testing Instructions:
+              </strong>
+              <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-400 leading-relaxed">
+                <li><strong className="text-white">PHONE A (Sender):</strong> Scan QR Code using Android Phone camera and open in Chrome.</li>
+                <li><strong className="text-white">PHONE A:</strong> Tap <span className="text-emerald-400 font-bold">[ALLOW GPS & START LIVE SHARING]</span>. Chrome will prompt for location permission. Tap <strong>Allow</strong>.</li>
+                <li><strong className="text-white">PHONE B (Dashboard/Viewer):</strong> Tap button below to open live tracking dashboard and watch Phone A move live!</li>
+              </ol>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={() => {
+                  if (qrSessionData?.sessionId) {
+                    setActiveSessionId(qrSessionData.sessionId);
+                    setActiveTab('tracking');
+                    setShowQrModal(false);
+                  }
+                }}
+                className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-lg transition uppercase tracking-wider flex items-center justify-center gap-2"
+              >
+                <Radio className="w-4 h-4 text-white" />
+                [ Open Live Tracking on Dashboard ]
+              </button>
+
+              <button
+                onClick={() => setShowQrModal(false)}
+                className="py-3.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl border border-slate-700"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

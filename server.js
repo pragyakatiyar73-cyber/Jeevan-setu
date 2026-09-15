@@ -2743,21 +2743,207 @@ app.get('/api/smart-tracking/private/:sessionId', (req, res) => {
   }
 
   // SECURITY: Returns ONLY the user's emergency & assigned vehicle (1-to-1 isolation)
+  // Check background/stale location status if real mode
+  if (session.status === 'LIVE' && session.lastUpdatedAt) {
+    const elapsedMs = Date.now() - new Date(session.lastUpdatedAt).getTime();
+    if (elapsedMs > 30000 && elapsedMs <= 120000) {
+      session.status = 'STALE';
+    } else if (elapsedMs > 120000) {
+      session.status = 'EXPIRED';
+      session.active = false;
+    }
+  }
+
   res.json({
     sessionId: session.sessionId,
+    token: session.token,
     emergencyRequestId: emergency.emergencyRequestId,
     active: session.active,
+    status: session.status || (session.active ? 'LIVE' : 'STOPPED'),
+    mode: session.mode || 'SIMULATION',
+    realLocation: session.realLocation || null,
     emergency,
     assignedVehicle,
     routeCoordinates: assignedVehicle
       ? [
           [assignedVehicle.currentLat, assignedVehicle.currentLon],
-          [emergency.lat, emergency.lon]
+          [session.realLocation?.lat || emergency.lat, session.realLocation?.lon || emergency.lon]
         ]
       : [],
     distanceKm,
     etaMinutes,
-    lastUpdated: new Date().toISOString()
+    lastUpdated: session.lastUpdatedAt || new Date().toISOString()
+  });
+});
+
+// 1b. POST /api/smart-tracking/create-qr-session - Create QR Real Phone Session
+app.post('/api/smart-tracking/create-qr-session', (req, res) => {
+  const { baseAppUrl, emergencyType, requirement, state, district } = req.body || {};
+  const nowIso = new Date().toISOString();
+
+  const reqId = `JS-QR-EMG-${Math.floor(1000 + Math.random() * 9000)}`;
+  const sessId = `QR-${Date.now().toString().slice(-6)}`;
+  const token = `tok_${Math.random().toString(36).substring(2, 10)}${Math.random().toString(36).substring(2, 10)}`;
+
+  const reqType = emergencyType || 'Medical';
+  const defaultState = state || 'Assam';
+  const defaultDist = district || 'Kamrup Metropolitan';
+
+  let assignedVehicle = smartTrackingVehiclesStore.find(v => v.typeCategory === reqType) || smartTrackingVehiclesStore[0];
+
+  const newRequest = {
+    emergencyRequestId: reqId,
+    emergencyType: reqType,
+    requirement: requirement || 'Real Phone Emergency GPS Live Tracking',
+    description: 'Real-time Android Mobile Phone GPS Tracking Session',
+    lat: 26.1445,
+    lon: 91.7362,
+    state: defaultState,
+    district: defaultDist,
+    priority: 'HIGH',
+    priorityLabel: 'Real Mobile Telemetry',
+    status: 'FINDING_VEHICLE',
+    assignedVehicleId: assignedVehicle ? assignedVehicle.vehicleId : null,
+    trackingSessionId: sessId,
+    createdAt: nowIso,
+    updatedAt: nowIso
+  };
+
+  const newSession = {
+    sessionId: sessId,
+    token: token,
+    emergencyRequestId: reqId,
+    vehicleId: assignedVehicle ? assignedVehicle.vehicleId : null,
+    active: true,
+    status: 'WAITING_FOR_GPS',
+    mode: 'REAL',
+    createdAt: nowIso,
+    lastUpdatedAt: nowIso,
+    realLocation: null
+  };
+
+  smartTrackingRequestsStore.unshift(newRequest);
+  smartTrackingSessionsStore.unshift(newSession);
+  saveSmartTrackingDb();
+
+  const baseUrl = baseAppUrl || process.env.VITE_APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const shareUrl = `${baseUrl.replace(/\/$/, '')}/?shareSession=${sessId}&token=${token}`;
+
+  res.status(201).json({
+    status: 'success',
+    sessionId: sessId,
+    token: token,
+    trackingUrl: shareUrl,
+    session: newSession
+  });
+});
+
+// 1c. POST /api/smart-tracking/update-location - Send Real GPS Telemetry from Phone A
+app.post('/api/smart-tracking/update-location', (req, res) => {
+  const { sessionId, token, lat, lon, accuracy, speed, heading, timestamp } = req.body || {};
+
+  if (!sessionId || !token) {
+    return res.status(400).json({ status: 'error', error: 'sessionId and token are required.' });
+  }
+
+  const session = smartTrackingSessionsStore.find(s => s.sessionId === sessionId);
+  if (!session) {
+    return res.status(404).json({ status: 'error', error: 'Tracking session not found.' });
+  }
+
+  if (session.token && session.token !== token) {
+    return res.status(401).json({ status: 'error', error: 'Invalid session token authorization.' });
+  }
+
+  if (session.status === 'STOPPED') {
+    return res.status(403).json({ status: 'error', error: 'Session has been STOPPED by Phone A. Further updates rejected.' });
+  }
+
+  if (session.status === 'EXPIRED') {
+    return res.status(403).json({ status: 'error', error: 'Session has EXPIRED. Please start a new session.' });
+  }
+
+  const numLat = Number(lat);
+  const numLon = Number(lon);
+
+  if (isNaN(numLat) || isNaN(numLon)) {
+    return res.status(400).json({ status: 'error', error: 'Invalid latitude or longitude numbers.' });
+  }
+
+  const nowIso = new Date().toISOString();
+
+  session.realLocation = {
+    lat: numLat,
+    lon: numLon,
+    accuracy: typeof accuracy === 'number' ? Number(accuracy.toFixed(1)) : 5.0,
+    speed: typeof speed === 'number' ? Number(speed.toFixed(1)) : null,
+    heading: typeof heading === 'number' ? Number(heading.toFixed(1)) : null,
+    timestamp: timestamp || Date.now()
+  };
+
+  session.status = 'LIVE';
+  session.mode = 'REAL';
+  session.active = true;
+  session.lastUpdatedAt = nowIso;
+
+  // Update emergency request coordinates
+  const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === session.emergencyRequestId);
+  if (emergency) {
+    emergency.lat = numLat;
+    emergency.lon = numLon;
+    emergency.status = 'VEHICLE_ASSIGNED';
+    emergency.updatedAt = nowIso;
+
+    const assignedVehicle = smartTrackingVehiclesStore.find(v => v.vehicleId === emergency.assignedVehicleId);
+    if (assignedVehicle) {
+      assignedVehicle.currentLat = Number((numLat + 0.015).toFixed(4));
+      assignedVehicle.currentLon = Number((numLon + 0.012).toFixed(4));
+      assignedVehicle.status = 'Assigned';
+      assignedVehicle.lastUpdatedAt = nowIso;
+    }
+  }
+
+  saveSmartTrackingDb();
+
+  res.json({
+    status: 'success',
+    sessionId: session.sessionId,
+    sessionStatus: session.status,
+    lastUpdatedAt: session.lastUpdatedAt,
+    realLocation: session.realLocation
+  });
+});
+
+// 1d. POST /api/smart-tracking/stop-session - Stop Sharing GPS (Phone A Stop Button)
+app.post('/api/smart-tracking/stop-session', (req, res) => {
+  const { sessionId, token } = req.body || {};
+
+  const session = smartTrackingSessionsStore.find(s => s.sessionId === sessionId);
+  if (!session) {
+    return res.status(404).json({ status: 'error', error: 'Tracking session not found.' });
+  }
+
+  if (session.token && session.token !== token) {
+    return res.status(401).json({ status: 'error', error: 'Invalid session token authorization.' });
+  }
+
+  const nowIso = new Date().toISOString();
+  session.status = 'STOPPED';
+  session.active = false;
+  session.lastUpdatedAt = nowIso;
+
+  const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === session.emergencyRequestId);
+  if (emergency) {
+    emergency.updatedAt = nowIso;
+  }
+
+  saveSmartTrackingDb();
+
+  res.json({
+    status: 'success',
+    sessionId: session.sessionId,
+    sessionStatus: 'STOPPED',
+    message: 'GPS live sharing stopped successfully.'
   });
 });
 

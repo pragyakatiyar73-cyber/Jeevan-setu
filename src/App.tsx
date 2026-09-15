@@ -83,6 +83,7 @@ import DisasterSafetyGuide from './components/DisasterSafetyGuide';
 import DisasterReportsModule from './components/DisasterReportsModule';
 import { ReliefSupplyTrackingModule } from './components/ReliefSupplyTrackingModule';
 import { PrivateSmartEmergencyModule } from './components/PrivateSmartEmergencyModule';
+import { MobileLiveLocationShareView } from './components/MobileLiveLocationShareView';
 import AddressDisasterIntelligence from './components/AddressDisasterIntelligence';
 import AIChatbotWidget from './components/AIChatbotWidget';
 import { useTranslation } from './i18n';
@@ -102,6 +103,23 @@ const NER_HUBS = [
 
 export default function App() {
   const { t, language } = useTranslation();
+
+  // Check if opened on Phone A from QR scan (Mobile Share Route)
+  const urlParams = new URLSearchParams(window.location.search);
+  const shareSession = urlParams.get('shareSession') || urlParams.get('qrSession');
+  const shareToken = urlParams.get('token') || '';
+
+  if (shareSession && shareToken) {
+    return (
+      <MobileLiveLocationShareView
+        sessionId={shareSession}
+        token={shareToken}
+        onExit={() => {
+          window.location.href = window.location.origin;
+        }}
+      />
+    );
+  }
   const [activeModule, setActiveModuleState] = useState<string>(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab') || params.get('module');
