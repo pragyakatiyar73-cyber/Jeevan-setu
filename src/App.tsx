@@ -1520,7 +1520,8 @@ export default function App() {
                 activeModule === 'driver-tracking' ? 'driver-portal' :
                 activeModule === 'relief-operations' ? 'operations' :
                 activeModule === 'relief-depots' ? 'depots' :
-                'supplies'
+                activeModule === 'supplies' ? 'supplies' :
+                'live-map'
               }
               onNavigateHome={() => setActiveModule('home')}
             />

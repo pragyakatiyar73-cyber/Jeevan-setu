@@ -1303,6 +1303,44 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
       {/* Main Sub-Tab Navigation */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-200 dark:border-slate-800">
+
+          {/* ── PRIMARY: GPS & Live Tracking ── */}
+          <button
+            onClick={() => setActiveTab('live-map')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition whitespace-nowrap ring-2 ${
+              activeTab === 'live-map'
+                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 ring-emerald-400'
+                : 'bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/50 border border-emerald-700/60 ring-emerald-900/0 hover:ring-emerald-700/40'
+            }`}
+          >
+            <Radio className="w-4 h-4 animate-pulse" />
+            🗺️ Live Vehicle Tracking
+          </button>
+
+          <button
+            onClick={() => setActiveTab('driver-portal')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition whitespace-nowrap ring-2 ${
+              activeTab === 'driver-portal'
+                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30 ring-amber-300'
+                : 'bg-amber-950/40 text-amber-300 hover:bg-amber-900/50 border border-amber-700/60 ring-amber-900/0 hover:ring-amber-700/40'
+            }`}
+          >
+            <Compass className="w-4 h-4" />
+            📱 Driver GPS Portal
+          </button>
+
+          <button
+            onClick={() => setShowQrModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition whitespace-nowrap bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-600/30 ring-2 ring-purple-400/50 cursor-pointer"
+          >
+            <QrCode className="w-4 h-4 animate-pulse" />
+            🔗 Connect Phone
+          </button>
+
+          {/* ── Divider ── */}
+          <div className="h-7 w-px bg-slate-300 dark:bg-slate-700 mx-1 shrink-0" />
+
+          {/* ── SECONDARY: Monitoring & Admin ── */}
           <button
             onClick={() => setActiveTab('supplies')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
@@ -1312,7 +1350,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             }`}
           >
             <Package className="w-4 h-4" />
-            Relief Supply Monitoring
+            Supply Monitoring
           </button>
 
           <button
@@ -1324,39 +1362,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             }`}
           >
             <Warehouse className="w-4 h-4" />
-            Relief Depots & Stock
-          </button>
-
-          <button
-            onClick={() => setActiveTab('live-map')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-              activeTab === 'live-map'
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/20 dark:shadow-emerald-950'
-                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-800'
-            }`}
-          >
-            <Radio className="w-4 h-4 text-emerald-500 dark:text-emerald-300 animate-pulse" />
-            Live Vehicle Tracking Map
-          </button>
-
-          <button
-            onClick={() => setActiveTab('driver-portal')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-              activeTab === 'driver-portal'
-                ? 'bg-amber-600 text-white shadow-lg shadow-amber-950/20 dark:shadow-amber-950'
-                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-800'
-            }`}
-          >
-            <Compass className="w-4 h-4" />
-            Driver Mobile GPS Portal
-          </button>
-
-          <button
-            onClick={() => setShowQrModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition whitespace-nowrap bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-950/20 cursor-pointer"
-          >
-            <QrCode className="w-4 h-4 animate-pulse" />
-            Connect Phone (QR Link)
+            Depots & Stock
           </button>
 
           <button
@@ -1368,7 +1374,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             }`}
           >
             <Activity className="w-4 h-4" />
-            Active Relief Operations
+            Active Operations
           </button>
 
           <button
@@ -1380,7 +1386,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             }`}
           >
             <Cpu className="w-4 h-4" />
-            Smart Allocation Engine
+            Smart Allocation
           </button>
         </div>
       </div>
