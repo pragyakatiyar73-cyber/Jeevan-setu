@@ -235,6 +235,67 @@ export async function updateEmergencyStatus(
   }
 }
 
+// 6b. Register Driver & Response Vehicle
+export async function registerDriverVehicle(payload: {
+  driverName: string;
+  contact: string;
+  vehicleType: string;
+  typeCategory: EmergencyType;
+  state?: string;
+  district?: string;
+  lat?: number;
+  lon?: number;
+}): Promise<{ success: boolean; vehicle?: ResponseVehicle; message?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/driver/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to register driver');
+    return { success: true, vehicle: json.vehicle, message: json.message };
+  } catch (err: any) {
+    return { success: false, message: err.message || 'Network error' };
+  }
+}
+
+// 6c. Driver Mark Arrived
+export async function markDriverArrived(
+  emergencyRequestId: string
+): Promise<{ success: boolean; message?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/driver/arrived`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emergencyRequestId })
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to mark arrived');
+    return { success: true, message: json.message };
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+// 6d. Driver Mark Complete
+export async function markDriverComplete(
+  emergencyRequestId: string
+): Promise<{ success: boolean; message?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/driver/complete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emergencyRequestId })
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to mark complete');
+    return { success: true, message: json.message };
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
 // 7. Demo / Simulation Step Movement
 export async function simulateVehicleStep(
   sessionId: string

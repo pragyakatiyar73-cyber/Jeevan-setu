@@ -2611,6 +2611,9 @@ try {
     const data = JSON.parse(fs.readFileSync(smartTrackingSessionsDbFile, 'utf-8'));
     smartTrackingRequestsStore = data.requests || [];
     smartTrackingSessionsStore = data.sessions || [];
+    if (data.vehicles && Array.isArray(data.vehicles) && data.vehicles.length > 0) {
+      smartTrackingVehiclesStore = data.vehicles;
+    }
   }
 } catch (e) {
   console.error('Error loading smart_tracking_sessions_db.json:', e);
@@ -2620,7 +2623,11 @@ function saveSmartTrackingDb() {
   try {
     fs.writeFileSync(
       smartTrackingSessionsDbFile,
-      JSON.stringify({ requests: smartTrackingRequestsStore, sessions: smartTrackingSessionsStore }, null, 2),
+      JSON.stringify({
+        requests: smartTrackingRequestsStore,
+        sessions: smartTrackingSessionsStore,
+        vehicles: smartTrackingVehiclesStore
+      }, null, 2),
       'utf-8'
     );
   } catch (e) {}
@@ -2997,7 +3004,89 @@ app.post('/api/smart-tracking/driver/location', (req, res) => {
   res.json({ status: 'success', message: 'Driver GPS location updated' });
 });
 
-// 6. POST /api/smart-tracking/driver/status - Update Workflow Status
+// 6. POST /api/smart-tracking/driver/register - Register Driver & Response Vehicle
+app.post('/api/smart-tracking/driver/register', (req, res) => {
+  const { driverName, contact, vehicleType, typeCategory, state, district, lat, lon } = req.body || {};
+
+  if (!driverName || !contact || !vehicleType) {
+    return res.status(400).json({ status: 'error', error: 'Driver name, contact number, and vehicle type are required.' });
+  }
+
+  const category = typeCategory || 'Medical';
+  const prefix = category === 'Medical' ? 'AMB' : category === 'Fire' ? 'FIRE' : category === 'Police' ? 'POL' : 'REL';
+  const newId = `JS-${prefix}-${Math.floor(100 + Math.random() * 900)}`;
+
+  const newVehicle = {
+    vehicleId: newId,
+    vehicleType: vehicleType,
+    typeCategory: category,
+    driverName: driverName,
+    contact: contact,
+    currentLat: typeof lat === 'number' ? lat : 26.1445,
+    currentLon: typeof lon === 'number' ? lon : 91.7362,
+    status: 'Available',
+    state: state || 'Assam',
+    district: district || 'Kamrup Metropolitan',
+    verified: true,
+    demoMode: false,
+    lastUpdatedAt: new Date().toISOString()
+  };
+
+  smartTrackingVehiclesStore.unshift(newVehicle);
+  saveSmartTrackingDb();
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Driver and response vehicle registered successfully.',
+    vehicle: newVehicle
+  });
+});
+
+// 7. POST /api/smart-tracking/driver/arrived - Driver Arrived at Location
+app.post('/api/smart-tracking/driver/arrived', (req, res) => {
+  const { emergencyRequestId } = req.body || {};
+
+  const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === emergencyRequestId);
+  if (!emergency) {
+    return res.status(404).json({ status: 'error', error: 'Emergency request not found' });
+  }
+
+  emergency.status = 'ARRIVED';
+  emergency.updatedAt = new Date().toISOString();
+
+  const vehicle = smartTrackingVehiclesStore.find(v => v.vehicleId === emergency.assignedVehicleId);
+  if (vehicle) {
+    vehicle.status = 'On the Way';
+    vehicle.lastUpdatedAt = new Date().toISOString();
+  }
+
+  saveSmartTrackingDb();
+  res.json({ status: 'success', message: 'Driver arrived at emergency location.' });
+});
+
+// 8. POST /api/smart-tracking/driver/complete - Complete Emergency
+app.post('/api/smart-tracking/driver/complete', (req, res) => {
+  const { emergencyRequestId } = req.body || {};
+
+  const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === emergencyRequestId);
+  if (!emergency) {
+    return res.status(404).json({ status: 'error', error: 'Emergency request not found' });
+  }
+
+  emergency.status = 'COMPLETED';
+  emergency.updatedAt = new Date().toISOString();
+
+  const vehicle = smartTrackingVehiclesStore.find(v => v.vehicleId === emergency.assignedVehicleId);
+  if (vehicle) {
+    vehicle.status = 'Available';
+    vehicle.lastUpdatedAt = new Date().toISOString();
+  }
+
+  saveSmartTrackingDb();
+  res.json({ status: 'success', message: 'Emergency response lifecycle marked COMPLETED.' });
+});
+
+// 9. POST /api/smart-tracking/driver/status - Update Workflow Status
 app.post('/api/smart-tracking/driver/status', (req, res) => {
   const { emergencyRequestId, status } = req.body || {};
 

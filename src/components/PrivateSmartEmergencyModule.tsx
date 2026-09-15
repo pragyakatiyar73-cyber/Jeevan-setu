@@ -38,6 +38,9 @@ import {
   getPrivateTrackingSession,
   getDriverRequests,
   acceptDriverRequest,
+  registerDriverVehicle,
+  markDriverArrived,
+  markDriverComplete,
   updateDriverLocation,
   updateEmergencyStatus,
   simulateVehicleStep,
@@ -93,6 +96,17 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const [selectedDriverVehicleId, setSelectedDriverVehicleId] = useState<string>('JS-AMB-001');
   const [isDriverTracking, setIsDriverTracking] = useState<boolean>(false);
   const [driverGpsWatchId, setDriverGpsWatchId] = useState<number | null>(null);
+
+  // Driver Registration Form State
+  const [showDriverRegModal, setShowDriverRegModal] = useState<boolean>(false);
+  const [regDriverName, setRegDriverName] = useState<string>('');
+  const [regContact, setRegContact] = useState<string>('');
+  const [regVehicleType, setRegVehicleType] = useState<string>('🚑 Emergency Ambulance');
+  const [regCategory, setRegCategory] = useState<EmergencyType>('Medical');
+  const [regState, setRegState] = useState<string>('Assam');
+  const [regDistrict, setRegDistrict] = useState<string>('Kamrup Metropolitan');
+  const [regSubmitting, setRegSubmitting] = useState<boolean>(false);
+  const [regError, setRegError] = useState<string | null>(null);
 
   // Simulation State
   const [simulatingAuto, setSimulatingAuto] = useState<boolean>(false);
@@ -301,6 +315,39 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     if (res.success) {
       setDriverEmergencies(res.emergencies);
       setDriverVehicles(res.vehicles);
+    }
+  };
+
+  const handleRegisterDriver = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regDriverName || !regContact) {
+      setRegError('Please provide driver name and contact number.');
+      return;
+    }
+    setRegSubmitting(true);
+    setRegError(null);
+
+    const baseCoords = NER_STATE_DEFAULT_COORDS[regState] || [26.1445, 91.7362];
+    const res = await registerDriverVehicle({
+      driverName: regDriverName,
+      contact: regContact,
+      vehicleType: regVehicleType,
+      typeCategory: regCategory,
+      state: regState,
+      district: regDistrict,
+      lat: baseCoords[0],
+      lon: baseCoords[1]
+    });
+
+    setRegSubmitting(false);
+    if (res.success && res.vehicle) {
+      setSelectedDriverVehicleId(res.vehicle.vehicleId);
+      setShowDriverRegModal(false);
+      setRegDriverName('');
+      setRegContact('');
+      fetchDriverData();
+    } else {
+      setRegError(res.message || 'Failed to register driver vehicle.');
     }
   };
 
@@ -1133,41 +1180,62 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       {activeTab === 'driver' && (
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-3xl shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
               <div>
                 <h2 className="text-base font-extrabold text-white flex items-center gap-2">
                   <Truck className="w-5 h-5 text-indigo-400" />
                   Driver Dispatch & Live GPS Control Portal
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Authorized drivers accept emergency requests and share live device coordinates.
+                  Authorized drivers accept emergency requests and transmit real device coordinates.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <label className="text-xs text-slate-400 font-bold">Select Active Vehicle:</label>
-                <select
-                  value={selectedDriverVehicleId}
-                  onChange={e => setSelectedDriverVehicleId(e.target.value)}
-                  className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-white font-mono text-xs"
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowDriverRegModal(true)}
+                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 shrink-0"
                 >
-                  <option value="JS-AMB-001">JS-AMB-001 (Ambulance - Assam)</option>
-                  <option value="JS-FIRE-001">JS-FIRE-001 (Fire Vehicle - Meghalaya)</option>
-                  <option value="JS-POL-001">JS-POL-001 (Police Vehicle - Manipur)</option>
-                  <option value="JS-REL-001">JS-REL-001 (Relief Truck - Tripura)</option>
-                </select>
+                  <User className="w-3.5 h-3.5" />
+                  + Register Driver
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-slate-400 font-bold hidden sm:inline">Active Vehicle:</label>
+                  <select
+                    value={selectedDriverVehicleId}
+                    onChange={e => setSelectedDriverVehicleId(e.target.value)}
+                    className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-white font-mono text-xs max-w-[220px]"
+                  >
+                    {driverVehicles.length > 0 ? (
+                      driverVehicles.map(v => (
+                        <option key={v.vehicleId} value={v.vehicleId}>
+                          {v.vehicleId} ({v.driverName} - {v.state})
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="JS-AMB-001">JS-AMB-001 (Ambulance - Assam)</option>
+                        <option value="JS-FIRE-001">JS-FIRE-001 (Fire Vehicle - Meghalaya)</option>
+                        <option value="JS-POL-001">JS-POL-001 (Police Vehicle - Manipur)</option>
+                        <option value="JS-REL-001">JS-REL-001 (Relief Truck - Tripura)</option>
+                      </>
+                    )}
+                  </select>
+                </div>
               </div>
             </div>
 
             {/* Emergency Requests Queue for Drivers */}
             <div className="space-y-4">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">
-                Incoming Emergency Requests Queue ({driverEmergencies.length})
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                <span>Incoming Emergency Requests Queue ({driverEmergencies.length})</span>
+                <span className="text-[10px] text-emerald-400 font-mono font-normal">● Auto-Refreshing Every 4s</span>
               </h3>
 
               {driverEmergencies.length === 0 ? (
-                <div className="p-6 text-center text-slate-500 text-xs">
-                  No active emergency requests in queue.
+                <div className="p-8 text-center text-slate-500 text-xs bg-slate-950 border border-slate-800 rounded-2xl">
+                  No active emergency requests in queue. Create an emergency request from Tab 1 to test driver response.
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -1217,7 +1285,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
                         <button
                           onClick={async () => {
-                            await updateEmergencyStatus(emg.emergencyRequestId, 'ARRIVED');
+                            await markDriverArrived(emg.emergencyRequestId);
                             fetchDriverData();
                           }}
                           className="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold"
@@ -1227,7 +1295,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
                         <button
                           onClick={async () => {
-                            await updateEmergencyStatus(emg.emergencyRequestId, 'COMPLETED');
+                            await markDriverComplete(emg.emergencyRequestId);
                             fetchDriverData();
                           }}
                           className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700"
@@ -1240,6 +1308,135 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* DRIVER REGISTRATION MODAL */}
+      {showDriverRegModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl relative my-8">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                <Truck className="w-5 h-5 text-indigo-400" />
+                Register Emergency Driver & Vehicle
+              </h3>
+              <button
+                onClick={() => setShowDriverRegModal(false)}
+                className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleRegisterDriver} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-300 font-bold mb-1">Driver Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={regDriverName}
+                  onChange={e => setRegDriverName(e.target.value)}
+                  placeholder="e.g. Ramesh Kalita"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold mb-1">Contact Phone Number *</label>
+                <input
+                  type="text"
+                  required
+                  value={regContact}
+                  onChange={e => setRegContact(e.target.value)}
+                  placeholder="e.g. +91 98765 43210"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">Category</label>
+                  <select
+                    value={regCategory}
+                    onChange={e => setRegCategory(e.target.value as EmergencyType)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-semibold"
+                  >
+                    <option value="Medical">Medical (Ambulance)</option>
+                    <option value="Fire">Fire Tender</option>
+                    <option value="Police">Police Patrol</option>
+                    <option value="Relief">Relief Convoy</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">Vehicle Description</label>
+                  <input
+                    type="text"
+                    value={regVehicleType}
+                    onChange={e => setRegVehicleType(e.target.value)}
+                    placeholder="e.g. 🚑 ICU Ambulance"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">State (NER)</label>
+                  <select
+                    value={regState}
+                    onChange={e => {
+                      const s = e.target.value;
+                      setRegState(s);
+                      const dists = NER_STATES_DISTRICTS[s] || [];
+                      setRegDistrict(dists[0] || '');
+                    }}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    {NER_STATES.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">District</label>
+                  <select
+                    value={regDistrict}
+                    onChange={e => setRegDistrict(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    {(NER_STATES_DISTRICTS[regState] || []).map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {regError && (
+                <div className="p-3 bg-rose-950 border border-rose-800 text-rose-200 rounded-xl">
+                  {regError}
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={regSubmitting}
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl shadow transition"
+                >
+                  {regSubmitting ? 'Registering...' : 'REGISTER VEHICLE'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDriverRegModal(false)}
+                  className="py-3 px-4 bg-slate-800 text-slate-300 font-bold rounded-xl"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
