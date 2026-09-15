@@ -89,7 +89,7 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
 
   // Leaflet Mini Map Multi-Participant Rendering
   useEffect(() => {
-    if (!mapContainerRef.current) return;
+    if (typeof window === 'undefined' || !mapContainerRef.current) return;
 
     if (!mapRef.current) {
       delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -99,15 +99,21 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
       });
 
+      const initialCenter: [number, number] = currentLocation
+        ? [currentLocation.lat, currentLocation.lon]
+        : sessionParticipants.find(p => p.location)?.location
+        ? [sessionParticipants.find(p => p.location)!.location!.lat, sessionParticipants.find(p => p.location)!.location!.lon]
+        : [26.1445, 91.7362];
+
       const map = L.map(mapContainerRef.current, {
-        center: [currentLocation?.lat || 26.1445, currentLocation?.lon || 91.7362],
-        zoom: 15,
-        zoomControl: false
+        center: initialCenter,
+        zoom: 14,
+        zoomControl: true
       });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap'
+        attribution: '&copy; OpenStreetMap contributors | Jeevan Setu Multi-Person Live GPS'
       }).addTo(map);
 
       mapRef.current = map;
@@ -115,20 +121,51 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
 
     const map = mapRef.current;
 
+    // Guaranteed size recalculation after DOM layout reflows
+    [50, 150, 300, 600, 1000].forEach(delay => {
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.invalidateSize();
+        }
+      }, delay);
+    });
+
     // Render markers for all session participants
     const activeCoords: Array<[number, number]> = [];
 
-    sessionParticipants.forEach((part, index) => {
-      if (!part.location || part.status === 'STOPPED') {
-        if (participantMarkersRef.current[part.participantId]) {
-          participantMarkersRef.current[part.participantId].marker.remove();
-          if (participantMarkersRef.current[part.participantId].circle) {
-            participantMarkersRef.current[part.participantId].circle?.remove();
-          }
-          delete participantMarkersRef.current[part.participantId];
+    // Combine sessionParticipants with local currentLocation if available
+    const participantList = [...sessionParticipants];
+    if (currentLocation && !participantList.some(p => p.participantId === myParticipantId)) {
+      participantList.push({
+        participantId: myParticipantId,
+        role: 'HOST',
+        label: myLabel || 'Me',
+        color: '#ef4444',
+        status: 'LIVE',
+        location: currentLocation,
+        lastUpdatedAt: new Date(currentLocation.timestamp).toISOString()
+      });
+    }
+
+    const activePids = new Set(
+      participantList
+        .filter(p => p.location && p.status !== 'STOPPED')
+        .map(p => p.participantId)
+    );
+
+    // Clean up markers for participants who stopped or exited
+    Object.keys(participantMarkersRef.current).forEach(pid => {
+      if (!activePids.has(pid)) {
+        participantMarkersRef.current[pid].marker.remove();
+        if (participantMarkersRef.current[pid].circle) {
+          participantMarkersRef.current[pid].circle?.remove();
         }
-        return;
+        delete participantMarkersRef.current[pid];
       }
+    });
+
+    participantList.forEach((part, index) => {
+      if (!part.location || part.status === 'STOPPED') return;
 
       const { lat, lon, accuracy } = part.location;
       activeCoords.push([lat, lon]);
@@ -138,27 +175,41 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
       const badgeIcon = isMe ? '🔴' : index === 1 ? '🔵' : '🟢';
 
       const icon = L.divIcon({
-        className: `participant-marker-${part.participantId}`,
+        className: `custom-participant-marker-${part.participantId}`,
         html: `
-          <div class="relative flex items-center justify-center w-9 h-9 rounded-full border-2 border-white shadow-2xl text-white font-black text-xs" style="background-color: ${markerColor}">
+          <div class="relative flex items-center justify-center w-10 h-10 rounded-full border-2 border-white shadow-2xl text-white font-black text-xs" style="background-color: ${markerColor}">
             <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full animate-ping" style="background-color: ${markerColor}"></span>
             ${badgeIcon}
           </div>
         `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18]
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
       });
+
+      const popupHtml = `
+        <div class="p-2.5 text-xs font-sans min-w-[160px]">
+          <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-1.5 mb-1.5">
+            <strong style="color:${markerColor}" class="font-bold text-sm block">
+              ${badgeIcon} ${part.label || part.participantId} ${isMe ? '(Me)' : ''}
+            </strong>
+            <span class="text-[10px] font-black uppercase px-1.5 py-0.5 rounded ${
+              part.status === 'LIVE' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-100 text-slate-700'
+            }">
+              ● ${part.status}
+            </span>
+          </div>
+          <div class="space-y-1 font-mono text-[11px] text-slate-700">
+            <p>Lat: <strong>${lat.toFixed(5)}</strong></p>
+            <p>Lon: <strong>${lon.toFixed(5)}</strong></p>
+            <p>Accuracy: <strong class="text-emerald-700">±${accuracy}m</strong></p>
+            <p class="text-[10px] text-slate-500 font-sans pt-1 border-t border-slate-100">ID: ${part.participantId} (${part.role})</p>
+          </div>
+        </div>
+      `;
 
       if (!participantMarkersRef.current[part.participantId]) {
         const marker = L.marker([lat, lon], { icon }).addTo(map);
-        marker.bindPopup(`
-          <div class="p-2 text-xs font-sans">
-            <strong style="color:${markerColor}" class="font-bold text-sm block">${part.label || part.participantId} ${isMe ? '(Me)' : ''}</strong>
-            <p class="text-slate-700 font-mono mt-1">Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)}</p>
-            <p class="text-slate-700 font-mono">Accuracy: ±${accuracy}m</p>
-            <p class="text-emerald-600 font-bold uppercase mt-1">● ${part.status}</p>
-          </div>
-        `);
+        marker.bindPopup(popupHtml);
 
         let circle: L.Circle | undefined;
         if (accuracy && accuracy > 0) {
@@ -176,6 +227,7 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
         const entry = participantMarkersRef.current[part.participantId];
         entry.marker.setLatLng([lat, lon]);
         entry.marker.setIcon(icon);
+        entry.marker.setPopupContent(popupHtml);
         if (entry.circle) {
           entry.circle.setLatLng([lat, lon]);
           if (accuracy) entry.circle.setRadius(accuracy);
@@ -188,11 +240,11 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
         map.setView(activeCoords[0], 15);
       } else {
         const bounds = L.latLngBounds(activeCoords);
-        map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
       }
       map.invalidateSize();
     }
-  }, [sessionParticipants, currentLocation, myParticipantId]);
+  }, [sessionParticipants, currentLocation, myParticipantId, myLabel]);
 
   // Start Real Mobile Phone GPS Watcher
   const handleStartSharing = () => {
@@ -507,25 +559,38 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
           </div>
         </div>
 
-        {/* Real-time Telemetry Mini Map Card */}
-        {currentLocation && (
-          <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-3xl shadow-2xl space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-extrabold uppercase text-white flex items-center gap-1">
-                <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                Live Multi-Participant Map
+        {/* Real-time Telemetry Live Multi-Participant Map Card */}
+        <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-3xl shadow-2xl space-y-3 backdrop-blur-md">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-extrabold uppercase text-white flex items-center gap-1.5">
+              <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+              Live Multi-Participant Map
+            </span>
+            <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">
+                ● OPENSTREETMAP LIVE
               </span>
-              <span className="text-[10px] font-mono text-slate-400">
-                Pings Sent: <strong className="text-emerald-400">{updateCount}</strong>
-              </span>
+              {updateCount > 0 && (
+                <span>Pings: <strong className="text-emerald-400">{updateCount}</strong></span>
+              )}
             </div>
-
-            <div
-              ref={mapContainerRef}
-              className="w-full h-48 rounded-2xl overflow-hidden border border-slate-800 relative z-0"
-            ></div>
           </div>
-        )}
+
+          <div
+            ref={mapContainerRef}
+            className="w-full h-[340px] sm:h-[420px] rounded-2xl overflow-hidden border border-slate-800 relative z-0 shadow-inner bg-slate-950"
+            style={{ height: '360px', minHeight: '300px', width: '100%' }}
+          ></div>
+
+          <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 px-1 pt-1">
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500 inline-block"></span> 🔴 Me</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span> 🔵 Friend</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> 🟢 Participant</span>
+            </div>
+            <span>Tap marker for details</span>
+          </div>
+        </div>
       </main>
 
       {/* INVITE PARTICIPANT QR MODAL */}
