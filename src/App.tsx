@@ -275,7 +275,7 @@ export default function App() {
   useEffect(() => {
     const syncSosAlerts = async () => {
       try {
-        const res = await fetch('http://localhost:5001/api/sos/alerts');
+        const res = await fetch('/api/sos/alerts');
         if (res.ok) {
           const data = await res.json();
           if (data?.alerts && data.alerts.length > 0) {
@@ -681,7 +681,7 @@ export default function App() {
           onTransmitSOSLocation={(locationData) => {
             setActiveSosLocation(locationData);
             setIsSosModalOpen(false);
-            setActiveModule('map');
+            setActiveModule('incidents');
           }}
         />
       </div>
@@ -933,6 +933,41 @@ export default function App() {
             </div>
           </div>
         </header>
+
+        {/* 🚨 High-Priority Live Emergency SOS Global Banner */}
+        {activeSosLocation && (
+          <div className="bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white px-4 py-2.5 shadow-lg border-b border-rose-400/40 flex items-center justify-between text-xs shrink-0 z-40 animate-fadeIn">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <span className="flex h-3 w-3 relative shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+              </span>
+              <span className="font-black uppercase tracking-wider bg-rose-950/70 px-2 py-0.5 rounded text-[10px] border border-rose-400/40 shrink-0">
+                🚨 LIVE SOS BEACON ({activeSosLocation.sosId})
+              </span>
+              <span className="font-bold truncate text-[11px] text-white">
+                📍 {activeSosLocation.landmark} • {activeSosLocation.distressType} • {activeSosLocation.personsTrapped}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0 ml-3">
+              <button
+                type="button"
+                onClick={() => setActiveModule('incidents')}
+                className="px-3 py-1 bg-white hover:bg-slate-100 text-rose-950 font-black rounded-lg text-[11px] shadow transition cursor-pointer flex items-center gap-1"
+              >
+                <span>View Incident Board ➔</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveSosLocation(null)}
+                className="p-1 hover:bg-rose-700/60 text-white/80 hover:text-white rounded-md transition cursor-pointer"
+                title="Dismiss banner"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Main Workspace Render */}
         <main className="flex-1 overflow-hidden">
@@ -1628,7 +1663,7 @@ export default function App() {
           onTransmitSOSLocation={(locationData) => {
             setActiveSosLocation(locationData);
             setIsSosModalOpen(false);
-            setActiveModule('map');
+            setActiveModule('incidents');
           }}
         />
 

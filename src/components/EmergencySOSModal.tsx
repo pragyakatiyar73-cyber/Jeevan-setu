@@ -142,7 +142,7 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
     setBroadcastResult(null);
 
     try {
-      const res = await fetch("http://localhost:5001/api/sos/broadcast", {
+      const res = await fetch("/api/sos/broadcast", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -159,8 +159,8 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
       setBroadcastResult(data);
       if (onTransmitSOSLocation) {
         onTransmitSOSLocation({
-          lat: parseFloat(lat) || 26.4736,
-          lon: parseFloat(lon) || 80.3596,
+          lat: parseFloat(lat) || 27.26,
+          lon: parseFloat(lon) || 92.42,
           sosId: data?.sosId || 'SOS-2026-7154',
           distressType,
           landmark,
@@ -440,18 +440,31 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
 
             {/* BROADCAST SUCCESS CONFIRMATION CARD */}
             {broadcastResult && (
-              <div className="rounded-xl border border-emerald-500/50 bg-emerald-950/90 p-3 space-y-1.5 shadow-xl animate-fadeIn">
+              <div className="rounded-2xl border-2 border-emerald-500/60 bg-emerald-950 p-4 space-y-2.5 shadow-2xl animate-fadeIn text-xs">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <div className="flex items-center gap-1.5 text-emerald-300 font-bold text-xs">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                    <span>SOS Signal Sent Successfully! (ID: {broadcastResult.sosId})</span>
+                  <div className="flex items-center gap-2 text-emerald-300 font-extrabold text-sm">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+                    <span>SOS Distress Broadcast Active!</span>
                   </div>
+                  <span className="font-mono text-[11px] bg-emerald-900/80 text-emerald-200 border border-emerald-700 px-2 py-0.5 rounded-full font-bold">
+                    ID: {broadcastResult.sosId}
+                  </span>
+                </div>
+
+                <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 space-y-1 text-[11px] text-slate-300">
+                  <p>📍 <strong>Coordinates:</strong> {lat}° N, {lon}° E ({landmark})</p>
+                  <p>⚠️ <strong>Type &amp; Severity:</strong> {distressType} • {personsTrapped}</p>
+                  <p>🚒 <strong>Units Alerted:</strong> NDRF 12th Battalion, SDRF Control, Army QRT</p>
+                </div>
+
+                <div className="pt-1 flex items-center gap-2">
                   <button
+                    type="button"
                     onClick={() => {
                       if (onTransmitSOSLocation) {
                         onTransmitSOSLocation({
-                          lat: parseFloat(lat) || 26.4736,
-                          lon: parseFloat(lon) || 80.3596,
+                          lat: parseFloat(lat) || 27.26,
+                          lon: parseFloat(lon) || 92.42,
                           sosId: broadcastResult.sosId || 'SOS-2026-7154',
                           distressType,
                           landmark,
@@ -459,13 +472,13 @@ export default function EmergencySOSModal({ isOpen, onClose, onTransmitSOSLocati
                           triageLevel
                         });
                       }
+                      onClose();
                     }}
-                    className="rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-2.5 py-1 text-[11px] font-black transition cursor-pointer shrink-0 shadow flex items-center gap-1"
+                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs transition cursor-pointer shadow-lg flex items-center justify-center gap-1.5"
                   >
-                    <span>📍 Track on Map ➔</span>
+                    <span>📋 View Active Beacon in Disaster Reports ➔</span>
                   </button>
                 </div>
-                <p className="text-[11px] text-slate-200 leading-snug">{broadcastResult.message}</p>
               </div>
             )}
           </div>
