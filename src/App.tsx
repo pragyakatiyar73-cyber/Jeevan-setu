@@ -665,9 +665,60 @@ export default function App() {
     setCalculatedRoute(res);
   };
 
+  // 🚨 Globally rendered, high-visibility Emergency SOS Floating Banner
+  const renderGlobalSosBanner = () => {
+    if (!activeSosLocation) return null;
+    return (
+      <aside
+        aria-label="Active Emergency SOS Alert"
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-[999999] w-[95%] max-w-3xl bg-gradient-to-r from-rose-700 via-red-600 to-amber-600 text-white px-4 py-3 rounded-2xl shadow-2xl border-2 border-rose-300 flex items-center justify-between gap-3 animate-pulse"
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-10 w-10 rounded-xl bg-black/30 border border-white/30 flex items-center justify-center shrink-0 text-xl shadow">
+            🚨
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-black uppercase tracking-wider bg-rose-950/90 px-2 py-0.5 rounded text-[10px] border border-rose-400/40">
+                LIVE SOS BEACON ({activeSosLocation.sosId})
+              </span>
+              <span className="text-[11px] font-extrabold text-amber-200">
+                {activeSosLocation.triageLevel || 'Level 1: Immediate Rescue'}
+              </span>
+            </div>
+            <p className="text-xs font-bold truncate text-white mt-0.5">
+              📍 {activeSosLocation.landmark} &bull; {activeSosLocation.distressType} ({activeSosLocation.personsTrapped})
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveModule('incidents');
+            }}
+            className="px-3.5 py-1.5 bg-white hover:bg-slate-100 text-rose-950 font-black rounded-xl text-xs shadow-lg transition cursor-pointer flex items-center gap-1 shrink-0"
+          >
+            <span>View Incident Board</span>
+            <span>➔</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSosLocation(null)}
+            className="h-8 w-8 rounded-xl bg-black/20 hover:bg-black/40 text-white flex items-center justify-center text-sm font-bold transition cursor-pointer"
+            title="Dismiss Alert Banner"
+          >
+            ✕
+          </button>
+        </div>
+      </aside>
+    );
+  };
+
   if (activeModule === 'home') {
     return (
       <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
+        {renderGlobalSosBanner()}
         <JeevanSetuHomepage
           onNavigateModule={(mod) => setActiveModule(mod)}
           onOpenSos={() => setIsSosModalOpen(true)}
@@ -690,6 +741,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-full max-w-full bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
+      {renderGlobalSosBanner()}
       
       {/* 1. LEFT SIDEBAR NAVIGATION BAR (Sleek & Perfectly Sized - Hidden in Driver Mobile View) */}
       <aside className={`${activeModule === 'driver-tracking' ? 'hidden' : 'w-16 md:w-60 lg:w-64'} shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] flex flex-col justify-between p-2.5 md:p-3 shadow-xl dark:shadow-2xl z-50 select-none transition-colors duration-300`}>
@@ -933,41 +985,6 @@ export default function App() {
             </div>
           </div>
         </header>
-
-        {/* 🚨 High-Priority Live Emergency SOS Global Banner */}
-        {activeSosLocation && (
-          <div className="bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white px-4 py-2.5 shadow-lg border-b border-rose-400/40 flex items-center justify-between text-xs shrink-0 z-40 animate-fadeIn">
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <span className="flex h-3 w-3 relative shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-              </span>
-              <span className="font-black uppercase tracking-wider bg-rose-950/70 px-2 py-0.5 rounded text-[10px] border border-rose-400/40 shrink-0">
-                🚨 LIVE SOS BEACON ({activeSosLocation.sosId})
-              </span>
-              <span className="font-bold truncate text-[11px] text-white">
-                📍 {activeSosLocation.landmark} • {activeSosLocation.distressType} • {activeSosLocation.personsTrapped}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 ml-3">
-              <button
-                type="button"
-                onClick={() => setActiveModule('incidents')}
-                className="px-3 py-1 bg-white hover:bg-slate-100 text-rose-950 font-black rounded-lg text-[11px] shadow transition cursor-pointer flex items-center gap-1"
-              >
-                <span>View Incident Board ➔</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveSosLocation(null)}
-                className="p-1 hover:bg-rose-700/60 text-white/80 hover:text-white rounded-md transition cursor-pointer"
-                title="Dismiss banner"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Main Workspace Render */}
         <main className="flex-1 overflow-hidden">
