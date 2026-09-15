@@ -320,22 +320,22 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
     <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
       
       {/* 🔴 HEADER & SEARCH BAR (Hidden in Print) */}
-      <div className="no-print rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-4">
+      <div className="no-print rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-6">
+        <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-bold text-sky-400 border border-sky-500/40 uppercase">
+              <span className="rounded bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-bold text-sky-600 dark:text-sky-400 border border-sky-500/40 uppercase">
                 LOCATION INTELLIGENCE REPORT
               </span>
-              <span className="rounded bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-mono text-emerald-400 border border-emerald-500/30">
+              <span className="rounded bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                 18 MODULES SYNCHRONIZED
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-white mt-1 flex items-center gap-2">
-              <Compass className="h-7 w-7 text-sky-400 animate-spin-slow shrink-0" />
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1 flex items-center gap-2">
+              <Compass className="h-7 w-7 text-sky-500 dark:text-sky-400 animate-spin-slow shrink-0" />
               <span>Location Intelligence Report & Multi-Page PDF Engine</span>
             </h1>
-            <p className="text-xs text-slate-300 mt-1 max-w-3xl">
+            <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-3xl">
               Enter any location in the 8 North-Eastern states of India to instantly collect telemetry across all 18 Jeevan Setu modules and generate an official 9-page Government PDF Location Intelligence Report.
             </p>
           </div>
@@ -344,9 +344,9 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowFullPDFView(!showFullPDFView)}
-                className="rounded-xl border border-sky-500/40 bg-sky-950/40 px-4 py-2.5 text-xs font-bold text-sky-300 hover:bg-sky-900/60 flex items-center gap-1.5 cursor-pointer"
+                className="rounded-xl border border-sky-300 dark:border-sky-500/40 bg-sky-50 dark:bg-sky-950/40 px-4 py-2.5 text-xs font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/60 flex items-center gap-1.5 cursor-pointer"
               >
-                <Eye className="h-4 w-4 text-sky-400" />
+                <Eye className="h-4 w-4 text-sky-600 dark:text-sky-400" />
                 <span>{showFullPDFView ? 'SHOW DASHBOARD VIEW' : 'VIEW 9-PAGE REPORT'}</span>
               </button>
               <button
@@ -370,7 +370,7 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Enter Location (e.g. East Khasi Hills, Meghalaya or Guwahati, Assam)"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 pl-10 pr-4 py-2.5 text-xs font-bold text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 pl-10 pr-4 py-2.5 text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-sky-500 focus:outline-none"
               />
             </div>
             <button
@@ -385,40 +385,40 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
 
           {/* Quick Pre-Populated Sample Locations */}
           <div className="flex items-center gap-2 flex-wrap text-xs">
-            <span className="text-slate-400 font-bold uppercase text-[10px]">Quick NER Searches:</span>
+            <span className="text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px]">Quick NER Searches:</span>
             <button
               onClick={() => handleQuickLocationSelect('East Khasi Hills, Meghalaya', 25.5788, 91.8933, 'Meghalaya', 'East Khasi Hills')}
-              className="rounded-lg border border-slate-700 bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-300 hover:border-sky-500 hover:text-white"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-700 dark:text-slate-300 hover:border-sky-500 hover:text-slate-900 dark:hover:text-white"
             >
               📍 East Khasi Hills (Meghalaya)
             </button>
             <button
               onClick={() => handleQuickLocationSelect('Gangtok, Sikkim', 27.3389, 88.6065, 'Sikkim', 'Gangtok')}
-              className="rounded-lg border border-slate-700 bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-300 hover:border-sky-500 hover:text-white"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-700 dark:text-slate-300 hover:border-sky-500 hover:text-slate-900 dark:hover:text-white"
             >
               📍 Gangtok (Sikkim)
             </button>
             <button
               onClick={() => handleQuickLocationSelect('Guwahati, Assam', 26.1445, 91.7362, 'Assam', 'Kamrup Metropolitan')}
-              className="rounded-lg border border-slate-700 bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-300 hover:border-sky-500 hover:text-white"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-700 dark:text-slate-300 hover:border-sky-500 hover:text-slate-900 dark:hover:text-white"
             >
               📍 Guwahati (Assam)
             </button>
             <button
               onClick={() => handleQuickLocationSelect('Aizawl, Mizoram', 23.7271, 92.7176, 'Mizoram', 'Aizawl')}
-              className="rounded-lg border border-slate-700 bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-300 hover:border-sky-500 hover:text-white"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-700 dark:text-slate-300 hover:border-sky-500 hover:text-slate-900 dark:hover:text-white"
             >
               📍 Aizawl (Mizoram)
             </button>
             <button
               onClick={() => handleQuickLocationSelect('Imphal, Manipur', 24.8170, 93.9368, 'Manipur', 'Imphal West')}
-              className="rounded-lg border border-slate-700 bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-300 hover:border-sky-500 hover:text-white"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-700 dark:text-slate-300 hover:border-sky-500 hover:text-slate-900 dark:hover:text-white"
             >
               📍 Imphal (Manipur)
             </button>
             <button
               onClick={() => handleQuickLocationSelect('Itanagar, Arunachal Pradesh', 27.0844, 93.6053, 'Arunachal Pradesh', 'Papum Pare')}
-              className="rounded-lg border border-slate-700 bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-300 hover:border-sky-500 hover:text-white"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-700 dark:text-slate-300 hover:border-sky-500 hover:text-slate-900 dark:hover:text-white"
             >
               📍 Itanagar (Arunachal)
             </button>
@@ -477,25 +477,25 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
       {!showFullPDFView && reportGenerated && (
         <div className="no-print space-y-6">
           {/* Top Overview Card */}
-          <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-3">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-200 dark:border-slate-800 pb-3">
               <div>
-                <span className="text-[10px] font-mono text-slate-400 uppercase">REPORT ID: <b className="text-sky-400">{reportId}</b> &bull; UPDATED: {new Date().toLocaleTimeString()}</span>
-                <h2 className="text-xl font-black text-white mt-0.5">
+                <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase">REPORT ID: <b className="text-sky-600 dark:text-sky-400">{reportId}</b> &bull; UPDATED: {new Date().toLocaleTimeString()}</span>
+                <h2 className="text-xl font-black text-slate-900 dark:text-white mt-0.5">
                   📍 {currentLoc.displayName}
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  State: <b className="text-white">{currentLoc.state || 'Meghalaya'}</b> | Lat: <b className="text-white">{currentLoc.lat.toFixed(4)}°</b> | Lon: <b className="text-white">{currentLoc.lon.toFixed(4)}°</b>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                  State: <b className="text-slate-900 dark:text-white">{currentLoc.state || 'Meghalaya'}</b> | Lat: <b className="text-slate-900 dark:text-white">{currentLoc.lat.toFixed(4)}°</b> | Lon: <b className="text-slate-900 dark:text-white">{currentLoc.lon.toFixed(4)}°</b>
                 </p>
               </div>
 
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">OVERALL DISASTER RISK</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold block">OVERALL DISASTER RISK</span>
                   <span className={`inline-block px-3 py-1 text-xs font-black rounded-lg border uppercase ${
-                    landslideAssessment?.riskTier === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400 border-rose-500/40' :
-                    landslideAssessment?.riskTier === 'HIGH' ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' :
-                    'bg-sky-500/20 text-sky-400 border-sky-500/40'
+                    landslideAssessment?.riskTier === 'CRITICAL' ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border-rose-500/40' :
+                    landslideAssessment?.riskTier === 'HIGH' ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40' :
+                    'bg-sky-500/20 text-sky-600 dark:text-sky-400 border-sky-500/40'
                   }`}>
                     {landslideAssessment?.riskTier || 'HIGH RISK'}
                   </span>
@@ -503,48 +503,48 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 font-serif leading-relaxed">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 font-serif leading-relaxed">
               <b>Current Situation Summary:</b> Multi-source telemetry synchronized for {currentLoc.displayName}. Active monsoon precipitation rate of {weatherData ? weatherData.precipitation : 12} mm/hr logged with high slope soil saturation (82%). NDRF and SDRF teams remain on standby along primary arterial passes.
             </div>
 
             {/* 18 Modules Telemetry Grid Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <div className="text-[10px] text-slate-400 font-bold uppercase">1. Weather Telemetry</div>
-                <div className="text-sky-400 font-bold">{weatherData ? weatherData.temperature + '°C' : '22°C'} &bull; {weatherData ? weatherData.weatherDescription : 'Rain'}</div>
-                <div className="text-[10px] text-slate-500">Status: <span className="text-emerald-400">LIVE DATA</span></div>
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">1. Weather Telemetry</div>
+                <div className="text-sky-600 dark:text-sky-400 font-bold">{weatherData ? weatherData.temperature + '°C' : '22°C'} &bull; {weatherData ? weatherData.weatherDescription : 'Rain'}</div>
+                <div className="text-[10px] text-slate-500">Status: <span className="text-emerald-600 dark:text-emerald-400">LIVE DATA</span></div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <div className="text-[10px] text-slate-400 font-bold uppercase">2. Flood Vulnerability</div>
-                <div className="text-amber-400 font-bold">{floodAssessment?.riskTier || 'MODERATE'} Risk</div>
-                <div className="text-[10px] text-slate-500">Status: <span className="text-emerald-400">VERIFIED DATA</span></div>
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">2. Flood Vulnerability</div>
+                <div className="text-amber-600 dark:text-amber-400 font-bold">{floodAssessment?.riskTier || 'MODERATE'} Risk</div>
+                <div className="text-[10px] text-slate-500">Status: <span className="text-emerald-600 dark:text-emerald-400">VERIFIED DATA</span></div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <div className="text-[10px] text-slate-400 font-bold uppercase">3. Landslide Hazard</div>
-                <div className="text-rose-400 font-bold">{landslideAssessment?.riskTier || 'HIGH'} Hazard</div>
-                <div className="text-[10px] text-slate-500">Status: <span className="text-emerald-400">VERIFIED DATA</span></div>
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">3. Landslide Hazard</div>
+                <div className="text-rose-600 dark:text-rose-400 font-bold">{landslideAssessment?.riskTier || 'HIGH'} Hazard</div>
+                <div className="text-[10px] text-slate-500">Status: <span className="text-emerald-600 dark:text-emerald-400">VERIFIED DATA</span></div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <div className="text-[10px] text-slate-400 font-bold uppercase">4. Road Accessibility</div>
-                <div className="text-emerald-400 font-bold">{landslideAssessment?.riskTier === 'CRITICAL' ? '42%' : '78%'} Open Score</div>
-                <div className="text-[10px] text-slate-500">Status: <span className="text-emerald-400">LIVE DATA</span></div>
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">4. Road Accessibility</div>
+                <div className="text-emerald-600 dark:text-emerald-400 font-bold">{landslideAssessment?.riskTier === 'CRITICAL' ? '42%' : '78%'} Open Score</div>
+                <div className="text-[10px] text-slate-500">Status: <span className="text-emerald-600 dark:text-emerald-400">LIVE DATA</span></div>
               </div>
             </div>
           </div>
 
           {/* Interactive GIS Dashboard Map */}
-          <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-2xl space-y-3">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-2xl space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-black text-white flex items-center gap-2">
-                <Layers className="h-4 w-4 text-sky-400" />
+              <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <Layers className="h-4 w-4 text-sky-500 dark:text-sky-400" />
                 <span>Interactive Location GIS Mesh Map</span>
               </h3>
-              <span className="text-[11px] font-mono text-emerald-400">NER Live Map Connected</span>
+              <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400">NER Live Map Connected</span>
             </div>
-            <div className="h-96 sm:h-[420px] w-full rounded-xl border border-slate-800 overflow-hidden shadow-inner relative">
+            <div className="h-96 sm:h-[420px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner relative">
               <NERLiveMapModule
                 hideHeader={true}
                 focusedTarget={{ coord: [currentLoc.lat, currentLoc.lon], zoom: 11 }}
@@ -559,19 +559,19 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
           </div>
 
           {/* Bottom Action Bar */}
-          <div className="flex items-center justify-end gap-3 bg-slate-800 p-4 rounded-2xl border border-slate-700">
+          <div className="flex items-center justify-end gap-3 bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
             <button
               onClick={handleExportTextReport}
-              className="rounded-xl border border-slate-600 bg-slate-700 px-4 py-2.5 text-xs font-bold text-slate-200 hover:bg-slate-600 flex items-center gap-1.5 cursor-pointer"
+              className="rounded-xl border border-slate-300 dark:border-slate-600 bg-white hover:bg-slate-50 dark:bg-slate-700 dark:hover:bg-slate-600 px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 cursor-pointer"
             >
               <Download className="h-4 w-4" />
               <span>EXPORT RAW TXT</span>
             </button>
             <button
               onClick={() => setShowFullPDFView(true)}
-              className="rounded-xl border border-sky-500/40 bg-sky-950/40 px-4 py-2.5 text-xs font-bold text-sky-300 hover:bg-sky-900/60 flex items-center gap-1.5 cursor-pointer"
+              className="rounded-xl border border-sky-300 dark:border-sky-500/40 bg-sky-50 dark:bg-sky-950/40 px-4 py-2.5 text-xs font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/60 flex items-center gap-1.5 cursor-pointer"
             >
-              <Eye className="h-4 w-4 text-sky-400" />
+              <Eye className="h-4 w-4 text-sky-600 dark:text-sky-400" />
               <span>PREVIEW 9-PAGE PDF REPORT</span>
             </button>
             <button
@@ -590,15 +590,15 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
         <div className="space-y-4">
           
           {/* Top Control Bar in PDF Mode (Hidden in Print) */}
-          <div className="no-print flex items-center justify-between bg-slate-800 p-3 rounded-xl border border-slate-700 text-xs font-mono">
-            <span className="text-slate-300 flex items-center gap-2">
-              <FileText className="h-4 w-4 text-emerald-400" />
+          <div className="no-print flex items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono">
+            <span className="text-slate-700 dark:text-slate-300 flex items-center gap-2">
+              <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               <span>OFFICIAL 9-PAGE A4 GOVERNMENT REPORT PREVIEW</span>
             </span>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowFullPDFView(false)}
-                className="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-xs font-bold text-slate-200 hover:bg-slate-600"
+                className="rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200"
               >
                 RETURN TO DASHBOARD
               </button>

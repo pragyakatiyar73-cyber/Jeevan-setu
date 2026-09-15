@@ -557,31 +557,31 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
   const activeIncident = incidents[currentSlideIndex] || incidents[0] || null;
 
   return (
-    <div className="h-full overflow-y-auto bg-slate-950 text-slate-100 p-4 sm:p-6 space-y-6 select-none font-sans">
+    <div className="h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-4 sm:p-6 space-y-6 select-none font-sans">
       
       {/* 🚀 MANDATORY TOP COVERAGE BANNER */}
-      <div className="rounded-2xl bg-gradient-to-r from-sky-950 via-indigo-950 to-slate-900 border border-sky-500/40 p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="rounded-2xl bg-gradient-to-r from-sky-50 via-indigo-50/50 to-slate-100 dark:from-sky-950 dark:via-indigo-950 dark:to-slate-900 border border-sky-200 dark:border-sky-500/40 p-4 sm:p-5 shadow-lg dark:shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="h-11 w-11 rounded-2xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center shrink-0 shadow-lg shadow-sky-900/40">
-            <ShieldAlert className="h-6 w-6 text-sky-400 animate-pulse" />
+          <div className="h-11 w-11 rounded-2xl bg-sky-500/10 dark:bg-sky-500/20 border border-sky-400/30 dark:border-sky-400/40 flex items-center justify-center shrink-0 shadow-lg shadow-sky-900/10 dark:shadow-sky-900/40">
+            <ShieldAlert className="h-6 w-6 text-sky-500 dark:text-sky-400 animate-pulse" />
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-black text-white tracking-tight">
+              <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
                 Disaster Reports &amp; Incident Intelligence
               </h1>
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold tracking-wide uppercase flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold tracking-wide uppercase flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
                 Data Coverage: North Eastern Region — 8 States
               </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[10px] font-black tracking-wide uppercase flex items-center gap-1 shadow-xs">
-                <span className="h-1.5 w-1.5 rounded-full bg-sky-400 animate-ping" />
+              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/15 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 dark:border-sky-500/40 text-[10px] font-black tracking-wide uppercase flex items-center gap-1 shadow-xs">
+                <span className="h-1.5 w-1.5 rounded-full bg-sky-500 dark:bg-sky-400 animate-ping" />
                 GENUINE REAL-TIME TELEMETRY
               </span>
             </div>
-            <p className="text-xs text-slate-300 font-medium mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <p className="text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <span>Live feeds from Open-Meteo High-Resolution IMD Grid &amp; USGS Realtime Seismology.</span>
-              <span className="text-emerald-400 font-bold">• Synced {lastSyncTimeDisplay}</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold">• Synced {lastSyncTimeDisplay}</span>
             </p>
           </div>
         </div>
@@ -589,7 +589,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
         <div className="flex items-center gap-2 self-stretch sm:self-auto shrink-0">
           <button
             onClick={() => setIsReportModalOpen(true)}
-            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-sky-900/40 hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer border border-sky-400/40"
+            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-sky-900/20 dark:shadow-sky-900/40 hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer border border-sky-400/40"
           >
             <Plus className="h-4 w-4" />
             <span>Report Incident</span>
@@ -597,16 +597,16 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
           <button
             onClick={() => loadIncidents(false)}
             disabled={isLoading || isRefreshing}
-            className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition cursor-pointer"
+            className="p-2.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition cursor-pointer"
             title={`Refresh Live Telemetry (Last synced: ${lastSyncTimeDisplay})`}
           >
-            <RefreshCw className={`h-4 w-4 ${isLoading || isRefreshing ? 'animate-spin text-sky-400' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${isLoading || isRefreshing ? 'animate-spin text-sky-500 dark:text-sky-400' : ''}`} />
           </button>
         </div>
       </div>
 
       {/* 🎛️ CONTROL PANEL & FILTERS */}
-      <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-4 shadow-xl space-y-4">
+      <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-4 shadow-sm dark:shadow-xl space-y-4">
         
         {/* Search Bar */}
         <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
@@ -617,12 +617,12 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by state, district, town, or disaster type (e.g. Guwahati, Flood, Landslide)..."
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 transition"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 transition"
             />
           </div>
           <button
             type="submit"
-            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700 transition cursor-pointer"
+            className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 transition cursor-pointer"
           >
             Search
           </button>
@@ -630,7 +630,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
             <button
               type="button"
               onClick={handleResetFilters}
-              className="px-3.5 py-2.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold rounded-xl border border-rose-500/40 transition cursor-pointer flex items-center gap-1.5 shrink-0"
+              className="px-3.5 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 text-xs font-bold rounded-xl border border-rose-500/30 dark:border-rose-500/40 transition cursor-pointer flex items-center gap-1.5 shrink-0"
             >
               <X className="h-3.5 w-3.5" />
               <span>Reset Filters</span>
@@ -646,8 +646,8 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
         {/* Outside-NER Search Rejection Warning */}
         {rejectedSearchNotice && (
-          <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs font-bold flex items-center gap-2 animate-pulse">
-            <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />
+          <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2 animate-pulse">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-rose-500 dark:text-rose-400" />
             <span>Location is outside Jeevan Setu's NER coverage. Only 8 North Eastern states are supported.</span>
           </div>
         )}
@@ -657,13 +657,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
           
           {/* Disaster Type Filter */}
           <div className="flex flex-col">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
+            <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               Disaster Type
             </label>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-600 transition cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-300 dark:hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">All Types</option>
               <option value="Flood">🌊 Flood</option>
@@ -678,13 +678,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
           {/* State Filter (8 NER States) */}
           <div className="flex flex-col">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
+            <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               State (NER Only)
             </label>
             <select
               value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-600 transition cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-300 dark:hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">All NER States (8)</option>
               {NER_STATES.map((st) => (
@@ -695,14 +695,14 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
           {/* Dynamic District Filter */}
           <div className="flex flex-col">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
+            <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               District
             </label>
             <select
               value={selectedDistrict}
               onChange={(e) => setSelectedDistrict(e.target.value)}
               disabled={selectedState === 'All'}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 disabled:opacity-40 hover:border-slate-600 transition cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sky-500 disabled:opacity-40 hover:border-slate-300 dark:hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">{selectedState === 'All' ? 'Select State First' : 'All Districts'}</option>
               {selectedState !== 'All' && NER_STATES_DISTRICTS[selectedState]?.map((dist) => (
@@ -713,13 +713,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
           {/* Severity Filter */}
           <div className="flex flex-col">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
+            <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               Severity Level
             </label>
             <select
               value={selectedSeverity}
               onChange={(e) => setSelectedSeverity(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-600 transition cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-300 dark:hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">All Severities</option>
               <option value="CRITICAL">🔴 CRITICAL</option>
@@ -731,13 +731,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
           {/* Status Filter */}
           <div className="flex flex-col">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
+            <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               Incident Status
             </label>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-600 transition cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-300 dark:hover:border-slate-600 transition cursor-pointer"
             >
               <option value="All">All Statuses</option>
               <option value="ACTIVE">ACTIVE</option>
@@ -755,14 +755,14 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column: Interactive Incident Map (5 cols) */}
-        <div className="lg:col-span-5 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-800 p-4 shadow-2xl flex flex-col h-[640px] xl:h-[660px]">
-          <div className="flex items-center justify-between px-1 pb-3 border-b border-slate-800/80 mb-3 shrink-0">
+        <div className="lg:col-span-5 rounded-2xl bg-white dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-4 shadow-lg dark:shadow-2xl flex flex-col h-[640px] xl:h-[660px]">
+          <div className="flex items-center justify-between px-1 pb-3 border-b border-slate-200 dark:border-slate-800/80 mb-3 shrink-0">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-white flex items-center gap-2 uppercase tracking-wide">
-                <MapPin className="h-4 w-4 text-sky-400" />
+              <span className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-2 uppercase tracking-wide">
+                <MapPin className="h-4 w-4 text-sky-500 dark:text-sky-400" />
                 NER Disaster Incident Map
               </span>
-              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-800/60">
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800/60">
                 {incidents.length} Markers
               </span>
             </div>
@@ -772,9 +772,9 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                 type="button"
                 onClick={handleFitAllMarkers}
                 title="Fit map view to show all incidents"
-                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition text-[10px] font-bold cursor-pointer flex items-center gap-1 border border-slate-700/60"
+                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition text-[10px] font-bold cursor-pointer flex items-center gap-1 border border-slate-200 dark:border-slate-700/60"
               >
-                <Maximize2 className="h-3 w-3 text-sky-400" />
+                <Maximize2 className="h-3 w-3 text-sky-500 dark:text-sky-400" />
                 <span>Fit All</span>
               </button>
               {activeIncident && (
@@ -782,29 +782,29 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                   type="button"
                   onClick={() => flyToIncidentOnMap(activeIncident)}
                   title="Center map on current slide"
-                  className="px-2.5 py-1 rounded-lg bg-sky-950/80 hover:bg-sky-900 text-sky-300 hover:text-white transition text-[10px] font-bold cursor-pointer flex items-center gap-1 border border-sky-600/50"
+                  className="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/80 dark:hover:bg-sky-900 text-sky-700 dark:text-sky-300 transition text-[10px] font-bold cursor-pointer flex items-center gap-1 border border-sky-200 dark:border-sky-600/50"
                 >
-                  <Navigation className="h-3 w-3 text-sky-400" />
+                  <Navigation className="h-3 w-3 text-sky-500 dark:text-sky-400" />
                   <span>Focus</span>
                 </button>
               )}
             </div>
           </div>
 
-          <div className="relative flex-1 w-full rounded-xl overflow-hidden shadow-inner border border-slate-800/60 z-10">
+          <div className="relative flex-1 w-full rounded-xl overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800/60 z-10">
             <div ref={mapContainerRef} className="w-full h-full" />
             
             {/* Active Incident Floating Indicator on Map */}
             {activeIncident && (
-              <div className="absolute bottom-3 left-3 z-[1000] bg-slate-950/90 backdrop-blur-md border border-slate-800/90 rounded-xl px-3 py-1.5 shadow-xl flex items-center gap-2 max-w-[85%] pointer-events-none">
+              <div className="absolute bottom-3 left-3 z-[1000] bg-white/95 dark:bg-slate-950/90 backdrop-blur-md border border-slate-200 dark:border-slate-800/90 rounded-xl px-3 py-1.5 shadow-xl flex items-center gap-2 max-w-[85%] pointer-events-none">
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500" />
                 </span>
-                <span className="text-[11px] font-bold text-white truncate">
+                <span className="text-[11px] font-bold text-slate-900 dark:text-white truncate">
                   {activeIncident.location}
                 </span>
-                <span className="text-[10px] text-slate-400 font-mono shrink-0 hidden sm:inline">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono shrink-0 hidden sm:inline">
                   {activeIncident.lat.toFixed(2)}°N, {activeIncident.lon.toFixed(2)}°E
                 </span>
               </div>
@@ -814,13 +814,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
         {/* Right Column: Incident Telemetry Slideshow & Stream (7 cols) */}
         <div 
-          className="lg:col-span-7 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-800 p-4 shadow-2xl flex flex-col h-[640px] xl:h-[660px] relative overflow-hidden"
+          className="lg:col-span-7 rounded-2xl bg-white dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-4 shadow-lg dark:shadow-2xl flex flex-col h-[640px] xl:h-[660px] relative overflow-hidden"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           {/* Top Progress Bar (Active during Slideshow) */}
           {viewMode === 'slideshow' && isAutoPlaying && incidents.length > 1 && (
-            <div className="absolute top-0 left-0 w-full h-1 bg-slate-800/50 overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-slate-200 dark:bg-slate-800/50 overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-sky-400 via-indigo-400 to-emerald-400 transition-all duration-100 ease-linear"
                 style={{ width: `${slideProgress}%` }}
@@ -829,21 +829,21 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
           )}
 
           {/* Header Bar */}
-          <div className="flex items-center justify-between px-1 pb-3 border-b border-slate-800/80 mb-3 shrink-0">
+          <div className="flex items-center justify-between px-1 pb-3 border-b border-slate-200 dark:border-slate-800/80 mb-3 shrink-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                <Activity className="h-4 w-4 text-emerald-400" />
+              <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-300 flex items-center gap-2">
+                <Activity className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
                 Active NER Incident Stream ({incidents.length})
               </h3>
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[9px] font-black uppercase tracking-wider shadow-xs">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[9px] font-black uppercase tracking-wider shadow-xs">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
                 REAL-TIME TELEMETRY
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               {/* View Switcher: Slideshow vs List */}
-              <div className="bg-slate-950 p-0.5 rounded-lg border border-slate-800 flex items-center">
+              <div className="bg-slate-100 dark:bg-slate-950 p-0.5 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center">
                 <button
                   type="button"
                   onClick={() => setViewMode('slideshow')}
@@ -851,7 +851,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                   className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold transition flex items-center gap-1 cursor-pointer ${
                     viewMode === 'slideshow'
                       ? 'bg-sky-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
                   <span>🎞️ Slideshow</span>
@@ -863,14 +863,14 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                   className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold transition flex items-center gap-1 cursor-pointer ${
                     viewMode === 'list'
                       ? 'bg-sky-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
                   <span>📋 All Cards</span>
                 </button>
               </div>
 
-              <span className="text-[10px] text-slate-400 font-semibold hidden md:inline">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold hidden md:inline">
                 Synced {lastSyncTimeDisplay}
               </span>
               <button
@@ -878,9 +878,9 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                 onClick={() => loadIncidents(true)}
                 disabled={isRefreshing}
                 title={`Refresh real-time telemetry feed (Last synced: ${lastSyncTimeDisplay})`}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center gap-1 text-[10px] font-bold cursor-pointer"
+                className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition flex items-center gap-1 text-[10px] font-bold cursor-pointer border border-slate-200 dark:border-slate-700"
               >
-                <RefreshCw className={`h-3 w-3 text-sky-400 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-3 w-3 text-sky-500 dark:text-sky-400 ${isRefreshing ? 'animate-spin' : ''}`} />
                 <span className="hidden sm:inline">Refresh</span>
               </button>
             </div>
@@ -888,18 +888,18 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
           {/* Loading Indicator */}
           {isLoading && (
-            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950/50 p-8 text-center space-y-3">
-              <RefreshCw className="h-8 w-8 text-sky-400 animate-spin" />
-              <p className="text-xs text-slate-400 font-bold">Querying official NER incident feeds &amp; live weather telemetry...</p>
+            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 p-8 text-center space-y-3">
+              <RefreshCw className="h-8 w-8 text-sky-500 dark:text-sky-400 animate-spin" />
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">Querying official NER incident feeds &amp; live weather telemetry...</p>
             </div>
           )}
 
           {/* Empty State */}
           {!isLoading && incidents.length === 0 && !isError && (
-            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950/50 p-8 text-center space-y-3">
-              <ShieldAlert className="h-10 w-10 text-slate-500" />
-              <h4 className="text-sm font-bold text-slate-300">No Matching Incidents Found</h4>
-              <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
+            <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 p-8 text-center space-y-3">
+              <ShieldAlert className="h-10 w-10 text-slate-400 dark:text-slate-500" />
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-300">No Matching Incidents Found</h4>
+              <p className="text-xs text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed">
                 Multiple active filters or search terms are filtering out records. Try clearing search text or resetting filters.
               </p>
               <button
@@ -920,11 +920,11 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               {/* Slideshow Top Navigation Bar */}
               <div className="flex items-center justify-between px-1 pb-2 shrink-0">
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-lg bg-slate-950 text-slate-300 border border-slate-800 text-[11px] font-black flex items-center gap-1.5 shadow-sm">
-                    <span className="text-sky-400 font-black">#{currentSlideIndex + 1}</span>
-                    <span className="text-slate-500">/</span>
-                    <span className="text-slate-400">{incidents.length}</span>
-                    <span className="ml-1 text-slate-300 font-bold hidden sm:inline">Incidents</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 text-[11px] font-black flex items-center gap-1.5 shadow-sm">
+                    <span className="text-sky-600 dark:text-sky-400 font-black">#{currentSlideIndex + 1}</span>
+                    <span className="text-slate-400 dark:text-slate-500">/</span>
+                    <span className="text-slate-600 dark:text-slate-400">{incidents.length}</span>
+                    <span className="ml-1 text-slate-700 dark:text-slate-300 font-bold hidden sm:inline">Incidents</span>
                   </span>
 
                   {/* Auto-Play Toggle */}
@@ -934,11 +934,11 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                     title={isAutoPlaying ? "Pause Auto-Cycle (6s)" : "Start Auto-Cycle"}
                     className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition flex items-center gap-1.5 cursor-pointer ${
                       isAutoPlaying 
-                        ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300' 
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-300' 
+                        : 'bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
-                    {isAutoPlaying ? <Pause className="h-3 w-3 text-emerald-400" /> : <Play className="h-3 w-3 text-sky-400" />}
+                    {isAutoPlaying ? <Pause className="h-3 w-3 text-emerald-600 dark:text-emerald-400" /> : <Play className="h-3 w-3 text-sky-600 dark:text-sky-400" />}
                     <span>{isAutoPlaying ? 'Auto-Cycle 6s' : 'Paused'}</span>
                   </button>
                 </div>
@@ -948,7 +948,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                     type="button"
                     onClick={handlePrevSlide}
                     title="Previous Incident"
-                    className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition cursor-pointer border border-slate-700"
+                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition cursor-pointer border border-slate-200 dark:border-slate-700"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
@@ -956,7 +956,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                     type="button"
                     onClick={handleNextSlide}
                     title="Next Incident"
-                    className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition cursor-pointer border border-slate-700"
+                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition cursor-pointer border border-slate-200 dark:border-slate-700"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
@@ -964,13 +964,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               </div>
 
               {/* Main Featured Slide Card */}
-              <div className="flex-1 bg-slate-950/70 border border-slate-800/90 rounded-2xl p-4 sm:p-5 flex flex-col justify-between overflow-y-auto custom-scrollbar shadow-xl">
+              <div className="flex-1 bg-slate-50/80 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-4 sm:p-5 flex flex-col justify-between overflow-y-auto custom-scrollbar shadow-sm dark:shadow-xl">
                 
                 {/* Header Row: Badges & Live Status */}
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-900 text-sky-300 font-black text-xs border border-slate-700/80 flex items-center gap-1.5 shadow-sm">
+                      <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-300 font-black text-xs border border-slate-200 dark:border-slate-700/80 flex items-center gap-1.5 shadow-sm">
                         {activeIncident.disasterType === 'Flood' && '🌊'}
                         {activeIncident.disasterType === 'Landslide' && '⛰️'}
                         {activeIncident.disasterType === 'Heavy Rain' && '🌧️'}
@@ -984,12 +984,12 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                       <span
                         className={`px-2.5 py-1 rounded-md font-black text-[10px] uppercase border ${
                           activeIncident.severity === 'CRITICAL'
-                            ? 'bg-red-500/20 text-red-400 border-red-500/40 animate-pulse'
+                            ? 'bg-red-500/15 dark:bg-red-500/20 text-red-600 dark:text-red-400 border-red-300 dark:border-red-500/40 animate-pulse'
                             : activeIncident.severity === 'HIGH'
-                            ? 'bg-orange-500/20 text-orange-400 border-orange-500/40'
+                            ? 'bg-orange-500/15 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-300 dark:border-orange-500/40'
                             : activeIncident.severity === 'MODERATE'
-                            ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
-                            : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                            ? 'bg-amber-500/15 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-500/40'
+                            : 'bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/40'
                         }`}
                       >
                         {activeIncident.severity}
@@ -998,44 +998,44 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                       <span
                         className={`px-2.5 py-1 rounded-md font-black text-[10px] uppercase border ${
                           activeIncident.status === 'ACTIVE' || activeIncident.status === 'RESPONSE IN PROGRESS'
-                            ? 'bg-rose-500/20 text-rose-300 border-rose-500/50'
+                            ? 'bg-rose-500/15 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-500/50'
                             : activeIncident.status === 'MONITORING'
-                            ? 'bg-sky-500/20 text-sky-300 border-sky-500/50'
+                            ? 'bg-sky-500/15 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-300 dark:border-sky-500/50'
                             : activeIncident.status === 'RESOLVED'
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                            : 'bg-slate-800 text-slate-300 border-slate-700'
+                            ? 'bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/50'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                         }`}
                       >
                         Status: {activeIncident.status || 'ACTIVE'}
                       </span>
                     </div>
 
-                    <span className="px-2.5 py-1 rounded-full bg-slate-900 text-emerald-400 border border-emerald-500/40 text-[10px] font-black flex items-center gap-1.5 shadow-xs">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="px-2.5 py-1 rounded-full bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40 text-[10px] font-black flex items-center gap-1.5 shadow-xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
                       {activeIncident.dataStatus || 'REALTIME LIVE'}
                     </span>
                   </div>
 
                   {/* Title & Location */}
                   <div className="mt-3">
-                    <h3 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                       <span>{activeIncident.location}</span>
                     </h3>
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 mt-1">
-                      <span className="flex items-center gap-1 text-slate-300 font-semibold">
-                        <MapPin className="h-3.5 w-3.5 text-sky-400" />
-                        <span>{activeIncident.district}, <b className="text-sky-300 font-bold">{activeIncident.state}</b></span>
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      <span className="flex items-center gap-1 text-slate-700 dark:text-slate-300 font-semibold">
+                        <MapPin className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" />
+                        <span>{activeIncident.district}, <b className="text-sky-600 dark:text-sky-300 font-bold">{activeIncident.state}</b></span>
                       </span>
-                      <span className="text-slate-500">•</span>
-                      <span className="flex items-center gap-1 text-slate-400 text-[11px]">
-                        <Clock className="h-3 w-3 text-emerald-400" />
+                      <span className="text-slate-400 dark:text-slate-500">•</span>
+                      <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-[11px]">
+                        <Clock className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
                         <span>{activeIncident.date} {activeIncident.time}</span>
                       </span>
                     </div>
                   </div>
 
                   {/* Clean Description */}
-                  <p className="text-xs text-slate-300 mt-2.5 leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
+                  <p className="text-xs text-slate-700 dark:text-slate-300 mt-2.5 leading-relaxed bg-white dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800/80">
                     {activeIncident.description}
                   </p>
                 </div>
@@ -1043,119 +1043,119 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                 {/* Real-time Multi-Sensor Telemetry Matrix (6 Live Gauges) */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 my-3">
                   {/* Temp */}
-                  <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 flex flex-col justify-between">
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase">
+                  <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 flex flex-col justify-between shadow-xs">
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">
                       <span>Temperature</span>
                       <span>🌡️</span>
                     </div>
                     <div className="mt-1 flex items-baseline gap-1.5">
-                      <span className="text-base sm:text-lg font-black text-amber-300">
+                      <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-300">
                         {activeIncident.liveTelemetry?.temperature !== undefined ? `${activeIncident.liveTelemetry.temperature}°C` : '--'}
                       </span>
                       {activeIncident.liveTelemetry?.apparentTemperature !== undefined && (
-                        <span className="text-[10px] text-slate-400 font-medium">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                           Feels {activeIncident.liveTelemetry.apparentTemperature}°C
                         </span>
                       )}
                     </div>
-                    <div className="text-[9px] text-slate-500 font-semibold mt-0.5">High-Res IMD Radar</div>
+                    <div className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">High-Res IMD Radar</div>
                   </div>
 
                   {/* Rainfall */}
-                  <div className={`border rounded-xl p-2.5 flex flex-col justify-between ${
+                  <div className={`border rounded-xl p-2.5 flex flex-col justify-between shadow-xs ${
                     (activeIncident.liveTelemetry?.precipitation || 0) > 10
-                      ? 'bg-rose-950/40 border-rose-500/50'
+                      ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-500/50'
                       : (activeIncident.liveTelemetry?.precipitation || 0) > 0
-                      ? 'bg-sky-950/40 border-sky-500/50'
-                      : 'bg-slate-900/90 border-slate-800'
+                      ? 'bg-sky-50 dark:bg-sky-950/40 border-sky-300 dark:border-sky-500/50'
+                      : 'bg-white dark:bg-slate-900/90 border-slate-200 dark:border-slate-800'
                   }`}>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase">
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">
                       <span>Rainfall Rate</span>
                       <span>🌧️</span>
                     </div>
                     <div className="mt-1 flex items-baseline gap-1.5">
                       <span className={`text-base sm:text-lg font-black ${
-                        (activeIncident.liveTelemetry?.precipitation || 0) > 10 ? 'text-rose-400' : 'text-sky-300'
+                        (activeIncident.liveTelemetry?.precipitation || 0) > 10 ? 'text-rose-600 dark:text-rose-400' : 'text-sky-600 dark:text-sky-300'
                       }`}>
                         {activeIncident.liveTelemetry?.precipitation !== undefined ? `${activeIncident.liveTelemetry.precipitation} mm/h` : '0 mm/h'}
                       </span>
-                      <span className="text-[10px] font-semibold text-slate-400">
+                      <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
                         {(activeIncident.liveTelemetry?.precipitation || 0) > 10 ? 'Heavy' : (activeIncident.liveTelemetry?.precipitation || 0) > 0 ? 'Light' : 'None'}
                       </span>
                     </div>
-                    <div className="text-[9px] text-slate-500 font-semibold mt-0.5">Precipitation Gauge</div>
+                    <div className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">Precipitation Gauge</div>
                   </div>
 
                   {/* Humidity */}
-                  <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 flex flex-col justify-between">
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase">
+                  <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 flex flex-col justify-between shadow-xs">
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">
                       <span>Humidity</span>
                       <span>💧</span>
                     </div>
                     <div className="mt-1">
-                      <span className="text-base sm:text-lg font-black text-cyan-300">
+                      <span className="text-base sm:text-lg font-black text-cyan-600 dark:text-cyan-300">
                         {activeIncident.liveTelemetry?.humidity !== undefined ? `${activeIncident.liveTelemetry.humidity}%` : '--'}
                       </span>
                     </div>
-                    <div className="text-[9px] text-slate-500 font-semibold mt-0.5">Atmospheric Sensor</div>
+                    <div className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">Atmospheric Sensor</div>
                   </div>
 
                   {/* Wind Speed */}
-                  <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 flex flex-col justify-between">
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase">
+                  <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 flex flex-col justify-between shadow-xs">
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">
                       <span>Wind Velocity</span>
                       <span>💨</span>
                     </div>
                     <div className="mt-1 flex items-baseline gap-1.5">
-                      <span className="text-base sm:text-lg font-black text-slate-200">
+                      <span className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-200">
                         {activeIncident.liveTelemetry?.windSpeed !== undefined ? `${activeIncident.liveTelemetry.windSpeed} km/h` : '--'}
                       </span>
                       {activeIncident.liveTelemetry?.windGusts !== undefined && (
-                        <span className="text-[10px] text-slate-400 font-medium">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                           Gust {activeIncident.liveTelemetry.windGusts} km/h
                         </span>
                       )}
                     </div>
-                    <div className="text-[9px] text-slate-500 font-semibold mt-0.5">Anemometer Grid</div>
+                    <div className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">Anemometer Grid</div>
                   </div>
 
                   {/* Atmosphere Condition */}
-                  <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 flex flex-col justify-between">
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase">
+                  <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 flex flex-col justify-between shadow-xs">
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">
                       <span>Weather</span>
                       <span>⛅</span>
                     </div>
                     <div className="mt-1">
-                      <span className="text-xs sm:text-sm font-black text-white truncate block">
+                      <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate block">
                         {activeIncident.liveTelemetry?.weatherCondition || 'Partly Cloudy'}
                       </span>
                     </div>
-                    <div className="text-[9px] text-slate-500 font-semibold mt-0.5">WMO Satellite Code</div>
+                    <div className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">WMO Satellite Code</div>
                   </div>
 
                   {/* Seismic / Geological */}
-                  <div className={`border rounded-xl p-2.5 flex flex-col justify-between ${
+                  <div className={`border rounded-xl p-2.5 flex flex-col justify-between shadow-xs ${
                     activeIncident.liveTelemetry?.seismicMagnitude
-                      ? 'bg-rose-950/40 border-rose-500/50 animate-pulse'
-                      : 'bg-slate-900/90 border-slate-800'
+                      ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-500/50 animate-pulse'
+                      : 'bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800'
                   }`}>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase">
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">
                       <span>Seismic Sensor</span>
                       <span>🌋</span>
                     </div>
                     <div className="mt-1">
-                      <span className="text-xs sm:text-sm font-black text-red-300">
+                      <span className="text-xs sm:text-sm font-black text-red-600 dark:text-red-300">
                         {activeIncident.liveTelemetry?.seismicMagnitude
                           ? `USGS M${activeIncident.liveTelemetry.seismicMagnitude.toFixed(1)}`
                           : 'Zone V Normal'}
                       </span>
                     </div>
-                    <div className="text-[9px] text-slate-500 font-semibold mt-0.5">USGS Real-time Feed</div>
+                    <div className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">USGS Real-time Feed</div>
                   </div>
                 </div>
 
                 {/* Footer Action Bar */}
-                <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80">
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 dark:border-slate-800/80">
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -1170,9 +1170,9 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                       <button
                         type="button"
                         onClick={() => onNavigateToReroute(activeIncident.location, `${activeIncident.district} Relief Hub`)}
-                        className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-extrabold text-xs border border-slate-700 transition flex items-center gap-1.5 cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white font-extrabold text-xs border border-slate-200 dark:border-slate-700 transition flex items-center gap-1.5 cursor-pointer"
                       >
-                        <Compass className="h-3.5 w-3.5 text-emerald-400" />
+                        <Compass className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                         <span>Plan Corridor</span>
                       </button>
                     )}
@@ -1181,36 +1181,36 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                       <button
                         type="button"
                         onClick={onTriggerSOS}
-                        className="px-3 py-1.5 rounded-xl bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/40 font-extrabold text-xs transition flex items-center gap-1.5 cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-red-600/10 hover:bg-red-600/20 dark:bg-red-600/20 dark:hover:bg-red-600/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-500/40 font-extrabold text-xs transition flex items-center gap-1.5 cursor-pointer"
                       >
-                        <AlertTriangle className="h-3.5 w-3.5 text-red-400" />
+                        <AlertTriangle className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
                         <span>Trigger SOS</span>
                       </button>
                     )}
                   </div>
 
-                  <span className="text-[10px] text-slate-500 font-mono">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                     {activeIncident.lat.toFixed(4)}°N, {activeIncident.lon.toFixed(4)}°E
                   </span>
                 </div>
               </div>
 
               {/* 🎞️ Bottom Interactive Slideshow Deck Reel */}
-              <div className="mt-3 pt-2.5 border-t border-slate-800/80 shrink-0">
+              <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-800/80 shrink-0">
                 {/* Reel Header Info & Scroll Chevrons */}
                 <div className="flex items-center justify-between px-1 mb-2 text-[10px]">
                   <div className="flex items-center gap-2">
-                    <span className="font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <span className="font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                       <span>🎞️</span>
                       <span>Slide Reel</span>
                     </span>
-                    <span className="text-slate-600 font-bold">•</span>
-                    <span className="font-extrabold text-sky-400">
+                    <span className="text-slate-400 dark:text-slate-600 font-bold">•</span>
+                    <span className="font-extrabold text-sky-600 dark:text-sky-400">
                       Slide {currentSlideIndex + 1} of {incidents.length}
                     </span>
                     {isAutoPlaying && (
-                      <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full shadow-xs">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 px-2 py-0.5 rounded-full shadow-xs">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
                         <span>Auto-Advancing</span>
                       </span>
                     )}
@@ -1221,7 +1221,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                       type="button"
                       onClick={handleScrollReelLeft}
                       title="Scroll slide reel left"
-                      className="p-1 rounded-lg bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition cursor-pointer"
+                      className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800 transition cursor-pointer"
                     >
                       <ChevronLeft className="h-3 w-3" />
                     </button>
@@ -1229,7 +1229,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                       type="button"
                       onClick={handleScrollReelRight}
                       title="Scroll slide reel right"
-                      className="p-1 rounded-lg bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition cursor-pointer"
+                      className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800 transition cursor-pointer"
                     >
                       <ChevronRight className="h-3 w-3" />
                     </button>
@@ -1239,8 +1239,8 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                 {/* Reel Horizontal Slider Track with Edge Fades & Hidden Scrollbars */}
                 <div className="relative group">
                   {/* Left & Right Edge Vignette Fades */}
-                  <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-5 bg-gradient-to-r from-slate-950/90 to-transparent z-10 rounded-l-xl" />
-                  <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-5 bg-gradient-to-l from-slate-950/90 to-transparent z-10 rounded-r-xl" />
+                  <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-5 bg-gradient-to-r from-white/95 dark:from-slate-950/90 to-transparent z-10 rounded-l-xl" />
+                  <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-5 bg-gradient-to-l from-white/95 dark:from-slate-950/90 to-transparent z-10 rounded-r-xl" />
 
                   <div
                     ref={carouselReelRef}
@@ -1270,13 +1270,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                           onClick={() => handleSelectSlide(idx)}
                           className={`relative shrink-0 flex flex-col justify-between rounded-xl px-2.5 py-2 text-left transition-all duration-200 cursor-pointer overflow-hidden border select-none ${
                             isSelected
-                              ? 'bg-sky-950/90 border-sky-400 ring-2 ring-sky-400/40 shadow-lg shadow-sky-500/25 scale-[1.02] text-white'
-                              : 'bg-slate-950/90 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900 text-slate-300 hover:text-white'
+                              ? 'bg-sky-50 dark:bg-sky-950/90 border-sky-400 ring-2 ring-sky-400/40 shadow-md scale-[1.02] text-slate-900 dark:text-white'
+                              : 'bg-white dark:bg-slate-950/90 border-slate-200 dark:border-slate-800/90 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                           }`}
                           style={{ minWidth: '138px', maxWidth: '160px' }}
                         >
                           {/* Story/Slideshow Top Progress Bar Line */}
-                          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-slate-800/80 overflow-hidden">
+                          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-slate-200 dark:bg-slate-800/80 overflow-hidden">
                             <div
                               className={`h-full transition-all ease-linear ${
                                 isSelected
@@ -1294,7 +1294,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                           {/* Top Row: Slide # + Emoji + Temp + Severity Beacon */}
                           <div className="flex items-center justify-between w-full pt-1 mb-1">
                             <div className="flex items-center gap-1.5">
-                              <span className={`text-[9px] font-mono font-black ${isSelected ? 'text-sky-300' : 'text-slate-500'}`}>
+                              <span className={`text-[9px] font-mono font-black ${isSelected ? 'text-sky-600 dark:text-sky-300' : 'text-slate-400 dark:text-slate-500'}`}>
                                 #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                               </span>
                               <span className="text-xs">{emoji}</span>
@@ -1302,7 +1302,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
                             <div className="flex items-center gap-1.5">
                               {item.liveTelemetry?.temperature !== undefined && (
-                                <span className="text-[9px] font-mono font-bold text-amber-300">
+                                <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-300">
                                   {item.liveTelemetry.temperature}°
                                 </span>
                               )}
@@ -1317,13 +1317,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
                           {/* Main Label & State/Disaster Subtitle */}
                           <div className="w-full">
-                            <div className={`text-[11px] font-black truncate leading-tight ${isSelected ? 'text-white' : 'text-slate-200'}`}>
+                            <div className={`text-[11px] font-black truncate leading-tight ${isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-800 dark:text-slate-200'}`}>
                               {formatSlideShortTitle(item)}
                             </div>
-                            <div className="text-[9px] font-semibold text-slate-400 truncate flex items-center justify-between mt-0.5">
+                            <div className="text-[9px] font-semibold text-slate-500 dark:text-slate-400 truncate flex items-center justify-between mt-0.5">
                               <span>{item.state}</span>
                               <span className={`text-[8px] font-black uppercase px-1 rounded ${
-                                isCritical ? 'bg-rose-950 text-rose-300' : isHigh ? 'bg-orange-950 text-orange-300' : 'bg-slate-800 text-slate-400'
+                                isCritical ? 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300' : isHigh ? 'bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                               }`}>
                                 {item.disasterType}
                               </span>
@@ -1350,13 +1350,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                     setCurrentSlideIndex(idx);
                     flyToIncidentOnMap(item);
                   }}
-                  className={`rounded-xl border bg-slate-950/80 p-4 transition-all duration-200 hover:border-sky-500/60 cursor-pointer shadow-md ${
-                    selectedIncident?.id === item.id || currentSlideIndex === idx ? 'border-sky-500 bg-sky-950/30 ring-1 ring-sky-500/40' : 'border-slate-800 hover:bg-slate-950'
+                  className={`rounded-xl border bg-white dark:bg-slate-950/80 p-4 transition-all duration-200 hover:border-sky-400 dark:hover:border-sky-500/60 cursor-pointer shadow-sm ${
+                    selectedIncident?.id === item.id || currentSlideIndex === idx ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/30 ring-1 ring-sky-500/40' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-950'
                   }`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-900 text-sky-300 font-black text-xs border border-slate-700/80 flex items-center gap-1.5 shadow-sm">
+                      <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 text-sky-700 dark:text-sky-300 font-black text-xs border border-slate-200 dark:border-slate-700/80 flex items-center gap-1.5 shadow-sm">
                         {item.disasterType === 'Flood' && '🌊'}
                         {item.disasterType === 'Landslide' && '⛰️'}
                         {item.disasterType === 'Heavy Rain' && '🌧️'}
@@ -1369,59 +1369,59 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                       <span
                         className={`px-2 py-0.5 rounded-md font-extrabold text-[10px] uppercase border ${
                           item.severity === 'CRITICAL'
-                            ? 'bg-red-500/20 text-red-400 border-red-500/40 animate-pulse'
+                            ? 'bg-red-500/15 dark:bg-red-500/20 text-red-600 dark:text-red-400 border-red-300 dark:border-red-500/40 animate-pulse'
                             : item.severity === 'HIGH'
-                            ? 'bg-orange-500/20 text-orange-400 border-orange-500/40'
+                            ? 'bg-orange-500/15 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-300 dark:border-orange-500/40'
                             : item.severity === 'MODERATE'
-                            ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
-                            : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                            ? 'bg-amber-500/15 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-500/40'
+                            : 'bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/40'
                         }`}
                       >
                         {item.severity}
                       </span>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full bg-slate-900 text-emerald-400 border border-emerald-500/40 text-[9px] font-black flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="px-2 py-0.5 rounded-full bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40 text-[9px] font-black flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
                       {item.dataStatus || 'REALTIME LIVE'}
                     </span>
                   </div>
 
-                  <h4 className="text-sm font-black text-white mt-2.5 tracking-tight">
+                  <h4 className="text-sm font-black text-slate-900 dark:text-white mt-2.5 tracking-tight">
                     {item.location}
                   </h4>
-                  <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                     {item.description}
                   </p>
 
                   {item.liveTelemetry && (
-                    <div className="mt-2.5 p-2 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-300">
-                      <span className="flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-md border border-slate-800 text-amber-300">
+                    <div className="mt-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                      <span className="flex items-center gap-1 bg-white dark:bg-slate-950 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-800 text-amber-600 dark:text-amber-300">
                         <span>🌡️</span>
                         <span>{item.liveTelemetry.temperature}°C</span>
                       </span>
-                      <span className="flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-md border border-slate-800 text-sky-300">
+                      <span className="flex items-center gap-1 bg-white dark:bg-slate-950 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-800 text-sky-600 dark:text-sky-300">
                         <span>🌧️</span>
                         <span>{item.liveTelemetry.precipitation} mm/h</span>
                       </span>
-                      <span className="flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-md border border-slate-800 text-cyan-300">
+                      <span className="flex items-center gap-1 bg-white dark:bg-slate-950 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-800 text-cyan-600 dark:text-cyan-300">
                         <span>💧</span>
                         <span>{item.liveTelemetry.humidity}%</span>
                       </span>
-                      <span className="flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-md border border-slate-800 text-slate-300">
+                      <span className="flex items-center gap-1 bg-white dark:bg-slate-950 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
                         <span>💨</span>
                         <span>{item.liveTelemetry.windSpeed} km/h</span>
                       </span>
                       {item.liveTelemetry.weatherCondition && (
-                        <span className="ml-auto text-[10px] font-bold text-sky-400 bg-sky-950/40 px-2 py-0.5 rounded-md border border-sky-800/40">
+                        <span className="ml-auto text-[10px] font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 px-2 py-0.5 rounded-md border border-sky-200 dark:border-sky-800/40">
                           {item.liveTelemetry.weatherCondition}
                         </span>
                       )}
                     </div>
                   )}
 
-                  <div className="mt-3 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
-                    <span className="font-semibold text-slate-300">
-                      📍 {item.district}, <b className="text-sky-300">{item.state}</b>
+                  <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 gap-2">
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">
+                      📍 {item.district}, <b className="text-sky-600 dark:text-sky-300">{item.state}</b>
                     </span>
                     <button
                       type="button"
@@ -1429,7 +1429,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                         e.stopPropagation();
                         flyToIncidentOnMap(item);
                       }}
-                      className="text-sky-400 hover:text-sky-300 font-extrabold text-[11px] flex items-center gap-1 cursor-pointer transition hover:translate-x-0.5"
+                      className="text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-extrabold text-[11px] flex items-center gap-1 cursor-pointer transition hover:translate-x-0.5"
                     >
                       Focus Map &rarr;
                     </button>
@@ -1445,13 +1445,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
       {/* 📄 INCIDENT DETAILS CARD MODAL */}
       {selectedIncident && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[99999] flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm z-[99999] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             
             {/* Header */}
-            <div className="bg-slate-950 px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+            <div className="bg-slate-50 dark:bg-slate-950 px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-black flex items-center gap-1">
+                <span className="px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-500/30 text-xs font-black flex items-center gap-1">
                   {selectedIncident.disasterType === 'Flood' && '🌊'}
                   {selectedIncident.disasterType === 'Landslide' && '⛰️'}
                   {selectedIncident.disasterType === 'Heavy Rain' && '🌧️'}
@@ -1461,14 +1461,14 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                   {selectedIncident.disasterType === 'Other Disaster' && '⚠️'}
                   {selectedIncident.disasterType}
                 </span>
-                <span className="px-2.5 py-1 rounded-md bg-emerald-950/60 text-emerald-400 border border-emerald-500/40 text-[10px] font-black uppercase flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <span className="px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/40 text-[10px] font-black uppercase flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
                   {selectedIncident.dataStatus || 'REALTIME LIVE'}
                 </span>
               </div>
               <button
                 onClick={() => setSelectedIncident(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1478,68 +1478,68 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
             <div className="p-5 space-y-4 text-xs">
               
               <div>
-                <h3 className="text-base font-black text-white tracking-tight flex items-center gap-2">
+                <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                   <span>{selectedIncident.location || 'Not available'}</span>
                 </h3>
-                <p className="text-xs text-sky-400 font-bold mt-0.5">
+                <p className="text-xs text-sky-600 dark:text-sky-400 font-bold mt-0.5">
                   📍 {selectedIncident.district || 'Not available'}, {selectedIncident.state || 'Not available'} ({selectedIncident.lat.toFixed(4)}° N, {selectedIncident.lon.toFixed(4)}° E)
                 </p>
-                <div className="mt-2 inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-300 bg-amber-950/50 border border-amber-500/50 px-3 py-1 rounded-lg">
+                <div className="mt-2 inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-500/50 px-3 py-1 rounded-lg">
                   <span>Disaster Classification: <b>{selectedIncident.disasterType}</b></span>
                 </div>
               </div>
 
               {/* ⚡ REAL-TIME SENSOR TELEMETRY DIAGNOSTICS */}
               {selectedIncident.liveTelemetry && (
-                <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-sky-500/30 space-y-2">
+                <div className="bg-slate-50 dark:bg-slate-950/80 p-3.5 rounded-2xl border border-sky-200 dark:border-sky-500/30 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
                       Live Environmental &amp; Sensor Telemetry
                     </span>
-                    <span className="text-[9px] font-bold text-slate-400">
+                    <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400">
                       {selectedIncident.liveTelemetry.source || 'Open-Meteo & IMD Grid'}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-                    <div className="bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-center">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase block">Temperature</span>
-                      <span className="text-xs font-black text-amber-300">
+                    <div className="bg-white dark:bg-slate-900/90 p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+                      <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Temperature</span>
+                      <span className="text-xs font-black text-amber-600 dark:text-amber-300">
                         {selectedIncident.liveTelemetry.temperature !== undefined ? `${selectedIncident.liveTelemetry.temperature}°C` : 'N/A'}
                       </span>
                     </div>
 
-                    <div className="bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-center">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase block">Rainfall Rate</span>
+                    <div className="bg-white dark:bg-slate-900/90 p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+                      <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Rainfall Rate</span>
                       <span className={`text-xs font-black ${
-                        (selectedIncident.liveTelemetry.precipitation || 0) > 0 ? 'text-sky-400' : 'text-slate-300'
+                        (selectedIncident.liveTelemetry.precipitation || 0) > 0 ? 'text-sky-600 dark:text-sky-400' : 'text-slate-700 dark:text-slate-300'
                       }`}>
                         {selectedIncident.liveTelemetry.precipitation !== undefined ? `${selectedIncident.liveTelemetry.precipitation} mm/h` : '0 mm/h'}
                       </span>
                     </div>
 
-                    <div className="bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-center">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase block">Humidity</span>
-                      <span className="text-xs font-black text-sky-300">
+                    <div className="bg-white dark:bg-slate-900/90 p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+                      <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Humidity</span>
+                      <span className="text-xs font-black text-sky-600 dark:text-sky-300">
                         {selectedIncident.liveTelemetry.humidity !== undefined ? `${selectedIncident.liveTelemetry.humidity}%` : 'N/A'}
                       </span>
                     </div>
 
-                    <div className="bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-center">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase block">Wind Speed</span>
-                      <span className="text-xs font-black text-slate-200">
+                    <div className="bg-white dark:bg-slate-900/90 p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+                      <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Wind Speed</span>
+                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">
                         {selectedIncident.liveTelemetry.windSpeed !== undefined ? `${selectedIncident.liveTelemetry.windSpeed} km/h` : 'N/A'}
                       </span>
                     </div>
                   </div>
 
                   {selectedIncident.liveTelemetry.seismicMagnitude !== undefined && (
-                    <div className="mt-2 p-2 rounded-xl bg-red-950/40 border border-red-500/40 flex items-center justify-between text-xs">
-                      <span className="font-bold text-red-300 flex items-center gap-1.5">
+                    <div className="mt-2 p-2 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-500/40 flex items-center justify-between text-xs">
+                      <span className="font-bold text-red-700 dark:text-red-300 flex items-center gap-1.5">
                         <span>🌋</span> USGS Richter Magnitude:
                       </span>
-                      <span className="font-black text-red-400 text-sm">
+                      <span className="font-black text-red-600 dark:text-red-400 text-sm">
                         M{selectedIncident.liveTelemetry.seismicMagnitude.toFixed(1)}
                       </span>
                     </div>
@@ -1548,29 +1548,29 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               )}
 
               {/* Badges Grid */}
-              <div className="grid grid-cols-2 gap-2 bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
+              <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Severity Rating</span>
-                  <span className="text-xs font-extrabold text-amber-400">{selectedIncident.severity || 'Not available'}</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Severity Rating</span>
+                  <span className="text-xs font-extrabold text-amber-600 dark:text-amber-400">{selectedIncident.severity || 'Not available'}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Incident Status</span>
-                  <span className="text-xs font-extrabold text-emerald-400">{selectedIncident.status || 'Not available'}</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Incident Status</span>
+                  <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400">{selectedIncident.status || 'Not available'}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Reported Date &amp; Time</span>
-                  <span className="text-xs font-bold text-slate-200">{selectedIncident.date || 'Not available'} {selectedIncident.time || ''}</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Reported Date &amp; Time</span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{selectedIncident.date || 'Not available'} {selectedIncident.time || ''}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Telemetry Source</span>
-                  <span className="text-xs font-bold text-slate-300 truncate block">{selectedIncident.source || 'Not available'}</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Telemetry Source</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate block">{selectedIncident.source || 'Not available'}</span>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="bg-slate-950/40 p-3.5 rounded-2xl border border-slate-800/80 space-y-1">
-                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Incident Description</span>
-                <p className="text-slate-300 font-medium leading-relaxed">
+              <div className="bg-slate-50 dark:bg-slate-950/40 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800/80 space-y-1">
+                <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Incident Description</span>
+                <p className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                   {selectedIncident.description || 'Not available'}
                 </p>
               </div>
@@ -1580,16 +1580,16 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-2 border-t border-slate-800 flex items-center gap-2">
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
                 <button
                   onClick={() => {
                     const item = selectedIncident;
                     setSelectedIncident(null);
                     flyToIncidentOnMap(item);
                   }}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl border border-slate-700 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 hover:text-slate-900 dark:text-white font-bold py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <MapPin className="h-4 w-4 text-sky-400" />
+                  <MapPin className="h-4 w-4 text-sky-500 dark:text-sky-400" />
                   <span>View on Map</span>
                 </button>
 
@@ -1601,7 +1601,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                       onNavigateToReroute('Guwahati Hub', locName);
                     }
                   }}
-                  className="flex-1 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold py-2.5 rounded-xl border border-sky-400/40 shadow-lg shadow-sky-900/30 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold py-2.5 rounded-xl border border-sky-400/40 shadow-lg shadow-sky-900/20 dark:shadow-sky-900/30 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Navigation className="h-4 w-4" />
                   <span>Check Safe Route</span>
@@ -1616,20 +1616,20 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
       {/* 📝 USER REPORT INCIDENT MODAL (MOBILE & DESKTOP RESPONSIVE) */}
       {isReportModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[99999] flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl my-auto animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-slate-950/70 dark:bg-slate-950/85 backdrop-blur-md z-[99999] flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl my-auto animate-in fade-in zoom-in-95 duration-200">
             
             {/* Header */}
-            <div className="bg-slate-950 px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+            <div className="bg-slate-50 dark:bg-slate-950 px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="h-5 w-5 text-sky-400" />
-                <h3 className="text-sm font-black text-white tracking-tight">
+                <ShieldAlert className="h-5 w-5 text-sky-500 dark:text-sky-400" />
+                <h3 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
                   Report Disaster Incident (NER Coverage)
                 </h3>
               </div>
               <button
                 onClick={() => setIsReportModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1640,16 +1640,16 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               
               {/* Error Warning */}
               {reportError && (
-                <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 font-bold text-xs flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0" />
+                <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-700 dark:text-rose-300 font-bold text-xs flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-rose-500 dark:text-rose-400 shrink-0" />
                   <span>{reportError}</span>
                 </div>
               )}
 
               {/* Success Notification */}
               {reportSuccess && (
-                <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 font-bold text-xs flex items-center gap-2">
-                  <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+                <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center gap-2">
+                  <Check className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
                   <span>Incident Report Submitted Successfully! Status set to MONITORING (Unverified).</span>
                 </div>
               )}
@@ -1657,13 +1657,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               <div className="grid grid-cols-2 gap-3">
                 {/* Disaster Type */}
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                     Disaster Type *
                   </label>
                   <select
                     value={reportType}
                     onChange={(e) => setReportType(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 cursor-pointer"
                   >
                     <option value="Flood">🌊 Flood</option>
                     <option value="Landslide">⛰️ Landslide</option>
@@ -1677,13 +1677,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
                 {/* Severity */}
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                     Observed Severity *
                   </label>
                   <select
                     value={reportSeverity}
                     onChange={(e) => setReportSeverity(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 cursor-pointer"
                   >
                     <option value="CRITICAL">🔴 CRITICAL</option>
                     <option value="HIGH">🟠 HIGH</option>
@@ -1696,13 +1696,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               <div className="grid grid-cols-2 gap-3">
                 {/* State (8 NER States Only) */}
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                     State (8 NER Only) *
                   </label>
                   <select
                     value={reportState}
                     onChange={(e) => setReportState(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 cursor-pointer"
                   >
                     {NER_STATES.map((st) => (
                       <option key={st} value={st}>{st}</option>
@@ -1712,13 +1712,13 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
                 {/* District (Dynamic Dropdown) */}
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                     District *
                   </label>
                   <select
                     value={reportDistrict}
                     onChange={(e) => setReportDistrict(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 cursor-pointer"
                   >
                     {NER_STATES_DISTRICTS[reportState]?.map((dist) => (
                       <option key={dist} value={dist}>{dist}</option>
@@ -1729,7 +1729,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
 
               {/* Location Landmark */}
               <div>
-                <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                   Location / Highway Landmark *
                 </label>
                 <input
@@ -1738,14 +1738,14 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                   value={reportLocation}
                   onChange={(e) => setReportLocation(e.target.value)}
                   placeholder="e.g. NH-10 Teesta Bridge Mile 14, Gangtok Corridor"
-                  className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
                 />
               </div>
 
               {/* Lat / Lon */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                     Latitude (NER Bbox 21.5-29.8° N) *
                   </label>
                   <input
@@ -1754,11 +1754,11 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                     required
                     value={reportLat}
                     onChange={(e) => setReportLat(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 transition"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 transition"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                     Longitude (NER Bbox 87.5-97.8° E) *
                   </label>
                   <input
@@ -1767,14 +1767,14 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                     required
                     value={reportLon}
                     onChange={(e) => setReportLon(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 transition"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 transition"
                   />
                 </div>
               </div>
 
               {/* Description */}
               <div>
-                <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                   Incident Description &amp; Ground Situation
                 </label>
                 <textarea
@@ -1782,23 +1782,23 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
                   value={reportDescription}
                   onChange={(e) => setReportDescription(e.target.value)}
                   placeholder="Describe road blockage depth, trapped vehicles, water level rise, or emergency assistance needed..."
-                  className="w-full bg-slate-950 border border-slate-700/80 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
                 />
               </div>
 
               {/* Submit Buttons */}
-              <div className="pt-2 border-t border-slate-800 flex items-center justify-end gap-2">
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsReportModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 font-bold text-xs transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={reportSubmitting}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-sky-900/30 transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-sky-900/20 dark:shadow-sky-900/30 transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {reportSubmitting ? (
                     <RefreshCw className="h-4 w-4 animate-spin text-white" />

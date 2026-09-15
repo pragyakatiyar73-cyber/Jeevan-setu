@@ -176,10 +176,10 @@ export default function SmartDisasterMonitoring({
 
     score = Math.min(98, score);
 
-    if (score >= 80) return { level: 'CRITICAL', score, color: 'text-rose-500 bg-rose-500/20 border-rose-500/40' };
-    if (score >= 60) return { level: 'HIGH', score, color: 'text-amber-400 bg-amber-500/20 border-amber-500/40' };
-    if (score >= 40) return { level: 'MODERATE', score, color: 'text-sky-400 bg-sky-500/20 border-sky-500/40' };
-    return { level: 'LOW', score, color: 'text-emerald-400 bg-emerald-500/20 border-emerald-500/40' };
+    if (score >= 80) return { level: 'CRITICAL', score, color: 'text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/80 border-rose-200 dark:border-rose-800' };
+    if (score >= 60) return { level: 'HIGH', score, color: 'text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/80 border-amber-200 dark:border-amber-800' };
+    if (score >= 40) return { level: 'MODERATE', score, color: 'text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/80 border-sky-200 dark:border-sky-800' };
+    return { level: 'LOW', score, color: 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 border-emerald-200 dark:border-emerald-800' };
   };
 
   const currentRisk = calculateOverallRiskLevel();
@@ -720,14 +720,14 @@ export default function SmartDisasterMonitoring({
     <div className="min-h-screen w-full bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-100 p-4 sm:p-6 space-y-6 font-sans transition-colors duration-300">
       
       {/* 1. TOP HEADER & EMERGENCY COMMAND BAR */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:via-rose-950/30 dark:to-slate-900 p-5 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-colors duration-300">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/95 p-5 shadow-xl dark:shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-colors duration-300">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-700 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1.5">
+            <span className="rounded-full bg-rose-50 dark:bg-rose-950/80 px-3 py-1 text-xs font-bold text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex items-center gap-1.5 shadow-sm">
               <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
               🛰️ SMART DISASTER MONITORING CENTER
             </span>
-            <span className="rounded bg-indigo-500/20 px-2.5 py-0.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
+            <span className="rounded-full bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1 text-xs font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-sm">
               MDoNER Operations Command Grid
             </span>
             <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">{t("smartmonitoring.continuousTracking", "Continuous 72-Hour Situation Tracking")}</span>
@@ -738,9 +738,9 @@ export default function SmartDisasterMonitoring({
           </h1>
 
           <div className="mt-1 flex items-center gap-4 text-xs font-mono text-slate-600 dark:text-slate-400 flex-wrap">
-            <span>{t("smartmonitoring.latitude", "Latitude:")} <b className="text-slate-900 dark:text-white font-bold">{monitoredLoc.lat.toFixed(4)}° N</b></span>
-            <span>{t("smartmonitoring.longitude", "Longitude:")} <b className="text-slate-900 dark:text-white font-bold">{monitoredLoc.lon.toFixed(4)}° E</b></span>
-            <span>{t("smartmonitoring.stateLabel", "State:")} <b className="text-slate-800 dark:text-slate-200 font-bold">{monitoredLoc.state || 'NER Sector'}</b></span>
+            <span>{t("smartmonitoring.latitude", "Latitude:")} <b className="text-slate-900 dark:text-slate-100 font-bold">{monitoredLoc.lat.toFixed(4)}° N</b></span>
+            <span>{t("smartmonitoring.longitude", "Longitude:")} <b className="text-slate-900 dark:text-slate-100 font-bold">{monitoredLoc.lon.toFixed(4)}° E</b></span>
+            <span>{t("smartmonitoring.stateLabel", "State:")} <b className="text-slate-900 dark:text-slate-100 font-bold">{monitoredLoc.state || 'NER Sector'}</b></span>
             <span>{t("smartmonitoring.lastSync", "Last Telemetry Sync:")} <b className="text-emerald-600 dark:text-emerald-400 font-bold">{reportTime}</b></span>
           </div>
         </div>
@@ -748,13 +748,13 @@ export default function SmartDisasterMonitoring({
         {/* Header Right Status Badges & Controls */}
         <div className="flex items-center gap-3 flex-wrap">
           {/* Disaster Type Selector */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs">
-            <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.disasterVector", "Disaster Vector")}</label>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-950/90 p-2 text-xs shadow-inner">
+            <label className="text-[10px] uppercase tracking-wider text-slate-600 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.disasterVector", "Disaster Vector")}</label>
             <div className="relative">
               <select
                 value={disasterType}
                 onChange={e => setDisasterType(e.target.value)}
-                className="w-full bg-transparent text-slate-900 dark:text-white font-bold cursor-pointer focus:outline-none pr-6 appearance-none"
+                className="w-full bg-transparent text-slate-900 dark:text-slate-100 font-bold cursor-pointer focus:outline-none pr-6 appearance-none"
               >
                 <option value="Landslide & Cloudburst" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1 font-medium">🌧️ Landslide & Cloudburst</option>
                 <option value="Severe Flash Flood" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1 font-medium">🌊 Severe Flash Flood</option>
@@ -762,31 +762,31 @@ export default function SmartDisasterMonitoring({
                 <option value="Wildfire & Forest Fire" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1 font-medium">🔥 Wildfire & Forest Fire</option>
                 <option value="Earthquake & Liquefaction" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 py-1 font-medium">🌋 Earthquake & Seismic Risk</option>
               </select>
-              <ChevronDown className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+              <ChevronDown className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-400" />
             </div>
           </div>
 
           {/* Disaster Status Selector */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2 text-xs">
-            <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.statusMode", "Status Mode")}</label>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-950/90 p-2 text-xs shadow-inner">
+            <label className="text-[10px] uppercase tracking-wider text-slate-600 dark:text-slate-400 block mb-0.5 font-bold">{t("smartmonitoring.statusMode", "Status Mode")}</label>
             <div className="relative">
               <select
                 value={disasterStatus}
                 onChange={e => setDisasterStatus(e.target.value as any)}
                 className="w-full bg-transparent text-emerald-600 dark:text-emerald-400 font-bold cursor-pointer focus:outline-none pr-6 appearance-none"
               >
-                <option value="ACTIVE" className="bg-white dark:bg-slate-900 text-rose-500 font-bold py-1">🔴 ACTIVE</option>
-                <option value="ESCALATING" className="bg-white dark:bg-slate-900 text-amber-500 font-bold py-1">⚠️ ESCALATING</option>
-                <option value="STABLE" className="bg-white dark:bg-slate-900 text-emerald-500 font-bold py-1">🟢 STABLE</option>
-                <option value="MONITORING" className="bg-white dark:bg-slate-900 text-sky-500 font-bold py-1">🔵 MONITORING</option>
+                <option value="ACTIVE" className="bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 font-bold py-1">🔴 ACTIVE</option>
+                <option value="ESCALATING" className="bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 font-bold py-1">⚠️ ESCALATING</option>
+                <option value="STABLE" className="bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 font-bold py-1">🟢 STABLE</option>
+                <option value="MONITORING" className="bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 font-bold py-1">🔵 MONITORING</option>
               </select>
-              <ChevronDown className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+              <ChevronDown className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-400" />
             </div>
           </div>
 
           {/* Current Risk Badge */}
-          <div className={`rounded-2xl border px-4 py-2.5 shadow-lg flex flex-col items-end ${currentRisk.color}`}>
-            <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">{t("smartmonitoring.currentDisasterRisk", "CURRENT DISASTER RISK")}</span>
+          <div className={`rounded-2xl border px-4 py-2.5 shadow-lg flex flex-col items-end shrink-0 ${currentRisk.color}`}>
+            <span className="text-[10px] font-bold uppercase tracking-wider opacity-90">{t("smartmonitoring.currentDisasterRisk", "CURRENT DISASTER RISK")}</span>
             <div className="text-xl font-black">{currentRisk.level} ({currentRisk.score}%)</div>
           </div>
         </div>
