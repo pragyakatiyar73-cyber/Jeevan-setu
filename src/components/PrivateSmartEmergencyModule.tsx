@@ -131,48 +131,73 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     return 'LOW';
   }, [selectedType, description]);
 
-  // Handle Geolocation (📍 USE MY LOCATION)
-  const handleUseMyLocation = () => {
+  // Handle Geolocation & Instant Emergency Response Connection (📍 USE MY LOCATION)
+  const handleUseMyLocation = async () => {
     setLocationLoading(true);
     setLocationError(null);
 
-    if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by your browser. Please select your location on the map.');
+    const dispatchWithCoords = async (lat: number, lon: number, stateName: string, distName: string) => {
+      setUserLat(lat);
+      setUserLon(lon);
+      setUserState(stateName);
+      setUserDistrict(distName);
+      setLocationMode('GPS');
+
+      // Pan live preview map
+      if (requestMapRef.current) {
+        requestMapRef.current.setView([lat, lon], 13);
+        requestMapRef.current.invalidateSize();
+      }
+
+      // Automatically submit emergency request to instantly connect user to live tracking
+      setSubmitting(true);
+      const res = await createSmartEmergencyRequest({
+        emergencyType: selectedType,
+        requirement: selectedRequirement,
+        description: description || `Live Emergency Request at ${distName}, ${stateName}`,
+        lat,
+        lon,
+        state: stateName,
+        district: distName
+      });
+
+      setSubmitting(false);
       setLocationLoading(false);
+
+      if (res.success && res.trackingSessionId) {
+        setActiveSessionId(res.trackingSessionId);
+        setActiveTab('tracking');
+      } else {
+        setLocationError(res.message || 'Error connecting to emergency response.');
+      }
+    };
+
+    if (!navigator.geolocation) {
+      await dispatchWithCoords(userLat, userLon, userState, userDistrict);
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const { latitude, longitude } = pos.coords;
+        let finalLat = latitude;
+        let finalLon = longitude;
+        let finalState = userState;
+        let finalDist = userDistrict;
+
         if (!isPointInNER(latitude, longitude)) {
-          // Fallback to NER default (Guwahati) if user is outside NER during testing
-          setUserLat(26.1445);
-          setUserLon(91.7362);
-          setUserState('Assam');
-          setUserDistrict('Kamrup Metropolitan');
-          setLocationMode('GPS');
-          setLocationError('Note: Jeevan Setu is restricted to the 8 North Eastern Region states. Defaulted to Guwahati emergency center.');
-        } else {
-          setUserLat(latitude);
-          setUserLon(longitude);
-          setLocationMode('GPS');
+          const baseCoords = NER_STATE_DEFAULT_COORDS[userState] || [26.1445, 91.7362];
+          finalLat = baseCoords[0];
+          finalLon = baseCoords[1];
         }
-        setLocationLoading(false);
+
+        await dispatchWithCoords(finalLat, finalLon, finalState, finalDist);
       },
-      (err) => {
-        let msg = 'Location permission is required to find and track the nearest response vehicle.';
-        if (err.code === err.PERMISSION_DENIED) {
-          msg = 'Location permission denied. Please allow location access or select your location on the map.';
-        } else if (err.code === err.POSITION_UNAVAILABLE) {
-          msg = 'Location position unavailable. Please select your location on the map.';
-        } else if (err.code === err.TIMEOUT) {
-          msg = 'GPS location request timed out. Please try again or click Select Location on Map.';
-        }
-        setLocationError(msg);
-        setLocationLoading(false);
+      async (_err) => {
+        const baseCoords = NER_STATE_DEFAULT_COORDS[userState] || [26.1445, 91.7362];
+        await dispatchWithCoords(baseCoords[0], baseCoords[1], userState, userDistrict);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
     );
   };
 
@@ -819,11 +844,11 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                   <button
                     type="button"
                     onClick={handleUseMyLocation}
-                    disabled={locationLoading}
-                    className="flex-1 min-w-[160px] py-3 px-4 bg-rose-600 hover:bg-rose-500 text-white font-extrabold rounded-xl shadow-lg shadow-rose-950/80 flex items-center justify-center gap-2 active:scale-95 transition"
+                    disabled={locationLoading || submitting}
+                    className="flex-1 min-w-[200px] py-3.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-black rounded-xl shadow-lg shadow-rose-950/80 flex items-center justify-center gap-2 active:scale-95 transition tracking-wide text-xs"
                   >
-                    <Compass className={`w-4 h-4 ${locationLoading ? 'animate-spin' : ''}`} />
-                    📍 USE MY LOCATION
+                    <Compass className={`w-4 h-4 ${locationLoading || submitting ? 'animate-spin' : ''}`} />
+                    {locationLoading || submitting ? '⚡ CONNECTING TO LIVE RESPONSE...' : '📍 USE MY LOCATION & CONNECT LIVE'}
                   </button>
 
                   <button
