@@ -126,6 +126,7 @@ export default function App() {
     if (tab) {
       if (tab === 'sitrep') return 'customdashboard';
       if (tab === 'driver' || tab === 'driver-portal') return 'driver-tracking';
+      if (tab === 'private-tracking' || tab === 'smart-tracking' || tab === 'smart-emergency' || tab === 'smart-emergency-response' || tab === 'live-tracking' || tab === 'emergency-response') return 'private-tracking';
       return tab;
     }
     const hash = window.location.hash.replace('#', '');

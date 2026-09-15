@@ -114,12 +114,11 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   // QR Code Real Phone Modal State
   const [showQrModal, setShowQrModal] = useState<boolean>(false);
   const [qrAppUrl, setQrAppUrl] = useState<string>(() => {
-    return (
-      (import.meta as any).env?.VITE_APP_URL ||
-      process.env.VITE_APP_URL ||
-      process.env.NEXT_PUBLIC_APP_URL ||
-      window.location.origin
-    );
+    const metaNextUrl = (import.meta as any).env?.NEXT_PUBLIC_APP_URL;
+    const metaViteUrl = (import.meta as any).env?.VITE_APP_URL;
+    const procNextUrl = typeof process !== 'undefined' ? process.env?.NEXT_PUBLIC_APP_URL : undefined;
+    const procViteUrl = typeof process !== 'undefined' ? process.env?.VITE_APP_URL : undefined;
+    return metaNextUrl || procNextUrl || metaViteUrl || procViteUrl || window.location.origin;
   });
   const [qrSessionData, setQrSessionData] = useState<{
     sessionId: string;
