@@ -1,6 +1,40 @@
 {
   "requests": [
     {
+      "emergencyRequestId": "JS-EMG-7183",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "",
+      "lat": 26.1579,
+      "lon": 91.7012,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "ARRIVED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-990183",
+      "createdAt": "2026-09-14T16:06:30.183Z",
+      "updatedAt": "2026-09-14T16:08:12.606Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-2820",
+      "emergencyType": "Fire",
+      "requirement": "Medicine",
+      "description": "",
+      "lat": 27.3388,
+      "lon": 88.4746,
+      "state": "Sikkim",
+      "district": "Soreng",
+      "priority": "CRITICAL",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "DRIVER_ACCEPTED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-944766",
+      "createdAt": "2026-09-14T15:49:04.766Z",
+      "updatedAt": "2026-09-14T15:49:13.666Z"
+    },
+    {
       "emergencyRequestId": "JS-EMG-1249",
       "emergencyType": "Police",
       "requirement": "Police/security assistance",
@@ -682,6 +716,20 @@
     }
   ],
   "sessions": [
+    {
+      "sessionId": "SESS-990183",
+      "emergencyRequestId": "JS-EMG-7183",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-14T16:06:30.183Z"
+    },
+    {
+      "sessionId": "SESS-944766",
+      "emergencyRequestId": "JS-EMG-2820",
+      "vehicleId": "JS-FIRE-001",
+      "active": true,
+      "createdAt": "2026-09-14T15:49:04.766Z"
+    },
     {
       "sessionId": "SESS-118218",
       "emergencyRequestId": "JS-EMG-1249",
