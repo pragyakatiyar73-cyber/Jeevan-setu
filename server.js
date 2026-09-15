@@ -2749,26 +2749,49 @@ app.get('/api/smart-tracking/private/:sessionId', (req, res) => {
     etaMinutes = Math.max(1, Math.round((distanceKm / 35) * 60));
   }
 
-  // SECURITY: Returns ONLY the user's emergency & assigned vehicle (1-to-1 isolation)
-  // Check background/stale location status if real mode
-  if (session.status === 'LIVE' && session.lastUpdatedAt) {
-    const elapsedMs = Date.now() - new Date(session.lastUpdatedAt).getTime();
-    if (elapsedMs > 30000 && elapsedMs <= 120000) {
-      session.status = 'STALE';
-    } else if (elapsedMs > 120000) {
-      session.status = 'EXPIRED';
-      session.active = false;
+  // Initialize participants list if not present
+  if (!session.participants) {
+    session.participants = [];
+    if (session.realLocation) {
+      session.participants.push({
+        participantId: 'P-1',
+        role: 'HOST',
+        label: '🔴 Phone A (Host)',
+        color: '#ef4444',
+        status: session.status || 'LIVE',
+        location: session.realLocation,
+        lastUpdatedAt: session.lastUpdatedAt || new Date().toISOString()
+      });
     }
   }
+
+  const nowMs = Date.now();
+  // Evaluate per-participant stale status
+  session.participants.forEach(part => {
+    if (part.status !== 'STOPPED' && part.lastUpdatedAt) {
+      const elapsedMs = nowMs - new Date(part.lastUpdatedAt).getTime();
+      if (elapsedMs > 30000 && elapsedMs <= 120000) {
+        part.status = 'STALE';
+      } else if (elapsedMs > 120000) {
+        part.status = 'EXPIRED';
+      }
+    }
+  });
+
+  // Top-level session status logic
+  const hasLive = session.participants.some(p => p.status === 'LIVE');
+  const hasStale = session.participants.some(p => p.status === 'STALE');
+  session.status = hasLive ? 'LIVE' : hasStale ? 'STALE' : 'STOPPED';
 
   res.json({
     sessionId: session.sessionId,
     token: session.token,
     emergencyRequestId: emergency.emergencyRequestId,
     active: session.active,
-    status: session.status || (session.active ? 'LIVE' : 'STOPPED'),
+    status: session.status,
     mode: session.mode || 'SIMULATION',
     realLocation: session.realLocation || null,
+    participants: session.participants,
     emergency,
     assignedVehicle,
     routeCoordinates: assignedVehicle
@@ -2778,6 +2801,9 @@ app.get('/api/smart-tracking/private/:sessionId', (req, res) => {
         ]
       : [],
     distanceKm,
+    etaMinutes,
+    lastUpdated: session.lastUpdatedAt || new Date().toISOString()
+  });
     etaMinutes,
     lastUpdated: session.lastUpdatedAt || new Date().toISOString()
   });
@@ -2845,9 +2871,9 @@ app.post('/api/smart-tracking/create-qr-session', (req, res) => {
   });
 });
 
-// 1c. POST /api/smart-tracking/update-location - Send Real GPS Telemetry from Phone A
+// 1c. POST /api/smart-tracking/update-location - Send Real GPS Telemetry (Multi-Participant Support)
 app.post('/api/smart-tracking/update-location', (req, res) => {
-  const { sessionId, token, lat, lon, accuracy, speed, heading, timestamp } = req.body || {};
+  const { sessionId, token, participantId, label, lat, lon, accuracy, speed, heading, timestamp } = req.body || {};
 
   if (!sessionId || !token) {
     return res.status(400).json({ status: 'error', error: 'sessionId and token are required.' });
@@ -2862,10 +2888,6 @@ app.post('/api/smart-tracking/update-location', (req, res) => {
     return res.status(401).json({ status: 'error', error: 'Invalid session token authorization.' });
   }
 
-  if (session.status === 'STOPPED') {
-    return res.status(403).json({ status: 'error', error: 'Session has been STOPPED by Phone A. Further updates rejected.' });
-  }
-
   if (session.status === 'EXPIRED') {
     return res.status(403).json({ status: 'error', error: 'Session has EXPIRED. Please start a new session.' });
   }
@@ -2878,8 +2900,7 @@ app.post('/api/smart-tracking/update-location', (req, res) => {
   }
 
   const nowIso = new Date().toISOString();
-
-  session.realLocation = {
+  const locData = {
     lat: numLat,
     lon: numLon,
     accuracy: typeof accuracy === 'number' ? Number(accuracy.toFixed(1)) : 5.0,
@@ -2888,6 +2909,37 @@ app.post('/api/smart-tracking/update-location', (req, res) => {
     timestamp: timestamp || Date.now()
   };
 
+  // Initialize participants array if not present
+  if (!session.participants) {
+    session.participants = [];
+  }
+
+  const partId = participantId || 'P-1';
+  const palette = ['#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'];
+  let part = session.participants.find(p => p.participantId === partId);
+
+  if (!part) {
+    const isHost = session.participants.length === 0;
+    const colorIndex = session.participants.length % palette.length;
+    part = {
+      participantId: partId,
+      role: isHost ? 'HOST' : 'PARTICIPANT',
+      label: label || (isHost ? '🔴 Phone A (Host)' : `🔵 Participant ${session.participants.length + 1}`),
+      color: palette[colorIndex],
+      status: 'LIVE',
+      location: locData,
+      lastUpdatedAt: nowIso
+    };
+    session.participants.push(part);
+  } else {
+    part.location = locData;
+    part.status = 'LIVE';
+    if (label) part.label = label;
+    part.lastUpdatedAt = nowIso;
+  }
+
+  // Update top-level session location and status
+  session.realLocation = locData;
   session.status = 'LIVE';
   session.mode = 'REAL';
   session.active = true;
@@ -2917,13 +2969,15 @@ app.post('/api/smart-tracking/update-location', (req, res) => {
     sessionId: session.sessionId,
     sessionStatus: session.status,
     lastUpdatedAt: session.lastUpdatedAt,
+    participant: part,
+    participants: session.participants,
     realLocation: session.realLocation
   });
 });
 
-// 1d. POST /api/smart-tracking/stop-session - Stop Sharing GPS (Phone A Stop Button)
+// 1d. POST /api/smart-tracking/stop-session - Stop Sharing GPS (Multi-Participant Support)
 app.post('/api/smart-tracking/stop-session', (req, res) => {
-  const { sessionId, token } = req.body || {};
+  const { sessionId, token, participantId } = req.body || {};
 
   const session = smartTrackingSessionsStore.find(s => s.sessionId === sessionId);
   if (!session) {
@@ -2935,8 +2989,31 @@ app.post('/api/smart-tracking/stop-session', (req, res) => {
   }
 
   const nowIso = new Date().toISOString();
-  session.status = 'STOPPED';
-  session.active = false;
+
+  if (session.participants && participantId) {
+    const part = session.participants.find(p => p.participantId === participantId);
+    if (part) {
+      part.status = 'STOPPED';
+      part.lastUpdatedAt = nowIso;
+    }
+
+    const allStopped = session.participants.every(p => p.status === 'STOPPED');
+    if (allStopped) {
+      session.status = 'STOPPED';
+      session.active = false;
+    }
+  } else {
+    // Stop entire session for all
+    if (session.participants) {
+      session.participants.forEach(p => {
+        p.status = 'STOPPED';
+        p.lastUpdatedAt = nowIso;
+      });
+    }
+    session.status = 'STOPPED';
+    session.active = false;
+  }
+
   session.lastUpdatedAt = nowIso;
 
   const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === session.emergencyRequestId);
@@ -2949,8 +3026,8 @@ app.post('/api/smart-tracking/stop-session', (req, res) => {
   res.json({
     status: 'success',
     sessionId: session.sessionId,
-    sessionStatus: 'STOPPED',
-    message: 'GPS live sharing stopped successfully.'
+    sessionStatus: session.status,
+    message: participantId ? `Participant ${participantId} stopped GPS sharing.` : 'GPS live sharing stopped for session.'
   });
 });
 

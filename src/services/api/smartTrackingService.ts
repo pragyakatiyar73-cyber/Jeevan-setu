@@ -64,6 +64,16 @@ export interface RealLocationData {
   timestamp: number;
 }
 
+export interface SessionParticipant {
+  participantId: string;
+  role: 'HOST' | 'PARTICIPANT';
+  label: string;
+  color: string;
+  status: 'LIVE' | 'STALE' | 'STOPPED' | 'EXPIRED';
+  location: RealLocationData | null;
+  lastUpdatedAt: string;
+}
+
 export interface TrackingSessionData {
   sessionId: string;
   token?: string;
@@ -72,6 +82,7 @@ export interface TrackingSessionData {
   status?: 'WAITING_FOR_GPS' | 'LIVE' | 'STALE' | 'STOPPED' | 'EXPIRED';
   mode?: 'REAL' | 'SIMULATION';
   realLocation?: RealLocationData | null;
+  participants?: SessionParticipant[];
   emergency: SmartEmergencyRequest;
   assignedVehicle: ResponseVehicle | null;
   routeCoordinates: Array<[number, number]>;
@@ -337,10 +348,12 @@ export async function createQRLiveTrackingSession(
   }
 }
 
-// 9. Send Real Mobile Phone GPS Telemetry (Phone A -> Backend)
+// 9. Send Real Mobile Phone GPS Telemetry (Multi-Participant Support)
 export async function sendRealGPSUpdate(payload: {
   sessionId: string;
   token: string;
+  participantId?: string;
+  label?: string;
   lat: number;
   lon: number;
   accuracy: number;
@@ -362,16 +375,17 @@ export async function sendRealGPSUpdate(payload: {
   }
 }
 
-// 10. Stop Sharing GPS (Phone A -> Backend)
+// 10. Stop Sharing GPS (Multi-Participant Support)
 export async function stopQRLiveTrackingSession(
   sessionId: string,
-  token: string
+  token: string,
+  participantId?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const res = await fetch(`${API_BASE}/stop-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId, token })
+      body: JSON.stringify({ sessionId, token, participantId })
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || 'Failed to stop tracking session');

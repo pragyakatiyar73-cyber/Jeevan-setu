@@ -22,7 +22,9 @@ import {
   Pause,
   ChevronRight,
   ExternalLink,
-  Info
+  Info,
+  Users,
+  Share2
 } from 'lucide-react';
 import L from 'leaflet';
 import QRCode from 'qrcode';
@@ -33,6 +35,7 @@ import {
   SmartEmergencyRequest,
   ResponseVehicle,
   TrackingSessionData,
+  SessionParticipant,
   createSmartEmergencyRequest,
   createQRLiveTrackingSession,
   getPrivateTrackingSession,
@@ -141,6 +144,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const vehicleMarkerRef = useRef<L.Marker | null>(null);
   const routePolylineRef = useRef<L.Polyline | null>(null);
   const realAccuracyCircleRef = useRef<L.Circle | null>(null);
+  const participantMarkersRef = useRef<Record<string, { marker: L.Marker; circle?: L.Circle }>>({});
 
   const handleOpenQrModal = async () => {
     setShowQrModal(true);
@@ -517,7 +521,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     };
   }, [activeTab, locationMode, selectedType, userLat, userLon]);
 
-  // Leaflet Private Live Tracking Map
+  // Leaflet Private Live Tracking Map (With Multi-Participant Support)
   useEffect(() => {
     if (activeTab !== 'tracking' || !trackingMapContainerRef.current || !trackingData) return;
 
@@ -528,13 +532,18 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
     });
 
-    const { emergency, assignedVehicle } = trackingData;
+    const { emergency, assignedVehicle, participants } = trackingData;
 
     // Reset if map instance container was unmounted
     if (trackingMapRef.current && (trackingMapContainerRef.current as any)?._leaflet_id === undefined) {
       userMarkerRef.current = null;
       vehicleMarkerRef.current = null;
       routePolylineRef.current = null;
+      Object.values(participantMarkersRef.current).forEach(item => {
+        item.marker.remove();
+        item.circle?.remove();
+      });
+      participantMarkersRef.current = {};
       trackingMapRef.current.remove();
       trackingMapRef.current = null;
     }
@@ -572,7 +581,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors | Jeevan Setu Private Live Tracking'
+        attribution: '&copy; OpenStreetMap contributors | Jeevan Setu Multi-Participant Live Tracking'
       }).addTo(map);
 
       trackingMapRef.current = map;
@@ -589,7 +598,92 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       }, delay);
     });
 
-    // 1. User Marker (🔴 YOU - My Emergency Location)
+    const activeBoundsCoords: Array<[number, number]> = [];
+
+    // 1. Multi-Participant Markers rendering
+    if (participants && participants.length > 0) {
+      const activePids = new Set(participants.map(p => p.participantId));
+      Object.keys(participantMarkersRef.current).forEach(pid => {
+        if (!activePids.has(pid)) {
+          participantMarkersRef.current[pid].marker.remove();
+          participantMarkersRef.current[pid].circle?.remove();
+          delete participantMarkersRef.current[pid];
+        }
+      });
+
+      participants.forEach((part, index) => {
+        if (!part.location || part.status === 'STOPPED') {
+          if (participantMarkersRef.current[part.participantId]) {
+            participantMarkersRef.current[part.participantId].marker.remove();
+            participantMarkersRef.current[part.participantId].circle?.remove();
+            delete participantMarkersRef.current[part.participantId];
+          }
+          return;
+        }
+
+        const { lat, lon, accuracy } = part.location;
+        activeBoundsCoords.push([lat, lon]);
+
+        const isHost = part.role === 'HOST';
+        const markerColor = part.color || (isHost ? '#ef4444' : index === 1 ? '#3b82f6' : '#10b981');
+        const badgeEmoji = isHost ? '🔴' : index === 1 ? '🔵' : '🟢';
+
+        const icon = L.divIcon({
+          className: `private-participant-marker-${part.participantId}`,
+          html: `
+            <div class="relative flex items-center justify-center w-10 h-10 rounded-full border-2 border-white shadow-2xl text-white font-black text-xs" style="background-color: ${markerColor}">
+              <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full animate-ping" style="background-color: ${markerColor}"></span>
+              ${badgeEmoji}
+            </div>
+          `,
+          iconSize: [40, 40],
+          iconAnchor: [20, 20]
+        });
+
+        if (!participantMarkersRef.current[part.participantId]) {
+          const marker = L.marker([lat, lon], { icon }).addTo(map);
+          marker.bindPopup(`
+            <div class="p-2 text-xs font-sans">
+              <strong style="color:${markerColor}" class="font-bold text-sm block">${badgeEmoji} ${part.label || part.participantId} (${part.role})</strong>
+              <p class="text-slate-700 font-mono mt-1">Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)}</p>
+              <p class="text-slate-700 font-mono">Accuracy: ±${accuracy}m</p>
+              <p class="text-emerald-600 font-bold uppercase mt-1">● ${part.status}</p>
+            </div>
+          `);
+
+          let circle: L.Circle | undefined;
+          if (accuracy && accuracy > 0) {
+            circle = L.circle([lat, lon], {
+              radius: accuracy,
+              color: markerColor,
+              fillColor: markerColor,
+              fillOpacity: 0.15,
+              weight: 1
+            }).addTo(map);
+          }
+
+          participantMarkersRef.current[part.participantId] = { marker, circle };
+        } else {
+          const entry = participantMarkersRef.current[part.participantId];
+          entry.marker.setLatLng([lat, lon]);
+          entry.marker.setIcon(icon);
+          entry.marker.setPopupContent(`
+            <div class="p-2 text-xs font-sans">
+              <strong style="color:${markerColor}" class="font-bold text-sm block">${badgeEmoji} ${part.label || part.participantId} (${part.role})</strong>
+              <p class="text-slate-700 font-mono mt-1">Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)}</p>
+              <p class="text-slate-700 font-mono">Accuracy: ±${accuracy}m</p>
+              <p class="text-emerald-600 font-bold uppercase mt-1">● ${part.status}</p>
+            </div>
+          `);
+          if (entry.circle) {
+            entry.circle.setLatLng([lat, lon]);
+            if (accuracy) entry.circle.setRadius(accuracy);
+          }
+        }
+      });
+    }
+
+    // 2. Default User Emergency Marker (🔴 Host / Requester Location)
     if (!userMarkerRef.current) {
       const userIcon = L.divIcon({
         className: 'private-user-marker',
@@ -614,8 +708,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     } else {
       userMarkerRef.current.setLatLng([emergency.lat, emergency.lon]);
     }
+    activeBoundsCoords.push([emergency.lat, emergency.lon]);
 
-    // 2. Assigned Vehicle Marker (🚑/🚒/🚓/🚚 Assigned Vehicle)
+    // 3. Assigned Vehicle Marker (🚑/🚒/🚓/🚚 Assigned Vehicle)
     const vehicleEmoji =
       effectiveVehicle.typeCategory === 'Medical'
         ? '🚑'
@@ -651,8 +746,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       vehicleMarkerRef.current.setIcon(vehicleIcon);
       vehicleMarkerRef.current.setLatLng([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
     }
+    activeBoundsCoords.push([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
 
-    // 3. Polyline Route
+    // 4. Polyline Route
     if (routePolylineRef.current) {
       routePolylineRef.current.remove();
     }
@@ -669,18 +765,22 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       opacity: 0.85
     }).addTo(map);
 
-    // Fit bounds to show both user and vehicle
-    const bounds = L.latLngBounds([
-      [emergency.lat, emergency.lon],
-      [effectiveVehicle.currentLat, effectiveVehicle.currentLon]
-    ]);
-    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+    // Fit bounds to show all participants and vehicle
+    if (activeBoundsCoords.length > 0) {
+      const bounds = L.latLngBounds(activeBoundsCoords);
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+    }
 
     return () => {
       if (activeTab !== 'tracking' && trackingMapRef.current) {
         userMarkerRef.current = null;
         vehicleMarkerRef.current = null;
         routePolylineRef.current = null;
+        Object.values(participantMarkersRef.current).forEach(item => {
+          item.marker.remove();
+          item.circle?.remove();
+        });
+        participantMarkersRef.current = {};
         trackingMapRef.current.remove();
         trackingMapRef.current = null;
       }
@@ -1137,6 +1237,78 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                       <span className="text-[10px] text-slate-400 block">Estimated ETA</span>
                       <strong className="text-emerald-400 text-sm">{trackingData.etaMinutes} min</strong>
                     </div>
+                  </div>
+                </div>
+
+                {/* Multi-Participant Live Location Status Section */}
+                <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-emerald-400" />
+                      <h3 className="text-xs font-black uppercase text-white tracking-wide">
+                        Multi-Participant Live GPS Session ({trackingData.participants?.length || 1})
+                      </h3>
+                    </div>
+                    <button
+                      onClick={handleOpenQrModal}
+                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1.5"
+                    >
+                      <Share2 className="w-3.5 h-3.5" />
+                      + Invite Friend (QR)
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    {(trackingData.participants && trackingData.participants.length > 0) ? (
+                      trackingData.participants.map((part, idx) => (
+                        <div key={part.participantId} className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-extrabold text-white flex items-center gap-1.5">
+                              <span>{part.role === 'HOST' ? '🔴' : idx === 1 ? '🔵' : '🟢'}</span>
+                              <span>{part.label || part.participantId}</span>
+                              <span className="text-[10px] text-slate-400 font-mono">({part.role})</span>
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase border ${
+                              part.status === 'LIVE'
+                                ? 'bg-emerald-950 text-emerald-300 border-emerald-800 animate-pulse'
+                                : part.status === 'STALE'
+                                ? 'bg-amber-950 text-amber-300 border-amber-800'
+                                : 'bg-slate-800 text-slate-400 border-slate-700'
+                            }`}>
+                              ● {part.status}
+                            </span>
+                          </div>
+
+                          {part.location ? (
+                            <div className="text-[11px] font-mono text-slate-300 space-y-0.5">
+                              <div>Lat: <span className="text-white font-bold">{part.location.lat.toFixed(5)}</span>, Lon: <span className="text-white font-bold">{part.location.lon.toFixed(5)}</span></div>
+                              <div className="text-slate-400 text-[10px] flex items-center justify-between">
+                                <span>Accuracy: ±{part.location.accuracy}m</span>
+                                <span>{new Date(part.location.timestamp).toLocaleTimeString()}</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-[11px] text-slate-500 italic">Waiting for initial GPS location...</div>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1.5 col-span-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-extrabold text-white flex items-center gap-1.5">
+                            <span>🔴</span>
+                            <span>Requester (Me)</span>
+                            <span className="text-[10px] text-slate-400 font-mono">(HOST)</span>
+                          </span>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-950 text-emerald-300 border border-emerald-800 animate-pulse">
+                            ● LIVE
+                          </span>
+                        </div>
+                        <div className="text-[11px] font-mono text-slate-300">
+                          Lat: <span className="text-white font-bold">{trackingData.emergency.lat.toFixed(5)}</span>, Lon: <span className="text-white font-bold">{trackingData.emergency.lon.toFixed(5)}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
