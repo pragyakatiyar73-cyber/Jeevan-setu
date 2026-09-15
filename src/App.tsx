@@ -709,9 +709,9 @@ export default function App() {
     setCalculatedRoute(res);
   };
 
-  // 🚨 Globally rendered, high-visibility Emergency SOS Floating Banner
+  // 🚨 Globally rendered, high-visibility Emergency SOS Floating Banner (renders on Command Center Dashboard, never on Homepage)
   const renderGlobalSosBanner = () => {
-    if (!activeSosLocation) return null;
+    if (!activeSosLocation || activeModule === 'home') return null;
     return (
       <aside
         aria-label="Active Emergency SOS Alert"
@@ -762,10 +762,12 @@ export default function App() {
   if (activeModule === 'home') {
     return (
       <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
-        {renderGlobalSosBanner()}
         <JeevanSetuHomepage
           onNavigateModule={(mod) => setActiveModule(mod)}
-          onOpenSos={() => setIsSosModalOpen(true)}
+          onOpenSos={() => {
+            setActiveModule('customdashboard');
+            setIsSosModalOpen(true);
+          }}
           onOpenDashboard={() => setActiveModule('customdashboard')}
         />
 
@@ -779,7 +781,7 @@ export default function App() {
             }
             setActiveSosLocation(locationData);
             setIsSosModalOpen(false);
-            setActiveModule('incidents');
+            setActiveModule('customdashboard');
           }}
         />
       </div>
@@ -1109,7 +1111,10 @@ export default function App() {
           <div className="h-full overflow-y-auto">
             <JeevanSetuHomepage
               onNavigateModule={(mod) => setActiveModule(mod)}
-              onOpenSos={() => setIsSosModalOpen(true)}
+              onOpenSos={() => {
+                setActiveModule('customdashboard');
+                setIsSosModalOpen(true);
+              }}
               onOpenAiChatbot={() => setIsAiAgentOpen(true)}
             />
           </div>
@@ -1730,7 +1735,7 @@ export default function App() {
             }
             setActiveSosLocation(locationData);
             setIsSosModalOpen(false);
-            setActiveModule('incidents');
+            setActiveModule('customdashboard');
           }}
         />
 
