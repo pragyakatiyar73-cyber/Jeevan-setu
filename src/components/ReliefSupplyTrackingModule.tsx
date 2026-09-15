@@ -2664,9 +2664,11 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             {/* Real-Time Tunnel Health Indicator Bar */}
             <div className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs">
               <div className="flex items-center gap-2">
-                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isTunnelHealthy ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500 animate-ping'}`} />
+                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isCurrentHttps || isTunnelHealthy ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500 animate-ping'}`} />
                 <span className="font-bold text-[11px] text-slate-800 dark:text-slate-200">
-                  {isTunnelHealthy
+                  {isCurrentHttps && !window.location.hostname.includes('pinggy') && !window.location.hostname.includes('trycloudflare')
+                    ? 'Permanent Cloud Deployment Active (24/7 Real-Time GPS Ready)'
+                    : isTunnelHealthy
                     ? 'HTTPS Tunnel Verified & Live (Phone GPS Ready)'
                     : tunnelStatus === 'connecting'
                     ? 'Auto-Recovering Fresh HTTPS Tunnel...'

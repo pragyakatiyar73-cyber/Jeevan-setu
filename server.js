@@ -3287,9 +3287,25 @@ app.post('/api/smart-tracking/simulate-step', (req, res) => {
   });
 });
 
+// Serve compiled React frontend in production (dist directory)
+const distPath = path.join(process.cwd(), 'dist');
+if (fs.existsSync(distPath)) {
+  console.log(`📦 Serving compiled production frontend from ${distPath}`);
+  app.use(express.static(distPath));
+
+  // Wildcard SPA route to index.html for client-side navigation (Express 5 compatible)
+  app.use((req, res) => {
+    // Only handle non-API routes
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/citizen') && !req.path.startsWith('/analyze')) {
+      return res.sendFile(path.join(distPath, 'index.html'));
+    }
+    res.status(404).json({ error: 'Endpoint not found' });
+  });
+}
+
 const serverPort = process.env.PORT || 5001;
 app.listen(serverPort, () => {
-  console.log(`🚀 Jeevan Setu Backend Server running on http://localhost:${serverPort}`);
+  console.log(`🚀 Jeevan Setu Server running on port ${serverPort}`);
 });
 
 
