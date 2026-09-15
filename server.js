@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import os from 'os';
+import path from 'path';
 import { MongoClient } from 'mongodb';
 
 dotenv.config();
@@ -2114,7 +2115,7 @@ app.post('/api/relief/supplies/request', async (req, res) => {
   });
 });
 
-// GET /api/server-info - Returns the server's LAN IP for phone QR code generation
+// GET /api/server-info - Returns the server's LAN IP and live public tunnel info for phone QR code generation
 app.get('/api/server-info', (req, res) => {
   const port = process.env.PORT || 5001;
   const frontendPort = 3000;
@@ -2132,11 +2133,26 @@ app.get('/api/server-info', (req, res) => {
     if (lanIp) break;
   }
 
+  // Read active tunnel state from tunnel-supervisor
+  let tunnelState = {};
+  const statePath = path.join(process.cwd(), 'tunnel_state.json');
+  if (fs.existsSync(statePath)) {
+    try {
+      tunnelState = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+    } catch (e) {}
+  }
+
   res.json({
     lanIp: lanIp || '127.0.0.1',
     lanUrl: lanIp ? `http://${lanIp}:${frontendPort}` : null,
     backendPort: port,
-    frontendPort
+    frontendPort,
+    publicUrl: tunnelState.url || null,
+    publicDriverUrl: tunnelState.driverUrl || null,
+    isTunnelHealthy: Boolean(tunnelState.healthy),
+    tunnelStatus: tunnelState.status || (tunnelState.url ? 'active' : 'idle'),
+    tunnelLastChecked: tunnelState.lastChecked || null,
+    tunnelUptimeSeconds: tunnelState.uptimeSeconds || 0
   });
 });
 
