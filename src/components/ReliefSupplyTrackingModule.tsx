@@ -478,106 +478,103 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
 
       const vehicleMarker = L.marker([vLat, vLon], { icon: customVehicleIcon }).addTo(map);
 
-      // 2. Source Depot Marker — styled headquarters icon
-      const depotIcon = L.divIcon({
-        className: 'custom-depot-marker',
-        html: `
-          <div style="position:relative;width:36px;height:36px">
-            <div style="width:36px;height:36px;background:linear-gradient(135deg,#1e1b4b,#312e81);border:2px solid #818cf8;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(99,102,241,0.5)">
-              <span style="font-size:16px">🏢</span>
+      bounds.extend([vLat, vLon]);
+
+      // 2. Dispatched Route & Destination Marker — ONLY rendered if an active route exists!
+      // (Never drawn from the start, and removed completely when cleared/reset)
+      const isSimulatingThis = isSimulatingConvoy && v.vehicleId === 'RT-101';
+      const hasDispatchedRoute = Boolean(v.dispatchedRoute);
+      const hasActiveRoute = hasDispatchedRoute || isSimulatingThis;
+
+      if (hasActiveRoute) {
+        let routeWaypoints: [number, number][] = [];
+        let targetDestName = v.destination || 'Relief Destination';
+        let targetDestLat = dLat;
+        let targetDestLon = dLon;
+
+        if (hasDispatchedRoute && v.dispatchedRoute) {
+          targetDestName = v.dispatchedRoute.destination || targetDestName;
+          targetDestLat = Number(v.dispatchedRoute.destLat) || dLat;
+          targetDestLon = Number(v.dispatchedRoute.destLon) || dLon;
+          if (v.dispatchedRoute.routePolyline && v.dispatchedRoute.routePolyline.length >= 2) {
+            routeWaypoints = generateRealisticRoute(v.dispatchedRoute.routePolyline, 0.08);
+          } else {
+            routeWaypoints = generateRealisticRoute([[vLat, vLon], [targetDestLat, targetDestLon]], 0.08);
+          }
+        } else if (isSimulatingThis) {
+          const destPt = SIMULATION_ROUTE[SIMULATION_ROUTE.length - 1];
+          targetDestName = destPt.locationName;
+          targetDestLat = destPt.lat;
+          targetDestLon = destPt.lon;
+          const rawPts: [number, number][] = SIMULATION_ROUTE.map(r => [r.lat, r.lon]);
+          routeWaypoints = generateRealisticRoute(rawPts, 0.08);
+        }
+
+        // Destination Marker — animated flag pin
+        const destIcon = L.divIcon({
+          className: 'custom-dest-marker',
+          html: `
+            <div style="position:relative;width:36px;height:44px">
+              <div style="width:36px;height:36px;background:linear-gradient(135deg,#4c0519,#881337);border:2px solid #fb7185;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px rgba(251,113,133,0.6)">
+                <span style="font-size:17px">🏁</span>
+              </div>
+              <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:3px;height:10px;background:linear-gradient(to bottom,#fb7185,transparent)"></div>
             </div>
-            <div style="position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:#818cf8;border-radius:50%;box-shadow:0 0 6px rgba(129,140,248,0.8)"></div>
-          </div>
-        `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 36]
-      });
-      const depotMarker = L.marker([sLat, sLon], { icon: depotIcon }).addTo(map);
-      depotMarker.bindPopup(`<div style="padding:10px;font-family:sans-serif;min-width:180px"><div style="font-weight:800;font-size:13px;color:#818cf8;margin-bottom:4px">🏢 ${v.sourceDepot || 'Regional Relief Depot'}</div><div style="font-size:11px;color:#94a3b8">Supply Origin Point</div></div>`);
-      markersRef.current.push(depotMarker);
+          `,
+          iconSize: [36, 44],
+          iconAnchor: [18, 44]
+        });
+        const destMarker = L.marker([targetDestLat, targetDestLon], { icon: destIcon }).addTo(map);
+        destMarker.bindPopup(`<div style="padding:10px;font-family:sans-serif;min-width:180px"><div style="font-weight:800;font-size:13px;color:#fb7185;margin-bottom:4px">🏁 ${targetDestName}</div><div style="font-size:11px;color:#94a3b8">Active Dispatched Destination</div></div>`);
+        markersRef.current.push(destMarker);
+        bounds.extend([targetDestLat, targetDestLon]);
 
-      // 3. Destination Marker — animated flag pin
-      const destIcon = L.divIcon({
-        className: 'custom-dest-marker',
-        html: `
-          <div style="position:relative;width:36px;height:44px">
-            <div style="width:36px;height:36px;background:linear-gradient(135deg,#4c0519,#881337);border:2px solid #fb7185;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px rgba(251,113,133,0.6)">
-              <span style="font-size:17px">🏁</span>
-            </div>
-            <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:3px;height:10px;background:linear-gradient(to bottom,#fb7185,transparent)"></div>
-          </div>
-        `,
-        iconSize: [36, 44],
-        iconAnchor: [18, 44]
-      });
-      const destMarker = L.marker([dLat, dLon], { icon: destIcon }).addTo(map);
-      destMarker.bindPopup(`<div style="padding:10px;font-family:sans-serif;min-width:180px"><div style="font-weight:800;font-size:13px;color:#fb7185;margin-bottom:4px">🏁 ${v.destination}</div><div style="font-size:11px;color:#94a3b8">Relief Destination</div></div>`);
-      markersRef.current.push(destMarker);
+        // Multi-layer curved route line: shadow → glow → core → animated dash
+        if (routeWaypoints.length >= 2) {
+          routeWaypoints.forEach(pt => bounds.extend(pt));
 
-      // 4. Beautiful multi-layer CURVED route line: shadow → glow → core → animated dash
-      const routeColor = isConnected ? '#10b981' : isStale ? '#f59e0b' : '#38bdf8';
-      const routeGlow  = isConnected ? '#34d399' : isStale ? '#fcd34d' : '#7dd3fc';
-      const routeShadow= isConnected ? '#052e16' : isStale ? '#451a03' : '#082f49';
+          const routeColor  = isConnected ? '#10b981' : isStale ? '#f59e0b' : '#38bdf8';
+          const routeGlow   = isConnected ? '#34d399' : isStale ? '#fcd34d' : '#7dd3fc';
+          const routeShadow = isConnected ? '#052e16' : isStale ? '#451a03' : '#082f49';
 
-      // Generate realistic curved path through depot → vehicle → destination
-      const fullCurvedPath = generateRealisticRoute(
-        [[sLat, sLon], [vLat, vLon], [dLat, dLon]],
-        0.08  // arc factor: ~8% perpendicular bow per segment
-      );
+          const shadowLine = L.polyline(routeWaypoints, {
+            color: routeShadow,
+            weight: 14,
+            opacity: 0.55,
+            lineCap: 'round',
+            lineJoin: 'round'
+          }).addTo(map);
+          routeLinesRef.current.push(shadowLine);
 
-      // Layer 1: wide dark shadow
-      const shadowLine = L.polyline(fullCurvedPath, {
-        color: routeShadow,
-        weight: 14,
-        opacity: 0.55,
-        lineCap: 'round',
-        lineJoin: 'round'
-      }).addTo(map);
-      routeLinesRef.current.push(shadowLine);
+          const glowLine = L.polyline(routeWaypoints, {
+            color: routeGlow,
+            weight: 9,
+            opacity: 0.3,
+            lineCap: 'round',
+            lineJoin: 'round'
+          }).addTo(map);
+          routeLinesRef.current.push(glowLine);
 
-      // Layer 2: wide glow
-      const glowLine = L.polyline(fullCurvedPath, {
-        color: routeGlow,
-        weight: 9,
-        opacity: 0.3,
-        lineCap: 'round',
-        lineJoin: 'round'
-      }).addTo(map);
-      routeLinesRef.current.push(glowLine);
+          const coreLine = L.polyline(routeWaypoints, {
+            color: routeColor,
+            weight: 4,
+            opacity: 1.0,
+            lineCap: 'round',
+            lineJoin: 'round'
+          }).addTo(map);
+          routeLinesRef.current.push(coreLine);
 
-      // Layer 3: solid bright core
-      const coreLine = L.polyline(fullCurvedPath, {
-        color: routeColor,
-        weight: 4,
-        opacity: 1.0,
-        lineCap: 'round',
-        lineJoin: 'round'
-      }).addTo(map);
-      routeLinesRef.current.push(coreLine);
-
-      // Layer 4: white animated dash overlay
-      const dashLine = L.polyline(fullCurvedPath, {
-        color: '#ffffff',
-        weight: 2,
-        opacity: 0.6,
-        dashArray: '4, 16',
-        dashOffset: '0',
-        lineCap: 'round',
-        lineJoin: 'round'
-      }).addTo(map);
-      routeLinesRef.current.push(dashLine);
-
-      // Progress segment: depot → current vehicle position (completed portion — also curved)
-      if (isConnected) {
-        const progressPath = generateRealisticRoute([[sLat, sLon], [vLat, vLon]], 0.08);
-        const progressLine = L.polyline(progressPath, {
-          color: '#ffffff',
-          weight: 3,
-          opacity: 0.85,
-          lineCap: 'round',
-          lineJoin: 'round'
-        }).addTo(map);
-        routeLinesRef.current.push(progressLine);
+          const dashLine = L.polyline(routeWaypoints, {
+            color: '#ffffff',
+            weight: 2,
+            opacity: 0.6,
+            dashArray: '4, 16',
+            dashOffset: '0',
+            lineCap: 'round',
+            lineJoin: 'round'
+          }).addTo(map);
+          routeLinesRef.current.push(dashLine);
+        }
       }
 
       const popupContent = `
@@ -603,16 +600,12 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
       vehicleMarker.bindPopup(popupContent);
       vehicleMarker.on('click', () => setSelectedVehicle(v));
       markersRef.current.push(vehicleMarker);
-
-      bounds.extend([sLat, sLon]);
-      bounds.extend([vLat, vLon]);
-      bounds.extend([dLat, dLon]);
     });
 
     if (vehicles.length > 0 && bounds.isValid()) {
       map.fitBounds(bounds, { padding: [40, 40], maxZoom: 10 });
     }
-  }, [vehicles, activeTab]);
+  }, [vehicles, activeTab, isSimulatingConvoy, convoyStep]);
 
   // Driver Navigation Map Initialization
   useEffect(() => {
@@ -1072,11 +1065,24 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
     if (convoyTimerRef.current) clearInterval(convoyTimerRef.current);
     setIsSimulatingConvoy(false);
     setConvoyStep(0);
+
+    // Immediately remove all route polylines and destination markers from map
+    routeLinesRef.current.forEach(l => l.remove());
+    routeLinesRef.current = [];
+    setDispatchedRouteReceived(null);
+    setDispatchSuccess(null);
+
+    // Clear route on backend
+    try {
+      await clearVehicleRoute('RT-101');
+    } catch (e) {}
+
     const origin = SIMULATION_ROUTE[0];
     setVehicles(prev => prev.map(v => {
       if (v.vehicleId === 'RT-101') {
+        const { dispatchedRoute, ...rest } = v as any;
         return {
-          ...v,
+          ...rest,
           lat: origin.lat,
           lon: origin.lon,
           currentLatitude: origin.lat,
@@ -1179,12 +1185,23 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
     if (!targetVeh) return;
 
     setIsClearingRoute(true);
+    // Immediately remove all route polylines and destination markers from map
+    routeLinesRef.current.forEach(l => l.remove());
+    routeLinesRef.current = [];
+
     const ok = await clearVehicleRoute(targetVeh.vehicleId);
     setIsClearingRoute(false);
     if (ok) {
       setDispatchedRouteReceived(null);
-      setDispatchSuccess(`Route cleared for ${targetVeh.vehicleId}. Phone returned to clean standby.`);
+      setDispatchSuccess(`Route cleared for ${targetVeh.vehicleId}. Returned to clean standby.`);
       setTimeout(() => setDispatchSuccess(null), 4000);
+      setVehicles(prev => prev.map(v => {
+        if (v.vehicleId === targetVeh.vehicleId) {
+          const { dispatchedRoute, ...rest } = v as any;
+          return rest;
+        }
+        return v;
+      }));
       fetchReliefVehicles().then(setVehicles);
     }
   };
