@@ -271,6 +271,36 @@ export default function App() {
     triageLevel?: string;
   } | null>(null);
 
+  // Track dismissed SOS alert IDs so clicking ✕ permanently dismisses the alert
+  const dismissedSosIdsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('jeevan_dismissed_sos_ids');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((id: string) => dismissedSosIdsRef.current.add(id));
+        }
+      }
+    } catch (e) {}
+  }, []);
+
+  const handleDismissSosBanner = (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (activeSosLocation?.sosId) {
+      dismissedSosIdsRef.current.add(activeSosLocation.sosId);
+      try {
+        const arr = Array.from(dismissedSosIdsRef.current);
+        localStorage.setItem('jeevan_dismissed_sos_ids', JSON.stringify(arr));
+      } catch (err) {}
+    }
+    setActiveSosLocation(null);
+  };
+
   // Real-time synchronization of SOS alerts from central DB across all devices
   useEffect(() => {
     const syncSosAlerts = async () => {
@@ -280,6 +310,20 @@ export default function App() {
           const data = await res.json();
           if (data?.alerts && data.alerts.length > 0) {
             const latest = data.alerts[0];
+            if (!latest || !latest.sosId) return;
+
+            // Do not display if user has dismissed this alert
+            if (dismissedSosIdsRef.current.has(latest.sosId)) {
+              return;
+            }
+
+            // Freshness check: only show if created within the last 15 minutes
+            const alertTime = latest.timestamp ? new Date(latest.timestamp).getTime() : 0;
+            const isRecent = alertTime > 0 ? (Date.now() - alertTime < 15 * 60 * 1000) : false;
+            if (!isRecent) {
+              return;
+            }
+
             setActiveSosLocation(prev => {
               if (!prev || prev.sosId !== latest.sosId) {
                 return {
@@ -704,7 +748,7 @@ export default function App() {
           </button>
           <button
             type="button"
-            onClick={() => setActiveSosLocation(null)}
+            onClick={handleDismissSosBanner}
             className="h-8 w-8 rounded-xl bg-black/20 hover:bg-black/40 text-white flex items-center justify-center text-sm font-bold transition cursor-pointer"
             title="Dismiss Alert Banner"
           >
@@ -730,6 +774,9 @@ export default function App() {
           isOpen={isSosModalOpen}
           onClose={() => setIsSosModalOpen(false)}
           onTransmitSOSLocation={(locationData) => {
+            if (locationData.sosId) {
+              dismissedSosIdsRef.current.delete(locationData.sosId);
+            }
             setActiveSosLocation(locationData);
             setIsSosModalOpen(false);
             setActiveModule('incidents');
@@ -1678,6 +1725,9 @@ export default function App() {
           isOpen={isSosModalOpen}
           onClose={() => setIsSosModalOpen(false)}
           onTransmitSOSLocation={(locationData) => {
+            if (locationData.sosId) {
+              dismissedSosIdsRef.current.delete(locationData.sosId);
+            }
             setActiveSosLocation(locationData);
             setIsSosModalOpen(false);
             setActiveModule('incidents');
