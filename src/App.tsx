@@ -992,6 +992,7 @@ export default function App() {
             setIsSosModalOpen(true);
           }}
           onOpenDashboard={() => setActiveModule('customdashboard')}
+          onOpenAiChatbot={() => setIsAiAgentOpen(true)}
           onOpenVideoGuide={() => setIsVideoGuideOpen(true)}
         />
 
@@ -1007,6 +1008,24 @@ export default function App() {
             setIsSosModalOpen(false);
             setActiveModule('customdashboard');
           }}
+        />
+
+        {/* 🤖 Universal AI Agent with Deep Telemetry & Diagnostics */}
+        <AIChatbotWidget
+          isOpenControlled={isAiAgentOpen}
+          onOpenControlled={() => setIsAiAgentOpen(true)}
+          onCloseControlled={() => setIsAiAgentOpen(false)}
+          onNavigateModule={(mod) => setActiveModule(mod as any)}
+          onOpenSos={() => setIsSosModalOpen(true)}
+          activeModule={activeModule}
+        />
+
+        {/* 🎥 10-Minute Official Citizen Video Walkthrough Modal */}
+        <CitizenVideoWalkthroughModal
+          isOpen={isVideoGuideOpen}
+          onClose={() => setIsVideoGuideOpen(false)}
+          onNavigateModule={(mod) => setActiveModule(mod as any)}
+          onTriggerSOS={() => setIsSosModalOpen(true)}
         />
       </div>
     );
