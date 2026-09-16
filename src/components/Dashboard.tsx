@@ -341,34 +341,6 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
   return (
     <div className="h-full overflow-y-auto overflow-x-hidden p-3 sm:p-5 lg:p-6 space-y-5 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 min-w-0 max-w-full">
       
-      {/* 🎛️ PROMINENT MOBILE FEATURE SWITCHER BANNER */}
-      <div className="w-full p-3.5 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white shadow-xl flex items-center justify-between gap-3 border border-sky-400/40">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center font-bold text-xl shrink-0 shadow-inner">
-            🎛️
-          </div>
-          <div>
-            <h3 className="text-xs sm:text-sm font-black leading-tight">
-              {language === 'hi' ? 'दूसरा फीचर खोलना चाहते हैं?' : 'Want to Switch to Another Feature?'}
-            </h3>
-            <p className="text-[10px] sm:text-xs text-sky-100 font-semibold mt-0.5">
-              {language === 'hi' ? 'सभी 18 फीचर्स की लिस्ट देखें' : 'Select from 18 Live Intelligence Modules'}
-            </p>
-          </div>
-        </div>
-
-        <button
-          onClick={() => {
-            if (onNavigateModule) onNavigateModule('launcher');
-            const event = new CustomEvent('openMobileMenu');
-            window.dispatchEvent(event);
-          }}
-          className="px-4 py-2 rounded-xl bg-white text-slate-900 font-black text-xs shadow-md hover:bg-sky-50 active:scale-95 transition cursor-pointer shrink-0 border border-white/50"
-        >
-          {language === 'hi' ? '18 फीचर्स देखें ➔' : 'View 18 Features ➔'}
-        </button>
-      </div>
-
       {/* 🔴 MODERN EXECUTIVE CRISIS COMMAND HERO BANNER */}
       <div className="relative rounded-3xl p-6 sm:p-7 overflow-hidden border border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-[#0c142b] dark:via-[#090e1d] dark:to-[#060a15] shadow-xl dark:shadow-2xl transition-all">
         {/* Ambient Glow Orbs */}
