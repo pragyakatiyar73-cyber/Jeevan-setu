@@ -245,6 +245,17 @@ export default function App() {
     (document.body.style as any).zoom = "100%";
   }, []);
 
+  // Listen for openVideoGuide custom event from anywhere in the app
+  useEffect(() => {
+    const handleOpenVideoGuide = () => {
+      setIsVideoGuideOpen(true);
+    };
+    window.addEventListener('openVideoGuide', handleOpenVideoGuide);
+    return () => {
+      window.removeEventListener('openVideoGuide', handleOpenVideoGuide);
+    };
+  }, []);
+
   const [sharedMonitoringLoc, setSharedMonitoringLoc] = useState<any>(null);
   const [selectedLayer, setSelectedLayer] = useState<string>('osm');
   const [mapFocusedTarget, setMapFocusedTarget] = useState<{ coord: [number, number]; zoom: number } | null>(null);
@@ -981,6 +992,7 @@ export default function App() {
             setIsSosModalOpen(true);
           }}
           onOpenDashboard={() => setActiveModule('customdashboard')}
+          onOpenVideoGuide={() => setIsVideoGuideOpen(true)}
         />
 
         {/* Emergency SOS Modal */}
@@ -1380,6 +1392,7 @@ export default function App() {
                 setIsSosModalOpen(true);
               }}
               onOpenAiChatbot={() => setIsAiAgentOpen(true)}
+              onOpenVideoGuide={() => setIsVideoGuideOpen(true)}
             />
           </div>
         )}

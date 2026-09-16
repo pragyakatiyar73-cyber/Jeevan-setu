@@ -67,6 +67,7 @@ interface JeevanSetuHomepageProps {
   onOpenSos: () => void;
   onOpenDashboard?: () => void;
   onOpenAiChatbot?: () => void;
+  onOpenVideoGuide?: () => void;
 }
 
 export interface DisasterMarkerItem {
@@ -830,8 +831,17 @@ function evaluateImageDisasterTriage(photoUrl: string, fileName: string, focusDi
   });
 }
 
-export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpenDashboard, onOpenAiChatbot }: JeevanSetuHomepageProps) {
+export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpenDashboard, onOpenAiChatbot, onOpenVideoGuide }: JeevanSetuHomepageProps) {
   const { t, language, setLanguage } = useTranslation();
+
+  const handleOpenVideoGuide = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (onOpenVideoGuide) {
+      onOpenVideoGuide();
+    }
+    const event = new CustomEvent('openVideoGuide');
+    window.dispatchEvent(event);
+  };
 
   const handleOpenDashboard = () => {
     if (onOpenDashboard) {
@@ -2503,7 +2513,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </div>
 
             {/* 🎥 HERO RIGHT SIDE: 10-MINUTE CITIZEN VIDEO PRESENTATION CARD */}
-            <div className="w-full lg:w-[380px] shrink-0 rounded-3xl p-5 sm:p-6 bg-[#0c142b]/95 backdrop-blur-2xl border-2 border-amber-400/60 shadow-2xl shadow-amber-950/60 space-y-4 relative overflow-hidden group z-30">
+            <div 
+              onClick={handleOpenVideoGuide}
+              className="w-full lg:w-[380px] shrink-0 rounded-3xl p-5 sm:p-6 bg-[#0c142b]/95 backdrop-blur-2xl border-2 border-amber-400/60 shadow-2xl shadow-amber-950/60 space-y-4 relative overflow-hidden group z-30 cursor-pointer hover:border-amber-400 transition"
+            >
               {/* Glow Effects */}
               <div className="absolute -top-12 -right-12 w-44 h-44 bg-amber-500/20 rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition duration-500" />
               <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-rose-500/20 rounded-full blur-3xl pointer-events-none" />
@@ -2557,10 +2570,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {/* Main Play Action Button */}
               <button
                 type="button"
-                onClick={() => {
-                  const event = new CustomEvent('openVideoGuide');
-                  window.dispatchEvent(event);
-                }}
+                onClick={handleOpenVideoGuide}
                 className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-black text-xs sm:text-sm shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 border border-amber-300/50 active:scale-95 transition cursor-pointer"
               >
                 <span className="text-lg">▶️</span>
