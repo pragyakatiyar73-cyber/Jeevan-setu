@@ -24,11 +24,15 @@ import {
   ExternalLink,
   Info,
   Users,
-  Share2
+  Share2,
+  Sun,
+  Moon
 } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import QRCode from 'qrcode';
+import { useTranslation } from '../i18n';
+import { useTheme } from '../theme/ThemeContext';
 import {
   EmergencyType,
   PriorityLevel,
@@ -48,6 +52,7 @@ import {
   updateDriverLocation,
   updateEmergencyStatus,
   simulateVehicleStep,
+  sendRealGPSUpdate,
   calculateHaversineDistance,
   calculateEstimatedETA
 } from '../services/api/smartTrackingService';
@@ -71,6 +76,9 @@ interface Props {
 }
 
 export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, initialSessionId }) => {
+  const { t, language } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
+  const isDarkMode = theme === 'dark';
   const [activeTab, setActiveTab] = useState<'request' | 'tracking' | 'driver' | 'simulation'>('request');
 
   // Emergency Form State
@@ -132,6 +140,10 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const [qrImageSrc, setQrImageSrc] = useState<string>('');
   const [qrLoading, setQrLoading] = useState<boolean>(false);
 
+  // Multi-Friend Addition State
+  const [customFriendName, setCustomFriendName] = useState<string>('');
+  const [addingFriend, setAddingFriend] = useState<boolean>(false);
+
   // Map Refs
   const requestMapContainerRef = useRef<HTMLDivElement>(null);
   const requestMapRef = useRef<L.Map | null>(null);
@@ -144,6 +156,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const userMarkerRef = useRef<L.Marker | null>(null);
   const vehicleMarkerRef = useRef<L.Marker | null>(null);
   const routePolylineRef = useRef<L.Polyline | null>(null);
+  const participantPolylinesRef = useRef<L.Polyline[]>([]);
   const realAccuracyCircleRef = useRef<L.Circle | null>(null);
   const participantMarkersRef = useRef<Record<string, { marker: L.Marker; circle?: L.Circle }>>({});
 
@@ -161,6 +174,47 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     }
   };
 
+  const handleAddSimulatedFriend = async (nameInput?: string) => {
+    if (!activeSessionId || !trackingData) return;
+    setAddingFriend(true);
+
+    const existingParts = trackingData.participants || [];
+    const friendIndex = existingParts.filter(p => p.role === 'PARTICIPANT').length + 1;
+    const friendName = nameInput || customFriendName || (language === 'hi' ? `मित्र ${friendIndex}` : `Friend ${friendIndex}`);
+
+    const palette = ['#3b82f6', '#10b981', '#a855f7', '#f97316', '#06b6d4', '#ec4899'];
+    const color = palette[(friendIndex - 1) % palette.length];
+
+    const baseLat = trackingData.emergency.lat;
+    const baseLon = trackingData.emergency.lon;
+
+    const angle = (friendIndex * 125 * Math.PI) / 180;
+    const dist = 0.003 + (friendIndex * 0.0012);
+    const fLat = Number((baseLat + Math.sin(angle) * dist).toFixed(5));
+    const fLon = Number((baseLon + Math.cos(angle) * dist).toFixed(5));
+
+    const pid = `P-FRIEND-${Date.now().toString().slice(-4)}-${friendIndex}`;
+    const tokenToUse = trackingData.token || qrSessionData?.token || '';
+
+    const res = await sendRealGPSUpdate({
+      sessionId: activeSessionId,
+      token: tokenToUse,
+      participantId: pid,
+      label: friendName,
+      lat: fLat,
+      lon: fLon,
+      accuracy: Number((4 + Math.random() * 4).toFixed(1)),
+      timestamp: Date.now()
+    });
+
+    setAddingFriend(false);
+    setCustomFriendName('');
+
+    if (res.success) {
+      fetchTrackingSession();
+    }
+  };
+
   useEffect(() => {
     if (qrSessionData) {
       const baseUrl = qrAppUrl || window.location.origin;
@@ -168,7 +222,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       QRCode.toDataURL(targetUrl, {
         width: 280,
         margin: 2,
-        color: { dark: '#10b981', light: '#0f172a' }
+        color: { dark: '#000000', light: '#ffffff' }
       })
         .then(url => setQrImageSrc(url))
         .catch(err => console.error('QR rendering error:', err));
@@ -717,32 +771,33 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       vehicleMarkerRef.current = null;
     }
 
-    // 4. Polyline Route Connection between Me (🔴) and Friend (🔵)
-    if (routePolylineRef.current) {
-      routePolylineRef.current.remove();
-      routePolylineRef.current = null;
-    }
+    // 4. Polyline Route Connections between Me (🔴 Host) and ALL Friends (🔵 Friend 1, 🟢 Friend 2, 🟣 Friend 3...)
+    participantPolylinesRef.current.forEach(p => p.remove());
+    participantPolylinesRef.current = [];
 
     const hostPart = participants?.find(p => p.role === 'HOST' || p.participantId === 'P-1') || participants?.[0];
-    const friendPart = participants?.find(p => p.role === 'PARTICIPANT' && p.location && p.status !== 'STOPPED') || participants?.find(p => p.location && p.participantId !== (hostPart?.participantId || 'P-1') && p.status !== 'STOPPED');
-
     const hostLat = hostPart?.location?.lat ?? emergency.lat;
     const hostLon = hostPart?.location?.lon ?? emergency.lon;
 
-    if (friendPart && friendPart.location) {
-      const points: L.LatLngExpression[] = [
-        [hostLat, hostLon],
-        [friendPart.location.lat, friendPart.location.lon]
-      ];
+    if (participants && participants.length > 0) {
+      participants.forEach((part) => {
+        if (part.location && part.status !== 'STOPPED' && part.participantId !== (hostPart?.participantId || 'P-1')) {
+          const points: L.LatLngExpression[] = [
+            [hostLat, hostLon],
+            [part.location.lat, part.location.lon]
+          ];
+          const colorToUse = part.color || '#10b981';
+          const line = L.polyline(points, {
+            color: colorToUse,
+            weight: 3.5,
+            dashArray: '6, 6',
+            opacity: 0.9
+          }).addTo(map);
 
-      routePolylineRef.current = L.polyline(points, {
-        color: '#10b981',
-        weight: 4,
-        dashArray: '8, 8',
-        opacity: 0.95
-      }).addTo(map);
-
-      activeBoundsCoords.push([friendPart.location.lat, friendPart.location.lon]);
+          participantPolylinesRef.current.push(line);
+          activeBoundsCoords.push([part.location.lat, part.location.lon]);
+        }
+      });
     }
 
     // Fit bounds to show all participants and vehicle
@@ -755,7 +810,8 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       if (activeTab !== 'tracking' && trackingMapRef.current) {
         userMarkerRef.current = null;
         vehicleMarkerRef.current = null;
-        routePolylineRef.current = null;
+        participantPolylinesRef.current.forEach(p => p.remove());
+        participantPolylinesRef.current = [];
         Object.values(participantMarkersRef.current).forEach(item => {
           item.marker.remove();
           item.circle?.remove();
@@ -785,52 +841,83 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   }, [simulatingAuto, activeSessionId, trackingData]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-3 md:p-6 pb-24">
+    <div className={`min-h-screen font-sans p-3 md:p-6 pb-24 transition-colors duration-300 ${
+      isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
       {/* Top Header Banner */}
       <div className="max-w-6xl mx-auto mb-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xl backdrop-blur-md">
+        <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 md:p-5 rounded-2xl shadow-xl backdrop-blur-md transition-colors ${
+          isDarkMode ? 'bg-slate-900/90 border border-slate-800' : 'bg-white/90 border border-slate-200'
+        }`}>
           <div className="flex items-center gap-3">
-            <span className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-400">
+            <span className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-500">
               <ShieldAlert className="w-7 h-7 animate-pulse" />
             </span>
             <div>
-              <h1 className="text-xl md:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-                SMART EMERGENCY RESPONSE
-                <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-700/50 uppercase tracking-widest">
-                  PRIVATE 1-TO-1 TRACKING
+              <h1 className={`text-xl md:text-2xl font-black tracking-tight flex items-center gap-2 flex-wrap ${
+                isDarkMode ? 'text-white' : 'text-slate-900'
+              }`}>
+                {language === 'hi' ? 'स्मार्ट आपातकालीन प्रतिक्रिया प्रणाली' : 'SMART EMERGENCY RESPONSE'}
+                <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/40 uppercase tracking-widest">
+                  {language === 'hi' ? 'निजी 1-टू-1 जीपीएस ट्रैकिंग' : 'PRIVATE 1-TO-1 TRACKING'}
                 </span>
               </h1>
-              <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-rose-400" />
-                Automatic Relevant Vehicle Matching & Private Live Tracking across 8 NER States of India
+              <p className={`text-xs mt-0.5 flex items-center gap-1.5 ${
+                isDarkMode ? 'text-slate-400' : 'text-slate-600'
+              }`}>
+                <Shield className="w-3.5 h-3.5 text-rose-500" />
+                {language === 'hi'
+                  ? 'भारत के 8 पूर्वोत्तर राज्यों में स्वचालित संबंधित वाहन आवंटन और लाइव जीपीएस ट्रैकिंग'
+                  : 'Automatic Relevant Vehicle Matching & Private Live Tracking across 8 NER States of India'}
               </p>
             </div>
           </div>
 
-          {onNavigateHome && (
+          <div className="flex items-center gap-2.5 self-start md:self-auto">
+            {/* Theme Toggle Button */}
             <button
-              onClick={onNavigateHome}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 text-xs font-bold transition self-start md:self-auto"
+              type="button"
+              onClick={toggleTheme}
+              className={`px-3.5 py-2 rounded-xl border text-xs font-extrabold flex items-center gap-2 transition cursor-pointer ${
+                isDarkMode
+                  ? 'bg-slate-800 hover:bg-slate-700 text-amber-300 border-slate-700'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 shadow-sm'
+              }`}
+              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              Exit to Homepage
+              {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
+              <span>{isDarkMode ? (language === 'hi' ? 'लाइट मोड ☀️' : 'Light Mode ☀️') : (language === 'hi' ? 'डार्क मोड 🌙' : 'Dark Mode 🌙')}</span>
             </button>
-          )}
+
+            {onNavigateHome && (
+              <button
+                onClick={onNavigateHome}
+                className={`px-4 py-2 rounded-xl border text-xs font-bold transition ${
+                  isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-slate-200 hover:bg-slate-300 text-slate-800 border-slate-300'
+                }`}
+              >
+                {language === 'hi' ? 'होमपेज पर जाएं' : 'Exit to Homepage'}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Main Tabs Navigation */}
       <div className="max-w-6xl mx-auto mb-6">
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-800">
+        <div className={`flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b ${
+          isDarkMode ? 'border-slate-800' : 'border-slate-200'
+        }`}>
           <button
             onClick={() => setActiveTab('request')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
               activeTab === 'request'
                 ? 'bg-rose-600 text-white shadow-lg shadow-rose-950'
-                : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                : (isDarkMode ? 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-sm')
             }`}
           >
             <ShieldAlert className="w-4 h-4 text-rose-300" />
-            🚨 Request Emergency Help
+            {language === 'hi' ? '🚨 आपातकालीन सहायता का अनुरोध करें' : '🚨 Request Emergency Help'}
           </button>
 
           {activeSessionId && (
@@ -839,20 +926,22 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
                 activeTab === 'tracking'
                   ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950'
-                  : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                  : (isDarkMode ? 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-sm')
               }`}
             >
               <Radio className="w-4 h-4 text-emerald-300 animate-pulse" />
-              🔒 My Private Tracking ({activeSessionId})
+              {language === 'hi' ? `🔒 मेरी निजी ट्रैकिंग (${activeSessionId})` : `🔒 My Private Tracking (${activeSessionId})`}
             </button>
           )}
 
           <button
             onClick={handleOpenQrModal}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-emerald-950 text-emerald-300 hover:bg-emerald-900 border border-emerald-800/80 shadow-lg shadow-emerald-950/40"
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap border shadow-sm ${
+              isDarkMode ? 'bg-emerald-950 text-emerald-300 hover:bg-emerald-900 border-emerald-800/80 shadow-emerald-950/40' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border-emerald-300'
+            }`}
           >
-            <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
-            📱 Share Real Mobile GPS (QR Code)
+            <Radio className="w-4 h-4 text-emerald-500 animate-pulse" />
+            {language === 'hi' ? '📱 मोबाइल जीपीएस शेयर करें (QR कोड)' : '📱 Share Real Mobile GPS (QR Code)'}
           </button>
 
           <button
@@ -860,11 +949,11 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
               activeTab === 'driver'
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-950'
-                : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                : (isDarkMode ? 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-sm')
             }`}
           >
-            <Truck className="w-4 h-4 text-indigo-300" />
-            👨‍✈️ Driver & Convoy Portal
+            <Truck className="w-4 h-4 text-indigo-400" />
+            {language === 'hi' ? '👨‍✈️ ड्राइवर एवं काफिला पोर्टल' : '👨‍✈️ Driver & Convoy Portal'}
           </button>
 
           <button
@@ -872,11 +961,11 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
               activeTab === 'simulation'
                 ? 'bg-amber-600 text-white shadow-lg shadow-amber-950'
-                : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                : (isDarkMode ? 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-sm')
             }`}
           >
-            <Play className="w-4 h-4 text-amber-300" />
-            ⚡ Demo / Simulation Mode
+            <Play className="w-4 h-4 text-amber-400" />
+            {language === 'hi' ? '⚡ डेमो / सिमुलेशन मोड' : '⚡ Demo / Simulation Mode'}
           </button>
         </div>
       </div>
@@ -884,25 +973,31 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       {/* TAB 1: EMERGENCY REQUEST FORM */}
       {activeTab === 'request' && (
         <div className="max-w-3xl mx-auto space-y-6">
-          <div className="bg-slate-900 border border-slate-800 p-5 md:p-7 rounded-3xl shadow-2xl space-y-6">
+          <div className={`p-5 md:p-7 rounded-3xl shadow-2xl space-y-6 border transition-colors ${
+            isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+          }`}>
             <div>
-              <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
-                <ShieldAlert className="w-5 h-5 text-rose-400" />
-                Select Emergency Category
+              <h2 className={`text-lg font-extrabold flex items-center gap-2 ${
+                isDarkMode ? 'text-white' : 'text-slate-900'
+              }`}>
+                <ShieldAlert className="w-5 h-5 text-rose-500" />
+                {language === 'hi' ? 'आपातकालीन श्रेणी चुनें' : 'Select Emergency Category'}
               </h2>
-              <p className="text-xs text-slate-400 mt-1">
-                Jeevan Setu automatically dispatches the nearest relevant response vehicle based on emergency type.
+              <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                {language === 'hi'
+                  ? 'जीवन सेतु आपात स्थिति के प्रकार के आधार पर निकटतम संबंधित प्रतिक्रिया वाहन तुरंत आवंटित करता है।'
+                  : 'Jeevan Setu automatically dispatches the nearest relevant response vehicle based on emergency type.'}
               </p>
             </div>
 
             {/* Emergency Type Options Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {[
-                { type: 'Medical' as EmergencyType, label: '🏥 Medical Emergency', vehicle: '🚑 Ambulance', reqs: ['Ambulance', 'Medical help', 'Medicine', 'Trauma Rescue'] },
-                { type: 'Fire' as EmergencyType, label: '🔥 Fire Emergency', vehicle: '🚒 Fire Response Vehicle', reqs: ['Fire assistance', 'Evacuation', 'Rescue'] },
-                { type: 'Police' as EmergencyType, label: '🚓 Police/Security', vehicle: '🚓 Police Patrol Vehicle', reqs: ['Police/security assistance', 'Law Enforcement', 'Emergency Escort'] },
-                { type: 'Relief' as EmergencyType, label: '📦 Relief/Supply', vehicle: '🚚 Relief Convoy Truck', reqs: ['Food', 'Drinking Water', 'Medicine', 'Shelter Kits'] },
-                { type: 'Other' as EmergencyType, label: '⚠️ Other Emergency', vehicle: '🔍 Categorized Dispatch', reqs: ['Rescue/Relief', 'Road Clearance', 'Other'] }
+                { type: 'Medical' as EmergencyType, label: language === 'hi' ? '🏥 चिकित्सा आपातकाल' : '🏥 Medical Emergency', vehicle: language === 'hi' ? '<ctrl42> एम्बुलेंस' : '🚑 Ambulance', reqs: ['Ambulance', 'Medical help', 'Medicine', 'Trauma Rescue'] },
+                { type: 'Fire' as EmergencyType, label: language === 'hi' ? '🔥 अग्नि आपातकाल' : '🔥 Fire Emergency', vehicle: language === 'hi' ? '🚒 अग्निशामक वाहन' : '🚒 Fire Response Vehicle', reqs: ['Fire assistance', 'Evacuation', 'Rescue'] },
+                { type: 'Police' as EmergencyType, label: language === 'hi' ? '🚓 पुलिस/सुरक्षा' : '🚓 Police/Security', vehicle: language === 'hi' ? '🚓 पुलिस गश्ती वाहन' : '🚓 Police Patrol Vehicle', reqs: ['Police/security assistance', 'Law Enforcement', 'Emergency Escort'] },
+                { type: 'Relief' as EmergencyType, label: language === 'hi' ? '📦 राहत/सामग्री' : '📦 Relief/Supply', vehicle: language === 'hi' ? '🚚 राहत सामग्री ट्रक' : '🚚 Relief Convoy Truck', reqs: ['Food', 'Drinking Water', 'Medicine', 'Shelter Kits'] },
+                { type: 'Other' as EmergencyType, label: language === 'hi' ? '⚠️ अन्य आपातकाल' : '⚠️ Other Emergency', vehicle: language === 'hi' ? '🔍 श्रेणीबद्ध वाहन' : '🔍 Categorized Dispatch', reqs: ['Rescue/Relief', 'Road Clearance', 'Other'] }
               ].map(opt => (
                 <button
                   key={opt.type}
@@ -913,12 +1008,14 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                   }}
                   className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between transition ${
                     selectedType === opt.type
-                      ? 'bg-rose-950/80 border-rose-500 ring-2 ring-rose-500/30 text-white shadow-xl'
-                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                      ? 'bg-rose-600/20 border-rose-500 ring-2 ring-rose-500/30 text-rose-700 dark:text-white shadow-xl'
+                      : (isDarkMode ? 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100')
                   }`}
                 >
                   <span className="font-extrabold text-xs md:text-sm block">{opt.label}</span>
-                  <span className="text-[10px] text-emerald-400 font-mono mt-2 block">Assigns: {opt.vehicle}</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono mt-2 block">
+                    {language === 'hi' ? 'आवंटित:' : 'Assigns:'} {opt.vehicle}
+                  </span>
                 </button>
               ))}
             </div>
@@ -927,33 +1024,39 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
             <form onSubmit={handleSubmitRequest} className="space-y-5 text-xs">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-300 font-bold mb-1.5">Specific Requirement</label>
+                  <label className={`block font-bold mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {language === 'hi' ? 'विशिष्ट आवश्यकता' : 'Specific Requirement'}
+                  </label>
                   <select
                     value={selectedRequirement}
                     onChange={e => setSelectedRequirement(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white font-semibold"
+                    className={`w-full rounded-xl px-3.5 py-2.5 font-semibold border ${
+                      isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
                   >
                     {[
-                      'Ambulance',
-                      'Medical help',
-                      'Food',
-                      'Drinking Water',
-                      'Medicine',
-                      'Rescue/Relief',
-                      'Fire assistance',
-                      'Police/security assistance',
-                      'Road Clearance',
-                      'Other'
+                      { val: 'Ambulance', label: language === 'hi' ? 'एम्बुलेंस' : 'Ambulance' },
+                      { val: 'Medical help', label: language === 'hi' ? 'चिकित्सा सहायता' : 'Medical help' },
+                      { val: 'Food', label: language === 'hi' ? 'खाद्य सामग्री' : 'Food' },
+                      { val: 'Drinking Water', label: language === 'hi' ? 'पेयजल' : 'Drinking Water' },
+                      { val: 'Medicine', label: language === 'hi' ? 'दवाइयां' : 'Medicine' },
+                      { val: 'Rescue/Relief', label: language === 'hi' ? 'बचाव एवं राहत' : 'Rescue/Relief' },
+                      { val: 'Fire assistance', label: language === 'hi' ? 'अग्निशमन सहायता' : 'Fire assistance' },
+                      { val: 'Police/security assistance', label: language === 'hi' ? 'पुलिस/सुरक्षा सहायता' : 'Police/security assistance' },
+                      { val: 'Road Clearance', label: language === 'hi' ? 'सड़क की सफाई' : 'Road Clearance' },
+                      { val: 'Other', label: language === 'hi' ? 'अन्य' : 'Other' }
                     ].map(req => (
-                      <option key={req} value={req}>
-                        {req}
+                      <option key={req.val} value={req.val}>
+                        {req.label}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-bold mb-1.5">State (8 NER States Only)</label>
+                  <label className={`block font-bold mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {language === 'hi' ? 'राज्य (केवल 8 पूर्वोत्तर राज्य)' : 'State (8 NER States Only)'}
+                  </label>
                   <select
                     value={userState}
                     onChange={e => {
@@ -966,7 +1069,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                       setUserLat(coords[0]);
                       setUserLon(coords[1]);
                     }}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white font-semibold"
+                    className={`w-full rounded-xl px-3.5 py-2.5 font-semibold border ${
+                      isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
                   >
                     {NER_STATES.map(s => (
                       <option key={s} value={s}>
@@ -978,7 +1083,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
               </div>
 
               <div>
-                <label className="block text-slate-300 font-bold mb-1.5">District Location</label>
+                <label className={`block font-bold mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {language === 'hi' ? 'जिला स्थान' : 'District Location'}
+                </label>
                 <select
                   value={userDistrict}
                   onChange={e => {
@@ -990,7 +1097,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                     setUserLat(Number((baseCoords[0] + distOffset * 0.2).toFixed(4)));
                     setUserLon(Number((baseCoords[1] + distOffset * 0.3).toFixed(4)));
                   }}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white font-semibold"
+                  className={`w-full rounded-xl px-3.5 py-2.5 font-semibold border ${
+                    isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  }`}
                 >
                   {(NER_STATES_DISTRICTS[userState] || []).map(d => (
                     <option key={d} value={d}>
@@ -1001,25 +1110,33 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
               </div>
 
               <div>
-                <label className="block text-slate-300 font-bold mb-1.5">Short Situation Description (Optional)</label>
+                <label className={`block font-bold mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {language === 'hi' ? 'संक्षिप्त स्थिति विवरण (वैकल्पिक)' : 'Short Situation Description (Optional)'}
+                </label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  placeholder="e.g. Flood affected. 3 injured people need medical assistance."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white placeholder-slate-500"
+                  placeholder={language === 'hi' ? 'उदा. बाढ़ प्रभावित। 3 घायल व्यक्तियों को चिकित्सा सहायता की आवश्यकता है।' : 'e.g. Flood affected. 3 injured people need medical assistance.'}
+                  className={`w-full rounded-xl p-3 border ${
+                    isDarkMode ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
+                  }`}
                 ></textarea>
               </div>
 
               {/* LIVE MAP & LOCATION CAPTURE SECTION */}
-              <div className="p-5 bg-slate-950 border border-slate-800 rounded-3xl space-y-4 shadow-xl">
+              <div className={`p-5 rounded-3xl space-y-4 shadow-xl border ${
+                isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-extrabold uppercase text-white flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-rose-400" />
-                    🗺️ Live Emergency Location & Relevant Vehicle Assignment
+                  <span className={`text-xs font-extrabold uppercase flex items-center gap-2 ${
+                    isDarkMode ? 'text-white' : 'text-slate-900'
+                  }`}>
+                    <MapPin className="w-4 h-4 text-rose-500" />
+                    {language === 'hi' ? '🗺️ लाइव आपातकालीन स्थान एवं वाहन आवंटन' : '🗺️ Live Emergency Location & Relevant Vehicle Assignment'}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800/60 font-mono text-[10px] font-bold animate-pulse">
-                    ● LIVE MAP ACTIVE
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 font-mono text-[10px] font-bold animate-pulse">
+                    ● {language === 'hi' ? 'लाइव मानचित्र सक्रिय' : 'LIVE MAP ACTIVE'}
                   </span>
                 </div>
 
@@ -1028,10 +1145,12 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                     type="button"
                     onClick={handleUseMyLocation}
                     disabled={locationLoading || submitting}
-                    className="flex-1 min-w-[200px] py-3.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-black rounded-xl shadow-lg shadow-rose-950/80 flex items-center justify-center gap-2 active:scale-95 transition tracking-wide text-xs"
+                    className="flex-1 min-w-[200px] py-3.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-black rounded-xl shadow-lg shadow-rose-950/80 flex items-center justify-center gap-2 active:scale-95 transition tracking-wide text-xs cursor-pointer"
                   >
                     <Compass className={`w-4 h-4 ${locationLoading || submitting ? 'animate-spin' : ''}`} />
-                    {locationLoading || submitting ? '⚡ CONNECTING TO LIVE RESPONSE...' : '📍 USE MY LOCATION & CONNECT LIVE'}
+                    {locationLoading || submitting
+                      ? (language === 'hi' ? '⚡ लाइव प्रतिक्रिया से कनेक्ट हो रहा है...' : '⚡ CONNECTING TO LIVE RESPONSE...')
+                      : (language === 'hi' ? '📍 मेरा स्थान उपयोग करें और कनेक्ट करें' : '📍 USE MY LOCATION & CONNECT LIVE')}
                   </button>
 
                   <button
@@ -1045,16 +1164,18 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                         requestMapRef.current.invalidateSize();
                       }
                     }}
-                    className="flex-1 min-w-[160px] py-3 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition"
+                    className={`flex-1 min-w-[160px] py-3 px-4 font-extrabold rounded-xl border flex items-center justify-center gap-2 transition cursor-pointer ${
+                      isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm'
+                    }`}
                   >
-                    <MapPin className="w-4 h-4 text-emerald-400" />
-                    🎯 RE-CENTER MAP
+                    <MapPin className="w-4 h-4 text-emerald-500" />
+                    {language === 'hi' ? '🎯 मानचित्र री-सेंटर करें' : '🎯 RE-CENTER MAP'}
                   </button>
                 </div>
 
                 {locationError && (
-                  <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-200 text-xs flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                  <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-700 dark:text-rose-200 text-xs flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
                     <span>{locationError}</span>
                   </div>
                 )}
@@ -1062,52 +1183,66 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 {/* CONTINUOUS LIVE MAP EMBED */}
                 <div className="space-y-2 pt-1">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-amber-400 font-semibold flex items-center gap-1">
-                      👆 Drag red pin 🔴 or click on map to set location:
+                    <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
+                      {language === 'hi'
+                        ? '👆 स्थान सेट करने के लिए लाल पिन 🔴 खींचें या मानचित्र पर क्लिक करें:'
+                        : '👆 Drag red pin 🔴 or click on map to set location:'}
                     </span>
-                    <span className="text-emerald-400 font-mono font-bold">
-                      {selectedType === 'Medical' ? '🚑 Ambulance' : selectedType === 'Fire' ? '🚒 Fire Tender' : selectedType === 'Police' ? '🚓 Police Patrol' : '🚚 Relief Convoy'} Matched
+                    <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">
+                      {language === 'hi'
+                        ? `${selectedType === 'Medical' ? '🚑 एम्बुलेंस' : selectedType === 'Fire' ? '🚒 अग्निशामक वाहन' : selectedType === 'Police' ? '🚓 पुलिस गश्ती' : '🚚 राहत सामग्री ट्रक'} मिल गया`
+                        : `${selectedType === 'Medical' ? '🚑 Ambulance' : selectedType === 'Fire' ? '🚒 Fire Tender' : selectedType === 'Police' ? '🚓 Police Patrol' : '🚚 Relief Convoy'} Matched`}
                     </span>
                   </div>
 
                   <div
                     ref={requestMapContainerRef}
-                    className="w-full rounded-2xl overflow-hidden border border-slate-800 relative shadow-2xl z-0"
+                    className={`w-full rounded-2xl overflow-hidden border relative shadow-2xl z-0 ${
+                      isDarkMode ? 'border-slate-800' : 'border-slate-300'
+                    }`}
                     style={{ height: '300px', width: '100%', minHeight: '300px' }}
                   ></div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-slate-400 bg-slate-900/90 px-3.5 py-2.5 rounded-xl border border-slate-800">
+                  <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono px-3.5 py-2.5 rounded-xl border ${
+                    isDarkMode ? 'bg-slate-900/90 text-slate-400 border-slate-800' : 'bg-white text-slate-600 border-slate-300 shadow-sm'
+                  }`}>
                     <div className="flex items-center gap-3">
-                      <span className="flex items-center gap-1 text-white font-bold">
-                        🔴 My Location
+                      <span className={`flex items-center gap-1 font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                        🔴 {language === 'hi' ? 'मेरा स्थान' : 'My Location'}
                       </span>
-                      <span className="flex items-center gap-1 text-emerald-400 font-bold">
-                        {selectedType === 'Medical' ? '🚑' : selectedType === 'Fire' ? '🚒' : selectedType === 'Police' ? '🚓' : '🚚'} Vehicle Assigned
+                      <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                        {selectedType === 'Medical' ? '🚑' : selectedType === 'Fire' ? '🚒' : selectedType === 'Police' ? '🚓' : '🚚'} {language === 'hi' ? 'वाहन आवंटित' : 'Vehicle Assigned'}
                       </span>
                     </div>
-                    <div className="text-slate-300">
-                      Lat: <strong className="text-white">{userLat.toFixed(4)}</strong>, Lon: <strong className="text-white">{userLon.toFixed(4)}</strong>
+                    <div className={isDarkMode ? 'text-slate-300' : 'text-slate-700'}>
+                      Lat: <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>{userLat.toFixed(4)}</strong>, Lon: <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>{userLon.toFixed(4)}</strong>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Priority Classification Preview */}
-              <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between">
-                <span className="text-slate-400 font-bold">System Priority Classification:</span>
+              <div className={`p-3 rounded-xl border flex items-center justify-between ${
+                isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <span className={`font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                  {language === 'hi' ? 'सिस्टम प्राथमिकता वर्गीकरण:' : 'System Priority Classification:'}
+                </span>
                 <span className={`px-3 py-1 rounded-full text-xs font-black border ${
                   calculatedPriority === 'CRITICAL'
-                    ? 'bg-rose-950 text-rose-300 border-rose-700 animate-pulse'
+                    ? 'bg-rose-500/20 text-rose-600 dark:text-rose-300 border-rose-500 animate-pulse'
                     : calculatedPriority === 'HIGH'
-                    ? 'bg-amber-950 text-amber-300 border-amber-700'
-                    : 'bg-blue-950 text-blue-300 border-blue-700'
+                    ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500'
+                    : 'bg-blue-500/20 text-blue-600 dark:text-blue-300 border-blue-500'
                 }`}>
-                  {calculatedPriority} PRIORITY
+                  {language === 'hi'
+                    ? `${calculatedPriority === 'CRITICAL' ? 'गंभीर' : calculatedPriority === 'HIGH' ? 'उच्च' : 'सामान्य'} प्राथमिकता`
+                    : `${calculatedPriority} PRIORITY`}
                 </span>
               </div>
 
               {submitError && (
-                <div className="p-3 bg-rose-950 border border-rose-800 text-rose-200 rounded-xl">
+                <div className="p-3 bg-rose-500/20 border border-rose-500/40 text-rose-700 dark:text-rose-200 rounded-xl">
                   {submitError}
                 </div>
               )}
@@ -1115,10 +1250,10 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 bg-rose-600 hover:bg-rose-500 text-white font-black text-sm rounded-2xl shadow-xl shadow-rose-950 transition uppercase tracking-wider flex items-center justify-center gap-2"
+                className="w-full py-4 bg-rose-600 hover:bg-rose-500 text-white font-black text-sm rounded-2xl shadow-xl shadow-rose-950 transition uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
               >
                 {submitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldAlert className="w-5 h-5" />}
-                [ SEND EMERGENCY REQUEST ]
+                <span>{language === 'hi' ? '[ आपातकालीन अनुरोध भेजें ]' : '[ SEND EMERGENCY REQUEST ]'}</span>
               </button>
             </form>
           </div>
@@ -1129,45 +1264,59 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       {activeTab === 'tracking' && (
         <div className="max-w-4xl mx-auto space-y-6">
           {trackingLoading && (
-            <div className="p-8 text-center text-slate-400 text-xs flex items-center justify-center gap-2">
-              <RefreshCw className="w-4 h-4 animate-spin text-rose-400" />
-              Connecting to secure private live tracking session...
+            <div className={`p-8 text-center text-xs flex items-center justify-center gap-2 ${
+              isDarkMode ? 'text-slate-400' : 'text-slate-600'
+            }`}>
+              <RefreshCw className="w-4 h-4 animate-spin text-rose-500" />
+              {language === 'hi'
+                ? 'सुरक्षित निजी लाइव ट्रैकिंग सत्र से कनेक्ट हो रहा है...'
+                : 'Connecting to secure private live tracking session...'}
             </div>
           )}
 
           {trackingError && (
-            <div className="p-4 bg-rose-950 border border-rose-800 text-rose-200 rounded-2xl text-xs flex items-center gap-3">
-              <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+            <div className="p-4 bg-rose-500/20 border border-rose-500/40 text-rose-700 dark:text-rose-200 rounded-2xl text-xs flex items-center gap-3">
+              <AlertTriangle className="w-5 h-5 text-rose-500 shrink-0" />
               <span>{trackingError}</span>
             </div>
           )}
 
           {trackingData && (
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl space-y-0">
+            <div className={`border rounded-3xl overflow-hidden shadow-2xl space-y-0 ${
+              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
               {/* Private Map Header */}
-              <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+              <div className={`p-4 border-b flex items-center justify-between ${
+                isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-                  <h2 className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-2">
-                    SMART EMERGENCY RESPONSE
-                    <span className="font-mono text-[10px] text-rose-400 bg-rose-950/80 px-2 py-0.5 rounded border border-rose-800">
+                  <h2 className={`text-xs font-black uppercase tracking-wider flex items-center gap-2 ${
+                    isDarkMode ? 'text-white' : 'text-slate-900'
+                  }`}>
+                    {language === 'hi' ? 'स्मार्ट आपातकालीन प्रतिक्रिया' : 'SMART EMERGENCY RESPONSE'}
+                    <span className="font-mono text-[10px] text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/30">
                       {trackingData.sessionId}
                     </span>
                   </h2>
                 </div>
 
-                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                  <span className="hidden sm:inline">Secured 1-to-1 Session</span>
+                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                  <span className="hidden sm:inline">
+                    {language === 'hi' ? 'सुरक्षित 1-टू-1 सत्र' : 'Secured 1-to-1 Session'}
+                  </span>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(window.location.href);
                       setCopiedLink(true);
                       setTimeout(() => setCopiedLink(false), 2000);
                     }}
-                    className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 flex items-center gap-1"
+                    className={`px-2.5 py-1 rounded-lg border flex items-center gap-1 cursor-pointer transition ${
+                      isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm'
+                    }`}
                   >
-                    {copiedLink ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                    {copiedLink ? 'Copied' : 'Share Link'}
+                    {copiedLink ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                    {copiedLink ? (language === 'hi' ? 'कॉपी हो गया' : 'Copied') : (language === 'hi' ? 'लिंक शेयर करें' : 'Share Link')}
                   </button>
                 </div>
               </div>
@@ -1177,59 +1326,69 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 <div ref={trackingMapContainerRef} style={{ width: '100%', height: '420px', minHeight: '420px' }} className="w-full h-[420px] min-h-[420px] z-0 rounded-2xl"></div>
 
                 {/* Overlay Legend */}
-                <div className="absolute top-3 left-3 z-10 bg-slate-950/90 border border-slate-800 p-2.5 rounded-xl text-[10px] space-y-1.5 backdrop-blur-md shadow-xl">
+                <div className={`absolute top-3 left-3 z-10 border p-2.5 rounded-xl text-[10px] space-y-1.5 backdrop-blur-md shadow-xl ${
+                  isDarkMode ? 'bg-slate-950/90 border-slate-800 text-white' : 'bg-white/90 border-slate-200 text-slate-900'
+                }`}>
                   <div className="flex items-center gap-2">
                     <span className="text-base">🔴</span>
-                    <span className="font-bold text-white">My Location (Me)</span>
+                    <span className="font-bold">{language === 'hi' ? 'मेरा स्थान (मैं)' : 'My Location (Me)'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-base">🔵</span>
-                    <span className="font-bold text-sky-400">Friend Location (Phone B)</span>
+                    <span className="font-bold text-sky-500">{language === 'hi' ? 'मित्र स्थान (फोन B)' : 'Friend Location (Phone B)'}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-4 h-0.5 border-t-2 border-dashed border-emerald-400 inline-block"></span>
-                    <span className="font-bold text-emerald-400">Live Connection (Me ➔ Friend)</span>
+                    <span className="w-4 h-0.5 border-t-2 border-dashed border-emerald-500 inline-block"></span>
+                    <span className="font-bold text-emerald-500">{language === 'hi' ? 'लाइव कनेक्शन (मैं ➔ मित्र)' : 'Live Connection (Me ➔ Friend)'}</span>
                   </div>
                 </div>
               </div>
 
               {/* Live Status & Distance Card */}
-              <div className="p-5 bg-slate-950 border-t border-slate-800 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div className={`p-5 border-t space-y-4 ${
+                isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3 ${
+                  isDarkMode ? 'border-slate-800' : 'border-slate-200'
+                }`}>
                   <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Response Status</span>
-                    <span className="text-sm font-black text-emerald-400 flex items-center gap-2 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      {trackingData.participants && trackingData.participants.length > 1 ? 'MULTI-PERSON LIVE CONNECTED' : 'SESSION_ACTIVE'}
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">
+                      {language === 'hi' ? 'प्रतिक्रिया स्थिति' : 'Response Status'}
+                    </span>
+                    <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      {trackingData.participants && trackingData.participants.length > 1
+                        ? (language === 'hi' ? 'बहु-व्यक्ति लाइव कनेक्टेड' : 'MULTI-PERSON LIVE CONNECTED')
+                        : (language === 'hi' ? 'सत्र सक्रिय' : 'SESSION_ACTIVE')}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs font-mono">
+                  <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
                     {(() => {
                       const hostPart = trackingData.participants?.find(p => p.role === 'HOST' || p.participantId === 'P-1') || trackingData.participants?.[0];
-                      const friendPart = trackingData.participants?.find(p => p.role === 'PARTICIPANT' && p.location && p.status !== 'STOPPED') || trackingData.participants?.find(p => p.location && p.participantId !== (hostPart?.participantId || 'P-1') && p.status !== 'STOPPED');
                       const hostLat = hostPart?.location?.lat ?? trackingData.emergency.lat;
                       const hostLon = hostPart?.location?.lon ?? trackingData.emergency.lon;
+                      const activeFriends = trackingData.participants?.filter(p => p.location && p.status !== 'STOPPED' && p.participantId !== (hostPart?.participantId || 'P-1')) || [];
 
-                      if (friendPart && friendPart.location) {
-                        const dist = calculateHaversineDistance(hostLat, hostLon, friendPart.location.lat, friendPart.location.lon);
-                        return (
-                          <>
-                            <div className="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-                              <span className="text-[10px] text-slate-400 block">Distance to Friend</span>
-                              <strong className="text-white text-sm">{dist} km</strong>
+                      if (activeFriends.length > 0) {
+                        return activeFriends.map((fPart) => {
+                          const dist = calculateHaversineDistance(hostLat, hostLon, fPart.location!.lat, fPart.location!.lon);
+                          return (
+                            <div key={fPart.participantId} className={`px-2.5 py-1 rounded-xl border flex items-center gap-1.5 ${
+                              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-300 shadow-sm'
+                            }`}>
+                              <span style={{ color: fPart.color || '#3b82f6' }} className="font-extrabold text-xs">● {fPart.label || fPart.participantId}</span>
+                              <strong className={`text-xs ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{dist} km</strong>
                             </div>
-                            <div className="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-                              <span className="text-[10px] text-slate-400 block">Friend Status</span>
-                              <strong className="text-emerald-400 text-sm">● {friendPart.status}</strong>
-                            </div>
-                          </>
-                        );
+                          );
+                        });
                       }
                       return (
-                        <div className="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-                          <span className="text-[10px] text-slate-400 block">Status</span>
-                          <strong className="text-amber-400 text-sm">Waiting for Friend via QR</strong>
+                        <div className={`px-3 py-1.5 rounded-xl border ${
+                          isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-300 shadow-sm'
+                        }`}>
+                          <span className="text-[10px] text-slate-500 block">{language === 'hi' ? 'स्थिति' : 'Status'}</span>
+                          <strong className="text-amber-500 text-sm">{language === 'hi' ? 'QR द्वारा मित्र की प्रतीक्षा जारी' : 'Waiting for Friend via QR'}</strong>
                         </div>
                       );
                     })()}
@@ -1237,71 +1396,131 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 </div>
 
                 {/* Multi-Participant Live Location Status Section */}
-                <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-3">
-                  <div className="flex items-center justify-between">
+                <div className={`p-4 rounded-2xl space-y-3 border ${
+                  isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+                }`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-emerald-400" />
-                      <h3 className="text-xs font-black uppercase text-white tracking-wide">
-                        Multi-Participant Live GPS Session ({trackingData.participants?.length || 1})
+                      <Users className="w-4 h-4 text-emerald-500" />
+                      <h3 className={`text-xs font-black uppercase tracking-wide ${
+                        isDarkMode ? 'text-white' : 'text-slate-900'
+                      }`}>
+                        {language === 'hi'
+                          ? `बहु-सहभागी लाइव जीपीएस सत्र (${trackingData.participants?.length || 1})`
+                          : `Multi-Participant Live GPS Session (${trackingData.participants?.length || 1})`}
                       </h3>
                     </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'मित्र 1 (राहुल)' : 'Friend 1 (Rahul)')}
+                        disabled={addingFriend}
+                        className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1 cursor-pointer transition"
+                      >
+                        + {language === 'hi' ? 'मित्र 1 (राहुल)' : 'Friend 1 (Rahul)'}
+                      </button>
+                      <button
+                        onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'मित्र 2 (प्रिया)' : 'Friend 2 (Priya)')}
+                        disabled={addingFriend}
+                        className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1 cursor-pointer transition"
+                      >
+                        + {language === 'hi' ? 'मित्र 2 (प्रिया)' : 'Friend 2 (Priya)'}
+                      </button>
+                      <button
+                        onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'रेस्पोंडर (अमित)' : 'Responder (Amit)')}
+                        disabled={addingFriend}
+                        className="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1 cursor-pointer transition"
+                      >
+                        + {language === 'hi' ? 'रेस्पोंडर 3' : 'Responder 3'}
+                      </button>
+                      <button
+                        onClick={handleOpenQrModal}
+                        className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Share2 className="w-3.5 h-3.5" />
+                        {language === 'hi' ? '+ QR द्वारा आमंत्रित करें' : '+ Invite Friend (QR)'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Add Custom Friend Name Row */}
+                  <div className={`p-2.5 rounded-xl border flex flex-col sm:flex-row items-center gap-2 ${
+                    isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <input
+                      type="text"
+                      value={customFriendName}
+                      onChange={e => setCustomFriendName(e.target.value)}
+                      placeholder={language === 'hi' ? 'मित्र का नाम दर्ज करें (उदा. विक्रम, स्नेहा)...' : 'Enter friend name (e.g. Vikram, Sneha)...'}
+                      className={`w-full sm:flex-1 px-3 py-1.5 rounded-lg text-xs border outline-none ${
+                        isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-300 text-slate-900'
+                      }`}
+                    />
                     <button
-                      onClick={handleOpenQrModal}
-                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1.5"
+                      onClick={() => handleAddSimulatedFriend()}
+                      disabled={addingFriend}
+                      className="w-full sm:w-auto px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs shadow cursor-pointer transition shrink-0"
                     >
-                      <Share2 className="w-3.5 h-3.5" />
-                      + Invite Friend (QR)
+                      {addingFriend ? (language === 'hi' ? 'जोड़ा जा रहा है...' : 'Adding...') : (language === 'hi' ? '+ लाइव मानचित्र पर मित्र जोड़ें' : '+ Add Live Friend to Map')}
                     </button>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     {(trackingData.participants && trackingData.participants.length > 0) ? (
                       trackingData.participants.map((part, idx) => (
-                        <div key={part.participantId} className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1.5">
+                        <div key={part.participantId} className={`p-3 rounded-xl space-y-1.5 border ${
+                          isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                        }`}>
                           <div className="flex items-center justify-between">
-                            <span className="font-extrabold text-white flex items-center gap-1.5">
+                            <span className={`font-extrabold flex items-center gap-1.5 ${
+                              isDarkMode ? 'text-white' : 'text-slate-900'
+                            }`}>
                               <span>{part.role === 'HOST' ? '🔴' : idx === 1 ? '🔵' : '🟢'}</span>
                               <span>{part.label || part.participantId}</span>
-                              <span className="text-[10px] text-slate-400 font-mono">({part.role})</span>
+                              <span className="text-[10px] text-slate-500 font-mono">({part.role})</span>
                             </span>
                             <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase border ${
                               part.status === 'LIVE'
-                                ? 'bg-emerald-950 text-emerald-300 border-emerald-800 animate-pulse'
+                                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/40 animate-pulse'
                                 : part.status === 'STALE'
-                                ? 'bg-amber-950 text-amber-300 border-amber-800'
-                                : 'bg-slate-800 text-slate-400 border-slate-700'
+                                ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/40'
+                                : 'bg-slate-200 text-slate-600 border-slate-300'
                             }`}>
                               ● {part.status}
                             </span>
                           </div>
 
                           {part.location ? (
-                            <div className="text-[11px] font-mono text-slate-300 space-y-0.5">
-                              <div>Lat: <span className="text-white font-bold">{part.location.lat.toFixed(5)}</span>, Lon: <span className="text-white font-bold">{part.location.lon.toFixed(5)}</span></div>
-                              <div className="text-slate-400 text-[10px] flex items-center justify-between">
+                            <div className="text-[11px] font-mono text-slate-600 dark:text-slate-300 space-y-0.5">
+                              <div>Lat: <span className="font-bold text-slate-900 dark:text-white">{part.location.lat.toFixed(5)}</span>, Lon: <span className="font-bold text-slate-900 dark:text-white">{part.location.lon.toFixed(5)}</span></div>
+                              <div className="text-slate-500 text-[10px] flex items-center justify-between">
                                 <span>Accuracy: ±{part.location.accuracy}m</span>
                                 <span>{new Date(part.location.timestamp).toLocaleTimeString()}</span>
                               </div>
                             </div>
                           ) : (
-                            <div className="text-[11px] text-slate-500 italic">Waiting for initial GPS location...</div>
+                            <div className="text-[11px] text-slate-500 italic">{language === 'hi' ? 'प्रारंभिक जीपीएस स्थान की प्रतीक्षा जारी...' : 'Waiting for initial GPS location...'}</div>
                           )}
                         </div>
                       ))
                     ) : (
-                      <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1.5 col-span-2">
+                      <div className={`p-3 rounded-xl space-y-1.5 col-span-2 border ${
+                        isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                      }`}>
                         <div className="flex items-center justify-between">
-                          <span className="font-extrabold text-white flex items-center gap-1.5">
+                          <span className={`font-extrabold flex items-center gap-1.5 ${
+                            isDarkMode ? 'text-white' : 'text-slate-900'
+                          }`}>
                             <span>🔴</span>
-                            <span>Requester (Me)</span>
-                            <span className="text-[10px] text-slate-400 font-mono">(HOST)</span>
+                            <span>{language === 'hi' ? 'अनुरोधकर्ता (मैं)' : 'Requester (Me)'}</span>
+                            <span className="text-[10px] text-slate-500 font-mono">(HOST)</span>
                           </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-950 text-emerald-300 border border-emerald-800 animate-pulse">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/40 animate-pulse">
                             ● LIVE
                           </span>
                         </div>
-                        <div className="text-[11px] font-mono text-slate-300">
-                          Lat: <span className="text-white font-bold">{trackingData.emergency.lat.toFixed(5)}</span>, Lon: <span className="text-white font-bold">{trackingData.emergency.lon.toFixed(5)}</span>
+                        <div className="text-[11px] font-mono text-slate-600 dark:text-slate-300">
+                          Lat: <span className="font-bold text-slate-900 dark:text-white">{trackingData.emergency.lat.toFixed(5)}</span>, Lon: <span className="font-bold text-slate-900 dark:text-white">{trackingData.emergency.lon.toFixed(5)}</span>
                         </div>
                       </div>
                     )}
@@ -1311,9 +1530,15 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 {/* Assigned Vehicle Details */}
                 {trackingData.assignedVehicle ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 space-y-1">
-                      <span className="text-[10px] text-slate-400 uppercase font-bold block">Assigned Vehicle</span>
-                      <strong className="text-white text-base block flex items-center gap-2">
+                    <div className={`p-3.5 rounded-2xl border space-y-1 ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+                    }`}>
+                      <span className="text-[10px] text-slate-500 uppercase font-bold block">
+                        {language === 'hi' ? 'आवंटित वाहन' : 'Assigned Vehicle'}
+                      </span>
+                      <strong className={`text-base block flex items-center gap-2 ${
+                        isDarkMode ? 'text-white' : 'text-slate-900'
+                      }`}>
                         {trackingData.assignedVehicle.typeCategory === 'Medical'
                           ? '🚑'
                           : trackingData.assignedVehicle.typeCategory === 'Fire'
@@ -1323,18 +1548,26 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                           : '🚚'}{' '}
                         {trackingData.assignedVehicle.vehicleType}
                       </strong>
-                      <span className="text-slate-400 font-mono text-[11px] block">ID: {trackingData.assignedVehicle.vehicleId}</span>
+                      <span className="text-slate-500 font-mono text-[11px] block">ID: {trackingData.assignedVehicle.vehicleId}</span>
                     </div>
 
-                    <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 space-y-1">
-                      <span className="text-[10px] text-slate-400 uppercase font-bold block">Driver / Operator</span>
-                      <strong className="text-white text-sm block">{trackingData.assignedVehicle.driverName}</strong>
-                      <span className="text-emerald-400 font-mono text-[11px] block">Contact: {trackingData.assignedVehicle.contact}</span>
+                    <div className={`p-3.5 rounded-2xl border space-y-1 ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+                    }`}>
+                      <span className="text-[10px] text-slate-500 uppercase font-bold block">
+                        {language === 'hi' ? 'ड्राइवर / ऑपरेटर' : 'Driver / Operator'}
+                      </span>
+                      <strong className={`text-sm block ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                        {trackingData.assignedVehicle.driverName}
+                      </strong>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-mono text-[11px] block">
+                        {language === 'hi' ? 'संपर्क:' : 'Contact:'} {trackingData.assignedVehicle.contact}
+                      </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 bg-amber-950/60 border border-amber-800 rounded-xl text-amber-200 text-xs">
-                    Finding nearest suitable available vehicle for dispatch...
+                  <div className="p-4 bg-amber-500/20 border border-amber-500/40 text-amber-800 dark:text-amber-200 rounded-xl text-xs">
+                    {language === 'hi' ? 'प्रेषण के लिए निकटतम उपयुक्त उपलब्ध वाहन की खोज जारी है...' : 'Finding nearest suitable available vehicle for dispatch...'}
                   </div>
                 )}
               </div>
@@ -1346,33 +1579,45 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       {/* TAB 3: DRIVER & CONVOY PORTAL */}
       {activeTab === 'driver' && (
         <div className="max-w-4xl mx-auto space-y-6">
-          <div className="bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-3xl shadow-2xl space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div className={`p-5 md:p-6 rounded-3xl shadow-2xl space-y-5 border transition-colors ${
+            isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+          }`}>
+            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${
+              isDarkMode ? 'border-slate-800' : 'border-slate-200'
+            }`}>
               <div>
-                <h2 className="text-base font-extrabold text-white flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-indigo-400" />
-                  Driver Dispatch & Live GPS Control Portal
+                <h2 className={`text-base font-extrabold flex items-center gap-2 ${
+                  isDarkMode ? 'text-white' : 'text-slate-900'
+                }`}>
+                  <Truck className="w-5 h-5 text-indigo-500" />
+                  {language === 'hi' ? 'ड्राइवर प्रेषण एवं लाइव जीपीएस नियंत्रण पोर्टल' : 'Driver Dispatch & Live GPS Control Portal'}
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Authorized drivers accept emergency requests and transmit real device coordinates.
+                <p className={`text-xs mt-0.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                  {language === 'hi'
+                    ? 'अधिकृत ड्राइवर आपातकालीन अनुरोध स्वीकार करते हैं और वास्तविक डिवाइस निर्देशांक प्रेषित करते हैं।'
+                    : 'Authorized drivers accept emergency requests and transmit real device coordinates.'}
                 </p>
               </div>
 
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setShowDriverRegModal(true)}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 shrink-0"
+                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 shrink-0 cursor-pointer"
                 >
                   <User className="w-3.5 h-3.5" />
-                  + Register Driver
+                  {language === 'hi' ? '+ ड्राइवर पंजीकृत करें' : '+ Register Driver'}
                 </button>
 
                 <div className="flex items-center gap-2">
-                  <label className="text-xs text-slate-400 font-bold hidden sm:inline">Active Vehicle:</label>
+                  <label className={`text-xs font-bold hidden sm:inline ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                    {language === 'hi' ? 'सक्रिय वाहन:' : 'Active Vehicle:'}
+                  </label>
                   <select
                     value={selectedDriverVehicleId}
                     onChange={e => setSelectedDriverVehicleId(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-white font-mono text-xs max-w-[220px]"
+                    className={`border rounded-xl px-3 py-1.5 font-mono text-xs max-w-[220px] ${
+                      isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
                   >
                     {driverVehicles.length > 0 ? (
                       driverVehicles.map(v => (
@@ -1395,38 +1640,52 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
             {/* Emergency Requests Queue for Drivers */}
             <div className="space-y-4">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-300 flex items-center justify-between">
-                <span>Incoming Emergency Requests Queue ({driverEmergencies.length})</span>
-                <span className="text-[10px] text-emerald-400 font-mono font-normal">● Auto-Refreshing Every 4s</span>
+              <h3 className={`text-xs font-extrabold uppercase tracking-wider flex items-center justify-between ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-700'
+              }`}>
+                <span>
+                  {language === 'hi' ? 'आगमन आपातकालीन अनुरोध कतार' : 'Incoming Emergency Requests Queue'} ({driverEmergencies.length})
+                </span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-normal">
+                  {language === 'hi' ? '● हर 4 सेकंड में ऑटो-रिफ्रेश' : '● AUTO-REFRESHING EVERY 4S'}
+                </span>
               </h3>
 
               {driverEmergencies.length === 0 ? (
-                <div className="p-8 text-center text-slate-500 text-xs bg-slate-950 border border-slate-800 rounded-2xl">
-                  No active emergency requests in queue. Create an emergency request from Tab 1 to test driver response.
+                <div className={`p-8 text-center text-xs border rounded-2xl ${
+                  isDarkMode ? 'bg-slate-950 border-slate-800 text-slate-500' : 'bg-slate-50 border-slate-200 text-slate-600'
+                }`}>
+                  {language === 'hi'
+                    ? 'कतार में कोई सक्रिय आपातकालीन अनुरोध नहीं है। ड्राइवर प्रतिक्रिया का परीक्षण करने के लिए टैब 1 से एक आपातकालीन अनुरोध बनाएं।'
+                    : 'No active emergency requests in queue. Create an emergency request from Tab 1 to test driver response.'}
                 </div>
               ) : (
                 <div className="space-y-3">
                   {driverEmergencies.map(emg => (
                     <div
                       key={emg.emergencyRequestId}
-                      className="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      className={`p-4 border rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition ${
+                        isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-sm'
+                      }`}
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-rose-400">{emg.emergencyRequestId}</span>
-                          <span className="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800 text-[10px] font-bold">
-                            {emg.priority} PRIORITY
+                          <span className="font-mono text-xs font-bold text-rose-500">{emg.emergencyRequestId}</span>
+                          <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40 text-[10px] font-bold">
+                            {language === 'hi' ? `${emg.priority === 'CRITICAL' ? 'गंभीर' : emg.priority === 'HIGH' ? 'उच्च' : 'सामान्य'} प्राथमिकता` : `${emg.priority} PRIORITY`}
                           </span>
-                          <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold">
+                          <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
                             {emg.status}
                           </span>
                         </div>
 
-                        <h4 className="text-sm font-extrabold text-white mt-1">
+                        <h4 className={`text-sm font-extrabold mt-1 ${
+                          isDarkMode ? 'text-white' : 'text-slate-900'
+                        }`}>
                           {emg.emergencyType} &bull; {emg.requirement}
                         </h4>
-                        <p className="text-xs text-slate-400 mt-0.5">{emg.district}, {emg.state}</p>
-                        {emg.description && <p className="text-xs text-slate-300 italic mt-1">"{emg.description}"</p>}
+                        <p className={`text-xs mt-0.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>{emg.district}, {emg.state}</p>
+                        {emg.description && <p className="text-xs text-slate-500 dark:text-slate-300 italic mt-1">"{emg.description}"</p>}
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2">
@@ -1435,9 +1694,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                             await acceptDriverRequest(emg.emergencyRequestId, selectedDriverVehicleId);
                             fetchDriverData();
                           }}
-                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow"
+                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow cursor-pointer"
                         >
-                          ACCEPT REQUEST
+                          {language === 'hi' ? 'अनुरोध स्वीकार करें' : 'ACCEPT REQUEST'}
                         </button>
 
                         <button
@@ -1445,9 +1704,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                             await updateEmergencyStatus(emg.emergencyRequestId, 'ON_THE_WAY');
                             fetchDriverData();
                           }}
-                          className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow"
+                          className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow cursor-pointer"
                         >
-                          📍 START LOCATION SHARING
+                          {language === 'hi' ? '📍 स्थान शेयरिंग शुरू करें' : '📍 START LOCATION SHARING'}
                         </button>
 
                         <button
@@ -1455,9 +1714,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                             await markDriverArrived(emg.emergencyRequestId);
                             fetchDriverData();
                           }}
-                          className="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold"
+                          className="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold cursor-pointer"
                         >
-                          Mark Arrived
+                          {language === 'hi' ? 'पहुंच गए चिह्नित करें' : 'Mark Arrived'}
                         </button>
 
                         <button
@@ -1465,9 +1724,11 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                             await markDriverComplete(emg.emergencyRequestId);
                             fetchDriverData();
                           }}
-                          className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700"
+                          className={`px-3 py-2 rounded-xl text-xs font-bold border cursor-pointer ${
+                            isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300'
+                          }`}
                         >
-                          Mark Completed
+                          {language === 'hi' ? 'पूर्ण हुआ चिह्नित करें' : 'Mark Completed'}
                         </button>
                       </div>
                     </div>
@@ -1482,15 +1743,23 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       {/* DRIVER REGISTRATION MODAL */}
       {showDriverRegModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl relative my-8">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-                <Truck className="w-5 h-5 text-indigo-400" />
-                Register Emergency Driver & Vehicle
+          <div className={`border rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl relative my-8 transition-colors ${
+            isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <div className={`flex items-center justify-between border-b pb-3 ${
+              isDarkMode ? 'border-slate-800' : 'border-slate-200'
+            }`}>
+              <h3 className={`text-base font-extrabold flex items-center gap-2 ${
+                isDarkMode ? 'text-white' : 'text-slate-900'
+              }`}>
+                <Truck className="w-5 h-5 text-indigo-500" />
+                {language === 'hi' ? 'आपातकालीन ड्राइवर और वाहन पंजीकृत करें' : 'Register Emergency Driver & Vehicle'}
               </h3>
               <button
                 onClick={() => setShowDriverRegModal(false)}
-                className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl"
+                className={`p-1 rounded-xl cursor-pointer ${
+                  isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+                }`}
               >
                 ✕
               </button>
@@ -1498,59 +1767,77 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
             <form onSubmit={handleRegisterDriver} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-bold mb-1">Driver Full Name *</label>
+                <label className={`block font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {language === 'hi' ? 'ड्राइवर का पूरा नाम *' : 'Driver Full Name *'}
+                </label>
                 <input
                   type="text"
                   required
                   value={regDriverName}
                   onChange={e => setRegDriverName(e.target.value)}
-                  placeholder="e.g. Ramesh Kalita"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  placeholder={language === 'hi' ? 'उदा. रमेश कलिता' : 'e.g. Ramesh Kalita'}
+                  className={`w-full rounded-xl p-2.5 border ${
+                    isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-bold mb-1">Contact Phone Number *</label>
+                <label className={`block font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {language === 'hi' ? 'संपर्क फोन नंबर *' : 'Contact Phone Number *'}
+                </label>
                 <input
                   type="text"
                   required
                   value={regContact}
                   onChange={e => setRegContact(e.target.value)}
                   placeholder="e.g. +91 98765 43210"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                  className={`w-full rounded-xl p-2.5 font-mono border ${
+                    isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  }`}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-bold mb-1">Category</label>
+                  <label className={`block font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {language === 'hi' ? 'श्रेणी' : 'Category'}
+                  </label>
                   <select
                     value={regCategory}
                     onChange={e => setRegCategory(e.target.value as EmergencyType)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-semibold"
+                    className={`w-full rounded-xl p-2.5 font-semibold border ${
+                      isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
                   >
-                    <option value="Medical">Medical (Ambulance)</option>
-                    <option value="Fire">Fire Tender</option>
-                    <option value="Police">Police Patrol</option>
-                    <option value="Relief">Relief Convoy</option>
+                    <option value="Medical">{language === 'hi' ? 'चिकित्सा (एम्बुलेंस)' : 'Medical (Ambulance)'}</option>
+                    <option value="Fire">{language === 'hi' ? 'अग्निशामक' : 'Fire Tender'}</option>
+                    <option value="Police">{language === 'hi' ? 'पुलिस गश्ती' : 'Police Patrol'}</option>
+                    <option value="Relief">{language === 'hi' ? 'राहत सामग्री' : 'Relief Convoy'}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-bold mb-1">Vehicle Description</label>
+                  <label className={`block font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {language === 'hi' ? 'वाहन विवरण' : 'Vehicle Description'}
+                  </label>
                   <input
                     type="text"
                     value={regVehicleType}
                     onChange={e => setRegVehicleType(e.target.value)}
                     placeholder="e.g. 🚑 ICU Ambulance"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    className={`w-full rounded-xl p-2.5 border ${
+                      isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-bold mb-1">State (NER)</label>
+                  <label className={`block font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {language === 'hi' ? 'राज्य (पूर्वोत्तर)' : 'State (NER)'}
+                  </label>
                   <select
                     value={regState}
                     onChange={e => {
@@ -1559,7 +1846,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                       const dists = NER_STATES_DISTRICTS[s] || [];
                       setRegDistrict(dists[0] || '');
                     }}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    className={`w-full rounded-xl p-2.5 border ${
+                      isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
                   >
                     {NER_STATES.map(s => (
                       <option key={s} value={s}>{s}</option>
@@ -1568,11 +1857,15 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-bold mb-1">District</label>
+                  <label className={`block font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {language === 'hi' ? 'जिला' : 'District'}
+                  </label>
                   <select
                     value={regDistrict}
                     onChange={e => setRegDistrict(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    className={`w-full rounded-xl p-2.5 border ${
+                      isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
                   >
                     {(NER_STATES_DISTRICTS[regState] || []).map(d => (
                       <option key={d} value={d}>{d}</option>
@@ -1582,7 +1875,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
               </div>
 
               {regError && (
-                <div className="p-3 bg-rose-950 border border-rose-800 text-rose-200 rounded-xl">
+                <div className="p-3 bg-rose-500/20 border border-rose-500/40 text-rose-700 dark:text-rose-200 rounded-xl">
                   {regError}
                 </div>
               )}
@@ -1591,16 +1884,18 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 <button
                   type="submit"
                   disabled={regSubmitting}
-                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl shadow transition"
+                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl shadow transition cursor-pointer"
                 >
-                  {regSubmitting ? 'Registering...' : 'REGISTER VEHICLE'}
+                  {regSubmitting ? (language === 'hi' ? 'पंजीकृत हो रहा है...' : 'Registering...') : (language === 'hi' ? 'वाहन पंजीकृत करें' : 'REGISTER VEHICLE')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowDriverRegModal(false)}
-                  className="py-3 px-4 bg-slate-800 text-slate-300 font-bold rounded-xl"
+                  className={`py-3 px-4 font-bold rounded-xl cursor-pointer ${
+                    isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700'
+                  }`}
                 >
-                  Cancel
+                  {language === 'hi' ? 'रद्द करें' : 'Cancel'}
                 </button>
               </div>
             </form>
@@ -1611,26 +1906,38 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       {/* TAB 4: DEMO / SIMULATION MODE */}
       {activeTab === 'simulation' && (
         <div className="max-w-3xl mx-auto space-y-6">
-          <div className="bg-slate-900 border border-slate-800 p-5 md:p-7 rounded-3xl shadow-2xl space-y-6">
-            <div className="p-4 bg-amber-950/60 border border-amber-700/60 rounded-2xl text-amber-200 text-xs flex items-center justify-between">
+          <div className={`p-5 md:p-7 rounded-3xl shadow-2xl space-y-6 border transition-colors ${
+            isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+          }`}>
+            <div className="p-4 bg-amber-500/20 border border-amber-500/40 rounded-2xl text-amber-800 dark:text-amber-200 text-xs flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Play className="w-5 h-5 text-amber-400 shrink-0" />
+                <Play className="w-5 h-5 text-amber-500 shrink-0" />
                 <div>
-                  <strong className="font-extrabold uppercase text-amber-300 block">DEMO / SIMULATION MODE</strong>
-                  <span>Simulate live vehicle movement, distance countdown, and ETA updates without physical device movement.</span>
+                  <strong className="font-extrabold uppercase text-amber-700 dark:text-amber-300 block">
+                    {language === 'hi' ? 'डेमो / सिमुलेशन मोड' : 'DEMO / SIMULATION MODE'}
+                  </strong>
+                  <span>
+                    {language === 'hi'
+                      ? 'भौतिक डिवाइस आंदोलन के बिना लाइव वाहन गतिविधि, दूरी और ईटीए अपडेट सिमुलेट करें।'
+                      : 'Simulate live vehicle movement, distance countdown, and ETA updates without physical device movement.'}
+                  </span>
                 </div>
               </div>
             </div>
 
             {activeSessionId ? (
               <div className="space-y-4 text-xs">
-                <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-between">
+                <div className={`p-4 rounded-2xl flex items-center justify-between border ${
+                  isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
                   <div>
-                    <span className="text-[10px] font-mono text-slate-400">ACTIVE SESSION</span>
-                    <strong className="text-white text-base block font-mono">{activeSessionId}</strong>
+                    <span className="text-[10px] font-mono text-slate-500">
+                      {language === 'hi' ? 'सक्रिय सत्र' : 'ACTIVE SESSION'}
+                    </span>
+                    <strong className={`text-base block font-mono ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{activeSessionId}</strong>
                   </div>
 
-                  <span className="px-3 py-1 bg-emerald-950 text-emerald-300 border border-emerald-800 text-xs font-bold rounded-full">
+                  <span className="px-3 py-1 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 text-xs font-bold rounded-full">
                     {trackingData?.emergency.status || 'ACTIVE'}
                   </span>
                 </div>
@@ -1641,20 +1948,22 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                       const res = await simulateVehicleStep(activeSessionId);
                       if (res.success && res.data) setTrackingData(res.data);
                     }}
-                    className="p-4 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-2xl shadow-lg flex items-center justify-center gap-2 transition"
+                    className="p-4 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-2xl shadow-lg flex items-center justify-center gap-2 transition cursor-pointer"
                   >
                     <ChevronRight className="w-5 h-5" />
-                    ▶ Simulate 1-Step Drive (500m Closer)
+                    {language === 'hi' ? '▶ 1-स्टेप ड्राइव सिमुलेट करें (500मी निकट)' : '▶ Simulate 1-Step Drive (500m Closer)'}
                   </button>
 
                   <button
                     onClick={() => setSimulatingAuto(!simulatingAuto)}
-                    className={`p-4 font-extrabold rounded-2xl shadow-lg flex items-center justify-center gap-2 transition ${
+                    className={`p-4 font-extrabold rounded-2xl shadow-lg flex items-center justify-center gap-2 transition cursor-pointer ${
                       simulatingAuto ? 'bg-rose-600 hover:bg-rose-500 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white'
                     }`}
                   >
                     {simulatingAuto ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                    {simulatingAuto ? 'Pause Live Drive Loop' : '▶ Auto Drive Simulation (Live Loop)'}
+                    {simulatingAuto
+                      ? (language === 'hi' ? 'लाइव ड्राइव लूप रोकें' : 'Pause Live Drive Loop')
+                      : (language === 'hi' ? '▶ ऑटो ड्राइव सिमुलेशन (लाइव लूप)' : '▶ Auto Drive Simulation (Live Loop)')}
                   </button>
                 </div>
 
@@ -1666,9 +1975,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                         fetchTrackingSession();
                       }
                     }}
-                    className="p-3 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl"
+                    className="p-3 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl cursor-pointer"
                   >
-                    📍 Simulate Vehicle Arrival
+                    {language === 'hi' ? '📍 वाहन आगमन सिमुलेट करें' : '📍 Simulate Vehicle Arrival'}
                   </button>
 
                   <button
@@ -1679,15 +1988,21 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                         fetchTrackingSession();
                       }
                     }}
-                    className="p-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl border border-slate-700"
+                    className={`p-3 font-bold rounded-xl border cursor-pointer ${
+                      isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300'
+                    }`}
                   >
-                    ✅ Complete Response Lifecycle
+                    {language === 'hi' ? '✅ प्रतिक्रिया जीवनचक्र पूर्ण करें' : '✅ Complete Response Lifecycle'}
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="p-8 text-center text-slate-500 text-xs">
-                Submit an emergency request first to start simulation mode.
+              <div className={`p-8 text-center text-xs border rounded-2xl ${
+                isDarkMode ? 'bg-slate-950 border-slate-800 text-slate-500' : 'bg-slate-50 border-slate-200 text-slate-600'
+              }`}>
+                {language === 'hi'
+                  ? 'सिमुलेशन मोड शुरू करने के लिए पहले एक आपातकालीन अनुरोध जमा करें।'
+                  : 'Submit an emergency request first to start simulation mode.'}
               </div>
             )}
           </div>
@@ -1697,23 +2012,33 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       {/* REAL ANDROID PHONE QR CODE SHARE MODAL */}
       {showQrModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full space-y-5 shadow-2xl relative my-8">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className={`border rounded-3xl p-6 max-w-lg w-full space-y-5 shadow-2xl relative my-8 transition-colors ${
+            isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <div className={`flex items-center justify-between border-b pb-3 ${
+              isDarkMode ? 'border-slate-800' : 'border-slate-200'
+            }`}>
               <div className="flex items-center gap-2.5">
-                <span className="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
+                <span className="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-500">
                   <Radio className="w-5 h-5 animate-pulse" />
                 </span>
                 <div>
-                  <h3 className="text-base font-black text-white flex items-center gap-2">
-                    Real Android GPS Tracking (QR Code)
+                  <h3 className={`text-base font-black flex items-center gap-2 ${
+                    isDarkMode ? 'text-white' : 'text-slate-900'
+                  }`}>
+                    {language === 'hi' ? 'वास्तविक एंड्रॉइड जीपीएस ट्रैकिंग (QR कोड)' : 'Real Android GPS Tracking (QR Code)'}
                   </h3>
-                  <p className="text-[11px] text-slate-400">Scan from Phone A to share actual GPS telemetry</p>
+                  <p className={`text-[11px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                    {language === 'hi' ? 'वास्तविक जीपीएस टेलीमेट्री शेयर करने के लिए फोन A से स्कैन करें' : 'Scan from Phone A to share actual GPS telemetry'}
+                  </p>
                 </div>
               </div>
 
               <button
                 onClick={() => setShowQrModal(false)}
-                className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl transition"
+                className={`p-1.5 rounded-xl transition cursor-pointer ${
+                  isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+                }`}
               >
                 ✕
               </button>
@@ -1721,57 +2046,112 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
             {/* Configurable App URL Field */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-extrabold text-slate-300">
-                Application Domain / HTTPS Tunnel URL:
+              <label className={`block text-xs font-extrabold ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                {language === 'hi' ? 'एप्लीकेशन डोमेन / HTTPS टनल यूआरएल:' : 'Application Domain / HTTPS Tunnel URL:'}
               </label>
               <input
                 type="text"
                 value={qrAppUrl}
                 onChange={e => setQrAppUrl(e.target.value)}
                 placeholder="https://YOUR-DEPLOYED-DOMAIN or https://xxx.loca.lt"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-mono text-emerald-300 focus:ring-2 focus:ring-emerald-500 outline-none"
+                className={`w-full border rounded-xl px-3.5 py-2.5 text-xs font-mono text-emerald-600 dark:text-emerald-300 focus:ring-2 focus:ring-emerald-500 outline-none ${
+                  isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-300'
+                }`}
               />
-              <p className="text-[10px] text-slate-400">
-                ⚠️ Android Chrome requires <strong>HTTPS</strong> for Geolocation API. For local mobile testing, expose port 3000 using Localtunnel or Ngrok e.g. <code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded">npx localtunnel --port 3000</code> and paste the HTTPS URL above.
+              <p className={`text-[10px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                ⚠️ Android Chrome requires <strong>HTTPS</strong> for Geolocation API. For local mobile testing, expose port 3000 using Localtunnel or Ngrok e.g. <code className="text-emerald-600 dark:text-emerald-400 bg-slate-200 dark:bg-slate-950 px-1 py-0.5 rounded">npx localtunnel --port 3000</code> and paste the HTTPS URL above.
               </p>
             </div>
 
             {/* QR Code Container */}
-            <div className="bg-slate-950 border border-slate-800 p-5 rounded-3xl text-center flex flex-col items-center justify-center space-y-3 shadow-inner">
+            <div className={`border p-5 rounded-3xl text-center flex flex-col items-center justify-center space-y-3 shadow-inner ${
+              isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               {qrLoading ? (
-                <div className="py-12 text-slate-400 text-xs flex items-center justify-center gap-2">
-                  <RefreshCw className="w-5 h-5 animate-spin text-emerald-400" />
-                  Generating secure real-phone tracking QR code...
+                <div className="py-12 text-slate-500 text-xs flex items-center justify-center gap-2">
+                  <RefreshCw className="w-5 h-5 animate-spin text-emerald-500" />
+                  {language === 'hi' ? 'सुरक्षित वास्तविक-फोन ट्रैकिंग QR कोड जनरेट हो रहा है...' : 'Generating secure real-phone tracking QR code...'}
                 </div>
               ) : qrImageSrc ? (
                 <>
-                  <div className="p-3 bg-slate-900 border-2 border-emerald-500/40 rounded-2xl shadow-xl">
+                  <div className="p-3 border-2 border-slate-900 dark:border-slate-100 rounded-2xl shadow-xl bg-white">
                     <img src={qrImageSrc} alt="Real GPS Tracking QR Code" className="w-56 h-56 rounded-xl" />
                   </div>
-                  <div className="text-[11px] font-mono text-emerald-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 break-all max-w-full">
+                  <div className={`text-[11px] font-mono text-slate-900 dark:text-slate-100 px-3 py-1.5 rounded-xl border break-all max-w-full ${
+                    isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-300 shadow-sm'
+                  }`}>
                     {qrSessionData?.trackingUrl}
                   </div>
                 </>
               ) : (
                 <button
                   onClick={handleOpenQrModal}
-                  className="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs"
+                  className="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs cursor-pointer"
                 >
-                  Generate QR Code
+                  {language === 'hi' ? 'QR कोड जनरेट करें' : 'Generate QR Code'}
                 </button>
               )}
             </div>
 
-            {/* Step-by-Step Test Guide */}
-            <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl text-xs space-y-2 text-slate-300">
-              <strong className="text-amber-400 font-bold block flex items-center gap-1.5">
-                <Info className="w-4 h-4 text-amber-400" />
-                Real Phone Testing Instructions:
+            {/* Multi-Friend Live Quick Spawn Section */}
+            <div className={`p-4 border rounded-2xl text-xs space-y-2.5 ${
+              isDarkMode ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
+              <strong className="text-emerald-500 font-extrabold uppercase text-[11px] block tracking-wide">
+                {language === 'hi' ? '⚡ बहु-मित्र लाइव परीक्षण (एक ही सत्र में कई मित्र जोड़ें)' : '⚡ Multi-Friend Live Demo (Add Multiple Friends to Session)'}
               </strong>
-              <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-400 leading-relaxed">
-                <li><strong className="text-white">PHONE A (Sender):</strong> Scan QR Code using Android Phone camera and open in Chrome.</li>
-                <li><strong className="text-white">PHONE A:</strong> Tap <span className="text-emerald-400 font-bold">[ALLOW GPS & START LIVE SHARING]</span>. Chrome will prompt for location permission. Tap <strong>Allow</strong>.</li>
-                <li><strong className="text-white">PHONE B (Dashboard/Viewer):</strong> Tap button below to open live tracking dashboard and watch Phone A move live!</li>
+              <p className="text-[11px] text-slate-500">
+                {language === 'hi'
+                  ? 'आप एक ही QR / लाइव सत्र में कई मित्रों (राहुल, प्रिया, अमित) को जोड़ सकते हैं। वे सभी मानचित्र पर अलग-अलग रंगों से लाइव प्रदर्शित होंगे।'
+                  : 'You can add multiple friends (Rahul, Priya, Amit) to the same session. All will display live on the Leaflet map with distinct pin colors.'}
+              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'मित्र 1 (राहुल)' : 'Friend 1 (Rahul)')}
+                  disabled={addingFriend}
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1 cursor-pointer transition"
+                >
+                  + {language === 'hi' ? 'राहुल (मित्र 1)' : 'Rahul (Friend 1)'}
+                </button>
+                <button
+                  onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'मित्र 2 (प्रिया)' : 'Friend 2 (Priya)')}
+                  disabled={addingFriend}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1 cursor-pointer transition"
+                >
+                  + {language === 'hi' ? 'प्रिया (मित्र 2)' : 'Priya (Friend 2)'}
+                </button>
+                <button
+                  onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'रेस्पोंडर (अमित)' : 'Responder (Amit)')}
+                  disabled={addingFriend}
+                  className="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1 cursor-pointer transition"
+                >
+                  + {language === 'hi' ? 'अमित (रेस्पोंडर)' : 'Amit (Responder)'}
+                </button>
+              </div>
+            </div>
+
+            {/* Step-by-Step Test Guide */}
+            <div className={`p-4 border rounded-2xl text-xs space-y-2 ${
+              isDarkMode ? 'bg-slate-950/80 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+            }`}>
+              <strong className="text-amber-600 dark:text-amber-400 font-bold block flex items-center gap-1.5">
+                <Info className="w-4 h-4 text-amber-500" />
+                {language === 'hi' ? 'वास्तविक फोन परीक्षण निर्देश:' : 'Real Phone Testing Instructions:'}
+              </strong>
+              <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                {language === 'hi' ? (
+                  <>
+                    <li><strong className="text-slate-900 dark:text-white">फोन A (प्रेषक):</strong> एंड्रॉइड फोन कैमरा का उपयोग करके QR कोड स्कैन करें और क्रोम में खोलें।</li>
+                    <li><strong className="text-slate-900 dark:text-white">फोन A:</strong> <span className="text-emerald-600 dark:text-emerald-400 font-bold">[जीपीएस अनुमति दें और लाइव शेयरिंग शुरू करें]</span> पर टैप करें। अनुमति के लिए <strong>Allow</strong> चुनें।</li>
+                    <li><strong className="text-slate-900 dark:text-white">फोन B (डैशबोर्ड/दर्शंक):</strong> फोन A को लाइव देखने के लिए नीचे दिए गए बटन पर टैप करें!</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong className="text-slate-900 dark:text-white">PHONE A (Sender):</strong> Scan QR Code using Android Phone camera and open in Chrome.</li>
+                    <li><strong className="text-slate-900 dark:text-white">PHONE A:</strong> Tap <span className="text-emerald-600 dark:text-emerald-400 font-bold">[ALLOW GPS & START LIVE SHARING]</span>. Chrome will prompt for location permission. Tap <strong>Allow</strong>.</li>
+                    <li><strong className="text-slate-900 dark:text-white">PHONE B (Dashboard/Viewer):</strong> Tap button below to open live tracking dashboard and watch Phone A move live!</li>
+                  </>
+                )}
               </ol>
             </div>
 
@@ -1785,17 +2165,19 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                     setShowQrModal(false);
                   }
                 }}
-                className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-lg transition uppercase tracking-wider flex items-center justify-center gap-2"
+                className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-lg transition uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Radio className="w-4 h-4 text-white" />
-                [ Open Live Tracking on Dashboard ]
+                {language === 'hi' ? '[ डैशबोर्ड पर लाइव ट्रैकिंग खोलें ]' : '[ Open Live Tracking on Dashboard ]'}
               </button>
 
               <button
                 onClick={() => setShowQrModal(false)}
-                className="py-3.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl border border-slate-700"
+                className={`py-3.5 px-4 font-bold text-xs rounded-xl border cursor-pointer ${
+                  isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-slate-200 hover:bg-slate-300 text-slate-800 border-slate-300'
+                }`}
               >
-                Close
+                {language === 'hi' ? 'बंद करें' : 'Close'}
               </button>
             </div>
           </div>

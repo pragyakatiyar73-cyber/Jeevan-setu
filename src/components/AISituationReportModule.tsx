@@ -400,10 +400,14 @@ Stamp: [ E-SIGNED & VERIFIED / OFFICIAL EMERGENCY DISPATCH ]
             </div>
 
             {/* SITREP Operational Header Details Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-100 p-3 border border-slate-400 font-mono text-[11px] text-slate-900 font-bold">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 bg-slate-100 p-3 border border-slate-400 font-mono text-[11px] text-slate-900 font-bold">
               <div>
                 <span className="text-slate-600 block text-[9px] uppercase font-sans">REPORT ID</span>
                 <span>{sitrep.id}</span>
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <span className="text-slate-600 block text-[9px] uppercase font-sans">PLATFORM URL</span>
+                <span className="text-emerald-800 underline text-[10px] truncate block">{typeof window !== 'undefined' ? window.location.href : 'http://localhost:3000'}</span>
               </div>
               <div>
                 <span className="text-slate-600 block text-[9px] uppercase font-sans">ISSUED TIMESTAMP (IST)</span>
@@ -577,7 +581,7 @@ Stamp: [ E-SIGNED & VERIFIED / OFFICIAL EMERGENCY DISPATCH ]
 
             {/* Footer Notice */}
             <div className="border-t border-slate-300 pt-2 text-center text-[9px] font-mono text-slate-500">
-              JEEVAN SETU DISASTER MANAGEMENT SYSTEM &bull; STRICTLY FOR NORTH-EASTERN REGION OF INDIA &bull; SITREP DOCUMENT PAGE 1 OF 1
+              JEEVAN SETU DISASTER MANAGEMENT SYSTEM &bull; {typeof window !== 'undefined' ? window.location.href : 'http://localhost:3000'} &bull; STRICTLY FOR NORTH-EASTERN REGION OF INDIA &bull; SITREP DOCUMENT PAGE 1 OF 1
             </div>
 
           </div>

@@ -32,6 +32,7 @@ import { NER_STATES_DISTRICTS } from '../services/api/disasterReportsService';
 import { isPointInNER, NER_STATES, NERStateName, MASTER_NER_POLYGON, NER_COVERAGE_LABEL } from '../utils/nerBoundary';
 import { calculateSafeNERRoute } from '../services/api/roadAccessibilityService';
 import { SearchSpellingCorrectionPrompt } from './SearchSpellingCorrectionPrompt';
+import { useTranslation } from '../i18n';
 
 interface EmergencyFacilitiesModuleProps {
   onNavigateToMap?: () => void;
@@ -67,6 +68,8 @@ export default function EmergencyFacilitiesModule({
   onNavigateToReroute,
   onTriggerSOS
 }: EmergencyFacilitiesModuleProps) {
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   // Filters & State
   const [selectedType, setSelectedType] = useState<EmergencyFacilityType | 'All'>('All');
   const [selectedState, setSelectedState] = useState<string>('All');
@@ -334,16 +337,16 @@ export default function EmergencyFacilitiesModule({
               dataStatusTag === 'VERIFIED' ? 'bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-500/30' :
               'bg-slate-500/20 text-slate-700 dark:text-slate-300 border-slate-500/30'
             }`}>
-              ● {dataStatusTag === 'LIVE' ? 'OPENSTREETMAP LIVE POIs' : 'VERIFIED STATE DIRECTORY'}
+              ● {dataStatusTag === 'LIVE' ? (isHi ? 'ओपनस्ट्रीटमैप लाइव POI' : 'OPENSTREETMAP LIVE POIs') : (isHi ? 'सत्यापित राज्य निर्देशिका' : 'VERIFIED STATE DIRECTORY')}
             </span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-3">
             <HeartPulse className="h-7 w-7 text-rose-500 shrink-0" />
-            Emergency Facilities & Rescue Points Intelligence
+            {isHi ? 'आपातकालीन सुविधाएं एवं बचाव स्थल बुद्धिमत्ता' : 'Emergency Facilities & Rescue Points Intelligence'}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium max-w-4xl leading-relaxed">
-            Real-time geospatial location, distance, verified helpline contacts, and safe route planning for emergency hospitals, police stations, fire brigades, and disaster shelters across all 8 North Eastern Region states.
+            {isHi ? 'सभी 8 उत्तर पूर्वी राज्यों में आपातकालीन अस्पतालों, पुलिस स्टेशनों, दमकल केंद्रों और राहत शिविरों के लिए वास्तविक समय भौगोलिक स्थान, दूरी, सत्यापित हेल्पलाइन नंबर और सुरक्षित मार्ग योजना।' : 'Real-time geospatial location, distance, verified helpline contacts, and safe route planning for emergency hospitals, police stations, fire brigades, and disaster shelters across all 8 North Eastern Region states.'}
           </p>
         </div>
 
@@ -353,13 +356,13 @@ export default function EmergencyFacilitiesModule({
             className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-extrabold cursor-pointer border border-slate-300 dark:border-slate-700 flex items-center gap-2 transition"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Sync Data
+            {isHi ? 'डेटा सिंक करें' : 'Sync Data'}
           </button>
           <button
             onClick={onTriggerSOS}
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 text-white text-xs sm:text-sm font-black shadow-lg shadow-rose-600/30 hover:scale-105 transition border border-rose-400/40 cursor-pointer animate-pulse"
           >
-            🚨 Emergency SOS
+            🚨 {isHi ? 'आपातकालीन SOS' : 'Emergency SOS'}
           </button>
         </div>
       </div>
@@ -369,8 +372,8 @@ export default function EmergencyFacilitiesModule({
         <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 sm:p-5 text-rose-700 dark:text-rose-300 flex items-center gap-3 shadow-lg">
           <AlertTriangle className="h-6 w-6 shrink-0 text-rose-500 animate-bounce" />
           <div className="text-xs sm:text-sm font-bold">
-            <b className="text-base font-black block">Location outside Jeevan Setu's NER coverage.</b>
-            Jeevan Setu is exclusively designed for the 8 North Eastern Region (NER) states: Arunachal Pradesh, Assam, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, and Tripura. Facilities from non-NER states are strictly excluded.
+            <b className="text-base font-black block">{isHi ? 'स्थान जीवन सेतु के NER कवरेज से बाहर है।' : 'Location outside Jeevan Setu\'s NER coverage.'}</b>
+            {isHi ? 'जीवन सेतु विशेष रूप से 8 उत्तर पूर्वी राज्यों (असम, अरुणाचल प्रदेश, मणिपुर, मेघालय, मिजोरम, नागालैंड, सिक्किम, त्रिपुरा) के लिए बनाया गया है।' : 'Jeevan Setu is exclusively designed for the 8 North Eastern Region (NER) states: Arunachal Pradesh, Assam, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, and Tripura.'}
           </div>
         </div>
       )}
@@ -379,7 +382,7 @@ export default function EmergencyFacilitiesModule({
       <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 sm:p-5 text-sky-800 dark:text-sky-200 flex items-start sm:items-center gap-3 shadow-md">
         <ShieldAlert className="h-6 w-6 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5 sm:mt-0" />
         <div className="text-xs sm:text-sm font-medium leading-relaxed">
-          <b className="font-bold text-slate-900 dark:text-white">Official Emergency Guidance Notice:</b> In an emergency, follow instructions from local authorities and official disaster-management agencies. Jeevan Setu is an information platform and not a replacement for official emergency services.
+          <b className="font-bold text-slate-900 dark:text-white">{isHi ? 'आधिकारिक आपातकालीन मार्गदर्शन सूचना:' : 'Official Emergency Guidance Notice:'}</b> {isHi ? 'किसी भी आपात स्थिति में स्थानीय अधिकारियों और आधिकारिक आपदा प्रबंधन एजेंसियों के निर्देशों का पालन करें। जीवन सेतु एक सूचना मंच है।' : 'In an emergency, follow instructions from local authorities and official disaster-management agencies. Jeevan Setu is an information platform and not a replacement for official emergency services.'}
         </div>
       </div>
 

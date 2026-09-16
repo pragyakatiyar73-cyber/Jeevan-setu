@@ -261,6 +261,9 @@ export default function App() {
   // SOS Emergency Modal State
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
   const [isAiAgentOpen, setIsAiAgentOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSimulated, setIsMobileSimulated] = useState(false);
+  const [mobileSearchQuery, setMobileSearchQuery] = useState('');
   const [activeSosLocation, setActiveSosLocation] = useState<{
     lat: number;
     lon: number;
@@ -270,6 +273,213 @@ export default function App() {
     personsTrapped?: string;
     triageLevel?: string;
   } | null>(null);
+
+  const ALL_FEATURE_GROUPS = [
+    {
+      categoryHi: 'मुख्य प्लेटफॉर्म एवं ओवरव्यू',
+      categoryEn: 'Main Platform & Overview',
+      items: [
+        {
+          id: 'home',
+          nameHi: 'जीवन सेतु होमपेज',
+          nameEn: 'Jeevan Setu Homepage',
+          descHi: 'मुख्य कमांड सेंटर एवं ओवरव्यू',
+          descEn: 'Primary Command & Overview Hub',
+          icon: Home,
+          iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10',
+          badge: 'MAIN'
+        },
+        {
+          id: 'customdashboard',
+          nameHi: 'कमांड सेंटर डैशबोर्ड (SITREP)',
+          nameEn: 'Command Center Dashboard',
+          descHi: 'रियल-टाइम आपदा स्थिति रिपोर्ट एवं टेलीमेट्री',
+          descEn: 'Real-time SITREP & Emergency Grid',
+          icon: Gauge,
+          iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10',
+          badge: 'LIVE'
+        },
+        {
+          id: 'safetyguide',
+          nameHi: 'आपदा सुरक्षा एवं तैयारी गाइड',
+          nameEn: 'Disaster Safety Guide',
+          descHi: 'सुरक्षा नियम, क्या करें और क्या न करें',
+          descEn: 'Safety Manual, Do’s & Don’ts',
+          icon: BookOpen,
+          iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10',
+          badge: 'GUIDE'
+        }
+      ]
+    },
+    {
+      categoryHi: 'AI एवं GIS इंटेलिजेंस',
+      categoryEn: 'AI & GIS Intelligence',
+      items: [
+        {
+          id: 'smartmonitoring',
+          nameHi: 'स्मार्ट आपदा निगरानी (Radar)',
+          nameEn: 'Smart Disaster Monitoring',
+          descHi: 'AI सैटेलाइट radar एवं लाइव सेंसर',
+          descEn: 'AI Satellite Radar & Live Sensors',
+          icon: Cpu,
+          iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10',
+          badge: 'AI RADAR'
+        },
+        {
+          id: 'incidents',
+          nameHi: 'आपदा रिपोर्ट एवं इंटेलिजेंस',
+          nameEn: 'Disaster Reports & Intelligence',
+          descHi: 'उत्तर पूर्वी राज्यों की घटना रिपोर्ट',
+          descEn: 'NER State Incidents & Heatmap',
+          icon: ShieldAlert,
+          iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10',
+          badge: 'NER 8'
+        },
+        {
+          id: 'aiimpact',
+          nameHi: 'AI आपदा प्रभाव आकलन',
+          nameEn: 'AI Impact Assessment',
+          descHi: 'मल्टी-मॉडल क्षति मूल्यांकन',
+          descEn: 'Multi-modal Damage & Risk Score',
+          icon: Camera,
+          iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10',
+          badge: 'AI SCORE'
+        },
+        {
+          id: 'map',
+          nameHi: 'NER लाइव GIS मानचित्र',
+          nameEn: 'NER Live GIS Map',
+          descHi: 'मल्टी-लेयर सैटेलाइट नक्शा',
+          descEn: 'Multi-Layer Satellite GIS Mapping',
+          icon: MapPin,
+          iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10',
+          badge: 'GIS 3D'
+        }
+      ]
+    },
+    {
+      categoryHi: 'संकट प्रतिक्रिया एवं लॉजिस्टिक्स',
+      categoryEn: 'Crisis Response & Logistics',
+      items: [
+        {
+          id: 'private-tracking',
+          nameHi: 'स्मार्ट आपातकालीन प्रतिक्रिया (1-टू-1 GPS & Invite Friends)',
+          nameEn: 'Smart Emergency Response',
+          descHi: '1-टू-1 लाइव GPS ट्रैकिंग एवं मित्र साझा करें',
+          descEn: 'Live GPS Track & Multi-Friend Share',
+          icon: Radio,
+          iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10',
+          badge: '1-TO-1 GPS'
+        },
+        {
+          id: 'relief-supplies',
+          nameHi: 'राहत सामग्री एवं वाहन ट्रैकिंग',
+          nameEn: 'Relief Supply & Vehicle Tracking',
+          descHi: 'GPS वाहन कान्वाय एवं राहत डिपो',
+          descEn: 'GPS Fleet Convoy & Supply Depots',
+          icon: Truck,
+          iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10',
+          badge: 'LIVE FLEET'
+        },
+        {
+          id: 'rerouting',
+          nameHi: 'सड़क सुगमता एवं सुरक्षित मार्ग',
+          nameEn: 'Road Accessibility & Safe Routes',
+          descHi: 'OSRM मार्ग अनुकूलन एवं सड़क अलर्ट',
+          descEn: 'OSRM Route Optimization & Road Watch',
+          icon: Navigation,
+          iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10',
+          badge: 'OSRM'
+        },
+        {
+          id: 'facilities',
+          nameHi: 'आपातकालीन सुविधाएं एवं बचाव',
+          nameEn: 'Emergency Facilities & Rescue',
+          descHi: 'अस्पताल, राहत शिविर एवं हेल्प सेंटर',
+          descEn: 'Hospitals, Relief Camps & LZs',
+          icon: HeartPulse,
+          iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10',
+          badge: 'RESCUE'
+        },
+        {
+          id: 'drone',
+          nameHi: 'UAV ड्रोन डिस्पैचर',
+          nameEn: 'UAV Drone Dispatcher',
+          descHi: 'स्वायत्त ड्रोन बेड़ा नियंत्रण',
+          descEn: 'Autonomous Drone Fleet Control',
+          icon: Radio,
+          iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10',
+          badge: 'UAV FLEET'
+        }
+      ]
+    },
+    {
+      categoryHi: 'गवर्नेंस, मौसम एवं रिपोर्ट्स',
+      categoryEn: 'Governance, Weather & Reports',
+      items: [
+        {
+          id: 'gov',
+          nameHi: 'MDoNER कमांड ग्रिड',
+          nameEn: 'MDoNER Command Grid',
+          descHi: 'मंत्रालय एवं राज्य स्तरीय डैशबोर्ड',
+          descEn: 'Ministry & Govt Analytics Grid',
+          icon: Building2,
+          iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10',
+          badge: 'GOVT'
+        },
+        {
+          id: 'weather',
+          nameHi: 'मौसम बुद्धिमत्ता एवं डोपलर Radar',
+          nameEn: 'Weather & Doppler Radar',
+          descHi: 'IMD मौसम पूर्वानुमान एवं वर्षा radar',
+          descEn: 'IMD Forecast & Live Doppler Radar',
+          icon: CloudRain,
+          iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10',
+          badge: 'IMD LIVE'
+        },
+        {
+          id: 'flood',
+          nameHi: 'बाढ़ जोखिम बुद्धिमत्ता',
+          nameEn: 'Flood Risk Intelligence',
+          descHi: 'ब्रह्मपुत्र नदी बेसिन एवं जलस्तर निगरानी',
+          descEn: 'Brahmaputra Basin & Inundation Watch',
+          icon: CloudRain,
+          iconColor: 'text-blue-500 dark:text-blue-400 bg-blue-500/10',
+          badge: 'BASIN'
+        },
+        {
+          id: 'landslide',
+          nameHi: 'भूस्खलन जोखिम बुद्धिमत्ता',
+          nameEn: 'Landslide Risk Intelligence',
+          descHi: 'पहाड़ी ढलान स्थिरता इंडेक्स',
+          descEn: 'Slope Stability Hazard Index',
+          icon: Mountain,
+          iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10',
+          badge: 'SLOPE'
+        },
+        {
+          id: 'location',
+          nameHi: 'स्थान बुद्धिमत्ता रिपोर्ट (2-Page PDF)',
+          nameEn: 'Location Intelligence Report',
+          descHi: '2-पेज पीडीएफ रिपोर्ट एवं URL शेयर',
+          descEn: '2-Page PDF Report & Dynamic Share',
+          icon: Compass,
+          iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10',
+          badge: 'PDF REPORT'
+        },
+        {
+          id: 'vehicle-tracking',
+          nameHi: 'वाहन एवं चालक लाइव ट्रैकिंग',
+          nameEn: 'Vehicle & Driver Live Tracking',
+          descHi: 'चालक एवं वाहन लाइव स्थिति पोर्टेबल',
+          descEn: 'Fleet Telemetry & Driver Portal',
+          icon: Truck,
+          iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10',
+          badge: 'DRIVER'
+        }
+      ]
+    }
+  ];
 
   // Track dismissed SOS alert IDs so clicking ✕ permanently dismisses the alert
   const dismissedSosIdsRef = useRef<Set<string>>(new Set());
@@ -792,8 +1002,8 @@ export default function App() {
     <div className="flex h-screen w-full max-w-full bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
       {renderGlobalSosBanner()}
       
-      {/* 1. LEFT SIDEBAR NAVIGATION BAR (Sleek & Perfectly Sized - Hidden in Driver Mobile View) */}
-      <aside className={`${activeModule === 'driver-tracking' ? 'hidden' : 'w-16 md:w-60 lg:w-64'} shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] flex flex-col justify-between p-2.5 md:p-3 shadow-xl dark:shadow-2xl z-50 select-none transition-colors duration-300`}>
+      {/* 1. LEFT SIDEBAR NAVIGATION BAR (Sleek & Perfectly Sized - Hidden in Driver & Mobile Screen View) */}
+      <aside className={`${activeModule === 'driver-tracking' || isMobileSimulated ? 'hidden' : 'hidden md:flex w-60 lg:w-64'} shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] flex-col justify-between p-2.5 md:p-3 shadow-xl dark:shadow-2xl z-50 select-none transition-colors duration-300`}>
         <div className="space-y-3">
           
           {/* Logo & Brand Header (Sleek & Compact) */}
@@ -890,28 +1100,28 @@ export default function App() {
               {
                 category: t('sidebar.catIntelligence', 'AI & GIS Intelligence'),
                 items: [
-                  { id: 'smartmonitoring', label: t('navigation.smartmonitoring', 'Smart Disaster Monitoring'), icon: Cpu, badge: 'AI RADAR', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
-                  { id: 'incidents', label: 'Disaster Reports & Intelligence', icon: ShieldAlert, badge: 'NER 8', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
-                  { id: 'aiimpact', label: t('navigation.aiimpact', 'AI Impact Assessment'), icon: Camera, iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
-                  { id: 'map', label: t('navigation.map', 'NER Live GIS Map'), icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
+                  { id: 'smartmonitoring', label: language === 'hi' ? 'स्मार्ट-आपदा निगरानी' : 'Smart Disaster Monitoring', icon: Cpu, badge: 'AI RADAR', iconColor: 'text-indigo-500 dark:text-indigo-400 bg-indigo-500/10' },
+                  { id: 'incidents', label: language === 'hi' ? 'आपदा रिपोर्ट एवं इंटेलिजेंस' : 'Disaster Reports & Intelligence', icon: ShieldAlert, badge: 'NER 8', iconColor: 'text-amber-500 dark:text-amber-400 bg-amber-500/10' },
+                  { id: 'aiimpact', label: language === 'hi' ? 'AI आपदा प्रभाव आकलन' : 'AI Impact Assessment', icon: Camera, iconColor: 'text-purple-500 dark:text-purple-400 bg-purple-500/10' },
+                  { id: 'map', label: language === 'hi' ? 'NER लाइव मानचित्र' : 'NER Live GIS Map', icon: MapPin, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' }
                 ]
               },
               {
                 category: t('sidebar.catResponse', 'Crisis Response & Logistics'),
                 items: [
-                  { id: 'private-tracking', label: 'Smart Emergency Response', icon: Radio, badge: '1-TO-1 GPS', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'relief-supplies', label: 'Relief Supply & Vehicle Tracking', icon: Truck, badge: 'LIVE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'rerouting', label: 'Road Accessibility & Safe Routes', icon: Navigation, badge: 'OSRM ROUTE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
-                  { id: 'facilities', label: t('navigation.facilities', 'Emergency Facilities & Rescue'), icon: HeartPulse, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
-                  { id: 'drone', label: t('navigation.drone', 'UAV Drone Dispatcher'), icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' }
+                  { id: 'private-tracking', label: language === 'hi' ? 'स्मार्ट आपातकालीन प्रतिक्रिया' : 'Smart Emergency Response', icon: Radio, badge: '1-TO-1 GPS', iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'relief-supplies', label: language === 'hi' ? 'राहत सामग्री एवं वाहन ट्रैकिंग' : 'Relief Supply & Vehicle Tracking', icon: Truck, badge: 'LIVE', iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
+                  { id: 'rerouting', label: language === 'hi' ? 'सड़क सुगमता एवं सुरक्षित मार्ग' : 'Road Accessibility & Safe Routes', icon: Navigation, badge: 'OSRM ROUTE', iconColor: 'text-teal-500 dark:text-teal-400 bg-teal-500/10' },
+                  { id: 'facilities', label: language === 'hi' ? 'आपातकालीन सुविधाएं एवं बचाव' : 'Emergency Facilities & Rescue', icon: HeartPulse, iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' },
+                  { id: 'drone', label: language === 'hi' ? 'UAV ड्रोन डिस्पैचर' : 'UAV Drone Dispatcher', icon: Radio, iconColor: 'text-cyan-500 dark:text-cyan-400 bg-cyan-500/10' }
                 ]
               },
               {
                 category: t('sidebar.catCommand', 'Governance & Operations'),
                 items: [
-                  { id: 'gov', label: t('navigation.gov', 'MDoNER Command Grid'), icon: Building2, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
-                  { id: 'weather', label: t('navigation.weather', 'Weather & Doppler Radar'), icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' },
-                  { id: 'location', label: 'Location Intelligence Report', icon: Compass, badge: 'PDF REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' }
+                  { id: 'gov', label: language === 'hi' ? 'MDoNER कमांड' : 'MDoNER Command Grid', icon: Building2, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
+                  { id: 'weather', label: language === 'hi' ? 'मौसम बुद्धिमत्ता' : 'Weather & Doppler Radar', icon: CloudRain, iconColor: 'text-sky-400 dark:text-sky-300 bg-sky-400/10' },
+                  { id: 'location', label: language === 'hi' ? 'स्थान बुद्धिमत्ता रिपोर्ट' : 'Location Intelligence Report', icon: Compass, badge: 'PDF REPORT', iconColor: 'text-sky-500 dark:text-sky-400 bg-sky-500/10' }
                 ]
               }
             ].map((section, sIdx) => (
@@ -982,10 +1192,50 @@ export default function App() {
       </aside>
 
       {/* 2. RIGHT MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0 max-w-full">
+      <div className={`flex-1 flex flex-col h-full overflow-hidden min-w-0 transition-all duration-300 ${isMobileSimulated ? 'max-w-[400px] mx-auto my-auto h-[95vh] rounded-[44px] border-[10px] border-slate-900 shadow-2xl shadow-sky-950/80 ring-4 ring-slate-800/80 bg-white dark:bg-[#070b14] relative z-40' : 'max-w-full'}`}>
+        
+        {/* iPhone Dynamic Island & Simulated Status Bar (Visible in Laptop Simulator Mode) */}
+        {isMobileSimulated && (
+          <div className="bg-slate-950 text-slate-200 text-[11px] font-bold px-5 py-1.5 flex items-center justify-between z-[10002] shrink-0 select-none relative">
+            <div className="flex items-center gap-1.5">
+              <span className="font-extrabold text-sky-400">9:41</span>
+              <span className="text-[10px] text-slate-400 font-normal">IST</span>
+            </div>
+
+            {/* Dynamic Island Notch Pill */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-1.5 h-4 w-24 bg-black rounded-full border border-slate-800/80 flex items-center justify-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-800"></span>
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500/80 animate-pulse"></span>
+            </div>
+
+            <div className="flex items-center gap-2 text-[10px]">
+              <span className="text-emerald-400 font-extrabold">5G</span>
+              <span>📶</span>
+              <span className="text-amber-400">100% 🔋</span>
+            </div>
+          </div>
+        )}
 
         {/* Top Header Command Bar — Clean, Aesthetic & Perfectly Responsive */}
-        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-3 sm:px-4 lg:px-5 flex items-center justify-end gap-2 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
+        <header className="relative z-[9999] h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-3 sm:px-4 lg:px-5 flex items-center justify-between gap-2 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
+          {/* Mobile Left: 3-Dot Feature Launcher Menu Button */}
+          <div className={`${isMobileSimulated ? 'flex' : 'md:hidden flex'} items-center gap-2 mr-auto`}>
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white font-extrabold text-xs shadow-md shadow-sky-600/30 active:scale-95 transition cursor-pointer"
+              title="Open All 18 Features Menu"
+            >
+              <div className="flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-pulse"></span>
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse delay-75"></span>
+                <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse delay-150"></span>
+              </div>
+              <span className="whitespace-nowrap font-black">
+                {language === 'hi' ? 'सभी 18 फीचर्स 🎛️' : 'All 18 Features 🎛️'}
+              </span>
+            </button>
+          </div>
+
           {/* Right: Quick Action Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-50 ml-auto">
             {/* 🤖 Executive AI Agent Button with Extra Detail Feature */}
@@ -1022,6 +1272,30 @@ export default function App() {
                 {currentTime || '23:45:11'}
               </span>
             </div>
+
+            {/* 📱 Mobile Phone View Simulator Switcher for Laptop */}
+            <button
+              onClick={() => {
+                const nextState = !isMobileSimulated;
+                setIsMobileSimulated(nextState);
+                if (nextState) {
+                  setIsMobileMenuOpen(true);
+                }
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer border shrink-0 ${
+                isMobileSimulated
+                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/40 ring-2 ring-amber-500/30 shadow-md'
+                  : 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30 hover:bg-sky-500/25 shadow-sm'
+              }`}
+              title="Toggle Mobile Phone View Simulator on Laptop"
+            >
+              <span className="text-sm">📱</span>
+              <span className="whitespace-nowrap">
+                {isMobileSimulated
+                  ? (language === 'hi' ? 'फोन व्यू ऑन (बंद करें)' : 'Phone View ON (Exit)')
+                  : (language === 'hi' ? '📱 फोन जैसा व्यू देखें' : '📱 Phone View')}
+              </span>
+            </button>
 
             {/* 🌐 Language Switcher */}
             <div className="shrink-0">
@@ -1748,6 +2022,134 @@ export default function App() {
           onOpenSos={() => setIsSosModalOpen(true)}
           activeModule={activeModule}
         />
+
+        {/* 🎛️ Floating Action Button on Mobile (Bottom-Right 3-Dots Button) */}
+        <button
+          onClick={() => setIsMobileMenuOpen(true)}
+          className={`${isMobileSimulated ? 'flex' : 'md:hidden flex'} fixed bottom-6 right-5 z-[9990] items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white shadow-2xl shadow-sky-600/50 border-2 border-sky-300/60 font-black text-xs active:scale-95 transition-transform cursor-pointer`}
+          title="Choose from All 18 Features"
+        >
+          <div className="flex items-center gap-1">
+            <span className="h-2.5 w-2.5 rounded-full bg-amber-300 animate-ping"></span>
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
+            <span className="h-2.5 w-2.5 rounded-full bg-sky-200"></span>
+          </div>
+          <span className="font-black text-xs">{language === 'hi' ? '18 फीचर्स 🎛️' : '18 Features 🎛️'}</span>
+        </button>
+
+        {/* 📱 MOBILE FEATURE LAUNCHER DRAWER (FULL SCREEN ON PHONE WITH 18 FEATURES) */}
+        {isMobileMenuOpen && (
+          <div className={`${isMobileSimulated ? 'flex' : 'md:hidden flex'} fixed inset-0 z-[10000] bg-slate-950/80 backdrop-blur-md flex-col justify-end sm:justify-center p-0 sm:p-4 animate-in fade-in duration-200`}>
+            <div className="bg-white dark:bg-[#080e21] border border-slate-200 dark:border-slate-800 w-full h-[92vh] sm:h-[85vh] rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl">
+              
+              {/* Drawer Header */}
+              <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0d152d] flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-600/30 ring-2 ring-sky-400/40 overflow-hidden shrink-0">
+                    <img src="/jeevan-setu-logo.jpg" alt="Logo" className="h-full w-full object-cover" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-black text-slate-900 dark:text-white leading-tight">
+                      {language === 'hi' ? 'जीवन सेतु — सभी 18 फीचर्स' : 'Jeevan Setu — All 18 Features'}
+                    </h2>
+                    <p className="text-xs text-sky-600 dark:text-sky-400 font-bold">
+                      {language === 'hi' ? 'अपनी पसंद का फीचर चुनें (Full Screen)' : 'Select any feature for full screen view'}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="h-9 w-9 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center hover:bg-rose-500 hover:text-white transition cursor-pointer shrink-0"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Feature Search Bar */}
+              <div className="p-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070b16] shrink-0">
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder={language === 'hi' ? 'फीचर का नाम खोजें (उदा: GPS, नक्शा, मौसम, अस्पताल)...' : 'Search feature name (e.g. GPS, map, weather)...'}
+                    value={mobileSearchQuery}
+                    onChange={(e) => setMobileSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                </div>
+              </div>
+
+              {/* Feature Grid List */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar">
+                {ALL_FEATURE_GROUPS.map((group, gIdx) => {
+                  const filteredItems = group.items.filter(item => {
+                    if (!mobileSearchQuery) return true;
+                    const q = mobileSearchQuery.toLowerCase();
+                    return (
+                      item.nameHi.toLowerCase().includes(q) ||
+                      item.nameEn.toLowerCase().includes(q) ||
+                      item.descHi.toLowerCase().includes(q) ||
+                      item.descEn.toLowerCase().includes(q)
+                    );
+                  });
+
+                  if (filteredItems.length === 0) return null;
+
+                  return (
+                    <div key={gIdx} className="space-y-2.5">
+                      <div className="flex items-center justify-between text-[11px] font-extrabold tracking-wider uppercase text-sky-600 dark:text-sky-400 px-1">
+                        <span>{language === 'hi' ? group.categoryHi : group.categoryEn}</span>
+                        <span className="text-[10px] text-slate-400">{filteredItems.length} Features</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {filteredItems.map(item => {
+                          const Icon = item.icon;
+                          const active = activeModule === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              onClick={() => {
+                                setActiveModule(item.id);
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full flex items-start gap-3 p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                                active
+                                  ? 'bg-gradient-to-r from-sky-600/20 to-indigo-600/20 border-sky-500/60 ring-2 ring-sky-500/40 shadow-lg'
+                                  : 'bg-slate-50 dark:bg-[#0c142b] border-slate-200 dark:border-slate-800/80 hover:border-sky-500/40 hover:bg-sky-500/10'
+                              }`}
+                            >
+                              <div className={`h-10 w-10 shrink-0 rounded-xl flex items-center justify-center border shadow-sm ${item.iconColor}`}>
+                                <Icon className="h-5 w-5" />
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-1">
+                                  <h3 className="text-xs font-black text-slate-900 dark:text-white truncate">
+                                    {language === 'hi' ? item.nameHi : item.nameEn}
+                                  </h3>
+                                  {item.badge && (
+                                    <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-black bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 uppercase">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                                  {language === 'hi' ? item.descHi : item.descEn}
+                                </p>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
       </main>
     </div>

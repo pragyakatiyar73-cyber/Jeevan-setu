@@ -166,13 +166,13 @@ html, body, #root {
     top: 0 !important;
     width: 100% !important;
     margin: 0 !important;
-    padding: 12mm 15mm !important;
+    padding: 10mm 12mm !important;
     background: #ffffff !important;
     color: #0f172a !important;
     box-shadow: none !important;
     border: none !important;
-    font-size: 11pt !important;
-    line-height: 1.4 !important;
+    font-size: 10.5pt !important;
+    line-height: 1.35 !important;
   }
   #official-location-360-report {
     position: absolute !important;
@@ -187,15 +187,21 @@ html, body, #root {
   .pdf-page {
     width: 210mm !important;
     min-height: 297mm !important;
-    padding: 12mm 15mm !important;
+    padding: 10mm 12mm !important;
     box-sizing: border-box !important;
     page-break-after: always !important;
     break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
     position: relative !important;
     background: #ffffff !important;
     color: #0f172a !important;
     border: none !important;
     box-shadow: none !important;
+  }
+  .pdf-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
   }
   .no-print {
     display: none !important;

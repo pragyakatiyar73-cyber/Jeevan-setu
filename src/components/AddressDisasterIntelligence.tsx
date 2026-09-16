@@ -69,7 +69,8 @@ const NER_STATES = [
 ];
 
 export default function AddressDisasterIntelligence() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
 
   // Search State
   const [searchQuery, setSearchQuery] = useState<string>('East Khasi Hills, Meghalaya');
@@ -325,18 +326,18 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-bold text-sky-600 dark:text-sky-400 border border-sky-500/40 uppercase">
-                LOCATION INTELLIGENCE REPORT
+                {isHi ? 'स्थान बुद्धिमत्ता रिपोर्ट' : 'LOCATION INTELLIGENCE REPORT'}
               </span>
               <span className="rounded bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                18 MODULES SYNCHRONIZED
+                {isHi ? '18 मॉड्यूल सिंक किए गए' : '18 MODULES SYNCHRONIZED'}
               </span>
             </div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1 flex items-center gap-2">
               <Compass className="h-7 w-7 text-sky-500 dark:text-sky-400 animate-spin-slow shrink-0" />
-              <span>Location Intelligence Report & Multi-Page PDF Engine</span>
+              <span>{isHi ? 'स्थान बुद्धिमत्ता रिपोर्ट एवं बहु-पृष्ठीय PDF इंजन' : 'Location Intelligence Report & Multi-Page PDF Engine'}</span>
             </h1>
             <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-3xl">
-              Enter any location in the 8 North-Eastern states of India to instantly collect telemetry across all 18 Jeevan Setu modules and generate an official 9-page Government PDF Location Intelligence Report.
+              {isHi ? 'भारत के 8 उत्तर-पूर्वी राज्यों में किसी भी स्थान का नाम दर्ज करें ताकि सभी 18 जीवन सेतु मॉड्यूल से रीयल-टाइम डेटा एकत्र करके आधिकारिक 9-पृष्ठीय सरकारी PDF रिपोर्ट बनाई जा सके।' : 'Enter any location in the 8 North-Eastern states of India to instantly collect telemetry across all 18 Jeevan Setu modules and generate an official 9-page Government PDF Location Intelligence Report.'}
             </p>
           </div>
 
@@ -347,14 +348,14 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
                 className="rounded-xl border border-sky-300 dark:border-sky-500/40 bg-sky-50 dark:bg-sky-950/40 px-4 py-2.5 text-xs font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/60 flex items-center gap-1.5 cursor-pointer"
               >
                 <Eye className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-                <span>{showFullPDFView ? 'SHOW DASHBOARD VIEW' : 'VIEW 9-PAGE REPORT'}</span>
+                <span>{showFullPDFView ? (isHi ? 'डैशबोर्ड दृश्य देखें' : 'SHOW DASHBOARD VIEW') : (isHi ? '9-पृष्ठीय रिपोर्ट देखें' : 'VIEW 9-PAGE REPORT')}</span>
               </button>
               <button
                 onClick={handlePrintPDF}
                 className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-500 shadow flex items-center gap-1.5 cursor-pointer"
               >
                 <Printer className="h-4 w-4" />
-                <span>GENERATE COMPLETE PDF REPORT</span>
+                <span>{isHi ? 'संपूर्ण PDF रिपोर्ट बनाएं' : 'GENERATE COMPLETE PDF REPORT'}</span>
               </button>
             </div>
           )}
@@ -369,7 +370,7 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Enter Location (e.g. East Khasi Hills, Meghalaya or Guwahati, Assam)"
+                placeholder={isHi ? 'स्थान का नाम दर्ज करें (जैसे ईस्ट खासी हिल्स, मेघालय या गुवाहाटी, असम)' : 'Enter Location (e.g. East Khasi Hills, Meghalaya or Guwahati, Assam)'}
                 className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 pl-10 pr-4 py-2.5 text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-sky-500 focus:outline-none"
               />
             </div>
@@ -379,13 +380,15 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
               className="rounded-xl bg-sky-600 px-6 py-2.5 text-xs font-black text-white hover:bg-sky-500 flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Sparkles className="h-4 w-4" />
-              <span>{isSearching || isLoadingData ? 'COLLECTING DATA...' : 'SEARCH LOCATION'}</span>
+              <span>{isSearching || isLoadingData ? (isHi ? 'डेटा एकत्र हो रहा है...' : 'COLLECTING DATA...') : (isHi ? 'स्थान खोजें' : 'SEARCH LOCATION')}</span>
             </button>
           </form>
 
           {/* Quick Pre-Populated Sample Locations */}
           <div className="flex items-center gap-2 flex-wrap text-xs">
-            <span className="text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px]">Quick NER Searches:</span>
+            <span className="text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px]">
+              {isHi ? 'त्वरित NER खोज:' : 'Quick NER Searches:'}
+            </span>
             <button
               onClick={() => handleQuickLocationSelect('East Khasi Hills, Meghalaya', 25.5788, 91.8933, 'Meghalaya', 'East Khasi Hills')}
               className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950/60 px-2.5 py-1 text-[11px] text-slate-700 dark:text-slate-300 hover:border-sky-500 hover:text-slate-900 dark:hover:text-white"
@@ -585,7 +588,7 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
         </div>
       )}
 
-      {/* 🔴 OFFICIAL MULTI-PAGE A4 PDF REPORT (PAGES 1 TO 9 - CONTINUOUS GAP-FREE FLOW) */}
+      {/* 🔴 OFFICIAL 2-PAGE A4 PDF REPORT (PAGES 1 TO 2 - A4 PRINT READY WITH LIVE URL) */}
       {(showFullPDFView || !reportGenerated) && reportGenerated && (
         <div className="space-y-4">
           
@@ -593,47 +596,50 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
           <div className="no-print flex items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono">
             <span className="text-slate-700 dark:text-slate-300 flex items-center gap-2">
               <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              <span>OFFICIAL 9-PAGE A4 GOVERNMENT REPORT PREVIEW</span>
+              <span>{isHi ? 'आधिकारिक 2-पेज ए4 सरकारी रिपोर्ट पूर्वावलोकन' : 'OFFICIAL 2-PAGE A4 GOVERNMENT REPORT PREVIEW'}</span>
             </span>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowFullPDFView(false)}
-                className="rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200"
+                className="rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer"
               >
-                RETURN TO DASHBOARD
+                {isHi ? 'डैशबोर्ड पर लौटें' : 'RETURN TO DASHBOARD'}
               </button>
               <button
                 onClick={handlePrintPDF}
                 className="rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 shadow flex items-center gap-1.5 cursor-pointer"
               >
                 <Printer className="h-3.5 w-3.5" />
-                <span>DOWNLOAD COMPLETE PDF</span>
+                <span>{isHi ? '2-पेज पीडीएफ डाउनलोड करें' : 'DOWNLOAD 2-PAGE PDF'}</span>
               </button>
             </div>
           </div>
 
-          {/* THE 9-PAGE A4 DOCUMENT WRAPPER */}
-          <div id="official-location-360-report" className="space-y-8 bg-slate-200 dark:bg-slate-950 p-2 sm:p-6 rounded-2xl">
+          {/* THE OFFICIAL 2-PAGE A4 DOCUMENT WRAPPER */}
+          <div id="official-location-360-report" className="space-y-6 bg-slate-200 dark:bg-slate-950 p-2 sm:p-6 rounded-2xl">
             
             {/* ========================================================================= */}
-            {/* PAGE 1: OFFICIAL COVER & EXECUTIVE SUMMARY */}
+            {/* PAGE 1 OF 2: EXECUTIVE SUMMARY, WEATHER & RISK ASSESSMENT */}
             {/* ========================================================================= */}
-            <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
+            <div className="pdf-page bg-white text-slate-950 p-6 shadow-xl border border-slate-300 font-sans space-y-4">
               {/* Government Header */}
-              <div className="border-b-2 border-slate-900 pb-4 text-center space-y-1">
-                <div className="text-4xl">🏛️</div>
-                <h2 className="text-xs font-black tracking-widest text-slate-700 uppercase">GOVERNMENT OF INDIA</h2>
-                <h1 className="text-sm font-extrabold tracking-wide text-slate-950 uppercase">MINISTRY OF DEVELOPMENT OF NORTH EASTERN REGION (MDoNER)</h1>
-                <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">NATIONAL EMERGENCY OPERATIONS CENTRE (NEOC)</h2>
-                <h3 className="text-xs font-black text-sky-900 uppercase tracking-widest pt-1 border-t border-slate-300 mt-2">
+              <div className="border-b-2 border-slate-900 pb-2 text-center space-y-0.5">
+                <div className="text-3xl">🏛️</div>
+                <h2 className="text-[10px] font-black tracking-widest text-slate-700 uppercase">GOVERNMENT OF INDIA</h2>
+                <h1 className="text-xs font-extrabold tracking-wide text-slate-950 uppercase">MINISTRY OF DEVELOPMENT OF NORTH EASTERN REGION (MDoNER)</h1>
+                <h2 className="text-[10px] font-bold text-slate-800 uppercase tracking-wider">NATIONAL EMERGENCY OPERATIONS CENTRE (NEOC)</h2>
+                <h3 className="text-[10px] font-black text-sky-900 uppercase tracking-widest pt-1 border-t border-slate-300 mt-1">
                   JEEVAN SETU — AI-POWERED DISASTER INTELLIGENCE & EMERGENCY RESPONSE PLATFORM
                 </h3>
               </div>
 
-              {/* Report Metadata Block */}
-              <div className="bg-slate-100 p-4 border border-slate-400 font-mono text-xs space-y-2">
+              {/* Report Metadata Block with Live URL */}
+              <div className="bg-slate-100 p-3 border border-slate-400 font-mono text-[11px] space-y-1">
                 <div className="flex justify-between border-b border-slate-300 pb-1">
                   <b>REPORT ID:</b> <span>{reportId}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-300 pb-1">
+                  <b>PLATFORM URL:</b> <span className="font-bold text-emerald-800 underline">{typeof window !== 'undefined' ? window.location.href : 'http://localhost:3000/location?tab=location'}</span>
                 </div>
                 <div className="flex justify-between border-b border-slate-300 pb-1">
                   <b>SELECTED LOCATION:</b> <span className="font-bold text-sky-900">{currentLoc.displayName}</span>
@@ -648,508 +654,264 @@ End of Location Intelligence Report — Jeevan Setu Command Engine
                   <b>TIMESTAMP (IST):</b> <span>{new Date().toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <b>DATA CLASSIFICATION STATUS:</b> <span className="text-emerald-800 font-bold">LIVE / VERIFIED TELEMETRY</span>
+                  <b>DATA CLASSIFICATION STATUS:</b> <span className="text-emerald-800 font-bold">LIVE / VERIFIED TELEMETRY MESH</span>
                 </div>
               </div>
 
               {/* Executive Summary */}
-              <div className="space-y-3 font-serif leading-relaxed text-xs text-slate-900">
-                <h4 className="text-sm font-black font-sans uppercase tracking-wider border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
-                  EXECUTIVE SUMMARY & DISASTER PROFILE
+              <div className="space-y-2 text-[11px] text-slate-900">
+                <h4 className="text-xs font-black uppercase tracking-wider border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
+                  1. EXECUTIVE SUMMARY & DISASTER PROFILE
                 </h4>
-                <p>
-                  This Location Intelligence Report compiles live satellite telemetry, hydrological readings, road accessibility metrics, and citizen distress calls across all 18 Jeevan Setu modules for <b>{currentLoc.displayName}</b>.
+                <p className="leading-snug">
+                  This Location Intelligence Report synthesizes live satellite telemetry, hydrological readings, road accessibility metrics, and citizen distress calls across all 18 Jeevan Setu modules for <b>{currentLoc.displayName}</b>.
                 </p>
-                <div className="p-3 bg-slate-50 border border-slate-300 font-sans">
-                  <div className="grid grid-cols-2 gap-4 font-mono text-xs">
+                <div className="p-2.5 bg-slate-50 border border-slate-300 font-mono">
+                  <div className="grid grid-cols-2 gap-2 text-[11px]">
                     <div><b>Overall Risk Rating:</b> <span className="text-rose-700 font-bold">{landslideAssessment?.riskTier || 'HIGH'}</span></div>
-                    <div><b>Soil Saturation:</b> <span>82% Saturation Index</span></div>
+                    <div><b>Soil Saturation Index:</b> <span>82% Pore Water Saturation</span></div>
                     <div><b>Precipitation Rate:</b> <span>{weatherData ? weatherData.precipitation : 12} mm/hr</span></div>
                     <div><b>Emergency Accessibility:</b> <span>78% Road Network Open</span></div>
                   </div>
                 </div>
-                <p>
-                  Field authorities in {currentLoc.state || 'the North-Eastern Region'} are advised to enforce strict road monitoring along steep incline cuts and maintain NDRF battalion readiness in Sector 4 lowlands.
-                </p>
+              </div>
+
+              {/* Weather & Meteorological Telemetry */}
+              <div className="space-y-2 text-[11px]">
+                <h4 className="text-xs font-black uppercase tracking-wider border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
+                  2. WEATHER & METEOROLOGICAL TELEMETRY
+                </h4>
+                <div className="grid grid-cols-4 gap-2 font-mono text-[10px]">
+                  <div className="p-2 border border-slate-300 bg-slate-50">
+                    <span className="text-slate-500 font-bold block uppercase">TEMP</span>
+                    <span className="text-sm font-black">{weatherData ? weatherData.temperature + '°C' : '22°C'}</span>
+                  </div>
+                  <div className="p-2 border border-slate-300 bg-slate-50">
+                    <span className="text-slate-500 font-bold block uppercase">RAIN</span>
+                    <span className="text-sm font-black text-sky-900">{weatherData ? weatherData.precipitation + ' mm/h' : '14 mm/h'}</span>
+                  </div>
+                  <div className="p-2 border border-slate-300 bg-slate-50">
+                    <span className="text-slate-500 font-bold block uppercase">HUMIDITY</span>
+                    <span className="text-sm font-black">{weatherData ? weatherData.humidity + '%' : '84%'}</span>
+                  </div>
+                  <div className="p-2 border border-slate-300 bg-slate-50">
+                    <span className="text-slate-500 font-bold block uppercase">WIND GUSTS</span>
+                    <span className="text-sm font-black">{weatherData ? weatherData.windSpeed + ' km/h' : '14 km/h'}</span>
+                  </div>
+                </div>
+
+                <table className="w-full text-left border-collapse border border-slate-300 text-[10px] font-mono">
+                  <thead>
+                    <tr className="bg-slate-100 border-b border-slate-300">
+                      <th className="p-1.5 border-r border-slate-300">FORECAST PERIOD</th>
+                      <th className="p-1.5 border-r border-slate-300">PRECIPITATION</th>
+                      <th className="p-1.5 border-r border-slate-300">TEMP (°C)</th>
+                      <th className="p-1.5">HAZARD OUTLOOK</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-slate-200">
+                      <td className="p-1.5 border-r border-slate-300">0 - 24 Hours</td>
+                      <td className="p-1.5 border-r border-slate-300 font-bold text-rose-800">38 mm/hr</td>
+                      <td className="p-1.5 border-r border-slate-300">21°C</td>
+                      <td className="p-1.5">Heavy cloudburst threat near river tributaries</td>
+                    </tr>
+                    <tr className="border-b border-slate-200">
+                      <td className="p-1.5 border-r border-slate-300">24 - 48 Hours</td>
+                      <td className="p-1.5 border-r border-slate-300 font-bold text-amber-800">18 mm/hr</td>
+                      <td className="p-1.5 border-r border-slate-300">23°C</td>
+                      <td className="p-1.5">Sustained rain with high soil saturation</td>
+                    </tr>
+                    <tr>
+                      <td className="p-1.5 border-r border-slate-300">48 - 72 Hours</td>
+                      <td className="p-1.5 border-r border-slate-300 font-bold text-emerald-800">4 mm/hr</td>
+                      <td className="p-1.5 border-r border-slate-300">25°C</td>
+                      <td className="p-1.5">Precipitation tapering; waterlogging clearing</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Flood & Landslide Risk Assessment */}
+              <div className="space-y-2 text-[11px]">
+                <h4 className="text-xs font-black uppercase tracking-wider border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
+                  3. FLOOD & LANDSLIDE RISK ASSESSMENT
+                </h4>
+                <div className="grid grid-cols-2 gap-2 text-[10px] font-sans">
+                  <div className="p-2 border border-slate-300 bg-slate-50 space-y-1">
+                    <b className="uppercase text-slate-900 block">FLOOD VULNERABILITY: <span className="text-amber-800">{floodAssessment?.riskTier || 'MODERATE'}</span></b>
+                    <p className="leading-tight">Runoff accumulation near agricultural river banks due to {weatherData ? weatherData.precipitation : 12} mm/hr rain rate.</p>
+                  </div>
+                  <div className="p-2 border border-slate-300 bg-slate-50 space-y-1">
+                    <b className="uppercase text-slate-900 block">LANDSLIDE HAZARD INDEX: <span className="text-rose-800">{landslideAssessment?.riskTier || 'HIGH'}</span></b>
+                    <p className="leading-tight">24° Incline Cut with 82% soil moisture destabilizes shale rock strata along mountain highway cuts.</p>
+                  </div>
+                </div>
               </div>
 
               {/* Page 1 Footer */}
               <div className="border-t border-slate-400 pt-2 flex justify-between items-center text-[9px] font-mono text-slate-600">
-                <span>JEEVAN SETU &bull; Government of India &bull; MDoNER</span>
-                <span>Page 1 of 9</span>
+                <span>JEEVAN SETU &bull; {typeof window !== 'undefined' ? window.location.href : 'http://localhost:3000/location?tab=location'} &bull; Government of India</span>
+                <span>Page 1 of 2</span>
               </div>
             </div>
 
             {/* ========================================================================= */}
-            {/* PAGE 2: WEATHER & ENVIRONMENTAL INTELLIGENCE */}
+            {/* PAGE 2 OF 2: MAP MATRIX, ACCESSIBILITY, LOGISTICS & DIRECTIVES */}
             {/* ========================================================================= */}
-            <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
-              <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
+            <div className="pdf-page bg-white text-slate-950 p-6 shadow-xl border border-slate-300 font-sans space-y-4">
+              <div className="border-b border-slate-900 pb-1.5 flex justify-between items-center text-[10px] font-mono">
                 <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
+                <span className="font-bold text-emerald-800 underline">{typeof window !== 'undefined' ? window.location.href : 'http://localhost:3000'}</span>
                 <span>REPORT ID: {reportId}</span>
               </div>
 
-              <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
-                PAGE 2: WEATHER & ENVIRONMENTAL INTELLIGENCE
-              </h3>
+              {/* Geospatial Feature & Map Matrix */}
+              <div className="space-y-2 text-[11px]">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
+                  4. GEOSPATIAL MAP & SATELLITE MESH
+                </h4>
 
-              <div className="grid grid-cols-2 gap-4 font-sans text-xs">
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase block">CURRENT TEMPERATURE</span>
-                  <span className="text-lg font-black text-slate-900">{weatherData ? weatherData.temperature + '°C' : '22°C'}</span>
-                  <span className="text-[10px] text-slate-600 block">Feels Like: {weatherData ? weatherData.apparentTemperature + '°C' : '24°C'}</span>
-                </div>
-
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase block">PRECIPITATION / RAINFALL</span>
-                  <span className="text-lg font-black text-sky-900">{weatherData ? weatherData.precipitation + ' mm/hr' : '14 mm/hr'}</span>
-                  <span className="text-[10px] text-slate-600 block">Condition: {weatherData ? weatherData.weatherDescription : 'Monsoon Rain'}</span>
-                </div>
-
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase block">HUMIDITY</span>
-                  <span className="text-lg font-black text-slate-900">{weatherData ? weatherData.humidity + '%' : '84%'}</span>
-                </div>
-
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase block">WIND SPEED & GUSTS</span>
-                  <span className="text-lg font-black text-slate-900">{weatherData ? weatherData.windSpeed + ' km/h' : '14 km/h'}</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold uppercase text-slate-800">24-HOUR & 72-HOUR METEOROLOGICAL FORECAST</h4>
-                <table className="w-full text-left border-collapse border border-slate-300 text-xs font-mono">
-                  <thead>
-                    <tr className="bg-slate-100 border-b border-slate-300">
-                      <th className="p-2 border-r border-slate-300">PERIOD</th>
-                      <th className="p-2 border-r border-slate-300">RAIN (MM/HR)</th>
-                      <th className="p-2 border-r border-slate-300">TEMP (°C)</th>
-                      <th className="p-2">HAZARD OUTLOOK</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-slate-200">
-                      <td className="p-2 border-r border-slate-300">0 - 24 Hours</td>
-                      <td className="p-2 border-r border-slate-300 font-bold text-rose-800">38 mm/hr</td>
-                      <td className="p-2 border-r border-slate-300">21°C</td>
-                      <td className="p-2">Heavy cloudburst threat near river tributaries</td>
-                    </tr>
-                    <tr className="border-b border-slate-200">
-                      <td className="p-2 border-r border-slate-300">24 - 48 Hours</td>
-                      <td className="p-2 border-r border-slate-300 font-bold text-amber-800">18 mm/hr</td>
-                      <td className="p-2 border-r border-slate-300">23°C</td>
-                      <td className="p-2">Sustained rain with high soil saturation</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2 border-r border-slate-300">48 - 72 Hours</td>
-                      <td className="p-2 border-r border-slate-300 font-bold text-emerald-800">4 mm/hr</td>
-                      <td className="p-2 border-r border-slate-300">25°C</td>
-                      <td className="p-2">Precipitation tapering; waterlogging clearing</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="border-t border-slate-400 pt-2 flex justify-between items-center text-[9px] font-mono text-slate-600">
-                <span>JEEVAN SETU &bull; Open-Meteo Radar Feed</span>
-                <span>Page 2 of 9</span>
-              </div>
-            </div>
-
-            {/* ========================================================================= */}
-            {/* PAGE 3: FLOOD & LANDSLIDE RISK ASSESSMENT */}
-            {/* ========================================================================= */}
-            <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
-              <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
-                <span>REPORT ID: {reportId}</span>
-              </div>
-
-              <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
-                PAGE 3: FLOOD & LANDSLIDE RISK ASSESSMENT
-              </h3>
-
-              <div className="space-y-4">
-                <div className="p-3 border border-slate-300 bg-slate-50 space-y-2">
-                  <h4 className="text-xs font-black uppercase text-slate-900">FLOOD VULNERABILITY MODEL</h4>
-                  <div className="text-xs font-serif leading-relaxed">
-                    <b>Vulnerability Tier:</b> <span className="font-bold text-amber-800">{floodAssessment?.riskTier || 'MODERATE'}</span><br/>
-                    <b>Primary Threat:</b> Tributary swelling & lowland drainage obstruction.<br/>
-                    <b>AI Flood Explanation:</b> Rainfall intensity of {weatherData ? weatherData.precipitation : 12} mm/hr over low-lying culvert sectors causes rapid runoff accumulation near agricultural river banks.
+                <div className="p-2.5 bg-slate-900 text-white rounded border border-slate-700 font-mono text-[10px] space-y-1">
+                  <div className="text-sky-400 font-bold border-b border-slate-700 pb-0.5 flex justify-between">
+                    <span>🌐 SATELLITE BOUNDARY & MESH COORDINATES</span>
+                    <span>ELEVATION: 1,420M MSL &bull; SLOPE: 24°</span>
                   </div>
-                </div>
-
-                <div className="p-3 border border-slate-300 bg-slate-50 space-y-2">
-                  <h4 className="text-xs font-black uppercase text-slate-900">LANDSLIDE HAZARD INDEX MODEL</h4>
-                  <div className="text-xs font-serif leading-relaxed">
-                    <b>Hazard Tier:</b> <span className="font-bold text-rose-800">{landslideAssessment?.riskTier || 'HIGH'}</span><br/>
-                    <b>Slope Angle:</b> 24° Stepped Incline Cut &bull; <b>Soil Moisture:</b> 82% Saturation Index<br/>
-                    <b>AI Landslide Explanation:</b> Sustained monsoon rainfall destabilizes mud and shale rock strata along mountain highway cuts, escalating debris flow risk over the next 12 hours.
-                  </div>
-                </div>
-
-                <div className="p-3 border border-slate-300 bg-slate-50 space-y-1 font-mono text-xs">
-                  <h4 className="font-bold uppercase text-slate-900">WATERSHED & SLOPE MITIGATION FACTORS</h4>
-                  <div>&bull; Retaining Gabions: Positioned at vulnerable incline curves.</div>
-                  <div>&bull; Dewatering Pumps: 14 High-capacity units allocated to municipal lowlands.</div>
-                  <div>&bull; Stream Gauging: Continuous Central Water Commission river stage monitoring.</div>
-                </div>
-              </div>
-
-              <div className="border-t border-slate-400 pt-2 flex justify-between items-center text-[9px] font-mono text-slate-600">
-                <span>JEEVAN SETU &bull; ISRO Bhuvan GIS & Hazard Engine</span>
-                <span>Page 3 of 9</span>
-              </div>
-            </div>
-
-            {/* ========================================================================= */}
-            {/* PAGE 4: MAP & GEOSPATIAL INTELLIGENCE */}
-            {/* ========================================================================= */}
-            <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
-              <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
-                <span>REPORT ID: {reportId}</span>
-              </div>
-
-              <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
-                PAGE 4: MAP & GEOSPATIAL INTELLIGENCE
-              </h3>
-
-              <div className="p-4 border border-slate-400 bg-slate-100 space-y-3">
-                <div className="bg-slate-900 text-white p-4 rounded border border-slate-700 font-mono text-xs space-y-2">
-                  <div className="text-sky-400 font-bold border-b border-slate-700 pb-1">
-                    🌐 SATELLITE & GIS BOUNDARY COORDINATES & MESH
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  <div className="grid grid-cols-2 gap-1 text-[10px]">
                     <div><b>Target Location:</b> {currentLoc.displayName}</div>
+                    <div><b>State / Sector:</b> {currentLoc.state || 'Meghalaya'}</div>
                     <div><b>Latitude:</b> {currentLoc.lat.toFixed(4)}° N</div>
                     <div><b>Longitude:</b> {currentLoc.lon.toFixed(4)}° E</div>
-                    <div><b>State / Sector:</b> {currentLoc.state || 'Meghalaya'}</div>
-                    <div><b>Elevation (MSL):</b> 1,420 Meters</div>
-                    <div><b>Terrain Slope:</b> 24° Incline Cut</div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold uppercase text-slate-900">GEOSPATIAL FEATURE & INFRASTRUCTURE MATRIX</h4>
-                  <table className="w-full text-left border-collapse border border-slate-300 text-xs font-mono">
-                    <thead>
-                      <tr className="bg-slate-200 border-b border-slate-300">
-                        <th className="p-2 border-r border-slate-300">FEATURE TYPE</th>
-                        <th className="p-2 border-r border-slate-300">LOCATION / NAME</th>
-                        <th className="p-2 border-r border-slate-300">COORDINATES</th>
-                        <th className="p-2">STATUS</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-slate-200">
-                        <td className="p-2 border-r border-slate-300 font-bold">📍 Location Pin</td>
-                        <td className="p-2 border-r border-slate-300">{currentLoc.city || currentLoc.displayName.split(',')[0]} Target</td>
-                        <td className="p-2 border-r border-slate-300">{currentLoc.lat.toFixed(2)}°N, {currentLoc.lon.toFixed(2)}°E</td>
-                        <td className="p-2 font-bold text-sky-800">MONITORED</td>
-                      </tr>
-                      <tr className="border-b border-slate-200">
-                        <td className="p-2 border-r border-slate-300 font-bold">🛣️ Highway Artery</td>
-                        <td className="p-2 border-r border-slate-300">NH Lifeline Corridor</td>
-                        <td className="p-2 border-r border-slate-300">{(currentLoc.lat + 0.02).toFixed(2)}°N, {(currentLoc.lon + 0.01).toFixed(2)}°E</td>
-                        <td className="p-2 font-bold text-amber-800">CAUTION</td>
-                      </tr>
-                      <tr className="border-b border-slate-200">
-                        <td className="p-2 border-r border-slate-300 font-bold">🚁 Emergency LZ</td>
-                        <td className="p-2 border-r border-slate-300">Shillong High-Altitude LZ</td>
-                        <td className="p-2 border-r border-slate-300">{(currentLoc.lat - 0.01).toFixed(2)}°N, {(currentLoc.lon - 0.02).toFixed(2)}°E</td>
-                        <td className="p-2 font-bold text-emerald-800">CLEAR</td>
-                      </tr>
-                      <tr>
-                        <td className="p-2 border-r border-slate-300 font-bold">🏕️ Relief Camp</td>
-                        <td className="p-2 border-r border-slate-300">High Cache Evacuation Hub A</td>
-                        <td className="p-2 border-r border-slate-300">{(currentLoc.lat + 0.01).toFixed(2)}°N, {(currentLoc.lon - 0.01).toFixed(2)}°E</td>
-                        <td className="p-2 font-bold text-emerald-800">ACTIVE</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div className="p-3 bg-slate-50 border border-slate-300 text-xs font-serif leading-relaxed">
-                <b>Geospatial Layer Legend:</b> Blue marker indicates target location pin; dashed emerald vector highlights recommended emergency evacuation route; red shaded markers indicate active citizen SOS calls.
-              </div>
-
-              <div className="border-t border-slate-400 pt-2 flex justify-between items-center text-[9px] font-mono text-slate-600">
-                <span>JEEVAN SETU &bull; OpenStreetMap & Leaflet Infrastructure</span>
-                <span>Page 4 of 9</span>
-              </div>
-            </div>
-
-            {/* ========================================================================= */}
-            {/* PAGE 5: ROAD & ACCESSIBILITY REPORT */}
-            {/* ========================================================================= */}
-            <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
-              <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
-                <span>REPORT ID: {reportId}</span>
-              </div>
-
-              <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
-                PAGE 5: ROAD & ACCESSIBILITY REPORT
-              </h3>
-
-              <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold block">EMERGENCY ACCESSIBILITY SCORE</span>
-                  <span className="text-xl font-black text-emerald-800">78% OPEN</span>
-                </div>
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold block">ROAD DATA STATUS</span>
-                  <span className="text-xs font-bold text-sky-900">LIVE / VERIFIED TELEMETRY</span>
-                </div>
-              </div>
-
-              <div className="space-y-2 text-xs">
-                <h4 className="font-bold uppercase text-slate-900">KEY ARTERIAL HIGHWAY CORRIDORS</h4>
-                <table className="w-full text-left border-collapse border border-slate-300 text-xs font-mono">
+                <table className="w-full text-left border-collapse border border-slate-300 text-[10px] font-mono">
                   <thead>
                     <tr className="bg-slate-100 border-b border-slate-300">
-                      <th className="p-2 border-r border-slate-300">ROUTE NAME</th>
-                      <th className="p-2 border-r border-slate-300">STATUS</th>
-                      <th className="p-2 border-r border-slate-300">SPEED LIMIT</th>
-                      <th className="p-2">DETOUR / ACTION</th>
+                      <th className="p-1.5 border-r border-slate-300">FEATURE TYPE</th>
+                      <th className="p-1.5 border-r border-slate-300">LOCATION / NAME</th>
+                      <th className="p-1.5 border-r border-slate-300">COORDINATES</th>
+                      <th className="p-1.5">STATUS</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-slate-200">
-                      <td className="p-2 border-r border-slate-300 font-bold">NH Lifeline Corridor</td>
-                      <td className="p-2 border-r border-slate-300 text-amber-800 font-bold">CAUTION</td>
-                      <td className="p-2 border-r border-slate-300">25 km/h</td>
-                      <td className="p-2">Minor mud silt drag at Km 142</td>
+                      <td className="p-1.5 border-r border-slate-300 font-bold">📍 Location Pin</td>
+                      <td className="p-1.5 border-r border-slate-300">{currentLoc.city || currentLoc.displayName.split(',')[0]} Target</td>
+                      <td className="p-1.5 border-r border-slate-300">{currentLoc.lat.toFixed(2)}°N, {currentLoc.lon.toFixed(2)}°E</td>
+                      <td className="p-1.5 font-bold text-sky-800">MONITORED</td>
                     </tr>
                     <tr className="border-b border-slate-200">
-                      <td className="p-2 border-r border-slate-300 font-bold">Jowai Ridge Bypass</td>
-                      <td className="p-2 border-r border-slate-300 text-emerald-800 font-bold">OPEN / SAFE</td>
-                      <td className="p-2 border-r border-slate-300">45 km/h</td>
-                      <td className="p-2">Recommended safe supply truck corridor</td>
+                      <td className="p-1.5 border-r border-slate-300 font-bold">🛣️ Highway Artery</td>
+                      <td className="p-1.5 border-r border-slate-300">NH Lifeline Corridor</td>
+                      <td className="p-1.5 border-r border-slate-300">{(currentLoc.lat + 0.02).toFixed(2)}°N, {(currentLoc.lon + 0.01).toFixed(2)}°E</td>
+                      <td className="p-1.5 font-bold text-amber-800">CAUTION</td>
                     </tr>
                     <tr className="border-b border-slate-200">
-                      <td className="p-2 border-r border-slate-300 font-bold">State Connector SH-12</td>
-                      <td className="p-2 border-r border-slate-300 text-amber-800 font-bold">PARTIAL</td>
-                      <td className="p-2 border-r border-slate-300">20 km/h</td>
-                      <td className="p-2">Single-lane convoy regulation</td>
+                      <td className="p-1.5 border-r border-slate-300 font-bold">🚁 Emergency LZ</td>
+                      <td className="p-1.5 border-r border-slate-300">Shillong High-Altitude LZ</td>
+                      <td className="p-1.5 border-r border-slate-300">{(currentLoc.lat - 0.01).toFixed(2)}°N, {(currentLoc.lon - 0.02).toFixed(2)}°E</td>
+                      <td className="p-1.5 font-bold text-emerald-800">CLEAR</td>
                     </tr>
                     <tr>
-                      <td className="p-2 border-r border-slate-300 font-bold">Sector 4 Culvert Access</td>
-                      <td className="p-2 border-r border-slate-300 text-rose-800 font-bold">RESTRICTED</td>
-                      <td className="p-2 border-r border-slate-300">15 km/h</td>
-                      <td className="p-2">Caution during heavy cloudbursts</td>
+                      <td className="p-1.5 border-r border-slate-300 font-bold">🏕️ Relief Camp</td>
+                      <td className="p-1.5 border-r border-slate-300">High Cache Evacuation Hub A</td>
+                      <td className="p-1.5 border-r border-slate-300">{(currentLoc.lat + 0.01).toFixed(2)}°N, {(currentLoc.lon - 0.01).toFixed(2)}°E</td>
+                      <td className="p-1.5 font-bold text-emerald-800">ACTIVE</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              <div className="border-t border-slate-400 pt-2 flex justify-between items-center text-[9px] font-mono text-slate-600">
-                <span>JEEVAN SETU &bull; Road Accessibility Engine</span>
-                <span>Page 5 of 9</span>
-              </div>
-            </div>
-
-            {/* ========================================================================= */}
-            {/* PAGE 6: EMERGENCY & RESCUE OPERATIONS */}
-            {/* ========================================================================= */}
-            <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
-              <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
-                <span>REPORT ID: {reportId}</span>
-              </div>
-
-              <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
-                PAGE 6: EMERGENCY & RESCUE OPERATIONS
-              </h3>
-
-              <div className="grid grid-cols-3 gap-3 font-mono text-xs">
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold block">ACTIVE SOS CALLS</span>
-                  <span className="text-base font-black text-rose-800">{sosAlerts.length || 8} Calls</span>
-                </div>
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold block">RESCUE TEAMS</span>
-                  <span className="text-base font-black text-slate-900">{rescueTeams.length || 3} Deployed</span>
-                </div>
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold block">UAV RECON DRONES</span>
-                  <span className="text-base font-black text-sky-900">3 Active Flight Vectors</span>
-                </div>
-              </div>
-
-              <div className="space-y-2 text-xs font-sans">
-                <h4 className="font-bold uppercase text-slate-900">DEPLOYED TASK FORCE UNITS</h4>
-                <table className="w-full text-left border-collapse border border-slate-300 text-xs font-mono">
+              {/* Road Accessibility & Logistics */}
+              <div className="space-y-2 text-[11px]">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
+                  5. ROAD ACCESSIBILITY & LOGISTICS CORRIDORS
+                </h4>
+                <table className="w-full text-left border-collapse border border-slate-300 text-[10px] font-mono">
                   <thead>
                     <tr className="bg-slate-100 border-b border-slate-300">
-                      <th className="p-2 border-r border-slate-300">TEAM ID</th>
-                      <th className="p-2 border-r border-slate-300">NAME / BATTALION</th>
-                      <th className="p-2 border-r border-slate-300">PERSONNEL</th>
-                      <th className="p-2 border-r border-slate-300">CONTACT</th>
-                      <th className="p-2">STATUS</th>
+                      <th className="p-1.5 border-r border-slate-300">ROUTE NAME</th>
+                      <th className="p-1.5 border-r border-slate-300">STATUS</th>
+                      <th className="p-1.5 border-r border-slate-300">SPEED LIMIT</th>
+                      <th className="p-1.5">DETOUR / ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {rescueTeams.slice(0, 3).map((team, i) => (
-                      <tr key={i} className="border-b border-slate-200">
-                        <td className="p-2 border-r border-slate-300 font-bold">{team.id}</td>
-                        <td className="p-2 border-r border-slate-300">{team.name}</td>
-                        <td className="p-2 border-r border-slate-300">{team.personnelCount} Personnel</td>
-                        <td className="p-2 border-r border-slate-300">{team.contactNumber}</td>
-                        <td className="p-2 font-bold text-emerald-800">{team.status}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="border-t border-slate-400 pt-2 flex justify-between items-center text-[9px] font-mono text-slate-600">
-                <span>JEEVAN SETU &bull; Rescue Command & Triage</span>
-                <span>Page 6 of 9</span>
-              </div>
-            </div>
-
-            {/* ========================================================================= */}
-            {/* PAGE 7: RELIEF SUPPLY & LOGISTICS */}
-            {/* ========================================================================= */}
-            <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
-              <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
-                <span>REPORT ID: {reportId}</span>
-              </div>
-
-              <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
-                PAGE 7: RELIEF SUPPLY & LOGISTICS REPORT
-              </h3>
-
-              <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold block">RELIEF CAMP CAPACITY</span>
-                  <span className="text-sm font-black text-slate-900">3 Camps Active &bull; 65% Occupied</span>
-                </div>
-                <div className="p-3 border border-slate-300 bg-slate-50">
-                  <span className="text-[10px] text-slate-500 font-bold block">ESSENTIAL SUPPLIES STATUS</span>
-                  <span className="text-sm font-black text-emerald-800">ADEQUATE (4,500 Packs)</span>
-                </div>
-              </div>
-
-              <div className="space-y-2 text-xs font-mono">
-                <h4 className="font-bold uppercase text-slate-900 font-sans">ACTIVE RELIEF CAMPS ROSTER</h4>
-                <table className="w-full text-left border-collapse border border-slate-300 text-xs font-mono">
-                  <thead>
-                    <tr className="bg-slate-100 border-b border-slate-300">
-                      <th className="p-2 border-r border-slate-300">CAMP NAME</th>
-                      <th className="p-2 border-r border-slate-300">CAPACITY</th>
-                      <th className="p-2 border-r border-slate-300">FOOD</th>
-                      <th className="p-2">WATER</th>
+                    <tr className="border-b border-slate-200">
+                      <td className="p-1.5 border-r border-slate-300 font-bold">NH Lifeline Corridor</td>
+                      <td className="p-1.5 border-r border-slate-300 text-amber-800 font-bold">CAUTION</td>
+                      <td className="p-1.5 border-r border-slate-300">25 km/h</td>
+                      <td className="p-1.5">Minor mud silt drag at Km 142</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {reliefCamps.slice(0, 3).map((camp, i) => (
-                      <tr key={i} className="border-b border-slate-200">
-                        <td className="p-2 border-r border-slate-300 font-bold">{camp.name}</td>
-                        <td className="p-2 border-r border-slate-300">{camp.occupiedCapacity} / {camp.totalCapacity}</td>
-                        <td className="p-2 border-r border-slate-300 text-emerald-800 font-bold">{camp.foodSupplyStatus}</td>
-                        <td className="p-2 text-emerald-800 font-bold">{camp.waterSupplyStatus}</td>
-                      </tr>
-                    ))}
+                    <tr className="border-b border-slate-200">
+                      <td className="p-1.5 border-r border-slate-300 font-bold">Jowai Ridge Bypass</td>
+                      <td className="p-1.5 border-r border-slate-300 text-emerald-800 font-bold">OPEN / SAFE</td>
+                      <td className="p-1.5 border-r border-slate-300">45 km/h</td>
+                      <td className="p-1.5">Recommended safe supply truck corridor</td>
+                    </tr>
+                    <tr>
+                      <td className="p-1.5 border-r border-slate-300 font-bold">State Connector SH-12</td>
+                      <td className="p-1.5 border-r border-slate-300 text-amber-800 font-bold">PARTIAL</td>
+                      <td className="p-1.5 border-r border-slate-300">20 km/h</td>
+                      <td className="p-1.5">Single-lane convoy regulation</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
 
-              <div className="border-t border-slate-400 pt-2 flex justify-between items-center text-[9px] font-mono text-slate-600">
-                <span>JEEVAN SETU &bull; Relief Supply Logistics</span>
-                <span>Page 7 of 9</span>
-              </div>
-            </div>
-
-            {/* ========================================================================= */}
-            {/* PAGE 8: AI DISASTER ASSESSMENT */}
-            {/* ========================================================================= */}
-            <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
-              <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
-                <span>REPORT ID: {reportId}</span>
-              </div>
-
-              <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
-                PAGE 8: AI DISASTER ASSESSMENT & STRUCTURED SYNTHESIS
-              </h3>
-
-              <div className="space-y-3 font-serif text-xs leading-relaxed">
-                <div className="p-3 border border-slate-300 bg-slate-50 font-sans space-y-1">
-                  <h4 className="font-bold uppercase text-slate-900 text-[11px]">1. CURRENT SITUATION & PRIMARY THREATS</h4>
-                  <p className="font-serif">
-                    High confidence (94%) risk synthesis indicates cascading landslide risk along East Khasi Hills NH corridor. Torrential rain rate of {weatherData ? weatherData.precipitation : 12} mm/hr combines with steep 24° terrain angle.
-                  </p>
-                </div>
-
-                <div className="p-3 border border-slate-300 bg-slate-50 font-sans space-y-1">
-                  <h4 className="font-bold uppercase text-slate-900 text-[11px]">2. INFRASTRUCTURE & ROAD ACCESSIBILITY</h4>
-                  <p className="font-serif">
-                    Primary arterial highway is partially restricted at Km 142 due to slope slippage. Alternate bypass corridor via Jowai Ridge remains 100% open for emergency vehicles.
-                  </p>
-                </div>
-
-                <div className="p-3 border border-slate-300 bg-slate-50 font-sans space-y-1">
-                  <h4 className="font-bold uppercase text-slate-900 text-[11px]">3. 72-HOUR RISK OUTLOOK</h4>
-                  <p className="font-serif">
-                    Precipitation is forecasted to plateau over the next 24 hours before tapering off by 48-72 hours, allowing structural repair crews to clear debris.
-                  </p>
+              {/* Rescue Operations & Relief Camps Roster */}
+              <div className="space-y-2 text-[11px]">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
+                  6. RESCUE OPERATIONS & RELIEF LOGISTICS
+                </h4>
+                <div className="grid grid-cols-3 gap-2 font-mono text-[10px]">
+                  <div className="p-2 border border-slate-300 bg-slate-50">
+                    <span className="text-slate-500 font-bold block uppercase">SOS CALLS</span>
+                    <span className="text-xs font-black text-rose-800">{sosAlerts.length || 8} Active Calls</span>
+                  </div>
+                  <div className="p-2 border border-slate-300 bg-slate-50">
+                    <span className="text-slate-500 font-bold block uppercase">RESCUE TEAMS</span>
+                    <span className="text-xs font-black text-slate-900">{rescueTeams.length || 3} Deployed</span>
+                  </div>
+                  <div className="p-2 border border-slate-300 bg-slate-50">
+                    <span className="text-slate-500 font-bold block uppercase">RELIEF CAMPS</span>
+                    <span className="text-xs font-black text-emerald-800">{reliefCamps.length || 3} Active (65% Capacity)</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="border-t border-slate-400 pt-2 flex justify-between items-center text-[9px] font-mono text-slate-600">
-                <span>JEEVAN SETU &bull; AI Intelligence Engine</span>
-                <span>Page 8 of 9</span>
-              </div>
-            </div>
-
-            {/* ========================================================================= */}
-            {/* PAGE 9: FINAL OPERATIONAL SUMMARY */}
-            {/* ========================================================================= */}
-            <div className="pdf-page bg-white text-slate-950 p-8 shadow-xl border border-slate-300 font-sans space-y-6">
-              <div className="border-b border-slate-900 pb-2 flex justify-between items-center text-xs font-mono">
-                <b>JEEVAN SETU LOCATION INTELLIGENCE REPORT</b>
-                <span>REPORT ID: {reportId}</span>
-              </div>
-
-              <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
-                PAGE 9: FINAL OPERATIONAL SUMMARY & IMMEDIATE ACTION DIRECTIVES
-              </h3>
-
-              <div className="space-y-3 font-sans text-xs">
-                <h4 className="font-bold uppercase text-slate-900">IMMEDIATE ACTION DIRECTIVES (TOP PRIORITIES)</h4>
-                <ol className="list-decimal pl-5 space-y-2 font-medium text-slate-900 text-[11px]">
+              {/* Operational Directives & E-Stamp Sign-Off */}
+              <div className="space-y-2 text-[11px]">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 border-l-4 border-slate-900 pl-2 bg-slate-100 py-1">
+                  7. IMMEDIATE ACTION DIRECTIVES & AUTHENTICATION
+                </h4>
+                <ol className="list-decimal pl-4 space-y-0.5 font-medium text-slate-900 text-[10px]">
                   <li>Prioritize emergency response & medical triage in low-lying Sector 4 culverts.</li>
                   <li>Monitor slope stability along primary arterial highway cuts with BRO earthmovers on site.</li>
                   <li>Position emergency relief supply caches near high-vulnerability residential sectors.</li>
-                  <li>Deploy additional SDRF aquatic rescue teams to flood-prone river banks.</li>
                   <li>Enforce regulated single-lane convoy traffic along Jowai Ridge Bypass.</li>
                 </ol>
 
-                {/* Authentication Sign-off */}
-                <div className="pt-6 grid grid-cols-2 gap-6 items-end font-mono text-[10px] border-t-2 border-slate-900 mt-6">
-                  <div className="space-y-1">
-                    <div><b>PREPARED BY:</b> Jeevan Setu AI Location Intelligence Engine</div>
+                <div className="pt-3 grid grid-cols-2 gap-4 items-end font-mono text-[10px] border-t-2 border-slate-900 mt-2">
+                  <div className="space-y-0.5">
+                    <div><b>PREPARED BY:</b> Jeevan Setu AI Location Engine</div>
                     <div><b>REVIEWED BY:</b> Duty Officer, NEOC MDoNER Command</div>
-                    <div><b>LOCATION GRID:</b> {currentLoc.displayName}</div>
+                    <div><b>REPORT VERIFICATION URL:</b> <span className="text-emerald-800 font-bold underline">{typeof window !== 'undefined' ? window.location.href : 'http://localhost:3000/location?tab=location'}</span></div>
                   </div>
                   <div className="text-right">
-                    <div className="inline-block p-2 border-2 border-dashed border-slate-900 bg-slate-50 text-center font-bold">
-                      <div className="text-[9px] uppercase tracking-widest text-slate-600">OFFICIAL E-STAMP & SIGNATURE</div>
-                      <div className="text-xs text-sky-950 font-mono">[ E-SIGNED / DISASTER OPERATIONS CONTROL ]</div>
+                    <div className="inline-block p-1.5 border-2 border-dashed border-slate-900 bg-slate-50 text-center font-bold">
+                      <div className="text-[8px] uppercase tracking-widest text-slate-600">OFFICIAL E-STAMP & SIGNATURE</div>
+                      <div className="text-[10px] text-sky-950 font-mono">[ E-SIGNED / DISASTER OPERATIONS CONTROL ]</div>
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* Page 2 Footer */}
               <div className="border-t border-slate-400 pt-2 flex justify-between items-center text-[9px] font-mono text-slate-600">
-                <span>JEEVAN SETU &bull; Government of India &bull; MDoNER &bull; Final Page</span>
-                <span>Page 9 of 9</span>
+                <span>JEEVAN SETU &bull; {typeof window !== 'undefined' ? window.location.href : 'http://localhost:3000/location?tab=location'} &bull; Government of India &bull; Final Page</span>
+                <span>Page 2 of 2</span>
               </div>
             </div>
 

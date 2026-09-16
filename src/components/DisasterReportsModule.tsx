@@ -45,6 +45,7 @@ import {
   isNERStateName
 } from '../services/api/disasterReportsService';
 import { SearchSpellingCorrectionPrompt } from './SearchSpellingCorrectionPrompt';
+import { useTranslation } from '../i18n';
 
 interface DisasterReportsModuleProps {
   onNavigateToReroute?: (origin: string, dest: string) => void;
@@ -57,6 +58,8 @@ export default function DisasterReportsModule({
   onNavigateToMap,
   onTriggerSOS
 }: DisasterReportsModuleProps) {
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   // Filter States
   const [selectedState, setSelectedState] = useState<string>('All');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('All');
@@ -568,20 +571,20 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                Disaster Reports &amp; Incident Intelligence
+                {isHi ? 'आपदा रिपोर्ट एवं घटना बुद्धिमत्ता' : 'Disaster Reports & Incident Intelligence'}
               </h1>
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold tracking-wide uppercase flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
-                Data Coverage: North Eastern Region — 8 States
+                {isHi ? 'डेटा कवरेज: उत्तर पूर्वी क्षेत्र — 8 राज्य' : 'Data Coverage: North Eastern Region — 8 States'}
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-sky-500/15 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 dark:border-sky-500/40 text-[10px] font-black tracking-wide uppercase flex items-center gap-1 shadow-xs">
                 <span className="h-1.5 w-1.5 rounded-full bg-sky-500 dark:bg-sky-400 animate-ping" />
-                GENUINE REAL-TIME TELEMETRY
+                {isHi ? 'सत्यापित वास्तविक समय टेलीमेट्री' : 'GENUINE REAL-TIME TELEMETRY'}
               </span>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-              <span>Live feeds from Open-Meteo High-Resolution IMD Grid &amp; USGS Realtime Seismology.</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">• Synced {lastSyncTimeDisplay}</span>
+              <span>{isHi ? 'Open-Meteo उच्च-रिज़ॉल्यूशन IMD ग्रिड और USGS वास्तविक समय भूकंप विज्ञान से लाइव फ़ीड।' : 'Live feeds from Open-Meteo High-Resolution IMD Grid & USGS Realtime Seismology.'}</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {isHi ? 'सिंक किया गया' : 'Synced'} {lastSyncTimeDisplay}</span>
             </p>
           </div>
         </div>
@@ -592,7 +595,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
             className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-sky-900/20 dark:shadow-sky-900/40 hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer border border-sky-400/40"
           >
             <Plus className="h-4 w-4" />
-            <span>Report Incident</span>
+            <span>{isHi ? '+ घटना रिपोर्ट करें' : '+ Report Incident'}</span>
           </button>
           <button
             onClick={() => loadIncidents(false)}
@@ -616,7 +619,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by state, district, town, or disaster type (e.g. Guwahati, Flood, Landslide)..."
+              placeholder={isHi ? 'राज्य, जिला, शहर या आपदा प्रकार से खोजें (जैसे गुवाहाटी, बाढ़, भूस्खलन)...' : 'Search by state, district, town, or disaster type (e.g. Guwahati, Flood, Landslide)...'}
               className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 transition"
             />
           </div>
@@ -624,7 +627,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
             type="submit"
             className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 transition cursor-pointer"
           >
-            Search
+            {isHi ? 'खोजें' : 'Search'}
           </button>
           {(selectedState !== 'All' || selectedDistrict !== 'All' || selectedType !== 'All' || selectedSeverity !== 'All' || selectedStatus !== 'All' || searchQuery) && (
             <button
@@ -633,7 +636,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
               className="px-3.5 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 text-xs font-bold rounded-xl border border-rose-500/30 dark:border-rose-500/40 transition cursor-pointer flex items-center gap-1.5 shrink-0"
             >
               <X className="h-3.5 w-3.5" />
-              <span>Reset Filters</span>
+              <span>{isHi ? 'फ़िल्टर रिसेट करें' : 'Reset Filters'}</span>
             </button>
           )}
         </form>
@@ -648,7 +651,7 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
         {rejectedSearchNotice && (
           <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2 animate-pulse">
             <AlertTriangle className="h-4 w-4 shrink-0 text-rose-500 dark:text-rose-400" />
-            <span>Location is outside Jeevan Setu's NER coverage. Only 8 North Eastern states are supported.</span>
+            <span>{isHi ? 'स्थान जीवन सेतु के NER कवरेज से बाहर है। केवल 8 उत्तर पूर्वी राज्य समर्थित हैं।' : 'Location is outside Jeevan Setu\'s NER coverage. Only 8 North Eastern states are supported.'}</span>
           </div>
         )}
 
@@ -658,35 +661,35 @@ const STATE_CENTERS: Record<string, { lat: number; lon: number; zoom: number }> 
           {/* Disaster Type Filter */}
           <div className="flex flex-col">
             <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-              Disaster Type
+              {isHi ? 'आपदा प्रकार' : 'Disaster Type'}
             </label>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
               className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-300 dark:hover:border-slate-600 transition cursor-pointer"
             >
-              <option value="All">All Types</option>
-              <option value="Flood">🌊 Flood</option>
-              <option value="Landslide">⛰️ Landslide</option>
-              <option value="Heavy Rain">🌧️ Heavy Rain</option>
-              <option value="Storm/Cyclone">🌪️ Storm / Cyclone</option>
-              <option value="Road Block">🚧 Road Block</option>
-              <option value="Earthquake">🌋 Earthquake</option>
-              <option value="Other Disaster">⚠️ Other Disaster</option>
+              <option value="All">{isHi ? 'सभी प्रकार' : 'All Types'}</option>
+              <option value="Flood">🌊 {isHi ? 'बाढ़' : 'Flood'}</option>
+              <option value="Landslide">⛰️ {isHi ? 'भूस्खलन' : 'Landslide'}</option>
+              <option value="Heavy Rain">🌧️ {isHi ? 'भारी बारिश' : 'Heavy Rain'}</option>
+              <option value="Storm/Cyclone">🌪️ {isHi ? 'तूफान / चक्रवात' : 'Storm / Cyclone'}</option>
+              <option value="Road Block">🚧 {isHi ? 'सड़क मार्ग अवरुद्ध' : 'Road Block'}</option>
+              <option value="Earthquake">🌋 {isHi ? 'भूकंप' : 'Earthquake'}</option>
+              <option value="Other Disaster">⚠️ {isHi ? 'अन्य आपदा' : 'Other Disaster'}</option>
             </select>
           </div>
 
           {/* State Filter (8 NER States) */}
           <div className="flex flex-col">
             <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-              State (NER Only)
+              {isHi ? 'राज्य (NER केवल)' : 'State (NER Only)'}
             </label>
             <select
               value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
               className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-sky-500 hover:border-slate-300 dark:hover:border-slate-600 transition cursor-pointer"
             >
-              <option value="All">All NER States (8)</option>
+              <option value="All">{isHi ? 'सभी 8 NER राज्य' : 'All NER States (8)'}</option>
               {NER_STATES.map((st) => (
                 <option key={st} value={st}>{st}</option>
               ))}

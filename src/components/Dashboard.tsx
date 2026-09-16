@@ -51,7 +51,7 @@ const NER_CAPITAL_HUBS = [
 ];
 
 export default function Dashboard({ onNavigateModule }: DashboardProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   // Active Dashboard Pillar Tab: 'all' | 'landslide' | 'flood' | 'livemap' | 'weather'
   const [activeTab, setActiveTab] = useState<'all' | 'landslide' | 'flood' | 'livemap' | 'weather'>('all');
@@ -341,6 +341,34 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
   return (
     <div className="h-full overflow-y-auto overflow-x-hidden p-3 sm:p-5 lg:p-6 space-y-5 select-none bg-slate-50 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 min-w-0 max-w-full">
       
+      {/* 🎛️ PROMINENT MOBILE FEATURE SWITCHER BANNER */}
+      <div className="w-full p-3.5 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white shadow-xl flex items-center justify-between gap-3 border border-sky-400/40">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center font-bold text-xl shrink-0 shadow-inner">
+            🎛️
+          </div>
+          <div>
+            <h3 className="text-xs sm:text-sm font-black leading-tight">
+              {language === 'hi' ? 'दूसरा फीचर खोलना चाहते हैं?' : 'Want to Switch to Another Feature?'}
+            </h3>
+            <p className="text-[10px] sm:text-xs text-sky-100 font-semibold mt-0.5">
+              {language === 'hi' ? 'सभी 18 फीचर्स की लिस्ट देखें' : 'Select from 18 Live Intelligence Modules'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            if (onNavigateModule) onNavigateModule('launcher');
+            const event = new CustomEvent('openMobileMenu');
+            window.dispatchEvent(event);
+          }}
+          className="px-4 py-2 rounded-xl bg-white text-slate-900 font-black text-xs shadow-md hover:bg-sky-50 active:scale-95 transition cursor-pointer shrink-0 border border-white/50"
+        >
+          {language === 'hi' ? '18 फीचर्स देखें ➔' : 'View 18 Features ➔'}
+        </button>
+      </div>
+
       {/* 🔴 MODERN EXECUTIVE CRISIS COMMAND HERO BANNER */}
       <div className="relative rounded-3xl p-6 sm:p-7 overflow-hidden border border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-[#0c142b] dark:via-[#090e1d] dark:to-[#060a15] shadow-xl dark:shadow-2xl transition-all">
         {/* Ambient Glow Orbs */}
@@ -374,13 +402,15 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               </div>
               <div>
                 <h1 className="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl text-slate-900 dark:text-white tracking-tight leading-[1.18]">
-                  North Eastern Region{' '}
+                  {language === 'hi' ? 'पूर्वोत्तर क्षेत्र' : 'North Eastern Region'}{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-sky-400 to-indigo-400 dark:from-sky-400 dark:via-sky-300 dark:to-indigo-300">
-                    Disaster Risk Command
+                    {language === 'hi' ? 'आपदा जोखिम कमान' : 'Disaster Risk Command'}
                   </span>
                 </h1>
                 <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-normal max-w-2xl">
-                  Unified situational monitoring across India's 8 North Eastern states. Active sensors tracking slope instability, river surge volumes, and precipitation anomalies.
+                  {language === 'hi'
+                    ? 'भारत के 8 पूर्वोत्तर राज्यों में एकीकृत स्थितिजन्य निगरानी। ढलान अस्थिरता, नदी जल स्तर और वर्षा विसंगतियों की सक्रिय ट्रैकिंग।'
+                    : "Unified situational monitoring across India's 8 North Eastern states. Active sensors tracking slope instability, river surge volumes, and precipitation anomalies."}
                 </p>
               </div>
             </div>
@@ -393,7 +423,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
                 onChange={(e) => handleSelectStateFilter(e.target.value)}
                 className="appearance-none rounded-xl border border-slate-300 dark:border-slate-700/80 bg-white/90 dark:bg-slate-900/90 hover:border-sky-400/60 px-4 py-2.5 pr-9 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white shadow-sm outline-none cursor-pointer transition focus:ring-2 focus:ring-sky-500/30"
               >
-                <option value="All">All 8 NER States</option>
+                <option value="All">{language === 'hi' ? 'सभी 8 पूर्वोत्तर राज्य' : 'All 8 NER States'}</option>
                 {NER_STATES.map(st => (
                   <option key={st} value={st}>{st}</option>
                 ))}
@@ -406,10 +436,10 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             <button
               onClick={() => fetchAllTelemetry()}
               className="px-4 py-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 hover:border-sky-400 font-semibold text-xs sm:text-sm flex items-center gap-2 transition cursor-pointer active:scale-95 shadow-sm"
-              title="Sync Real-Time Telemetry"
+              title={language === 'hi' ? 'टेलीमेट्री सिंक करें' : 'Sync Real-Time Telemetry'}
             >
               <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              <span>Sync Telemetry</span>
+              <span>{language === 'hi' ? 'टेलीमेट्री सिंक करें' : 'Sync Telemetry'}</span>
             </button>
           </div>
         </div>
@@ -417,7 +447,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
         {/* 8-State Interactive Quick-Filter Chips */}
         <div className="mt-5 pt-4 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar w-full min-w-0">
           <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider shrink-0 mr-1">
-            States:
+            {language === 'hi' ? 'राज्य:' : 'States:'}
           </span>
           
           <button
@@ -476,16 +506,18 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div className="h-8 w-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500">
                 <Mountain className="h-4 w-4" />
               </div>
-              <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">Landslide Hazard</span>
+              <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                {language === 'hi' ? 'भूस्खलन खतरा' : 'Landslide Hazard'}
+              </span>
             </div>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30">
-              {landslideData ? `${landslideData.criticalSectorsCount + landslideData.highRiskSectorsCount} HIGH RISK` : 'LOADING'}
+              {landslideData ? `${landslideData.criticalSectorsCount + landslideData.highRiskSectorsCount} ${language === 'hi' ? 'उच्च जोखिम' : 'HIGH RISK'}` : (language === 'hi' ? 'लोड हो रहा है' : 'LOADING')}
             </span>
           </div>
 
           <div className="flex items-baseline gap-2 mb-1">
             <span className="text-3xl font-black text-slate-900 dark:text-white">{landslideData ? landslideData.totalSectors : 0}</span>
-            <span className="text-xs font-semibold text-slate-500">Monitored Sectors</span>
+            <span className="text-xs font-semibold text-slate-500">{language === 'hi' ? 'निगरानी क्षेत्र' : 'Monitored Sectors'}</span>
           </div>
 
           <div className="w-full bg-slate-200 dark:bg-slate-800/80 rounded-full h-1.5 my-2.5 overflow-hidden">
@@ -496,8 +528,8 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
           </div>
 
           <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-2 font-medium">
-            <span>Critical Pass: <b className="text-slate-900 dark:text-white">{landslideData ? landslideData.criticalSectorsCount : 0}</b></span>
-            <span className="text-amber-500 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">View Details →</span>
+            <span>{language === 'hi' ? 'गंभीर दर्रा:' : 'Critical Pass:'} <b className="text-slate-900 dark:text-white">{landslideData ? landslideData.criticalSectorsCount : 0}</b></span>
+            <span className="text-amber-500 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">{language === 'hi' ? 'विवरण देखें →' : 'View Details →'}</span>
           </div>
         </div>
 
@@ -516,16 +548,18 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div className="h-8 w-8 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-500">
                 <Waves className="h-4 w-4" />
               </div>
-              <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">River Basins</span>
+              <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                {language === 'hi' ? 'नदी बेसिन' : 'River Basins'}
+              </span>
             </div>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/30">
-              {floodData ? `${floodData.criticalSectorsCount} SWELLING` : 'LOADING'}
+              {floodData ? `${floodData.criticalSectorsCount} ${language === 'hi' ? 'जल-स्तर वृद्धि' : 'SWELLING'}` : (language === 'hi' ? 'लोड हो रहा है' : 'LOADING')}
             </span>
           </div>
 
           <div className="flex items-baseline gap-2 mb-1">
             <span className="text-3xl font-black text-slate-900 dark:text-white">{floodData ? floodData.totalMonitoredSectors : 0}</span>
-            <span className="text-xs font-semibold text-slate-500">Monitored Rivers</span>
+            <span className="text-xs font-semibold text-slate-500">{language === 'hi' ? 'निगरानी नदियां' : 'Monitored Rivers'}</span>
           </div>
 
           <div className="w-full bg-slate-200 dark:bg-slate-800/80 rounded-full h-1.5 my-2.5 overflow-hidden">
@@ -540,10 +574,10 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               {floodData?.glofasConnected ? (
                 <>GloFAS Flow: <b className="text-slate-900 dark:text-white font-mono">{floodData?.reports?.[0]?.liveDischargeM3s ?? 15.6} m³/s</b></>
               ) : (
-                <>High Vulnerability: <b className="text-slate-900 dark:text-white">{floodData ? floodData.highRiskSectorsCount + floodData.criticalSectorsCount : 0}</b></>
+                <>{language === 'hi' ? 'उच्च संवेदनशीलता:' : 'High Vulnerability:'} <b className="text-slate-900 dark:text-white">{floodData ? floodData.highRiskSectorsCount + floodData.criticalSectorsCount : 0}</b></>
               )}
             </span>
-            <span className="text-blue-500 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">Analyze Basins →</span>
+            <span className="text-blue-500 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">{language === 'hi' ? 'बेसिन विश्लेषण →' : 'Analyze Basins →'}</span>
           </div>
         </div>
 
@@ -562,7 +596,9 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div className="h-8 w-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
                 <MapPin className="h-4 w-4" />
               </div>
-              <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">GIS Satellite</span>
+              <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                {language === 'hi' ? 'जीआईएस उपग्रह' : 'GIS Satellite'}
+              </span>
             </div>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
               8 NER STATES
@@ -571,7 +607,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
 
           <div className="flex items-baseline gap-2 mb-1">
             <span className="text-3xl font-black text-slate-900 dark:text-white">{landslideData && floodData ? landslideData.totalSectors + floodData.totalMonitoredSectors : 0}</span>
-            <span className="text-xs font-semibold text-slate-500">GIS Telemetry Points</span>
+            <span className="text-xs font-semibold text-slate-500">{language === 'hi' ? 'जीआईएस टेलीमेट्री बिंदु' : 'GIS Telemetry Points'}</span>
           </div>
 
           <div className="w-full bg-slate-200 dark:bg-slate-800/80 rounded-full h-1.5 my-2.5 overflow-hidden">
@@ -579,8 +615,8 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
           </div>
 
           <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-2 font-medium">
-            <span>Interactive Leaflet Map</span>
-            <span className="text-emerald-500 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">Open Map →</span>
+            <span>{language === 'hi' ? 'इंटरैक्टिव लीफलेट मानचित्र' : 'Interactive Leaflet Map'}</span>
+            <span className="text-emerald-500 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">{language === 'hi' ? 'मानचित्र खोलें →' : 'Open Map →'}</span>
           </div>
         </div>
 
@@ -599,7 +635,9 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
               <div className="h-8 w-8 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-500">
                 <CloudRain className="h-4 w-4" />
               </div>
-              <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">Weather & Radar</span>
+              <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                {language === 'hi' ? 'मौसम एवं रडार' : 'Weather & Radar'}
+              </span>
             </div>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black bg-sky-500/20 text-sky-700 dark:text-sky-400 border border-sky-500/30">
               OPEN-METEO
@@ -616,8 +654,8 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
           </div>
 
           <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-2 font-medium">
-            <span>Rain: <b className="text-slate-900 dark:text-white">{weatherData ? `${weatherData.precipitation} mm` : '0 mm'}</b></span>
-            <span className="text-sky-500 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">Forecast →</span>
+            <span>{language === 'hi' ? 'वर्षा:' : 'Rain:'} <b className="text-slate-900 dark:text-white">{weatherData ? `${weatherData.precipitation} mm` : '0 mm'}</b></span>
+            <span className="text-sky-500 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">{language === 'hi' ? 'पूर्वानुमान →' : 'Forecast →'}</span>
           </div>
         </div>
 
@@ -627,7 +665,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800/80 pb-4">
         {/* Left: Active State Filter */}
         <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-          <span>Active State Filter:</span>
+          <span>{language === 'hi' ? 'सक्रिय राज्य फ़िल्टर:' : 'Active State Filter:'}</span>
           <span className="text-sky-600 dark:text-sky-400 font-bold bg-sky-500/10 px-2.5 py-1 rounded-lg border border-sky-500/20">
             {selectedStateFilter}
           </span>
@@ -644,7 +682,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             }`}
           >
             <span>⛰️</span>
-            <span>Landslide Risk</span>
+            <span>{language === 'hi' ? 'भूस्खलन जोखिम' : 'Landslide Risk'}</span>
           </button>
 
           <button
@@ -656,7 +694,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             }`}
           >
             <span>🌊</span>
-            <span>Flood Intelligence</span>
+            <span>{language === 'hi' ? 'बाढ़ बुद्धिमत्ता' : 'Flood Intelligence'}</span>
           </button>
 
           <button
@@ -668,7 +706,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             }`}
           >
             <span>🗺️</span>
-            <span>Live GIS Map</span>
+            <span>{language === 'hi' ? 'लाइव जीआईएस मानचित्र' : 'Live GIS Map'}</span>
           </button>
 
           <button
@@ -680,7 +718,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             }`}
           >
             <span>🌤️</span>
-            <span>Weather & Radar</span>
+            <span>{language === 'hi' ? 'मौसम एवं रडार' : 'Weather & Radar'}</span>
           </button>
         </div>
       </div>
@@ -694,7 +732,7 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             <div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
                 <Mountain className="h-5 w-5 text-orange-500" />
-                1. Landslide Risk & Hazard Intelligence (8 NER States)
+                {language === 'hi' ? '1. भूस्खलन जोखिम एवं खतरा बुद्धिमत्ता (8 NER राज्य)' : '1. Landslide Risk & Hazard Intelligence (8 NER States)'}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
                 Live Open-Meteo precipitation cross-referenced against slope stability and road blockage risk.

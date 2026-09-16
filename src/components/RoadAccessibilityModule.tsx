@@ -239,7 +239,8 @@ export default function RoadAccessibilityModule({
   onNavigateToMap,
   onTriggerSOS
 }: RoadAccessibilityModuleProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
 
   // Search Inputs
   const [startInput, setStartInput] = useState<string>("Guwahati, Assam");
@@ -622,7 +623,9 @@ export default function RoadAccessibilityModule({
           
           {/* Start Location Input */}
           <div className="flex-1">
-            <label className="text-xs font-extrabold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">Start Location (NER State/City):</label>
+            <label className="text-xs font-extrabold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
+              {isHi ? 'शुरुआती स्थान (NER राज्य/शहर):' : 'Start Location (NER State/City):'}
+            </label>
             <div className="flex items-center rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white">
               <MapPin className="h-4 w-4 text-emerald-500 mr-2 shrink-0" />
               <input
@@ -630,7 +633,7 @@ export default function RoadAccessibilityModule({
                 value={startInput}
                 onChange={(e) => setStartInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleComputeRoute(startInput, destInput); }}
-                placeholder="e.g. Guwahati, Assam"
+                placeholder={isHi ? 'जैसे गुवाहाटी, असम' : 'e.g. Guwahati, Assam'}
                 className="w-full bg-transparent focus:outline-none"
               />
             </div>
@@ -638,7 +641,9 @@ export default function RoadAccessibilityModule({
 
           {/* Destination Input */}
           <div className="flex-1">
-            <label className="text-xs font-extrabold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">Destination Location (NER State/City):</label>
+            <label className="text-xs font-extrabold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">
+              {isHi ? 'गंतव्य स्थान (NER राज्य/शहर):' : 'Destination Location (NER State/City):'}
+            </label>
             <div className="flex items-center rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white">
               <Navigation className="h-4 w-4 text-sky-500 mr-2 shrink-0" />
               <input
@@ -646,7 +651,7 @@ export default function RoadAccessibilityModule({
                 value={destInput}
                 onChange={(e) => setDestInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleComputeRoute(startInput, destInput); }}
-                placeholder="e.g. Shillong, Meghalaya"
+                placeholder={isHi ? 'जैसे शिलोंग, मेघालय' : 'e.g. Shillong, Meghalaya'}
                 className="w-full bg-transparent focus:outline-none"
               />
             </div>
@@ -660,7 +665,7 @@ export default function RoadAccessibilityModule({
               className="w-full lg:w-auto px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer h-[40px]"
             >
               <Navigation className="h-4 w-4" />
-              <span>{isComputing ? 'Computing Route...' : 'Calculate Safe Route'}</span>
+              <span>{isComputing ? (isHi ? 'मार्ग की गणना हो रही है...' : 'Computing Route...') : (isHi ? 'सुरक्षित मार्ग की गणना करें' : 'Calculate Safe Route')}</span>
             </button>
           </div>
 
@@ -668,7 +673,9 @@ export default function RoadAccessibilityModule({
 
         {/* Quick Travel Corridor Presets */}
         <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-1">Tested Corridors:</span>
+          <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-1">
+            {isHi ? 'परीक्षण किए गए कॉरिडोर:' : 'Tested Corridors:'}
+          </span>
           
           <button
             onClick={() => handleSelectPreset("Guwahati, Assam", 26.1445, 91.7362, "Shillong, Meghalaya", 25.5788, 91.8933)}
@@ -714,10 +721,10 @@ export default function RoadAccessibilityModule({
           <AlertTriangle className="h-6 w-6 text-amber-500 shrink-0 mt-0.5" />
           <div className="flex-1">
             <h3 className="text-sm font-black text-amber-800 dark:text-amber-200 uppercase tracking-wide">
-              ⚠️ High-Risk Road Segment Detected
+              ⚠️ {isHi ? 'उच्च जोखिम वाला सड़क खंड मिला' : 'High-Risk Road Segment Detected'}
             </h3>
             <p className="text-xs text-amber-900 dark:text-amber-100 font-semibold mt-0.5">
-              {routeResult.warningMessage || "Route passes near a known landslide or flood danger sector. Alternative green corridor bypass recommended."}
+              {routeResult.warningMessage || (isHi ? 'मार्ग ज्ञात भूस्खलन या बाढ़ के खतरे वाले क्षेत्र के पास से गुजरता है। वैकल्पिक ग्रीन कॉरिडोर बाईपास की सिफारिश की जाती है।' : 'Route passes near a known landslide or flood danger sector. Alternative green corridor bypass recommended.')}
             </p>
           </div>
         </div>
@@ -729,7 +736,7 @@ export default function RoadAccessibilityModule({
           <ShieldAlert className="h-6 w-6 text-red-500 shrink-0 mt-0.5" />
           <div className="flex-1">
             <h3 className="text-sm font-black text-red-700 dark:text-red-300 uppercase tracking-wide">
-              Geographic Boundary Rejection
+              {isHi ? 'भौगोलिक सीमा अस्वीकृति' : 'Geographic Boundary Rejection'}
             </h3>
             <p className="text-xs text-red-800 dark:text-red-200 font-semibold mt-0.5">
               {routeResult.warningMessage}
@@ -749,7 +756,7 @@ export default function RoadAccessibilityModule({
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <Navigation className="h-5 w-5 text-indigo-500" />
-                <span>SAFE ROUTE SUMMARY</span>
+                {isHi ? 'सुरक्षित मार्ग का सारांश' : 'SAFE ROUTE SUMMARY'}
               </h2>
               <span className={`px-3 py-0.5 rounded-full text-xs font-black uppercase border ${
                 routeResult?.overallRisk === 'CRITICAL' ? 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/40' :

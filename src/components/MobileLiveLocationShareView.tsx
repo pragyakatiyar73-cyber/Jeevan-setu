@@ -81,7 +81,7 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
       QRCode.toDataURL(shareUrl, {
         width: 260,
         margin: 2,
-        color: { dark: '#10b981', light: '#0f172a' }
+        color: { dark: '#000000', light: '#ffffff' }
       })
         .then(url => setQrImageSrc(url))
         .catch(err => console.error('QR generation error:', err));

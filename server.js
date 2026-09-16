@@ -3255,6 +3255,22 @@ app.post('/api/smart-tracking/simulate-step', (req, res) => {
   vehicle.status = 'On the Way';
   vehicle.lastUpdatedAt = new Date().toISOString();
 
+  // Also simulate live movement for all active friends / participants in session
+  if (session.participants && session.participants.length > 0) {
+    const nowIso = new Date().toISOString();
+    session.participants.forEach((part) => {
+      if (part.role === 'PARTICIPANT' && part.location && part.status !== 'STOPPED') {
+        const driftLat = (Math.random() - 0.48) * 0.0003;
+        const driftLon = (Math.random() - 0.48) * 0.0003;
+        part.location.lat = Number((part.location.lat + driftLat).toFixed(5));
+        part.location.lon = Number((part.location.lon + driftLon).toFixed(5));
+        part.location.timestamp = Date.now();
+        part.lastUpdatedAt = nowIso;
+        part.status = 'LIVE';
+      }
+    });
+  }
+
   const dist = calculateHaversineDistanceServer(emergency.lat, emergency.lon, vehicle.currentLat, vehicle.currentLon);
   if (dist < 0.2) {
     emergency.status = 'ARRIVED';
@@ -3276,6 +3292,7 @@ app.post('/api/smart-tracking/simulate-step', (req, res) => {
       active: session.active,
       emergency,
       assignedVehicle: vehicle,
+      participants: session.participants,
       routeCoordinates: [
         [vehicle.currentLat, vehicle.currentLon],
         [emergency.lat, emergency.lon]

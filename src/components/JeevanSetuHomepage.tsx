@@ -2096,7 +2096,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               <img
                 src="/jeevan-setu-logo.jpg"
                 alt="Jeevan Setu Logo"
-                className="h-full w-full object-cover rounded-full"
+                className="absolute inset-0 h-full w-full object-cover rounded-full z-10"
                 onError={(e) => {
                   (e.target as HTMLElement).style.display = 'none';
                 }}
@@ -2493,10 +2493,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
             {[
               {
-                title: 'Real-Time Relief Supply & Vehicle Tracking',
-                desc: 'Live database-driven relief supply monitoring & real-time mobile GPS tracking across all 8 North-Eastern states.',
+                title: language === 'hi' ? 'वास्तविक समय राहत सामग्री एवं वाहन ट्रैकिंग' : 'Real-Time Relief Supply & Vehicle Tracking',
+                desc: language === 'hi' ? 'सभी 8 पूर्वोत्तर राज्यों में लाइव डेटाबेस-संचालित राहत सामग्री निगरानी और रियल-टाइम मोबाइल जीपीएस ट्रैकिंग।' : 'Live database-driven relief supply monitoring & real-time mobile GPS tracking across all 8 North-Eastern states.',
                 icon: Truck,
-                badge: 'LIVE REGIONAL SYSTEM',
+                badge: language === 'hi' ? 'लाइव क्षेत्रीय प्रणाली' : 'LIVE REGIONAL SYSTEM',
                 badgeColor: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/40',
                 action: () => setActiveSidePanel('reliefsupplies'),
                 bgColor: 'bg-[#ECFDF5] dark:bg-emerald-950/30',
@@ -2506,10 +2506,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-emerald-700 dark:group-hover:text-emerald-300'
               },
               {
-                title: 'Smart Emergency Response System',
-                desc: 'Multi-criteria emergency response priority calculator matching depots, supplies, and live GPS vehicles.',
+                title: language === 'hi' ? 'स्मार्ट आपातकालीन प्रतिक्रिया प्रणाली' : 'Smart Emergency Response System',
+                desc: language === 'hi' ? 'डिपो, सामग्री और लाइव जीपीएस वाहनों को मिलाने वाला बहु-मानदंड आपातकालीन प्रतिक्रिया प्राथमिकता कैलकुलेटर।' : 'Multi-criteria emergency response priority calculator matching depots, supplies, and live GPS vehicles.',
                 icon: Zap,
-                badge: 'AI PRIORITY',
+                badge: language === 'hi' ? 'एआई प्राथमिकता' : 'AI PRIORITY',
                 badgeColor: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40',
                 action: () => setActiveSidePanel('emergencyresponse'),
                 bgColor: 'bg-[#FFFBEB] dark:bg-amber-950/30',
@@ -2574,10 +2574,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-indigo-700 dark:group-hover:text-indigo-300'
               },
               {
-                title: 'Road Accessibility & Safe Route Intelligence',
-                desc: 'Real-time highway accessibility status, landslide road blockages, and AI OSRM green corridor rerouting.',
+                title: language === 'hi' ? 'सड़क सुगमता एवं सुरक्षित मार्ग बुद्धिमत्ता' : 'Road Accessibility & Safe Route Intelligence',
+                desc: language === 'hi' ? 'रियल-टाइम राजमार्ग सुगमता स्थिति, भूस्खलन सड़क अवरोध और एआई ग्रीन कॉरिडोर मार्ग परिवर्तन।' : 'Real-time highway accessibility status, landslide road blockages, and AI OSRM green corridor rerouting.',
                 icon: Navigation,
-                badge: 'LIVE ROUTES',
+                badge: language === 'hi' ? 'लाइव मार्ग' : 'LIVE ROUTES',
                 badgeColor: 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border-teal-500/40',
                 action: () => setActiveSidePanel('roadroutes'),
                 bgColor: 'bg-[#F0FDF4] dark:bg-teal-950/30',
@@ -3218,11 +3218,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             
             {/* Left: Brand (Compact) */}
             <div className="flex items-center gap-3 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.05] cursor-pointer group">
-              <div className="h-9 w-9 rounded-full bg-slate-900 ring-2 ring-sky-400/70 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300">
+              <div className="relative h-9 w-9 rounded-full bg-slate-900 ring-2 ring-sky-400/70 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300">
                 <img
                   src="/jeevan-setu-logo.jpg"
                   alt="Jeevan Setu Logo"
-                  className="h-full w-full object-cover rounded-full"
+                  className="absolute inset-0 h-full w-full object-cover rounded-full z-10"
                   onError={(e) => {
                     (e.target as HTMLElement).style.display = 'none';
                   }}

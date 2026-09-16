@@ -51,6 +51,7 @@ import {
   clearVehicleRoute
 } from '../services/api/reliefService';
 import { NER_STATES, NER_STATES_DISTRICTS } from '../services/api/disasterReportsService';
+import { useTranslation } from '../i18n';
 
 interface ReliefSupplyTrackingModuleProps {
   initialTab?: 'supplies' | 'depots' | 'live-map' | 'driver-portal' | 'operations' | 'smart-alloc';
@@ -162,6 +163,8 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
   initialTab = 'supplies',
   onNavigateHome
 }) => {
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   const [activeTab, setActiveTab] = useState<'supplies' | 'depots' | 'live-map' | 'driver-portal' | 'operations' | 'smart-alloc'>(initialTab);
 
   // Sync prop changes
@@ -1307,14 +1310,14 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
               </span>
               <div>
                 <h1 className="text-xl md:text-2xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                  REAL-TIME RELIEF SUPPLY & VEHICLE TRACKING
+                  {isHi ? 'वास्तविक समय राहत सामग्री एवं वाहन ट्रैकिंग' : 'REAL-TIME RELIEF SUPPLY & VEHICLE TRACKING'}
                   <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/50 uppercase tracking-widest">
-                    LIVE REGIONAL SYSTEM
+                    {isHi ? 'लाइव क्षेत्रीय प्रणाली' : 'LIVE REGIONAL SYSTEM'}
                   </span>
                 </h1>
                 <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 flex items-center gap-2">
                   <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  Strictly Restricted to North-Eastern Region — 8 States (Arunachal Pradesh, Assam, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura)
+                  {isHi ? 'विशेष रूप से उत्तर-पूर्वी क्षेत्र के 8 राज्यों (अरुणाचल प्रदेश, असम, मणिपुर, मेघालय, मिजोरम, नागालैंड, सिक्किम, त्रिपुरा) के लिए प्रतिबंधित' : 'Strictly Restricted to North-Eastern Region — 8 States (Arunachal Pradesh, Assam, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura)'}
                 </p>
               </div>
             </div>
@@ -1327,21 +1330,21 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
               className="flex items-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold transition"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
+              {isHi ? 'रिफ्रेश' : 'Refresh'}
             </button>
             <button
               onClick={() => setShowRequestModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-950/20 dark:shadow-emerald-900/30 transition"
             >
               <Plus className="w-4 h-4" />
-              New Supply Request
+              {isHi ? '+ नई सामग्री मांग' : '+ New Supply Request'}
             </button>
             {onNavigateHome && (
               <button
                 onClick={onNavigateHome}
                 className="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold"
               >
-                Exit
+                {isHi ? 'बाहर निकलें' : 'Exit'}
               </button>
             )}
           </div>
@@ -1362,7 +1365,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             }`}
           >
             <Radio className="w-4 h-4 animate-pulse" />
-            🗺️ Live Vehicle Tracking
+            🗺️ {isHi ? 'लाइव वाहन ट्रैकिंग' : 'Live Vehicle Tracking'}
           </button>
 
           <button
@@ -1374,7 +1377,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             }`}
           >
             <Compass className="w-4 h-4" />
-            📱 Driver GPS Portal
+            📱 {isHi ? 'ड्राइवर जीपीएस पोर्टल' : 'Driver GPS Portal'}
           </button>
 
           <button
@@ -1382,7 +1385,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition whitespace-nowrap bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-600/30 ring-2 ring-purple-400/50 cursor-pointer"
           >
             <QrCode className="w-4 h-4 animate-pulse" />
-            🔗 Connect Phone
+            🔗 {isHi ? 'फ़ोन कनेक्ट करें' : 'Connect Phone'}
           </button>
 
           {/* ── Divider ── */}
@@ -1398,7 +1401,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             }`}
           >
             <Package className="w-4 h-4" />
-            Supply Monitoring
+            {isHi ? 'सामग्री निगरानी' : 'Supply Monitoring'}
           </button>
 
           <button
@@ -1410,7 +1413,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             }`}
           >
             <Warehouse className="w-4 h-4" />
-            Depots & Stock
+            {isHi ? 'डिपो एवं स्टॉक' : 'Depots & Stock'}
           </button>
 
           <button
@@ -2708,7 +2711,7 @@ export const ReliefSupplyTrackingModule: React.FC<ReliefSupplyTrackingModuleProp
             <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center">
               <div className="bg-white p-3 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 inline-block mb-2">
                 <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(driverPortalUrl)}`}
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(driverPortalUrl)}&color=000000&bgcolor=ffffff`}
                   alt="Driver Portal QR Code"
                   className="w-44 h-44 object-contain rounded-lg"
                 />

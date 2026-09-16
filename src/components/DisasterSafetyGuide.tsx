@@ -207,7 +207,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
           <span>{t('safety.helplinesTitle', '24/7 Emergency Toll-Free Helplines')}</span>
         </h2>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-3.5">
           {emergencyContacts.map((contact, idx) => {
             const IconComp = contact.icon;
             return (
@@ -300,12 +300,12 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                 </div>
 
                 {/* 3-Step Protocol Flow */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-2">
+                <div className="flex flex-col xl:flex-row gap-3.5 pt-2">
                   {currentData.steps.map((step, idx) => (
-                    <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800/80 space-y-1.5">
+                    <div key={idx} className="flex-1 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800/80 space-y-1.5 min-w-0">
                       <div className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                        <ChevronRight className="w-3.5 h-3.5 text-sky-500" />
-                        <span>{step.title}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                        <span className="truncate">{step.title}</span>
                       </div>
                       <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
                         {step.desc}
@@ -315,7 +315,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                 </div>
 
                 {/* DO's AND DONT's GRID */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                <div className="flex flex-col xl:flex-row gap-6 pt-4 border-t border-slate-200 dark:border-slate-800">
                   
                   {/* DO'S COLUMN */}
                   <div className="space-y-3">
@@ -394,7 +394,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
           </div>
 
           {/* CHECKLIST ITEMS GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-3.5">
             {[
               { key: 'water', label: 'Drinking Water (3 Liters per person per day)', desc: '1-Gallon sealed bottles for min 3 days' },
               { key: 'firstaid', label: 'First Aid Kit & Bandages', desc: 'Antiseptics, gauze, medical tape, tweezers' },

@@ -125,7 +125,8 @@ export default function WeatherIntelligence({
   onNavigateToReroute,
   onTriggerSOS
 }: WeatherIntelligenceProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   const { theme } = useTheme();
 
   // State Selection
@@ -418,28 +419,28 @@ export default function WeatherIntelligence({
               {/* Coverage Badge */}
               <span className="rounded-full bg-sky-500/20 px-3 py-0.5 text-xs font-bold text-sky-700 dark:text-sky-300 flex items-center gap-1.5 border border-sky-500/30">
                 <Globe className="h-3.5 w-3.5 text-sky-400" />
-                Data Coverage: North Eastern Region — 8 States
+                {isHi ? 'डेटा कवरेज: उत्तर पूर्वी क्षेत्र — 8 राज्य' : 'Data Coverage: North Eastern Region — 8 States'}
               </span>
 
               {/* LIVE Status Badge */}
               {weather?.isLive ? (
                 <span className="rounded-full bg-emerald-500/20 px-3 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 border border-emerald-500/30">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
-                  Live Telemetry Active
+                  {isHi ? 'लाइव टेलीमेट्री सक्रिय' : 'Live Telemetry Active'}
                 </span>
               ) : (
                 <span className="rounded-full bg-red-500/20 px-3 py-0.5 text-xs font-bold text-red-700 dark:text-red-400 flex items-center gap-1.5 border border-red-500/30">
                   <AlertTriangle className="h-3.5 w-3.5 text-red-400" />
-                  {weather?.error || "Weather data unavailable"}
+                  {weather?.error || (isHi ? 'मौसम डेटा अनुपलब्ध' : "Weather data unavailable")}
                 </span>
               )}
             </div>
 
             <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-2 flex items-center gap-2.5">
-              <span>🌧️</span> Weather Intelligence (Open-Meteo API)
+              <span>🌧️</span> {isHi ? 'मौसम बुद्धिमत्ता (Open-Meteo API)' : 'Weather Intelligence (Open-Meteo API)'}
             </h1>
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-4xl leading-relaxed">
-              Real-time meteorological telemetry, precipitation, temperature, humidity, wind direction &amp; 7-day weather forecast scoped exclusively to the 8 North Eastern Region (NER) states.
+              {isHi ? 'सभी 8 उत्तर पूर्वी राज्यों के लिए वास्तविक समय मौसम संबंधी टेलीमेट्री, वर्षा, तापमान, आर्द्रता, हवा की दिशा और 7-दिवसीय मौसम पूर्वानुमान।' : 'Real-time meteorological telemetry, precipitation, temperature, humidity, wind direction & 7-day weather forecast scoped exclusively to the 8 North Eastern Region (NER) states.'}
             </p>
           </div>
 
@@ -450,7 +451,7 @@ export default function WeatherIntelligence({
                 <Search className="h-3.5 w-3.5 text-sky-500 shrink-0 mr-2" />
                 <input
                   type="text"
-                  placeholder="Search NER City/District..."
+                  placeholder={isHi ? 'NER शहर / जिला खोजें...' : 'Search NER City/District...'}
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   className="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
@@ -459,7 +460,7 @@ export default function WeatherIntelligence({
 
               {searchResults.length > 0 && (
                 <div className="absolute left-0 right-0 top-11 z-[2500] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-1.5 shadow-2xl max-h-48 overflow-y-auto space-y-1">
-                  <div className="text-[9px] font-bold text-sky-600 dark:text-sky-400 uppercase px-1.5 py-0.5">NER Location Search:</div>
+                  <div className="text-[9px] font-bold text-sky-600 dark:text-sky-400 uppercase px-1.5 py-0.5">{isHi ? 'NER स्थान खोज:' : 'NER Location Search:'}</div>
                   {searchResults.map((item, idx) => (
                     item.isOutofBounds ? (
                       <div key={`loc_err_${idx}`} className="p-2 text-xs text-red-400 font-bold bg-red-950/40 rounded-lg">
@@ -487,7 +488,7 @@ export default function WeatherIntelligence({
               title="Refresh Weather Telemetry"
             >
               <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin text-sky-400' : ''}`} />
-              <span>Refresh</span>
+              <span>{isHi ? 'रिफ्रेश' : 'Refresh'}</span>
             </button>
           </div>
         </div>
@@ -500,7 +501,7 @@ export default function WeatherIntelligence({
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             <MapPin className="h-4 w-4 text-sky-500" />
-            <span>Select State:</span>
+            <span>{isHi ? 'राज्य चुनें:' : 'Select State:'}</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {Object.keys(NER_WEATHER_LOCATIONS).map((stName) => (
@@ -521,7 +522,7 @@ export default function WeatherIntelligence({
 
         {/* District / City Dropdown Selector */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">District / City:</span>
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{isHi ? 'जिला / शहर:' : 'District / City:'}</span>
           <select
             value={selectedLocation.name}
             onChange={(e) => {

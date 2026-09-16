@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Mic, MicOff, Sparkles, Volume2, ArrowRight } from 'lucide-react';
 import { useVoiceRecognition } from '../../hooks/useVoiceRecognition';
+import { useTranslation } from '../../i18n';
 
 interface VoiceAssistantModalProps {
   isOpen: boolean;
@@ -134,11 +135,12 @@ export default function VoiceAssistantModal({
   onNavigate,
   onTriggerSOS
 }: VoiceAssistantModalProps) {
-  if (!isOpen) return null;
-
-  const [selectedLang, setSelectedLang] = useState<LangType>('en-IN');
+  const { language } = useTranslation();
+  const [selectedLang, setSelectedLang] = useState<LangType>(() => language === 'hi' ? 'hi-IN' : 'en-IN');
   const t = translations[selectedLang] || translations['en-IN'];
   const [feedbackMsg, setFeedbackMsg] = useState<string>(t.defaultFeedback);
+
+  if (!isOpen) return null;
 
   const processSpokenCommand = (text: string) => {
     const lower = text.toLowerCase();
