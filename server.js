@@ -34,6 +34,60 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', server: 'Jeevan Setu Disaster Intelligence API', time: new Date().toISOString() });
 });
 
+// 🤖 AI Chatbot Assistant Endpoint with Gemini + Knowledge Engine Bridge
+app.post('/api/ai/chat', async (req, res) => {
+  const { query, language } = req.body || {};
+  if (!query || typeof query !== 'string') {
+    return res.status(400).json({ error: 'Query is required' });
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+  if (apiKey) {
+    try {
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const langPrompt = language === 'hi'
+        ? 'उत्तर पूरी तरह से सरल, शुद्ध और स्पष्ट हिंदी में दें। आपदा राहत, सुरक्षित रास्ते (NH-10, NH-29, NH-27, NH-6), मौसम, तापमान व हेल्पलाइन (112, 1078, 108) की सटीक जानकारी दें।'
+        : 'Provide authoritative, actionable guidance for Jeevan Setu disaster response in North East India (Assam, Arunachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura).';
+
+      const systemInstruction = `You are the official Jeevan Setu AI Disaster Intelligence Agent.
+The platform covers the 8 North Eastern States of India.
+Key Features: Live GIS Map, AI Impact Assessment (Gemini Vision), Smart Disaster Monitoring (ISRO Bhuvan LHI/FVI), Road Accessibility & Safe Rerouting (OSRM detours around landslides), Private Smart Emergency (peer-to-peer live tracking Phone A & Phone B), Relief Supplies & Camps, Emergency Hospitals (ICU beds, blood, oxygen, ambulances), UAV Drones, and Emergency SOS (NDRF 112 / 1078).
+${langPrompt}`;
+
+      const gRes = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: `${systemInstruction}\n\nUser Question: "${query}"` }
+            ]
+          }]
+        })
+      });
+
+      if (gRes.ok) {
+        const gData = await gRes.json();
+        const reply = gData.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (reply && reply.trim().length > 15) {
+          return res.json({
+            status: 'success',
+            source: 'gemini',
+            answerText: reply.trim()
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('Gemini chat API error:', err.message);
+    }
+  }
+
+  res.json({
+    status: 'fallback',
+    source: 'knowledge_engine'
+  });
+});
+
 // Photo Upload Endpoint: /citizen/photo
 app.post('/citizen/photo', (req, res) => {
   console.log('📸 Photo uploaded to /citizen/photo:', {
