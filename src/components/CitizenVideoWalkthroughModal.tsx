@@ -439,22 +439,22 @@ export default function CitizenVideoWalkthroughModal({
     : (currentScene.screenHighlightsHi || currentScene.screenHighlights);
 
   return (
-    <div className="fixed inset-0 z-[10000] bg-slate-950/85 backdrop-blur-md flex flex-col justify-center items-center p-3 sm:p-5 animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 w-full max-w-5xl rounded-3xl flex flex-col overflow-hidden shadow-2xl max-h-[95vh]">
+    <div className="fixed inset-0 z-[10000] bg-slate-950/85 backdrop-blur-md flex flex-col justify-center items-center p-2 sm:p-4 animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 w-full max-w-4xl rounded-2xl flex flex-col overflow-hidden shadow-2xl max-h-[92vh]">
         
         {/* Header Bar */}
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0c142b] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white shadow-md shadow-amber-500/30 ring-2 ring-amber-400/40">
-              <Sparkles className="w-5 h-5 text-yellow-200 animate-pulse" />
+        <div className="p-3 sm:p-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0c142b] flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white shadow-md shadow-amber-500/30 ring-2 ring-amber-400/40 shrink-0">
+              <Sparkles className="w-4 h-4 text-yellow-200 animate-pulse" />
             </div>
             <div>
-              <h2 className="text-base font-black text-slate-900 dark:text-white leading-tight">
+              <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
                 {language === 'hi'
                   ? '🎥 आपका साथी (Aapka Saathi) — 10-मिनट संपूर्ण नागरिक वीडियो गाइड'
                   : '🎥 Aapka Saathi — 10-Minute Official Citizen Video Guide'}
               </h2>
-              <p className="text-xs text-amber-600 dark:text-amber-400 font-bold">
+              <p className="text-[11px] text-amber-600 dark:text-amber-400 font-bold">
                 {language === 'hi' ? 'एआई आवाज़ एवं स्टेप-बाय-स्टेप बिना रुके लाइव गाइड' : 'AI Voice Narration & Step-by-Step Non-Stop Interactive Guide'}
               </p>
             </div>
@@ -466,76 +466,76 @@ export default function CitizenVideoWalkthroughModal({
               if (synthRef.current) synthRef.current.cancel();
               onClose();
             }}
-            className="h-9 w-9 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center hover:bg-rose-500 hover:text-white transition cursor-pointer"
+            className="h-8 w-8 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center hover:bg-rose-500 hover:text-white transition cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Video Player Display Container */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 custom-scrollbar">
           
           {/* Main Visual Stage Box */}
-          <div className="relative rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 bg-slate-900 text-white p-6 sm:p-8 min-h-[340px] flex flex-col justify-between shadow-xl">
+          <div className="relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 bg-slate-900 text-white p-4 sm:p-5 min-h-[220px] flex flex-col justify-between shadow-xl">
             {/* Ambient Background Glow */}
             <div className={`absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br ${currentScene.color} opacity-20 rounded-full blur-3xl pointer-events-none`} />
             <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
             {/* Stage Top Bar */}
-            <div className="relative z-10 flex items-center justify-between gap-3 border-b border-slate-800 pb-4">
-              <div className="flex items-center gap-2.5">
-                <span className="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <div className="relative z-10 flex items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
                   {language === 'hi' ? currentScene.badgeHi : currentScene.badge}
                 </span>
-                <span className="text-xs font-bold text-slate-400 font-mono">
+                <span className="text-[11px] font-bold text-slate-400 font-mono">
                   {language === 'hi' ? `दृश्य ${currentScene.id} / 10` : `SCENE ${currentScene.id} / 10`}
                 </span>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span className="text-xs font-mono font-bold text-emerald-400">
+                <span className="text-[11px] font-mono font-bold text-emerald-400">
                   {formatTime(currentTime)} / 10:00
                 </span>
               </div>
             </div>
 
             {/* Stage Center Content */}
-            <div className="relative z-10 my-6 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className={`p-3 rounded-2xl bg-gradient-to-br ${currentScene.color} text-white shadow-lg shrink-0`}>
-                  <IconComponent className="w-6 h-6" />
+            <div className="relative z-10 my-2.5 space-y-2.5">
+              <div className="flex items-center gap-2.5">
+                <div className={`p-2.5 rounded-xl bg-gradient-to-br ${currentScene.color} text-white shadow-lg shrink-0`}>
+                  <IconComponent className="w-5 h-5" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                <h3 className="text-base sm:text-lg font-black text-white tracking-tight">
                   {language === 'hi' ? currentScene.titleHi : currentScene.titleHi}
                 </h3>
               </div>
 
               {/* On-screen Visual Highlights in Hindi */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
                 {highlightsToDisplay.map((hl, idx) => (
-                  <div key={idx} className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs font-semibold text-slate-200 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>{hl}</span>
+                  <div key={idx} className="p-2 sm:p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/80 text-[11px] font-semibold text-slate-200 flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">{hl}</span>
                   </div>
                 ))}
               </div>
 
               {/* AI Voice Narration Box in Hindi */}
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-amber-500/40 space-y-1.5 shadow-lg">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase text-amber-300 tracking-wider">
+              <div className="p-3 rounded-xl bg-slate-950/80 border border-amber-500/40 space-y-1 shadow-lg">
+                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-amber-300 tracking-wider">
                   <Volume2 className="w-3.5 h-3.5 animate-pulse text-amber-300" />
                   <span>{language === 'hi' ? '🔊 AI आवाज़ (बिना रुके बोलकर समझा रहा है)' : '🔊 AI VOICE NARRATION (NON-STOP HINDI)'}</span>
                 </div>
-                <p className="text-xs sm:text-sm font-bold text-amber-200 leading-relaxed">
+                <p className="text-xs sm:text-xs font-bold text-amber-200 leading-snug">
                   "{language === 'hi' ? currentScene.narrationHi : currentScene.narrationHi}"
                 </p>
               </div>
             </div>
 
             {/* Stage Bottom Direct Action Button */}
-            <div className="relative z-10 pt-2 flex items-center justify-between border-t border-slate-800">
-              <span className="text-xs text-slate-400 font-medium">
+            <div className="relative z-10 pt-1.5 flex items-center justify-between border-t border-slate-800">
+              <span className="text-[11px] text-slate-400 font-medium">
                 {language === 'hi' ? 'लाइव फीचर आजमाने के लिए क्लिक करें:' : 'Try feature live:'}
               </span>
 
@@ -550,7 +550,7 @@ export default function CitizenVideoWalkthroughModal({
                     onNavigateModule(currentScene.moduleKey);
                   }
                 }}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-black text-xs flex items-center gap-1 shadow-md active:scale-95 transition cursor-pointer"
               >
                 <span>{language === 'hi' ? 'यह फ़ीचर खोलें ➔' : 'Open This Feature ➔'}</span>
               </button>
@@ -558,18 +558,18 @@ export default function CitizenVideoWalkthroughModal({
           </div>
 
           {/* Video Control Bar */}
-          <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
+          <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
             {/* Scrubber Range Input */}
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <input
                 type="range"
                 min={0}
                 max={600}
                 value={currentTime}
                 onChange={(e) => handleSeek(Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer h-2 bg-slate-300 dark:bg-slate-800 rounded-lg"
+                className="w-full accent-amber-500 cursor-pointer h-1.5 bg-slate-300 dark:bg-slate-800 rounded-lg"
               />
-              <div className="flex justify-between text-[10px] font-bold text-slate-400 font-mono">
+              <div className="flex justify-between text-[9px] font-bold text-slate-400 font-mono">
                 <span>00:00</span>
                 <span>02:00 (SOS)</span>
                 <span>04:15 (Safe Routes)</span>
@@ -580,67 +580,67 @@ export default function CitizenVideoWalkthroughModal({
             </div>
 
             {/* Playback Controls */}
-            <div className="flex items-center justify-between gap-3 pt-1">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2 pt-0.5">
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={togglePlay}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-extrabold text-xs shadow-md flex items-center gap-2 cursor-pointer active:scale-95 transition border border-amber-300/40"
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-extrabold text-xs shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95 transition border border-amber-300/40"
                 >
-                  {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
-                  <span>{isPlaying ? (language === 'hi' ? 'रोकें (Pause)' : 'Pause Video') : (language === 'hi' ? '▶️ वीडियो चलाएं (Play)' : '▶️ Play Video')}</span>
+                  {isPlaying ? <Pause className="w-3.5 h-3.5 fill-white" /> : <Play className="w-3.5 h-3.5 fill-white" />}
+                  <span>{isPlaying ? (language === 'hi' ? 'रोकें (Pause)' : 'Pause Video') : (language === 'hi' ? '▶️ चलाएं (Play)' : '▶️ Play Video')}</span>
                 </button>
 
                 <button
                   onClick={() => handleSeek(0)}
-                  className="p-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+                  className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
                   title="Reset to 00:00"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <RotateCcw className="w-3.5 h-3.5" />
                 </button>
 
                 <button
                   onClick={() => setIsMuted(prev => !prev)}
-                  className={`p-2.5 rounded-xl border transition cursor-pointer ${
+                  className={`p-2 rounded-lg border transition cursor-pointer ${
                     isMuted
                       ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
                       : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
                   }`}
                   title={isMuted ? 'Unmute AI Voice' : 'Mute AI Voice'}
                 >
-                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                 </button>
               </div>
 
               {/* Scene Navigation Prev/Next */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <button
                   disabled={currentSceneIndex === 0}
                   onClick={() => handleSeek(VIDEO_SCENES[Math.max(0, currentSceneIndex - 1)].timestampStart)}
-                  className="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 disabled:opacity-40 text-slate-700 dark:text-slate-300 text-xs font-extrabold flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 disabled:opacity-40 text-slate-700 dark:text-slate-300 text-xs font-extrabold flex items-center gap-1 cursor-pointer"
                 >
-                  <ChevronLeft className="w-4 h-4" />
-                  <span>{language === 'hi' ? 'पिछला दृश्य' : 'Prev Scene'}</span>
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span>{language === 'hi' ? 'पिछला' : 'Prev'}</span>
                 </button>
 
                 <button
                   disabled={currentSceneIndex === VIDEO_SCENES.length - 1}
                   onClick={() => handleSeek(VIDEO_SCENES[Math.min(VIDEO_SCENES.length - 1, currentSceneIndex + 1)].timestampStart)}
-                  className="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 disabled:opacity-40 text-slate-700 dark:text-slate-300 text-xs font-extrabold flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 disabled:opacity-40 text-slate-700 dark:text-slate-300 text-xs font-extrabold flex items-center gap-1 cursor-pointer"
                 >
-                  <span>{language === 'hi' ? 'अगला दृश्य' : 'Next Scene'}</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <span>{language === 'hi' ? 'अगला' : 'Next'}</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
           </div>
 
           {/* Scene Playlist Items */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-black uppercase text-slate-500 dark:text-slate-400">
+          <div className="space-y-1.5">
+            <h4 className="text-[11px] font-black uppercase text-slate-500 dark:text-slate-400">
               {language === 'hi' ? '10-मिनट वीडियो दृश्य सूची (Playlist)' : '10-Minute Video Scene Playlist'}
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
               {VIDEO_SCENES.map((scene, sIdx) => {
                 const isActive = currentSceneIndex === sIdx;
                 const SceneIcon = scene.icon;
@@ -648,14 +648,14 @@ export default function CitizenVideoWalkthroughModal({
                   <button
                     key={scene.id}
                     onClick={() => handleSeek(scene.timestampStart)}
-                    className={`w-full p-3 rounded-2xl border text-left flex items-center gap-3 transition cursor-pointer ${
+                    className={`w-full p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition cursor-pointer ${
                       isActive
                         ? 'bg-amber-500/15 border-amber-500/60 ring-2 ring-amber-500/30 text-slate-900 dark:text-white'
                         : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <div className={`h-8 w-8 rounded-xl flex items-center justify-center text-white shrink-0 bg-gradient-to-br ${scene.color}`}>
-                      <SceneIcon className="w-4 h-4" />
+                    <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-white shrink-0 bg-gradient-to-br ${scene.color}`}>
+                      <SceneIcon className="w-3.5 h-3.5" />
                     </div>
 
                     <div className="flex-1 min-w-0">
