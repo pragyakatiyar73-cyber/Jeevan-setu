@@ -2502,26 +2502,70 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
             </div>
 
-            {/* Hero Right Script Accent Tagline */}
-            <div className="hidden xl:flex flex-col items-end justify-center self-start pt-2 pr-4 lg:pr-6 z-20 shrink-0">
-              <div className="relative font-serif italic text-lg lg:text-xl text-slate-100 font-normal tracking-wide transform -rotate-3 text-right drop-shadow-md">
-                {language === 'hi' ? (
-                  <>
-                    <span>सुरक्षित कल के लिए</span>
-                    <br />
-                    <span className="font-semibold text-white">एक साथ</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Together for a</span>
-                    <br />
-                    <span className="font-semibold text-white">safer tomorrow</span>
-                  </>
-                )}
-                <svg className="w-36 h-3 text-[#38BDF8] mt-1 ml-auto" viewBox="0 0 200 20" fill="none">
-                  <path d="M5 15 Q 100 0, 195 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                </svg>
+            {/* 🎥 HERO RIGHT SIDE: 10-MINUTE CITIZEN VIDEO PRESENTATION CARD */}
+            <div className="w-full lg:w-[380px] shrink-0 rounded-3xl p-5 sm:p-6 bg-[#0c142b]/95 backdrop-blur-2xl border-2 border-amber-400/60 shadow-2xl shadow-amber-950/60 space-y-4 relative overflow-hidden group z-30">
+              {/* Glow Effects */}
+              <div className="absolute -top-12 -right-12 w-44 h-44 bg-amber-500/20 rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition duration-500" />
+              <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-rose-500/20 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Card Header Badge */}
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white shadow-md">
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-200 animate-pulse" />
+                  <span>{language === 'hi' ? 'नागरिक वीडियो गाइड (10 MIN)' : 'CITIZEN VIDEO GUIDE (10 MIN)'}</span>
+                </span>
+                <span className="text-[11px] font-mono font-bold text-emerald-400 flex items-center gap-1">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  <span>HD AI Voice</span>
+                </span>
               </div>
+
+              {/* Video Title & Subtitle */}
+              <div className="space-y-1.5">
+                <h3 className="text-base sm:text-lg font-black text-white leading-tight group-hover:text-amber-300 transition">
+                  {language === 'hi'
+                    ? '🎥 10-मिनट में सीखें जीवन सेतु का उपयोग'
+                    : '🎥 Learn Jeevan Setu in 10-Minute Video'}
+                </h3>
+                <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  {language === 'hi'
+                    ? 'AI आवाज़ में समझें: 1-Click SOS मदद, लाइव परिवार GPS ट्रैकिंग, सेफ रूट और पास के अस्पताल खोजना।'
+                    : 'Watch AI voice step-by-step narration explaining SOS alert, live GPS sharing, safe routes, and hospitals.'}
+                </p>
+              </div>
+
+              {/* Mini Feature Highlights Pills */}
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
+                  <span className="text-rose-400">🚨</span>
+                  <span className="truncate">{language === 'hi' ? '1-टैप SOS मदद' : '1-Tap SOS Alert'}</span>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
+                  <span className="text-amber-400">🛰️</span>
+                  <span className="truncate">{language === 'hi' ? 'लाइव GPS ट्रैकिंग' : 'Live GPS Sharing'}</span>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
+                  <span className="text-teal-400">🗺️</span>
+                  <span className="truncate">{language === 'hi' ? 'सुरक्षित मार्ग (Route)' : 'Safe Route Planner'}</span>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
+                  <span className="text-sky-400">📄</span>
+                  <span className="truncate">{language === 'hi' ? '2-पेज PDF रिपोर्ट' : '2-Page PDF Report'}</span>
+                </div>
+              </div>
+
+              {/* Main Play Action Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  const event = new CustomEvent('openVideoGuide');
+                  window.dispatchEvent(event);
+                }}
+                className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-black text-xs sm:text-sm shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 border border-amber-300/50 active:scale-95 transition cursor-pointer"
+              >
+                <span className="text-lg">▶️</span>
+                <span>{language === 'hi' ? '10-मिनट वीडियो प्रेजेंटेशन चलाएं' : 'Play 10-Minute Video Presentation'}</span>
+              </button>
             </div>
 
           </div>
