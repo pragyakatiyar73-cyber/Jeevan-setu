@@ -711,95 +711,41 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     }
     activeBoundsCoords.push([emergency.lat, emergency.lon]);
 
-    const activeParticipants = (participants || []).filter(p => p.location && p.status !== 'STOPPED');
-    const isMultiPersonSession = activeParticipants.length >= 2 || (participants && participants.length > 1);
-
-    if (isMultiPersonSession) {
-      // Remove vehicle marker during multi-participant live map session
-      if (vehicleMarkerRef.current) {
-        vehicleMarkerRef.current.remove();
-        vehicleMarkerRef.current = null;
-      }
-    } else {
-      // 3. Assigned Vehicle Marker (Only when single participant / vehicle mode)
-      const vehicleEmoji =
-        effectiveVehicle.typeCategory === 'Medical'
-          ? '🚑'
-          : effectiveVehicle.typeCategory === 'Fire'
-          ? '🚒'
-          : effectiveVehicle.typeCategory === 'Police'
-          ? '🚓'
-          : '🚚';
-
-      const vehicleIcon = L.divIcon({
-        className: 'private-vehicle-marker',
-        html: `
-          <div class="relative flex items-center justify-center w-11 h-11 rounded-full bg-slate-900 border-2 border-emerald-400 shadow-2xl text-lg text-white font-extrabold">
-            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            ${vehicleEmoji}
-          </div>
-        `,
-        iconSize: [44, 44],
-        iconAnchor: [22, 22]
-      });
-
-      if (!vehicleMarkerRef.current) {
-        vehicleMarkerRef.current = L.marker([effectiveVehicle.currentLat, effectiveVehicle.currentLon], { icon: vehicleIcon })
-          .addTo(map)
-          .bindPopup(`
-            <div class="p-2 text-xs font-sans">
-              <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleEmoji} ${effectiveVehicle.vehicleType}</strong>
-              <p class="text-slate-700 font-mono mt-1">ID: ${effectiveVehicle.vehicleId}</p>
-              <p class="text-slate-700">Driver: ${effectiveVehicle.driverName}</p>
-            </div>
-          `);
-      } else {
-        vehicleMarkerRef.current.setIcon(vehicleIcon);
-        vehicleMarkerRef.current.setLatLng([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
-      }
-      activeBoundsCoords.push([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
+    // 3. Remove assigned vehicle marker (Live map shows ONLY Me 🔴 & Friend 🔵 connection)
+    if (vehicleMarkerRef.current) {
+      vehicleMarkerRef.current.remove();
+      vehicleMarkerRef.current = null;
     }
 
-    // 4. Connection Line Polyline Route
+    // 4. Polyline Route Connection between Me (🔴) and Friend (🔵)
     if (routePolylineRef.current) {
       routePolylineRef.current.remove();
       routePolylineRef.current = null;
     }
 
-    if (isMultiPersonSession && activeParticipants.length >= 2) {
-      // Connect Phone A (Host 🔴) and Phone B (Friend 🔵) directly
-      const p1 = activeParticipants[0].location!;
-      const p2 = activeParticipants[1].location!;
+    const hostPart = participants?.find(p => p.role === 'HOST' || p.participantId === 'P-1') || participants?.[0];
+    const friendPart = participants?.find(p => p.role === 'PARTICIPANT' && p.location && p.status !== 'STOPPED') || participants?.find(p => p.location && p.participantId !== (hostPart?.participantId || 'P-1') && p.status !== 'STOPPED');
 
-      routePolylineRef.current = L.polyline(
-        [
-          [p1.lat, p1.lon],
-          [p2.lat, p2.lon]
-        ],
-        {
-          color: '#10b981',
-          weight: 4,
-          dashArray: '8, 8',
-          opacity: 0.85
-        }
-      ).addTo(map);
-    } else if (!isMultiPersonSession) {
-      // Connect Vehicle to Requester
-      routePolylineRef.current = L.polyline(
-        [
-          [effectiveVehicle.currentLat, effectiveVehicle.currentLon],
-          [emergency.lat, emergency.lon]
-        ],
-        {
-          color: '#10b981',
-          weight: 4,
-          dashArray: '8, 8',
-          opacity: 0.85
-        }
-      ).addTo(map);
+    const hostLat = hostPart?.location?.lat ?? emergency.lat;
+    const hostLon = hostPart?.location?.lon ?? emergency.lon;
+
+    if (friendPart && friendPart.location) {
+      const points: L.LatLngExpression[] = [
+        [hostLat, hostLon],
+        [friendPart.location.lat, friendPart.location.lon]
+      ];
+
+      routePolylineRef.current = L.polyline(points, {
+        color: '#10b981',
+        weight: 4,
+        dashArray: '8, 8',
+        opacity: 0.95
+      }).addTo(map);
+
+      activeBoundsCoords.push([friendPart.location.lat, friendPart.location.lon]);
     }
 
-    // Fit bounds to show all active participants
+    // Fit bounds to show all participants and vehicle
     if (activeBoundsCoords.length > 0) {
       const bounds = L.latLngBounds(activeBoundsCoords);
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
@@ -1231,55 +1177,62 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 <div ref={trackingMapContainerRef} style={{ width: '100%', height: '420px', minHeight: '420px' }} className="w-full h-[420px] min-h-[420px] z-0 rounded-2xl"></div>
 
                 {/* Overlay Legend */}
-                <div className="absolute top-3 left-3 z-10 bg-slate-950/90 border border-slate-800 p-2.5 rounded-xl text-[10px] space-y-1 backdrop-blur-md shadow-xl">
+                <div className="absolute top-3 left-3 z-10 bg-slate-950/90 border border-slate-800 p-2.5 rounded-xl text-[10px] space-y-1.5 backdrop-blur-md shadow-xl">
                   <div className="flex items-center gap-2">
                     <span className="text-base">🔴</span>
-                    <span className="font-bold text-white">
-                      {(trackingData.participants && trackingData.participants.length > 1) ? 'Phone A (Me)' : 'My Emergency Location'}
-                    </span>
+                    <span className="font-bold text-white">My Location (Me)</span>
                   </div>
-                  {(trackingData.participants && trackingData.participants.length > 1) ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">🔵</span>
-                      <span className="font-bold text-sky-400">Phone B (Friend)</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">
-                        {trackingData.assignedVehicle?.typeCategory === 'Medical'
-                          ? '🚑'
-                          : trackingData.assignedVehicle?.typeCategory === 'Fire'
-                          ? '🚒'
-                          : trackingData.assignedVehicle?.typeCategory === 'Police'
-                          ? '🚓'
-                          : '🚚'}
-                      </span>
-                      <span className="font-bold text-emerald-400">Assigned Relevant Vehicle</span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🔵</span>
+                    <span className="font-bold text-sky-400">Friend Location (Phone B)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-0.5 border-t-2 border-dashed border-emerald-400 inline-block"></span>
+                    <span className="font-bold text-emerald-400">Live Connection (Me ➔ Friend)</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Live Vehicle Status & Distance Card */}
+              {/* Live Status & Distance Card */}
               <div className="p-5 bg-slate-950 border-t border-slate-800 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Response Status</span>
                     <span className="text-sm font-black text-emerald-400 flex items-center gap-2 mt-0.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      {trackingData.emergency.status}
+                      {trackingData.participants && trackingData.participants.length > 1 ? 'MULTI-PERSON LIVE CONNECTED' : 'SESSION_ACTIVE'}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-4 text-xs font-mono">
-                    <div className="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-                      <span className="text-[10px] text-slate-400 block">Distance</span>
-                      <strong className="text-white text-sm">{trackingData.distanceKm} km</strong>
-                    </div>
-                    <div className="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-                      <span className="text-[10px] text-slate-400 block">Estimated ETA</span>
-                      <strong className="text-emerald-400 text-sm">{trackingData.etaMinutes} min</strong>
-                    </div>
+                    {(() => {
+                      const hostPart = trackingData.participants?.find(p => p.role === 'HOST' || p.participantId === 'P-1') || trackingData.participants?.[0];
+                      const friendPart = trackingData.participants?.find(p => p.role === 'PARTICIPANT' && p.location && p.status !== 'STOPPED') || trackingData.participants?.find(p => p.location && p.participantId !== (hostPart?.participantId || 'P-1') && p.status !== 'STOPPED');
+                      const hostLat = hostPart?.location?.lat ?? trackingData.emergency.lat;
+                      const hostLon = hostPart?.location?.lon ?? trackingData.emergency.lon;
+
+                      if (friendPart && friendPart.location) {
+                        const dist = calculateHaversineDistance(hostLat, hostLon, friendPart.location.lat, friendPart.location.lon);
+                        return (
+                          <>
+                            <div className="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
+                              <span className="text-[10px] text-slate-400 block">Distance to Friend</span>
+                              <strong className="text-white text-sm">{dist} km</strong>
+                            </div>
+                            <div className="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
+                              <span className="text-[10px] text-slate-400 block">Friend Status</span>
+                              <strong className="text-emerald-400 text-sm">● {friendPart.status}</strong>
+                            </div>
+                          </>
+                        );
+                      }
+                      return (
+                        <div className="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
+                          <span className="text-[10px] text-slate-400 block">Status</span>
+                          <strong className="text-amber-400 text-sm">Waiting for Friend via QR</strong>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 

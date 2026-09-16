@@ -236,7 +236,7 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
       }
     });
 
-    // Connection line between Phone A and Phone B
+    // Draw polyline connecting participants (Me 🔴 ➔ Friend 🔵)
     if (routePolylineRef.current) {
       routePolylineRef.current.remove();
       routePolylineRef.current = null;
@@ -247,7 +247,7 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
         color: '#10b981',
         weight: 4,
         dashArray: '8, 8',
-        opacity: 0.85
+        opacity: 0.95
       }).addTo(map);
     }
 
