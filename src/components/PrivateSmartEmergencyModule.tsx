@@ -27,6 +27,7 @@ import {
   Share2
 } from 'lucide-react';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import QRCode from 'qrcode';
 import {
   EmergencyType,
