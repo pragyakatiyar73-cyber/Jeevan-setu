@@ -59,6 +59,7 @@ import { useTranslation, SUPPORTED_LANGUAGES } from '../i18n';
 import ThemeToggle from './ThemeToggle';
 import TrustedDataSourcesModal from './TrustedDataSourcesModal';
 import AIChatbotWidget from './AIChatbotWidget';
+import { analyzeUserQuery } from '../services/ai/aiKnowledgeEngine';
 import { NER_HIGHWAY_SEGMENTS } from '../services/api/roadAccessibilityService';
 
 interface JeevanSetuHomepageProps {
@@ -1257,17 +1258,29 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   const [aiMessages, setAiMessages] = useState<Array<{ role: 'user' | 'assistant'; text: string; actionText?: string; actionModule?: string }>>([
     {
       role: 'assistant',
-      text: 'Hello! I am your Jeevan Setu AI Agent. You can speak or type to search disaster alerts, check live GIS telemetry, locate emergency camps, or analyze local risk.'
+      text: 'Hello! I am your Jeevan Setu AI Agent. Trained with comprehensive disaster intelligence across all 8 North Eastern states (Assam, Arunachal, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura). Ask me about live road accessibility (NH-10, NH-29, NH-27), weather & temperature, flood/landslide risk, relief camps, or Emergency SOS!'
     }
   ]);
   const [isAiThinking, setIsAiThinking] = useState(false);
   const recognitionRef = useRef<any>(null);
 
+  // Update initial message when language changes
+  useEffect(() => {
+    setAiMessages([
+      {
+        role: 'assistant',
+        text: language === 'hi'
+          ? 'नमस्ते! मैं जीवन सेतु आधिकारिक एआई एजेंट (Jeevan Setu AI Agent) हूँ 🤖।\n\nपूर्वोत्तर के सभी 8 राज्यों के लिए प्रशिक्षित: सुरक्षित राजमार्ग मार्ग (NH-10, NH-29, NH-27), मौसम व तापमान, भूस्खलन/बाढ़ स्थिति, राहत शिविर, अस्पताल या 24x7 इमरजेंसी एसओएस (SOS) के बारे में पूछें। आप माइक 🎙️ दबाकर बोल भी सकते हैं!'
+          : 'Hello! I am your Jeevan Setu AI Agent 🤖.\n\nTrained with comprehensive disaster intelligence across all 8 North Eastern states (Assam, Arunachal, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura). Ask me about live road accessibility (NH-10, NH-29, NH-27), weather & temperature, flood/landslide risk, relief camps, or Emergency SOS!'
+      }
+    ]);
+  }, [language]);
+
   // Toggle Voice-to-Text Listening
   const toggleVoiceListening = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert('Speech Recognition is not supported in this browser. Please use Google Chrome or Edge, or type your query.');
+      alert(language === 'hi' ? 'इस ब्राउज़र में स्पीच रिकॉग्निशन समर्थित नहीं है। कृपया गूगल क्रोम या एज का उपयोग करें।' : 'Speech Recognition is not supported in this browser. Please use Google Chrome or Edge, or type your query.');
       return;
     }
 
@@ -1316,8 +1329,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     }
   };
 
-  // Process AI Prompt and Return Disaster Intelligence
-  const handleSendAiPrompt = (queryText?: string) => {
+  // Process AI Prompt and Return Professional Disaster Intelligence
+  const handleSendAiPrompt = async (queryText?: string) => {
     const textToSend = queryText || aiPrompt;
     if (!textToSend.trim()) return;
 
@@ -1331,60 +1344,102 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
     setAiPrompt('');
     setIsAiThinking(true);
 
-    const q = textToSend.toLowerCase();
+    const activeLang: 'en' | 'hi' = (language === 'hi' || /[\u0900-\u097F]/.test(textToSend)) ? 'hi' : 'en';
 
-    setTimeout(() => {
-      let reply = '';
-      let actionText: string | undefined;
-      let actionModule: string | undefined;
+    // Comprehensive knowledge engine analysis
+    const engineResult = analyzeUserQuery(textToSend, activeLang);
 
-      if (q.includes('map') || q.includes('gis') || q.includes('satellite') || q.includes('telem') || q.includes('live')) {
-        reply = 'Live GIS telemetry is active. Sikkim Teesta corridor is on HIGH risk (82mm rain), and Assam Brahmaputra basin is being monitored by SDRF Team 8.';
-        actionText = 'Open Live Map';
-        actionModule = 'map';
-      } else if (q.includes('risk') || q.includes('landslide') || q.includes('flood') || q.includes('hazard') || q.includes('sikkim')) {
-        reply = 'Analyzed 8 North Eastern states: Sikkim (LHI 7.8, High Risk) and Meghalaya (Heavy Cloudburst Alert) require priority avoidance corridors.';
-        actionText = 'View Risk Matrix';
-        actionModule = 'staterisk';
-      } else if (q.includes('camp') || q.includes('shelter') || q.includes('hospital') || q.includes('resource') || q.includes('relief')) {
-        reply = '32 active relief camps are operational across NER with 14.8 tons of essential medical supplies. Gangtok Central Referral Hospital has 450 emergency beds available.';
-        actionText = 'View Relief Camps';
-        actionModule = 'reliefcamps';
-      } else if (q.includes('drone') || q.includes('aerial') || q.includes('flight') || q.includes('uav')) {
-        reply = 'UAV Garuda-X15 drone fleet is on standby at Guwahati logistics depot with high-altitude blood plasma and dialysis payload.';
-        actionText = 'Open Drone Dispatcher';
-        actionModule = 'drone';
-      } else if (q.includes('sos') || q.includes('emergency') || q.includes('help') || q.includes('rescue')) {
-        reply = 'Emergency SOS dispatch is standing by. National Disaster Helpline: 1078, National Emergency Number: 112. Connecting to triage center.';
-        actionText = 'Trigger Emergency SOS';
-        actionModule = 'sos';
-      } else if (q.includes('dashboard') || q.includes('command') || q.includes('center')) {
-        reply = 'Connecting to MDoNER / NEC Unified Command Center with 27 active rescue battalions and 9 relief fleets deployed in the field.';
-        actionText = 'Open Command Center';
-        actionModule = 'customdashboard';
-      } else {
-        reply = `AI Assistant analyzed "${textToSend}": All disaster response systems are operational. You can track real-time weather overlays, road accessibility corridors, and satellite indices across the North Eastern grid.`;
-        actionText = 'Explore Live Map';
-        actionModule = 'map';
+    let replyText = engineResult.answerText;
+    let actionText = engineResult.recommendedModuleName || (activeLang === 'hi' ? 'नक्शा देखें' : 'Explore Live Map');
+    let actionModule = engineResult.recommendedModule || 'map';
+
+    // Try backend AI API endpoint if live
+    try {
+      const apiResp = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: textToSend,
+          language: activeLang,
+          context: {
+            activeModule: 'home',
+            state: 'NER',
+            emergencyContact: '112 / 1078'
+          }
+        })
+      });
+
+      if (apiResp.ok) {
+        const apiData = await apiResp.json();
+        if (apiData.reply) {
+          replyText = apiData.reply;
+        }
+        if (apiData.analysis?.recommendedModuleName) {
+          actionText = apiData.analysis.recommendedModuleName;
+        }
+        if (apiData.analysis?.recommendedModule) {
+          actionModule = apiData.analysis.recommendedModule;
+        }
       }
+    } catch (apiErr) {
+      // Clean fallback to engineResult
+    }
 
-      setAiMessages(prev => [...prev, {
+    setAiMessages(prev => [
+      ...prev,
+      {
         role: 'assistant',
-        text: reply,
+        text: replyText,
         actionText,
         actionModule
-      }]);
-      setIsAiThinking(false);
-    }, 600);
+      }
+    ]);
+    setIsAiThinking(false);
   };
 
+  // Text to Speech in the user's active language
   const speakText = (text: string) => {
-    if ('speechSynthesis' in window) {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    if (window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = language === 'hi' ? 'hi-IN' : 'en-US';
-      window.speechSynthesis.speak(utterance);
+      return;
     }
+
+    window.speechSynthesis.cancel();
+
+    // Clean text of markdown and symbols for crystal clear speech
+    const cleanSpeechText = text
+      .replace(/[*#_`~]/g, '')
+      .replace(/[🚨🗺️📷🛰️🛣️🏕️🚁🌐📞⚡⛰️🎒🌊📻🏨📍➔•💡🤖]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!cleanSpeechText) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleanSpeechText);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+
+    const isHindiText = language === 'hi' || /[\u0900-\u097F]/.test(text);
+    const targetLangCode = isHindiText ? 'hi-IN' : 'en-IN';
+    utterance.lang = targetLangCode;
+
+    try {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        const langPrefix = targetLangCode.split('-')[0].toLowerCase();
+        const matched = voices.find(v => v.lang.toLowerCase().startsWith(langPrefix)) ||
+                        voices.find(v => v.lang.toLowerCase().includes(langPrefix));
+        if (matched) {
+          utterance.voice = matched;
+        }
+      }
+    } catch (e) {
+      console.error('TTS voice match error:', e);
+    }
+
+    window.speechSynthesis.speak(utterance);
   };
 
   // Report Modal state
@@ -2144,7 +2199,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* 🤖 AI AGENT WITH VOICE SEARCH BUTTON */}
             <button
               onClick={() => {
-                setIsAiChatOpen((prev) => !prev);
+                setIsAiAgentOpen((prev) => !prev);
                 if (onOpenAiChatbot) onOpenAiChatbot();
               }}
               className="bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-sky-500/20 hover:shadow-sky-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-sky-400/40 whitespace-nowrap shrink-0 group"
@@ -2298,11 +2353,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {[
                 { name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
                 {
-                  name: 'AI Chat Box (Voice Search 🎙️)',
+                  name: language === 'hi' ? 'एआई एजेंट (आवाज खोज 🎙️)' : 'AI Agent (Voice Search 🎙️)',
                   action: () => {
                     setActiveTab('AIChat');
                     setIsMobileMenuOpen(false);
-                    setIsAiChatOpen(true);
+                    setIsAiAgentOpen(true);
                     if (onOpenAiChatbot) onOpenAiChatbot();
                   }
                 },
@@ -4028,6 +4083,221 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 ));
               })()}
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================
+          MODAL 5: AI AGENT & VOICE SEARCH MODAL (Homepage Dedicated)
+         ================================================== */}
+      {isAiAgentOpen && (
+        <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#070d1e] border border-slate-800 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[88vh]">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-sky-500/30 shrink-0">
+                  <Bot className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm sm:text-base font-black text-white">
+                      {language === 'hi' ? 'जीवन सेतु एआई एजेंट' : 'Jeevan Setu AI Agent'}
+                    </h3>
+                    <span className="bg-sky-500/20 text-sky-300 border border-sky-400/40 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      {language === 'hi' ? 'आवाज सक्रिय' : 'Voice Active'}
+                    </span>
+                    <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+                      {language === 'hi' ? 'हिंदी' : 'English'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 font-semibold">
+                    {language === 'hi'
+                      ? 'आवाज व टेक्स्ट आधारित आपदा इंटेलिजेंस, सुरक्षित मार्ग (Routes), मौसम व तापमान'
+                      : 'Voice-to-Text Search & Neural Disaster Intelligence Assistant (Routes, Weather, SOS)'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  if (isListening && recognitionRef.current) {
+                    recognitionRef.current.stop();
+                    setIsListening(false);
+                  }
+                  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                  }
+                  setIsAiAgentOpen(false);
+                }}
+                className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
+                title={language === 'hi' ? 'बंद करें' : 'Close'}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Chat / Message Stream */}
+            <div className="flex-1 overflow-y-auto py-4 space-y-3.5 custom-scrollbar min-h-[240px] pr-1">
+              {aiMessages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {msg.role === 'assistant' && (
+                    <div className="h-7 w-7 rounded-xl bg-sky-600/30 border border-sky-400/30 text-sky-300 flex items-center justify-center shrink-0 mt-1">
+                      <Sparkles className="h-3.5 w-3.5" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[88%] rounded-2xl px-4 py-3 text-xs leading-relaxed whitespace-pre-line ${
+                      msg.role === 'user'
+                        ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-slate-950 font-bold shadow-md'
+                        : 'bg-slate-900/90 border border-slate-800 text-slate-200 shadow-sm'
+                    }`}
+                  >
+                    <p className="text-slate-100">{msg.text}</p>
+
+                    {/* Action button if AI suggested a navigation route & Speak button */}
+                    {msg.role === 'assistant' && (
+                      <div className="mt-2.5 pt-2 border-t border-slate-800 flex items-center justify-between gap-2 flex-wrap">
+                        {msg.actionText ? (
+                          <button
+                            onClick={() => {
+                              setIsAiAgentOpen(false);
+                              if (msg.actionModule === 'sos') {
+                                onOpenSos();
+                              } else if (msg.actionModule) {
+                                onNavigateModule(msg.actionModule);
+                              }
+                            }}
+                            className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-slate-950 font-black px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1.5 transition transform hover:scale-[1.02] cursor-pointer shadow-md"
+                          >
+                            <span>{msg.actionText}</span>
+                            <ArrowRight className="h-3 w-3" />
+                          </button>
+                        ) : <div />}
+                        
+                        <button
+                          onClick={() => speakText(msg.text)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-sky-300 hover:bg-slate-800 transition cursor-pointer flex items-center gap-1 text-[10px] font-bold border border-slate-800"
+                          title={language === 'hi' ? 'बोलकर सुनाएं (Read Aloud)' : 'Read aloud in current language'}
+                        >
+                          <Volume2 className="h-3.5 w-3.5 text-sky-400" />
+                          <span>{language === 'hi' ? 'सुनें' : 'Listen'}</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {isAiThinking && (
+                <div className="flex items-center gap-2 text-sky-400 text-xs font-bold pl-9 py-2 animate-pulse">
+                  <Activity className="h-4 w-4 animate-spin" />
+                  <span>
+                    {language === 'hi'
+                      ? 'जीवन सेतु एआई आपदा डेटा और रूट्स का विश्लेषण कर रहा है...'
+                      : 'AI Agent is analyzing telemetry, routes & weather data...'}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Voice Listening Active Wave Indicator */}
+            {isListening && (
+              <div className="mb-3 p-3 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-center justify-between animate-pulse">
+                <div className="flex items-center gap-2 text-xs font-bold text-red-400">
+                  <span className="h-2.5 w-2.5 rounded-full bg-red-500 animate-ping" />
+                  <span>
+                    {language === 'hi'
+                      ? '🎙️ सुन रहे हैं... कृपया अपना सवाल या खोज बोलें...'
+                      : '🎙️ Listening... Speak your search, route or disaster question now'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleVoiceListening}
+                  className="bg-red-500 hover:bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-lg cursor-pointer transition"
+                >
+                  {language === 'hi' ? 'रोकें' : 'Stop'}
+                </button>
+              </div>
+            )}
+
+            {/* Quick Prompt Suggestions */}
+            <div className="flex flex-wrap gap-1.5 pb-3">
+              {(language === 'hi' ? [
+                'सिलिगुड़ी से गंगटोक सुरक्षित मार्ग (NH-10)',
+                'शिलांग मौसम और तापमान क्या है?',
+                'असम बाढ़ व ब्रह्मपुत्र जलस्तर',
+                'निकटतम राहत शिविर खोजें',
+                'इमरजेंसी एसओएस (SOS) सहायता'
+              ] : [
+                'Siliguri to Gangtok Route (NH-10)',
+                'Shillong Weather & Temperature',
+                'Assam Flood & Brahmaputra Level',
+                'Find Nearest Relief Camps',
+                'Emergency SOS Rescue Dispatch'
+              ]).map((suggestion, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSendAiPrompt(suggestion)}
+                  className="px-2.5 py-1 rounded-full bg-slate-900 hover:bg-sky-600/30 text-slate-300 hover:text-white border border-slate-800 text-[10px] font-semibold transition cursor-pointer"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+
+            {/* Input Bar with Voice to Text Mic Button */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendAiPrompt();
+              }}
+              className="flex items-center gap-2 pt-3 border-t border-slate-800"
+            >
+              {/* Voice-to-Text Microphone Trigger Button */}
+              <button
+                type="button"
+                onClick={toggleVoiceListening}
+                className={`p-3 rounded-2xl transition cursor-pointer flex items-center justify-center shrink-0 ${
+                  isListening
+                    ? 'bg-red-600 text-white ring-4 ring-red-500/40 animate-pulse'
+                    : 'bg-slate-800 hover:bg-sky-500 text-slate-200 hover:text-slate-950 border border-slate-700'
+                }`}
+                title={isListening ? (language === 'hi' ? 'माइक रोकें' : 'Stop Listening') : (language === 'hi' ? 'बोलने के लिए क्लिक करें' : 'Click to Speak (Voice Search)')}
+              >
+                {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              </button>
+
+              {/* Text Input Box */}
+              <input
+                type="text"
+                placeholder={
+                  isListening
+                    ? (language === 'hi' ? 'आपकी आवाज सुनी जा रही है...' : 'Listening to your voice...')
+                    : (language === 'hi' ? 'एआई एजेंट से पूछें (मार्ग, मौसम, तापमान, एसओएस)...' : 'Ask AI Agent (Routes, Weather, Temp, Camps, SOS)...')
+                }
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-4 py-3 text-xs font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500"
+              />
+
+              {/* Send Button */}
+              <button
+                type="submit"
+                disabled={!aiPrompt.trim() && !isListening}
+                className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 disabled:opacity-40 text-slate-950 font-black px-4 py-3 rounded-2xl text-xs flex items-center gap-1.5 transition cursor-pointer shrink-0"
+              >
+                <span>{language === 'hi' ? 'पूछें' : 'Search'}</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </form>
 
           </div>
         </div>
