@@ -711,62 +711,95 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     }
     activeBoundsCoords.push([emergency.lat, emergency.lon]);
 
-    // 3. Assigned Vehicle Marker (🚑/🚒/🚓/🚚 Assigned Vehicle)
-    const vehicleEmoji =
-      effectiveVehicle.typeCategory === 'Medical'
-        ? '🚑'
-        : effectiveVehicle.typeCategory === 'Fire'
-        ? '🚒'
-        : effectiveVehicle.typeCategory === 'Police'
-        ? '🚓'
-        : '🚚';
+    const activeParticipants = (participants || []).filter(p => p.location && p.status !== 'STOPPED');
+    const isMultiPersonSession = activeParticipants.length >= 2 || (participants && participants.length > 1);
 
-    const vehicleIcon = L.divIcon({
-      className: 'private-vehicle-marker',
-      html: `
-        <div class="relative flex items-center justify-center w-11 h-11 rounded-full bg-slate-900 border-2 border-emerald-400 shadow-2xl text-lg text-white font-extrabold">
-          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          ${vehicleEmoji}
-        </div>
-      `,
-      iconSize: [44, 44],
-      iconAnchor: [22, 22]
-    });
-
-    if (!vehicleMarkerRef.current) {
-      vehicleMarkerRef.current = L.marker([effectiveVehicle.currentLat, effectiveVehicle.currentLon], { icon: vehicleIcon })
-        .addTo(map)
-        .bindPopup(`
-          <div class="p-2 text-xs font-sans">
-            <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleEmoji} ${effectiveVehicle.vehicleType}</strong>
-            <p class="text-slate-700 font-mono mt-1">ID: ${effectiveVehicle.vehicleId}</p>
-            <p class="text-slate-700">Driver: ${effectiveVehicle.driverName}</p>
-          </div>
-        `);
+    if (isMultiPersonSession) {
+      // Remove vehicle marker during multi-participant live map session
+      if (vehicleMarkerRef.current) {
+        vehicleMarkerRef.current.remove();
+        vehicleMarkerRef.current = null;
+      }
     } else {
-      vehicleMarkerRef.current.setIcon(vehicleIcon);
-      vehicleMarkerRef.current.setLatLng([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
-    }
-    activeBoundsCoords.push([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
+      // 3. Assigned Vehicle Marker (Only when single participant / vehicle mode)
+      const vehicleEmoji =
+        effectiveVehicle.typeCategory === 'Medical'
+          ? '🚑'
+          : effectiveVehicle.typeCategory === 'Fire'
+          ? '🚒'
+          : effectiveVehicle.typeCategory === 'Police'
+          ? '🚓'
+          : '🚚';
 
-    // 4. Polyline Route
+      const vehicleIcon = L.divIcon({
+        className: 'private-vehicle-marker',
+        html: `
+          <div class="relative flex items-center justify-center w-11 h-11 rounded-full bg-slate-900 border-2 border-emerald-400 shadow-2xl text-lg text-white font-extrabold">
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            ${vehicleEmoji}
+          </div>
+        `,
+        iconSize: [44, 44],
+        iconAnchor: [22, 22]
+      });
+
+      if (!vehicleMarkerRef.current) {
+        vehicleMarkerRef.current = L.marker([effectiveVehicle.currentLat, effectiveVehicle.currentLon], { icon: vehicleIcon })
+          .addTo(map)
+          .bindPopup(`
+            <div class="p-2 text-xs font-sans">
+              <strong class="text-emerald-600 font-extrabold text-sm block">${vehicleEmoji} ${effectiveVehicle.vehicleType}</strong>
+              <p class="text-slate-700 font-mono mt-1">ID: ${effectiveVehicle.vehicleId}</p>
+              <p class="text-slate-700">Driver: ${effectiveVehicle.driverName}</p>
+            </div>
+          `);
+      } else {
+        vehicleMarkerRef.current.setIcon(vehicleIcon);
+        vehicleMarkerRef.current.setLatLng([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
+      }
+      activeBoundsCoords.push([effectiveVehicle.currentLat, effectiveVehicle.currentLon]);
+    }
+
+    // 4. Connection Line Polyline Route
     if (routePolylineRef.current) {
       routePolylineRef.current.remove();
+      routePolylineRef.current = null;
     }
 
-    const points: L.LatLngExpression[] = [
-      [effectiveVehicle.currentLat, effectiveVehicle.currentLon],
-      [emergency.lat, emergency.lon]
-    ];
+    if (isMultiPersonSession && activeParticipants.length >= 2) {
+      // Connect Phone A (Host 🔴) and Phone B (Friend 🔵) directly
+      const p1 = activeParticipants[0].location!;
+      const p2 = activeParticipants[1].location!;
 
-    routePolylineRef.current = L.polyline(points, {
-      color: '#10b981',
-      weight: 4,
-      dashArray: '8, 8',
-      opacity: 0.85
-    }).addTo(map);
+      routePolylineRef.current = L.polyline(
+        [
+          [p1.lat, p1.lon],
+          [p2.lat, p2.lon]
+        ],
+        {
+          color: '#10b981',
+          weight: 4,
+          dashArray: '8, 8',
+          opacity: 0.85
+        }
+      ).addTo(map);
+    } else if (!isMultiPersonSession) {
+      // Connect Vehicle to Requester
+      routePolylineRef.current = L.polyline(
+        [
+          [effectiveVehicle.currentLat, effectiveVehicle.currentLon],
+          [emergency.lat, emergency.lon]
+        ],
+        {
+          color: '#10b981',
+          weight: 4,
+          dashArray: '8, 8',
+          opacity: 0.85
+        }
+      ).addTo(map);
+    }
 
-    // Fit bounds to show all participants and vehicle
+    // Fit bounds to show all active participants
     if (activeBoundsCoords.length > 0) {
       const bounds = L.latLngBounds(activeBoundsCoords);
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
@@ -1201,20 +1234,29 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 <div className="absolute top-3 left-3 z-10 bg-slate-950/90 border border-slate-800 p-2.5 rounded-xl text-[10px] space-y-1 backdrop-blur-md shadow-xl">
                   <div className="flex items-center gap-2">
                     <span className="text-base">🔴</span>
-                    <span className="font-bold text-white">My Emergency Location</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">
-                      {trackingData.assignedVehicle?.typeCategory === 'Medical'
-                        ? '🚑'
-                        : trackingData.assignedVehicle?.typeCategory === 'Fire'
-                        ? '🚒'
-                        : trackingData.assignedVehicle?.typeCategory === 'Police'
-                        ? '🚓'
-                        : '🚚'}
+                    <span className="font-bold text-white">
+                      {(trackingData.participants && trackingData.participants.length > 1) ? 'Phone A (Me)' : 'My Emergency Location'}
                     </span>
-                    <span className="font-bold text-emerald-400">Assigned Relevant Vehicle</span>
                   </div>
+                  {(trackingData.participants && trackingData.participants.length > 1) ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">🔵</span>
+                      <span className="font-bold text-sky-400">Phone B (Friend)</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">
+                        {trackingData.assignedVehicle?.typeCategory === 'Medical'
+                          ? '🚑'
+                          : trackingData.assignedVehicle?.typeCategory === 'Fire'
+                          ? '🚒'
+                          : trackingData.assignedVehicle?.typeCategory === 'Police'
+                          ? '🚓'
+                          : '🚚'}
+                      </span>
+                      <span className="font-bold text-emerald-400">Assigned Relevant Vehicle</span>
+                    </div>
+                  )}
                 </div>
               </div>
 

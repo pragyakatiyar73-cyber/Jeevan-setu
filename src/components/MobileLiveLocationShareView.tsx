@@ -47,6 +47,7 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const participantMarkersRef = useRef<Record<string, { marker: L.Marker; circle?: L.Circle }>>({});
+  const routePolylineRef = useRef<L.Polyline | null>(null);
 
   // Session polling effect to update multi-participant data from backend
   const fetchSessionParticipants = async () => {
@@ -234,6 +235,21 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
         }
       }
     });
+
+    // Connection line between Phone A and Phone B
+    if (routePolylineRef.current) {
+      routePolylineRef.current.remove();
+      routePolylineRef.current = null;
+    }
+
+    if (activeCoords.length >= 2) {
+      routePolylineRef.current = L.polyline(activeCoords, {
+        color: '#10b981',
+        weight: 4,
+        dashArray: '8, 8',
+        opacity: 0.85
+      }).addTo(map);
+    }
 
     if (activeCoords.length > 0) {
       if (activeCoords.length === 1) {
