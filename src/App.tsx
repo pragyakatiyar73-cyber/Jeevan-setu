@@ -86,6 +86,7 @@ import { PrivateSmartEmergencyModule } from './components/PrivateSmartEmergencyM
 import { MobileLiveLocationShareView } from './components/MobileLiveLocationShareView';
 import AddressDisasterIntelligence from './components/AddressDisasterIntelligence';
 import AIChatbotWidget from './components/AIChatbotWidget';
+import CitizenVideoWalkthroughModal from './components/CitizenVideoWalkthroughModal';
 import { useTranslation } from './i18n';
 import { incidentStore } from './services/api';
 
@@ -261,6 +262,7 @@ export default function App() {
   // SOS Emergency Modal State
   const [isSosModalOpen, setIsSosModalOpen] = useState(false);
   const [isAiAgentOpen, setIsAiAgentOpen] = useState(false);
+  const [isVideoGuideOpen, setIsVideoGuideOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSimulated, setIsMobileSimulated] = useState(false);
   const [mobileSearchQuery, setMobileSearchQuery] = useState('');
@@ -1238,6 +1240,18 @@ export default function App() {
 
           {/* Right: Quick Action Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-50 ml-auto">
+            {/* 🎥 10-Minute Official Citizen Video Walkthrough Button */}
+            <button
+              onClick={() => setIsVideoGuideOpen(true)}
+              className="rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-amber-500/25 flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border border-amber-300/40"
+              title="Watch 10-Minute Official Citizen Video Guide with AI Voiceover"
+            >
+              <span className="text-sm">🎥</span>
+              <span className="whitespace-nowrap font-black">
+                {language === 'hi' ? '10-मिनट वीडियो गाइड' : '10-Min Video Guide'}
+              </span>
+            </button>
+
             {/* 🤖 Executive AI Agent Button with Extra Detail Feature */}
             <button
               onClick={() => setIsAiAgentOpen(prev => !prev)}
@@ -1997,6 +2011,14 @@ export default function App() {
           onNavigateModule={(mod) => setActiveModule(mod as any)}
           onOpenSos={() => setIsSosModalOpen(true)}
           activeModule={activeModule}
+        />
+
+        {/* 🎥 10-Minute Official Citizen Video Walkthrough Modal */}
+        <CitizenVideoWalkthroughModal
+          isOpen={isVideoGuideOpen}
+          onClose={() => setIsVideoGuideOpen(false)}
+          onNavigateModule={(mod) => setActiveModule(mod as any)}
+          onTriggerSOS={() => setIsSosModalOpen(true)}
         />
 
         {/* 🎛️ Floating Action Button on Mobile (Bottom-Right 3-Dots Button) */}
