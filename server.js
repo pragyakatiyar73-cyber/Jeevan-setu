@@ -36,9 +36,10 @@ app.get('/health', (req, res) => {
 
 // 🤖 AI Chatbot Assistant Endpoint with Gemini + Knowledge Engine Bridge
 app.post('/api/ai/chat', async (req, res) => {
-  const { query, language } = req.body || {};
+  const query = req.body?.query || req.body?.message;
+  const language = req.body?.language;
   if (!query || typeof query !== 'string') {
-    return res.status(400).json({ error: 'Query is required' });
+    return res.status(400).json({ error: 'Query or message is required' });
   }
 
   const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
@@ -73,7 +74,8 @@ ${langPrompt}`;
           return res.json({
             status: 'success',
             source: 'gemini',
-            answerText: reply.trim()
+            answerText: reply.trim(),
+            reply: reply.trim()
           });
         }
       }

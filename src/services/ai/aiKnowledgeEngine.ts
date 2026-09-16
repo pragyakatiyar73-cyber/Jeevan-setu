@@ -304,6 +304,198 @@ If you or anyone nearby is trapped, injured, or in immediate danger:
     q.includes('जाम') ||
     q.includes('बंद')
   ) {
+    // 2A. Specific Corridor: NH-10 (Siliguri - Teesta - Gangtok)
+    if (q.includes('nh-10') || q.includes('nh10') || (q.includes('siliguri') && q.includes('gangtok')) || q.includes('teesta') || q.includes('melli')) {
+      if (isHi) {
+        return {
+          answerText: `🛣️ NH-10 (सिलीगुड़ी - गंगटोक) राष्ट्रीय राजमार्ग लाइव स्थिति रिपोर्ट
+
+• 📍 मार्ग विवरण: सिलीगुड़ी ➔ सेवोके ➔ कोरोनेशन ब्रिज ➔ कालीझोरा ➔ तीस्ता बाजार ➔ मेली ➔ रंगपो ➔ रानीपूल ➔ गंगटोक (दूरी: 114 किमी | समय: ~3.5 से 4 घंटे)
+• ⚠️ संवेदनशील भूस्खलन क्षेत्र: 29वां मील (29th Mile), लिकुवीर (Likhuveer), बिरीक दारा, और सेल्फी दारा।
+• 🔄 सुरक्षित वैकल्पिक बाईपास मार्ग (Safe Detour Corridors):
+  1. वैकल्पिक मार्ग A (लावा - पाक्योंग): सिलीगुड़ी ➔ दामदिम ➔ गोरूबथान ➔ लावा ➔ अल्गड़ा ➔ रेशी ➔ पाक्योंग ➔ गंगटोक (142 किमी)। यह मार्ग तीस्ता नदी के कटाव से पूरी तरह सुरक्षित है।
+  2. वैकल्पिक मार्ग B (जोरथांग - नामची): सिलीगुड़ी ➔ मेली ➔ जोरथांग ➔ नामची ➔ सिंगताम ➔ गंगटोक।
+• 🚜 बीआरओ प्रोजेक्ट स्वास्तिक (BRO Project Swastik): मलबा हटाने वाली भारी जेसीबी और बुलडोजर 29वें मील और सेवोके पर 24 घंटे तैनात हैं।
+• 📞 सिक्किम पुलिस व बीआरओ कंट्रोल रूम: 03592-202450 / 03592-202488`,
+          riskLevel: 'HIGH',
+          detectedLocation: 'NH-10 Teesta Corridor, Sikkim-WB Border',
+          incidentType: 'NH-10 Highway Corridor Telemetry',
+          actionSteps: [
+            'Road Accessibility में लाइव NH-10 नेविगेशन खोलें',
+            'तीस्ता जलस्तर बढ़ने की स्थिति में लावा-पाक्योंग बाईपास चुनें',
+            'रंगपो चेकपोस्ट पर ट्रैफिक एडवाइजरी की पुष्टि करें'
+          ],
+          recommendedModule: 'rerouting',
+          recommendedModuleName: 'NH-10 सुरक्षित मार्ग देखें (Road Accessibility)'
+        };
+      }
+
+      return {
+        answerText: `🛣️ NH-10 (SILIGURI TO GANGTOK) LIVE HIGHWAY CORRIDOR REPORT
+
+• 📍 Route Overview: Siliguri ➔ Sevoke ➔ Coronation Bridge ➔ Kalijhora ➔ Teesta Bazaar ➔ Melli ➔ Rangpo ➔ Singtam ➔ Ranipool ➔ Gangtok (Distance: 114 km | Avg Travel Time: ~3.5 to 4.5 hrs).
+• ⚠️ Vulnerable Sinking & Slide Zones: 29th Mile, Likhuveer, Birik Dara, Teesta Bazaar, and Selfi Dara.
+• 🔄 Verified Safe Detour Corridors:
+  1. Primary Bypass via Lava - Pakyong: Siliguri ➔ Damdim ➔ Gorubathan ➔ Lava ➔ Algarah ➔ Reshi ➔ Pakyong ➔ Gangtok (~142 km). Bypasses Teesta river bed scouring completely.
+  2. South Sikkim Bypass: Siliguri ➔ Melli ➔ Jorethang ➔ Namchi ➔ Singtam ➔ Gangtok.
+• 🚜 BRO Project Swastik Heavy Machinery: Continuous wheel-loader and hydraulic excavator teams stationed at 29th Mile and Kalijhora.
+• 📞 Control Room: Sikkim Police Traffic: 03592-202450 | BRO Swastik: 03592-202488`,
+        riskLevel: 'HIGH',
+        detectedLocation: 'NH-10 Teesta Corridor, Sikkim-WB Border',
+        incidentType: 'NH-10 Highway Corridor Telemetry',
+        actionSteps: [
+          'Open Road Accessibility module to view live bypass routes',
+          'Switch to Lava-Pakyong corridor if Teesta flash flood alerts trigger',
+          'Check BRO clearance status before crossing Coronation Bridge'
+        ],
+        recommendedModule: 'rerouting',
+        recommendedModuleName: 'View NH-10 Safe Detour Routes'
+      };
+    }
+
+    // 2B. Specific Corridor: NH-29 (Dimapur - Kohima)
+    if (q.includes('nh-29') || q.includes('nh29') || (q.includes('dimapur') && q.includes('kohima')) || q.includes('pagla pahar')) {
+      if (isHi) {
+        return {
+          answerText: `🛣️ NH-29 (दीमापुर - कोहिमा) राष्ट्रीय राजमार्ग लाइव स्थिति रिपोर्ट
+
+• 📍 मार्ग विवरण: दीमापुर ➔ चुमुकेदिमा ➔ पगलपहाड़ ➔ मेदजीफेमा ➔ पिपेमा ➔ जुबजा ➔ कोहिमा (दूरी: 74 किमी | समय: ~2 से 2.5 घंटे)
+• ⚠️ संवेदनशील क्षेत्र: पगलपहाड़ (Pagla Pahar) रॉकफॉल जोन, पुराना केएमसी डंपिंग ग्राउंड, और फेसामा (Phesama) स्लाइडिंग स्ट्रेच।
+• 🔄 वैकल्पिक बाईपास मार्ग:
+  दीमापुर ➔ निउलैंड (Niuland) ➔ घोतोवी ➔ झाडिमा ➔ कोहिमा बाईपास (भारी वाहनों व भूस्खलन के दौरान प्रयुक्त)।
+• 🚜 बीआरओ प्रोजेक्ट सेवक (BRO Project Sewak): 4-लेन राजमार्ग पर रॉक-नेटिंग और सुरक्षा दीवार का कार्य सक्रिय है।
+• 📞 नागालैंड पुलिस ट्रैफिक कंट्रोल रूम: 0370-2291122`,
+          riskLevel: 'MODERATE',
+          detectedLocation: 'NH-29 Dimapur-Kohima Highway, Nagaland',
+          incidentType: 'NH-29 Highway Corridor Telemetry',
+          actionSteps: [
+            'Road Accessibility में NH-29 की लाइव स्थिति देखें',
+            'पगलपहाड़ सेक्टर में भारी बारिश के दौरान गति नियंत्रित रखें',
+            'निउलैंड बाईपास की सुगमता जांचें'
+          ],
+          recommendedModule: 'rerouting',
+          recommendedModuleName: 'NH-29 सुरक्षित मार्ग देखें (Road Accessibility)'
+        };
+      }
+
+      return {
+        answerText: `🛣️ NH-29 (DIMAPUR TO KOHIMA) LIVE HIGHWAY CORRIDOR REPORT
+
+• 📍 Route Overview: Dimapur ➔ Chumukedima ➔ Pagla Pahar ➔ Medziphema ➔ Piphema ➔ Zubza ➔ Kohima (Distance: 74 km | Avg Travel Time: ~2 to 2.5 hrs).
+• ⚠️ Vulnerable Sliding & Rockfall Zones: Pagla Pahar rockfall corridor, Old KMC Dumping Ground slide face, and Phesama landslide area.
+• 🔄 Verified Alternate Bypass:
+  Dimapur ➔ Niuland ➔ Ghotovi ➔ Zhadima ➔ Kohima bypass corridor (operational for light passenger vehicles during heavy rain).
+• 🚜 BRO Project Sewak: Active rock-shed reinforcement and geogrid retaining wall telemetry active.
+• 📞 Nagaland Emergency & Traffic Control: 0370-2291122 | State Control Room: 1070`,
+        riskLevel: 'MODERATE',
+        detectedLocation: 'NH-29 Dimapur-Kohima Highway, Nagaland',
+        incidentType: 'NH-29 Highway Corridor Telemetry',
+        actionSteps: [
+          'Open Road Accessibility module to verify real-time NH-29 travel time',
+          'Follow Chumukedima police checkpoint regulated single-lane convoys',
+          'Inspect weather radar for cloudburst alerts over Kohima ridge'
+        ],
+        recommendedModule: 'rerouting',
+        recommendedModuleName: 'View NH-29 Safe Detour Routes'
+      };
+    }
+
+    // 2C. Specific Corridor: NH-6 (Guwahati - Shillong - Silchar)
+    if (q.includes('nh-6') || q.includes('nh6') || q.includes('shillong') || q.includes('sonapur') || (q.includes('guwahati') && q.includes('shillong'))) {
+      if (isHi) {
+        return {
+          answerText: `🛣️ NH-6 (गुवाहाटी - शिलांग - सिलचर) हाईवे स्थिति रिपोर्ट
+
+• 📍 गुवाहाटी से शिलांग स्ट्रेच (Guwahati to Shillong):
+  - दूरी: 99 किमी | समय: ~2.5 घंटे | 4-लेन सुगम एक्सप्रेसवे
+  - जोराबाट ➔ नोंगपोह ➔ उमियम झील ➔ शिलांग। यह मार्ग पूर्णतः खुला और सुगम है।
+• 📍 शिलांग से सिलचर स्ट्रेच (Shillong to Silchar / Barak Valley):
+  - दूरी: 215 किमी | समय: ~6.5 से 8 घंटे | 2-लेन पहाड़ी हाईवे
+  - संवेदनशील क्षेत्र: सोनापुर टनल (Sonapur Tunnel) एवं लुभा ब्रिज (Lubha Bridge)। मानसून में भारी कीचड़ व पत्थरों के गिरने का जोखिम रहता है।
+• 🔄 बराक घाटी वैकल्पिक मार्ग (Alternative to Barak Valley):
+  गुवाहाटी ➔ लुमडिंग ➔ हाफलोंग ➔ सिलचर (NH-27 ईस्ट-वेस्ट कॉरिडोर)।`,
+          riskLevel: 'MODERATE',
+          detectedLocation: 'NH-6 Meghalaya-Barak Valley Corridor',
+          incidentType: 'NH-6 Highway Corridor Telemetry',
+          actionSteps: [
+            'Road Accessibility में NH-6 लाइव स्थिति देखें',
+            'सोनापुर टनल के पास कीचड़ फिसलन से सावधान रहें',
+            'शिलांग-सिलचर यात्रा से पहले मौसम पूर्वानुमान देखें'
+          ],
+          recommendedModule: 'rerouting',
+          recommendedModuleName: 'NH-6 सुरक्षित मार्ग देखें (Road Accessibility)'
+        };
+      }
+
+      return {
+        answerText: `🛣️ NH-6 (GUWAHATI - SHILLONG - SILCHAR) HIGHWAY CORRIDOR REPORT
+
+• 📍 Guwahati to Shillong Corridor:
+  - Distance: 99 km | Avg Travel Time: ~2.5 hrs | 4-Lane Asian Highway (AH-1/AH-2 standard).
+  - Jorabat ➔ Nongpoh ➔ Umiam Lake ➔ Shillong. Route is fully operational with clear tarmac.
+• 📍 Shillong to Silchar (Barak Valley Lifeline):
+  - Distance: 215 km | Avg Travel Time: ~6.5 to 8 hrs.
+  - Critical Chokepoints: Sonapur Tunnel (frequent mudflow and rock discharge during torrential downpours) and Lubha River bridge approach in East Jaintia Hills.
+• 🔄 Alternate Route to Barak Valley / Tripura:
+  Guwahati ➔ Lumding ➔ Haflong ➔ Jatinga ➔ Silchar via NH-27 (East-West Corridor).`,
+        riskLevel: 'MODERATE',
+        detectedLocation: 'NH-6 Meghalaya-Barak Valley Corridor',
+        incidentType: 'NH-6 Highway Corridor Telemetry',
+        actionSteps: [
+          'Open Road Accessibility module to inspect Sonapur Tunnel sensor alerts',
+          'Use NH-27 via Haflong if NH-6 East Jaintia Hills mudslides trigger closure',
+          'Verify police clearance at Jowai checkpoint'
+        ],
+        recommendedModule: 'rerouting',
+        recommendedModuleName: 'View NH-6 Safe Detour Routes'
+      };
+    }
+
+    // 2D. Specific Corridor: Sela Tunnel & NH-13 (Trans-Arunachal Highway to Tawang)
+    if (q.includes('sela') || q.includes('nh-13') || q.includes('nh13') || q.includes('tawang') || q.includes('bomdila')) {
+      if (isHi) {
+        return {
+          answerText: `🛣️ सेला टनल व NH-13 (ट्रांस-अरुणाचल हाईवे / तवांग मार्ग) रिपोर्ट
+
+• 📍 मार्ग विवरण: तेजपुर/भालुकपोंग ➔ बोमडिला ➔ दिरांग ➔ सेला टनल ➔ जंग ➔ तवांग (दूरी: ~320 किमी | समय: ~8 से 9 घंटे)
+• 🏔️ सेला टनल (Sela Tunnel - 13,000 फीट):
+  - विश्व की सबसे लंबी दोहरी-लेन वाली सुरंग जो वर्ष भर हर मौसम में तवांग तक निर्बाध पहुंच सुनिश्चित करती है।
+  - पुराने खतरनाक सेला दर्रे (Sela Pass) पर बर्फबारी के कारण लगने वाले जाम से मुक्ति दिलाती है।
+• 🚜 बीआरओ प्रोजेक्ट वर्तक (BRO Project Vartak): दिरांग और बैसाखी में स्नो-कटर और बुलडोजर तैनात रहते हैं।`,
+          riskLevel: 'LOW',
+          detectedLocation: 'Sela Tunnel Corridor, Arunachal Pradesh',
+          incidentType: 'Trans-Arunachal Sela Tunnel Telemetry',
+          actionSteps: [
+            'Road Accessibility में सेला टनल लाइव स्थिति देखें',
+            'सर्दियों में वाहन में स्नो-चेन और एंटी-फ्रीज कूलेंट की व्यवस्था रखें',
+            'बोमडिला चेकपोस्ट से मौसम की ताजा जानकारी लें'
+          ],
+          recommendedModule: 'rerouting',
+          recommendedModuleName: 'सेला टनल मार्ग देखें (Road Accessibility)'
+        };
+      }
+
+      return {
+        answerText: `🛣️ SELA TUNNEL & NH-13 (TRANS-ARUNACHAL HIGHWAY TO TAWANG) REPORT
+
+• 📍 Route Overview: Tezpur / Bhalukpong ➔ Tenga ➔ Bomdila ➔ Dirang ➔ Sela Tunnel ➔ Jang ➔ Tawang (Distance: ~320 km | Avg Travel Time: ~8 to 9 hrs).
+• 🏔️ Sela Tunnel Engineering Telemetry (Altitude: ~13,000 ft MSL):
+  - World's longest bi-lane tunnel at this altitude, providing all-weather, year-round tactical and civilian connectivity to Tawang.
+  - Bypasses the hazardous, snow-bound hairpin bends of the 13,700 ft Sela Pass, slashing travel time by over 60 minutes.
+• 🚜 BRO Project Vartak: Active snow-clearing machinery and temperature telemetry maintain clear portal approaches.`,
+        riskLevel: 'LOW',
+        detectedLocation: 'Sela Tunnel Corridor, Arunachal Pradesh',
+        incidentType: 'Trans-Arunachal Sela Tunnel Telemetry',
+        actionSteps: [
+          'Open Road Accessibility module to verify portal transit status',
+          'Carry snow chains during sub-zero precipitation periods',
+          'Confirm Inner Line Permit (ILP) validity at Bhalukpong gate'
+        ],
+        recommendedModule: 'rerouting',
+        recommendedModuleName: 'View Sela Tunnel Route & Telemetry'
+      };
+    }
+
     if (isHi) {
       return {
         answerText: `🛣️ सड़क सुगमता व सुरक्षित मार्ग इंटेलिजेंस (Road Accessibility & Safe Routes)
@@ -1056,6 +1248,584 @@ You can type or click the microphone (🎙️) to speak naturally!`,
       ],
       recommendedModule: 'customdashboard',
       recommendedModuleName: 'Explore Command Center Dashboard'
+    };
+  }
+
+  // ==========================================
+  // 12. UAV DRONE LIFELINE & EMERGENCY AERIAL DROPS
+  // ==========================================
+  if (
+    q.includes('drone') ||
+    q.includes('uav') ||
+    q.includes('garuda') ||
+    q.includes('pawan') ||
+    q.includes('pushpak') ||
+    q.includes('aeropeak') ||
+    q.includes('aerial') ||
+    q.includes('flight') ||
+    q.includes('payload') ||
+    q.includes('medicine drop') ||
+    q.includes('ड्रोन') ||
+    q.includes('हवाई दवा')
+  ) {
+    if (isHi) {
+      return {
+        answerText: `🚁 यूएवी ड्रोन आपातकालीन लाइफलाइन डिस्पैचर (UAV Drone Lifeline Delivery)
+
+पूर्वोत्तर के दुर्गम और कटे हुए पहाड़ी गांवों में जीवनरक्षक दवाएं और रक्त पहुंचाने के लिए 4 श्रेणियों के विशेष ड्रोन तैनात हैं:
+
+• 🛸 तैनात यूएवी ड्रोन बेड़ा (Active Drone Fleet):
+  1. Garuda-X15 (सॉवरेन हैवी लाइफलाइन): 18 किग्रा पेलोड, 150 किमी रेंज, 4,200 मीटर अधिकतम ऊंचाई।
+  2. Pawan-V4 (एक्सप्रेस मेडिकल कैरियर): 10 किग्रा पेलोड, 120 किमी रेंज, 110 किमी/घंटा क्रूज गति।
+  3. Pushpak-25 (हैवी कार्गो क्वाड): 25 किग्रा पेलोड, 90 किमी रेंज, भारी राहत सामग्री हेतु।
+  4. AeroPeak-9 (माउंटेन रिज स्काउट): 6 किग्रा पेलोड, 200 किमी रेंज, थर्मल इंफ्रारेड कैमरों से लैस।
+• 📍 8 प्रमुख क्षेत्रीय लॉन्च हब:
+  गुवाहाटी, शिलांग, गंगटोक, ईटानगर, आइजोल, कोहिमा, इम्फाल और अगरतला।
+• 🎯 उच्च-पहाड़ी लैंडिंग जोन (LZ Helipads):
+  सेला पास (अरुणाचल), जोवाई/शिलांग रूफटॉप, मेली (सिक्किम), नोने (मणिपुर), जुबजा (नागालैंड)।
+• 🧊 कोल्ड-चेन सुरक्षा:
+  सांप काटने का एंटीवेनम, ब्लड प्लाज्मा, इंसुलिन और जीवनरक्षक दवाएं 4°C नियंत्रित तापमान में सुरक्षित पहुंचाई जाती हैं।`,
+        riskLevel: 'INFO',
+        detectedLocation,
+        incidentType: 'यूएवी ड्रोन मेडिकल डिस्पैच इंटेलिजेंस (UAV Drone Delivery)',
+        actionSteps: [
+          'UAV Drone Dispatcher मॉड्यूल खोलें',
+          'सक्रिय ड्रोन की स्थिति और पेलोड क्षमता देखें',
+          'दुर्गम क्षेत्र के लिए आपातकालीन मेडिकल ड्रॉप का अनुरोध करें',
+          'भारतीय वायु सेना (IAF) एयरस्पेस क्लीयरेंस स्टेटस जांचें'
+        ],
+        recommendedModule: 'drone',
+        recommendedModuleName: 'यूएवी ड्रोन डिस्पैचर खोलें (UAV Drone Dispatcher)'
+      };
+    }
+
+    return {
+      answerText: `🚁 UAV DRONE LIFELINE & EMERGENCY AERIAL DELIVERY FLEET
+
+Engineered specifically for North East India's cut-off valleys and high-altitude mountain redoubts:
+
+• 🛸 Operational Autonomous Drone Fleet:
+  1. Garuda-X15 (Sovereign Heavy Lifeline): 18 kg payload, 150 km operating radius, 4,200 m altitude ceiling.
+  2. Pawan-V4 (Express Medical Carrier): 10 kg payload, 120 km radius, 110 km/h cruising speed.
+  3. Pushpak-25 (Heavy Cargo Lift Quad): 25 kg payload, 90 km radius, all-weather adverse flight capability.
+  4. AeroPeak-9 (Mountain Ridge Scout): 6 kg payload, 200 km radius, high-resolution FLIR thermal search sensors.
+• 📍 8 Regional Command Hubs:
+  Guwahati, Shillong, Gangtok, Itanagar, Aizawl, Kohima, Imphal, and Agartala.
+• 🎯 Designated Mountain Helipads (Landing Zones):
+  NEIGRIHMS Shillong rooftop (1,525m), Sela Pass LZ (3,500m), Aizawl Civil Hospital, Melli Teesta Basin LZ, Zubza Pass Highland LZ, and Noney Valley slide camp LZ.
+• 🧊 Cold-Chain Monitored Payloads:
+  Maintains active thermal regulation (+4.2°C) for blood plasma, polyvalent snake antivenom, cardiac emergency ampoules, and dialysis units.`,
+      riskLevel: 'INFO',
+      detectedLocation,
+      incidentType: 'UAV Drone Aerial Logistics & Medical Drops',
+      actionSteps: [
+        'Open UAV Drone Dispatcher module from the navigation grid',
+        'Inspect live readiness status of Garuda-X15 and Pawan-V4 drones',
+        'Verify IAF radar airspace corridor clearance #IAF-NER-9981',
+        'Dispatch emergency medical payload to verified coordinate drops'
+      ],
+      recommendedModule: 'drone',
+      recommendedModuleName: 'Open UAV Drone Dispatcher'
+    };
+  }
+
+  // ==========================================
+  // 13. REPORT A DISASTER & CITIZEN GROUND INCIDENT TRIAGE
+  // ==========================================
+  if (
+    q.includes('report') ||
+    q.includes('submit incident') ||
+    q.includes('report disaster') ||
+    q.includes('crowdsource') ||
+    q.includes('submit photo') ||
+    q.includes('lodge complaint') ||
+    q.includes('रिपोर्ट') ||
+    q.includes('घटना दर्ज') ||
+    q.includes('आपदा की सूचना')
+  ) {
+    if (isHi) {
+      return {
+        answerText: `📢 आपदा की रिपोर्ट कैसे दर्ज करें (Citizen Incident Reporting Guide)
+
+यदि आपने सड़क पर कोई भूस्खलन, पुल का टूटना, नदी का जलभराव या बिजली के खंभे गिरते देखे हैं:
+
+• ⏱️ केवल 30 सेकंड में रिपोर्ट दर्ज करें:
+  1. ऊपर नेविगेशन या साइड पैनल में 'Report a Disaster' पर क्लिक करें।
+  2. आपदा का प्रकार चुनें: भूस्खलन (Landslide), बाढ़ (Flood), सड़क अवरोध (Road Block), आग (Fire), या अन्य।
+  3. ऑन-साइट फोटो अपलोड करें या कैमरे से तुरंत खींचें।
+  4. सिस्टम आपके फोन के GPS से अक्षांश और देशांतर स्वतः दर्ज कर लेता है।
+  5. 'Submit Ground Report' बटन दबाएँ।
+• 🏢 तत्काल कार्रवाई:
+  आपकी रिपोर्ट सीधे जिला आपदा नियंत्रण कक्ष (DEOC) और स्थानीय एनडीआरएफ/एसडीआरएफ गश्ती दल को भेजी जाती है।
+• ✅ लाइव वेरिफिकेशन बैज:
+  जांच के बाद आपकी रिपोर्ट पर 'Verified Citizen Report' का आधिकारिक बैज लग जाता है और यह लाइव जीआईएस नक्शे पर दिखाई देने लगती है।`,
+        riskLevel: 'INFO',
+        detectedLocation,
+        incidentType: 'नागरिक आपदा रिपोर्टिंग व ग्राउंड ट्रुथिंग (Citizen Incident Reporting)',
+        actionSteps: [
+          'Report a Disaster फॉर्म खोलें',
+          'घटना स्थल की स्पष्ट तस्वीर अपलोड करें',
+          'सटीक जीपीएस लोकेशन की पुष्टि करें',
+          'सबमिट करें ताकि बचाव टीमें तुरंत पहुंच सकें'
+        ],
+        recommendedModule: 'incidents',
+        recommendedModuleName: 'आपदा रिपोर्टिंग मॉड्यूल खोलें (Disaster Reports)'
+      };
+    }
+
+    return {
+      answerText: `📢 HOW TO REPORT A DISASTER INCIDENT (CITIZEN GROUND REPORTING)
+
+Any citizen or traveler can report verified hazards in under 30 seconds to alert first responders:
+
+• ⏱️ Simple 3-Step Reporting Process:
+  1. Click 'Report a Disaster' in the top header or quick actions drawer.
+  2. Select Incident Category: Landslide, Flash Flood, Road Cave-in / Bridge Structural Damage, Wildfire, or Utility Severance.
+  3. Upload photo from your smartphone camera or device gallery.
+  4. GPS coordinates (Latitude/Longitude) are automatically stamped via browser geolocation.
+  5. Click 'Submit Incident Report'.
+• 🏢 Multi-Agency Dispatch Integration:
+  Your report is immediately routed into the District Emergency Operations Center (DEOC) queue and cross-referenced against satellite radar passes.
+• 🛡️ Verification Badge:
+  Once confirmed by local SDRF or PWD field inspectors, the incident appears on the public NER Live GIS Map with a 'VERIFIED' badge to warn other motorists.`,
+      riskLevel: 'INFO',
+      detectedLocation,
+      incidentType: 'Citizen Ground Incident Triage & Reporting',
+      actionSteps: [
+        'Open Disaster Reports & Intelligence module',
+        'Upload geotagged photographic evidence of the hazard',
+        'Verify immediate vicinity risk level',
+        'Alert nearby motorists and residents via the crowdsourced map'
+      ],
+      recommendedModule: 'incidents',
+      recommendedModuleName: 'Open Disaster Reports & Intelligence'
+    };
+  }
+
+  // ==========================================
+  // 14. TOP RED ALERT BANNER & ACTIVE EMERGENCY NOTIFICATIONS
+  // ==========================================
+  if (
+    q.includes('banner') ||
+    q.includes('red banner') ||
+    q.includes('top banner') ||
+    q.includes('flashing banner') ||
+    q.includes('dismiss alert') ||
+    q.includes('close alert') ||
+    q.includes('alert box') ||
+    q.includes('लाल पट्टी') ||
+    q.includes('बैनर') ||
+    q.includes('अलर्ट पट्टी')
+  ) {
+    if (isHi) {
+      return {
+        answerText: `🚨 शीर्ष लाल आपातकालीन अलर्ट बैनर (Top Emergency Alert Banner Guide)
+
+स्क्रीन के सबसे ऊपर दिखने वाली चमकती लाल पट्टी (Top Alert Banner) एक उच्च-प्राथमिकता नागरिक सुरक्षा सुविधा है:
+
+• 🔴 यह कब दिखाई देती है?
+  - जब किसी नागरिक द्वारा इमरजेंसी एसओएस (SOS) सिग्नल सक्रिय किया गया हो।
+  - या जब राज्य आपदा प्रबंधन प्राधिकरण द्वारा रेड अलर्ट (जैसे तीस्ता नदी फ्लैश फ्लड या असम भारी बाढ़) जारी किया गया हो।
+• ✕ बैनर कैसे हटाएं (Dismiss Banner):
+  - बैनर के दाईं ओर स्थित '✕' बटन पर क्लिक करें। बैनर तुरंत बंद हो जाएगा और आपकी स्क्रीन साफ हो जाएगी।
+• 📊 पूरी जानकारी देखना:
+  - बैनर के टेक्स्ट पर क्लिक करने से आप सीधे आपदा कमांड सेंटर डैशबोर्ड पर पहुंच जाते हैं, जहाँ सक्रिय बचाव दलों और प्रभावित सेक्टर का विवरण मिलता है।`,
+        riskLevel: 'HIGH',
+        detectedLocation,
+        incidentType: 'आपातकालीन अलर्ट बैनर इंटेलिजेंस (Emergency Alert Banner Guide)',
+        actionSteps: [
+          'बैनर बंद करने के लिए दाईं ओर ✕ बटन दबाएँ',
+          'आपदा का विवरण देखने के लिए बैनर पर क्लिक करें',
+          'लाइव खतरे की समीक्षा हेतु Command Center Dashboard खोलें'
+        ],
+        recommendedModule: 'customdashboard',
+        recommendedModuleName: 'कमांड सेंटर डैशबोर्ड खोलें (Command Center Dashboard)'
+      };
+    }
+
+    return {
+      answerText: `🚨 TOP EMERGENCY ALERT BANNER & ACTIVE DISTRESS SIGNALS
+
+The prominent, pulsing red banner at the very top of the interface is the site's critical alert system:
+
+• 🔴 Why is it showing?
+  - Triggered when an active Emergency SOS distress signal is transmitted from a user device.
+  - Or when State Disaster Authorities (SDMA / NDMA) post an active Red Alert (e.g. Teesta GLOF outburst or Brahmaputra overtopping).
+• ✕ How to Dismiss the Banner:
+  - Simply click the '✕' close button on the right side of the banner. It will dismiss cleanly and won't reappear unless a new high-priority SOS alert is broadcast.
+• 📊 Inspecting the Emergency Details:
+  - Clicking anywhere on the banner text opens the Command Center Dashboard, showing active rescue battalions, deployed relief trucks, and exact GPS coordinates of the incident.`,
+      riskLevel: 'HIGH',
+      detectedLocation,
+      incidentType: 'Executive Disaster Alert Banner Guidance',
+      actionSteps: [
+        'Click the ✕ icon to dismiss the banner if already reviewed',
+        'Click the banner message to navigate to the live incident telemetry',
+        'Review regional safety advisories before entering flagged sectors'
+      ],
+      recommendedModule: 'customdashboard',
+      recommendedModuleName: 'Open Command Center Dashboard'
+    };
+  }
+
+  // ==========================================
+  // 15. OFFLINE RESILIENCE, LOW CONNECTIVITY & SMS RESCUE
+  // ==========================================
+  if (
+    q.includes('offline') ||
+    q.includes('no internet') ||
+    q.includes('low internet') ||
+    q.includes('connectivity') ||
+    q.includes('sms') ||
+    q.includes('ussd') ||
+    q.includes('network down') ||
+    q.includes('बिना इंटरनेट') ||
+    q.includes('ऑफलाइन') ||
+    q.includes('इंटरनेट नहीं')
+  ) {
+    if (isHi) {
+      return {
+        answerText: `📶 बिना इंटरनेट व ऑफलाइन आपदा मोड (Offline & Low Connectivity Resilience)
+
+पहाड़ी घाटियों में मोबाइल टावर गिरने या इंटरनेट बंद होने की स्थिति में जीवन सेतु का सुरक्षा बैकअप:
+
+• 📱 प्रोग्रेसिव वेब ऐप (PWA) ऑफलाइन कैशिंग:
+  जब आप साइट खोलते हैं, तो महत्वपूर्ण नक्शे, सुरक्षा नियम, अस्पताल व राहत शिविरों के नंबर आपके फोन की मेमोरी में सुरक्षित हो जाते हैं। इंटरनेट कटने पर भी यह जानकारी उपलब्ध रहती है।
+• ✉️ एसएमएस (SMS) आपातकालीन एसओएस:
+  यदि 4G/5G डेटा काम न करे, तो किसी भी साधारण 2G फोन से अपने नजदीकी लैंडमार्क के साथ 'SOS' लिखकर 112 या 1078 पर भेजें।
+• 📞 वॉयस कॉल हमेशा काम करता है:
+  टोल-फ्री नंबर 112 और 1078 बिना डेटा पैक या बैलेंस के भी सभी टेलीकॉम नेटवर्क (BSNL, Airtel, Jio, VI) पर 24 घंटे काम करते हैं।`,
+        riskLevel: 'INFO',
+        detectedLocation,
+        incidentType: 'ऑफलाइन आपदा बैकअप व एसएमएस प्रोटोकॉल (Offline Disaster Protocol)',
+        actionSteps: [
+          'ऑफलाइन उपयोग हेतु Disaster Safety Guide को बुकमार्क करें',
+          'फोन में 112, 1078 और 108 नंबर सेव रखें',
+          'डेटा बंद होने पर साधारण एसएमएस द्वारा आपातकालीन संदेश भेजें'
+        ],
+        recommendedModule: 'safetyguide',
+        recommendedModuleName: 'आपदा सुरक्षा गाइड खोलें (Disaster Safety Guide)'
+      };
+    }
+
+    return {
+      answerText: `📶 OFFLINE RESILIENCE & LOW-CONNECTIVITY EMERGENCY FALLBACK
+
+Engineered specifically for remote Himalayan gorges where telecom infrastructure suffers flood and mudslide damage:
+
+• 📱 Progressive Web App (PWA) Offline Storage:
+  Once loaded, core GIS map tiles, emergency contact directories, and step-by-step safety guides remain cached in your local browser storage.
+• ✉️ SMS & 2G GSM Fallback Protocol:
+  When mobile data packets (4G/5G) drop to zero, you can send an SMS with your location details to 112 or 1078 to trigger automated rescue dispatch.
+• 📞 Zero-Balance Emergency Calling:
+  Toll-free emergency lines (112 Pan-India, 1078 NDRF, 108 Ambulance) operate across all Indian telecom providers even with no active SIM balance or roaming data plan.`,
+      riskLevel: 'INFO',
+      detectedLocation,
+      incidentType: 'Low-Connectivity & Offline Emergency Protocols',
+      actionSteps: [
+        'Review Disaster Safety Guide for offline preparation steps',
+        'Save primary state emergency operations numbers to local device storage',
+        'Rely on toll-free 112 and 1078 voice channels during severe signal loss'
+      ],
+      recommendedModule: 'safetyguide',
+      recommendedModuleName: 'Open Disaster Safety Guide'
+    };
+  }
+
+  // ==========================================
+  // 16. EMERGENCY HELPLINES DIRECTORY (ALL 8 STATES)
+  // ==========================================
+  if (
+    q.includes('helpline') ||
+    q.includes('phone number') ||
+    q.includes('contact number') ||
+    q.includes('emergency number') ||
+    q.includes('ndrf number') ||
+    q.includes('sdrf number') ||
+    q.includes('हेल्पलाइन') ||
+    q.includes('फोन नंबर') ||
+    q.includes('संपर्क') ||
+    q.includes('कॉल')
+  ) {
+    if (isHi) {
+      return {
+        answerText: `📞 पूर्वोत्तर भारत आधिकारिक 24x7 आपातकालीन हेल्पलाइन डायरेक्टरी
+
+किसी भी संकट के समय इन प्रमाणित टोल-फ्री नंबरों पर तुरंत संपर्क करें:
+
+• 🇮🇳 राष्ट्रीय आपातकालीन नंबर (अखिल भारतीय):
+  - 112 — एकीकृत आपातकालीन प्रतिक्रिया (पुलिस, एम्बुलेंस, फायर ब्रिगेड)
+  - 1078 — एनडीआरएफ (NDRF) राष्ट्रीय आपदा मोचन बल 24x7 कंट्रोल रूम
+  - 108 — आपातकालीन मेडिकल व एम्बुलेंस सेवा
+  - 1070 — राज्य आपदा आपातकालीन संचालन केंद्र (SEOC)
+  - 1077 — जिला आपदा नियंत्रण कक्ष (DEOC)
+  - 104 — स्वास्थ्य परामर्श हेल्पलाइन
+• 🗺️ 8 पूर्वोत्तर राज्यों के राज्य नियंत्रण कक्ष:
+  - असम (ASDMA): 1070 / 1079 / 0361-2237221
+  - सिक्किम (SSDMA): 1070 / 03592-202450 / 03592-202451
+  - मेघालय (MSDMA): 1070 / 0364-2502188
+  - अरुणाचल प्रदेश: 1070 / 0360-2212222
+  - नागालैंड (NSDMA): 1070 / 0370-2291122
+  - मणिपुर: 1070 / 0385-2443441
+  - मिजोरम: 1070 / 0389-2335837
+  - त्रिपुरा: 1070 / 0381-2416045
+• 🚜 बीआरओ (BRO) सड़क क्लीयरेंस हेल्पलाइन: 03592-202488 (प्रोजेक्ट स्वास्तिक / सेवक)`,
+        riskLevel: 'INFO',
+        detectedLocation,
+        incidentType: 'आपातकालीन हेल्पलाइन डायरेक्टरी (Emergency Helplines Directory)',
+        actionSteps: [
+          'Emergency Facilities & Rescue मॉड्यूल में नजदीकी अस्पताल देखें',
+          'तत्काल सहायता हेतु 112 या 1078 डायल करें',
+          'राज्य नियंत्रण कक्ष के नंबर अपने फोन में सुरक्षित रखें'
+        ],
+        recommendedModule: 'facilities',
+        recommendedModuleName: 'आपातकालीन सुविधाएं व हेल्पलाइन खोलें (Emergency Facilities)'
+      };
+    }
+
+    return {
+      answerText: `📞 OFFICIAL 24x7 EMERGENCY HELPLINES DIRECTORY (8 NER STATES)
+
+Certified 24x7 emergency contacts for immediate rescue and disaster relief:
+
+• 🇮🇳 National Emergency Numbers (Pan-India):
+  - 112 — Unified Emergency Dispatch (Police, Fire, Ambulance)
+  - 1078 — NDRF (National Disaster Response Force) 24x7 Control Room
+  - 108 — Emergency Medical & Ambulance Service
+  - 1070 — State Emergency Operations Center (SEOC)
+  - 1077 — District Emergency Operations Center (DEOC)
+  - 104 — Medical Advice & Health Helpline
+• 🗺️ State Disaster Control Rooms (All 8 NER States):
+  - Assam (ASDMA): 1070 / 1079 / 0361-2237221
+  - Sikkim (SSDMA): 1070 / 03592-202450 / 03592-202451
+  - Meghalaya (MSDMA): 1070 / 0364-2502188
+  - Arunachal Pradesh: 1070 / 0360-2212222
+  - Nagaland (NSDMA): 1070 / 0370-2291122
+  - Manipur: 1070 / 0385-2443441
+  - Mizoram: 1070 / 0389-2335837
+  - Tripura: 1070 / 0381-2416045
+• 🚜 Border Roads Organisation (BRO) Clearance Hotline: 03592-202488 (Project Swastik & Sewak)`,
+      riskLevel: 'INFO',
+      detectedLocation,
+      incidentType: 'Official Emergency Helplines Directory',
+      actionSteps: [
+        'Open Emergency Facilities & Rescue module for live hospital and helpline map',
+        'Dial toll-free 112 or 1078 for immediate rescue deployment',
+        'Store respective state control room numbers in mobile speed dial'
+      ],
+      recommendedModule: 'facilities',
+      recommendedModuleName: 'Open Emergency Facilities & Helplines'
+    };
+  }
+
+  // ==========================================
+  // 17. VOLUNTEERS, NGOS & RELIEF DONATIONS
+  // ==========================================
+  if (
+    q.includes('volunteer') ||
+    q.includes('ngo') ||
+    q.includes('donate') ||
+    q.includes('donation') ||
+    q.includes('help others') ||
+    q.includes('contribute') ||
+    q.includes('स्वयंसेवक') ||
+    q.includes('मदद कैसे करें') ||
+    q.includes('दान') ||
+    q.includes('सहयोग')
+  ) {
+    if (isHi) {
+      return {
+        answerText: `🤝 स्वयंसेवक, गैर-सरकारी संगठन (NGOs) व राहत सामग्री सहयोग
+
+आपदा के समय नागरिकों और स्वयंसेवी संस्थाओं के सहयोग हेतु आधिकारिक दिशा-निर्देश:
+
+• 🙋‍♂️ आपदा मित्र (Aapda Mitra) स्वयंसेवक नेटवर्क:
+  राष्ट्रीय आपदा प्रबंधन प्राधिकरण (NDMA) के 'आपदा मित्र' कार्यक्रम के तहत प्रशिक्षित नागरिक राहत और प्राथमिक चिकित्सा कार्यों में प्रशासन का हाथ बंटाते हैं।
+• 📦 राहत सामग्री दान व वितरण:
+  - पीने का स्वच्छ पानी, सूखा राशन (चावल, दाल, बिस्कुट), सैनिटरी पैड, बच्चों का दूध, और वाटरप्रूफ तिरपाल की सर्वाधिक आवश्यकता होती है।
+  - सामग्री को सीधे जिला राहत केंद्रों पर पंजीकृत कराएँ ताकि 'Relief Supply Tracking' के जरिए जरूरतमंदों तक पारदर्शी ढंग से पहुंचाया जा सके।
+• ⚠️ महत्वपूर्ण नियम:
+  आपदा प्रभावित संकीर्ण पहाड़ी रास्तों पर निजी वाहनों से न जाएं ताकि सेना, एनडीआरएफ और एम्बुलेंस का रास्ता अवरुद्ध न हो।`,
+        riskLevel: 'INFO',
+        detectedLocation,
+        incidentType: 'स्वयंसेवक व राहत सामग्री समन्वय (Volunteer & NGO Coordination)',
+        actionSteps: [
+          'Relief Supply & Vehicle Tracking में राहत सामग्री की स्थिति देखें',
+          'स्थानीय जिला आपदा प्रबंधन प्राधिकरण से संपर्क करें',
+          'आपदा मित्र स्वयंसेवक दल से जुड़ें'
+        ],
+        recommendedModule: 'relief-supplies',
+        recommendedModuleName: 'राहत आपूर्ति व सामग्री ट्रैकिंग खोलें (Relief Supplies)'
+      };
+    }
+
+    return {
+      answerText: `🤝 VOLUNTEER COORDINATION, NGOS & RELIEF CONTRIBUTIONS
+
+Guidelines for citizen volunteers and civil society organizations providing disaster assistance:
+
+• 🙋‍♂️ Aapda Mitra Community Volunteer Network:
+  Citizens trained under NDMA's Aapda Mitra program provide vital first-response support: local search and rescue, evacuation guiding, and emergency first aid.
+• 📦 Verified Supply Contributions:
+  - Priority needs include packaged drinking water, ready-to-eat dry rations, infant milk formula, water purification drops, warm blankets, and tarpaulins.
+  - Coordinate drop-offs through District Emergency Operations Centers (DEOC) to ensure transparent GPS dispatch via our Relief Supply Tracking system.
+• ⚠️ Mountain Route Discipline:
+  Do not self-deploy private civilian convoys into active landslide gorges (e.g. NH-10 or NH-6), as congestion delays heavy BRO bulldozers and military ambulances.`,
+      riskLevel: 'INFO',
+      detectedLocation,
+      incidentType: 'Civil Society & Volunteer Disaster Assistance',
+      actionSteps: [
+        'Open Relief Supply & Vehicle Tracking to inspect buffer shortages',
+        'Coordinate large relief consignments with District Magistrates',
+        'Register local volunteer groups with State Disaster Management Authorities'
+      ],
+      recommendedModule: 'relief-supplies',
+      recommendedModuleName: 'Open Relief Supply Tracking'
+    };
+  }
+
+  // ==========================================
+  // 18. MULTI-LANGUAGE SELECTOR & VOICE ASSISTANT GUIDE
+  // ==========================================
+  if (
+    q.includes('language') ||
+    q.includes('change language') ||
+    q.includes('how to change language') ||
+    q.includes('voice search') ||
+    q.includes('how to speak') ||
+    q.includes('voice mode') ||
+    q.includes('microphone') ||
+    q.includes('भाषा') ||
+    q.includes('बोली') ||
+    q.includes('आवाज') ||
+    q.includes('माइक')
+  ) {
+    if (isHi) {
+      return {
+        answerText: `🌐 भाषा चयन व वॉयस असिस्टेंट उपयोग गाइड (16 Languages & Voice Assistant)
+
+जीवन सेतु सभी पूर्वोत्तर नागरिकों के लिए 16 क्षेत्रीय व राष्ट्रीय भाषाओं में उपलब्ध है:
+
+• 🗣️ 16 समर्थित भाषाएं:
+  हिंदी (Hindi), अंग्रेजी (English), असमिया (অসমীয়া), बांग्ला (বাংলা), बोडो (बड़ो), मणिपुरी/मेइतेइ (মৈতৈলোন্), मिजो (Mizo ṭawng), नागामीज (Nagamese), नेपाली (नेपाली), खासी (Ka Ktien Khasi), गारो (A·chik), त्रिपुरी/कोकबोरोक (Kokborok) आदि।
+• 🔄 भाषा कैसे बदलें:
+  1. ऊपर नेविगेशन बार में 'Language' (🌐 ग्लोब आइकॉन) बटन पर क्लिक करें।
+  2. ड्रॉपडाउन सूची से अपनी पसंदीदा भाषा चुनें। पूरी वेबसाइट तुरंत उस भाषा में परिवर्तित हो जाएगी।
+• 🎙️ बोलकर कैसे पूछें (Voice Search):
+  - सर्च बार या AI Agent विंडो में 🎙️ माइक बटन दबाएँ।
+  - अपनी भाषा में बोलें (जैसे "गुवाहाटी का मौसम क्या है?" या "NH-10 की स्थिति")।
+  - एआई आपकी बात सुनकर लिखित व वॉयस दोनों में उत्तर देगा!`,
+        riskLevel: 'INFO',
+        detectedLocation,
+        incidentType: 'भाषा व वॉयस असिस्टेंट गाइड (Language & Voice Guide)',
+        actionSteps: [
+          'नेविगेशन बार से अपनी मातृभाषा का चयन करें',
+          'माइक (🎙️) दबाकर बोलकर सवाल पूछें',
+          'उत्तर सुनने के लिए "Listen / सुनें" बटन का उपयोग करें'
+        ],
+        recommendedModule: 'customdashboard',
+        recommendedModuleName: 'डैशबोर्ड खोलें (Command Center Dashboard)'
+      };
+    }
+
+    return {
+      answerText: `🌐 16 REGIONAL LANGUAGES & VOICE ASSISTANT GUIDE
+
+Jeevan Setu supports native multilingual communication across all 8 North Eastern States:
+
+• 🗣️ 16 Supported Regional & National Languages:
+  English, Hindi, Assamese (অসমীয়া), Bengali (বাংলা), Bodo (बड़ो), Manipuri / Meitei (মৈতৈলোন্), Mizo (Mizo ṭawng), Nagamese, Nepali (नेपाली), Khasi (Ka Ktien Khasi), Garo (A·chik), Tripuri / Kokborok, etc.
+• 🔄 How to Change Language:
+  1. Click the Language pill with the Globe (🌐) icon in the sticky top navbar.
+  2. Select your desired language from the comprehensive dropdown menu. The UI and alerts update instantly.
+• 🎙️ How to Use Voice Search (Voice Assistant):
+  - Click the 🎙️ microphone icon in the search bar or AI Agent modal.
+  - Speak your query naturally in Hindi, English, or regional phonetics.
+  - The AI synthesizes the answer and speaks it aloud using natural browser speech synthesis!`,
+      riskLevel: 'INFO',
+      detectedLocation,
+      incidentType: 'Multilingual Support & Voice Assistant Guide',
+      actionSteps: [
+        'Select your preferred native language from the top navbar',
+        'Click the microphone (🎙️) to query via natural speech',
+        'Click "Listen / Listen Aloud" on any AI response card to hear spoken audio'
+      ],
+      recommendedModule: 'customdashboard',
+      recommendedModuleName: 'Explore Command Center Dashboard'
+    };
+  }
+
+  // ==========================================
+  // 19. LIVE GIS MAP NAVIGATION & SATELLITE LAYERS GUIDE
+  // ==========================================
+  if (
+    q.includes('how to use map') ||
+    q.includes('how to see map') ||
+    q.includes('map layer') ||
+    q.includes('satellite map') ||
+    q.includes('gis map') ||
+    q.includes('map help') ||
+    q.includes('नक्शा कैसे देखें') ||
+    q.includes('मैप कैसे')
+  ) {
+    if (isHi) {
+      return {
+        answerText: `🗺️ एनईआर लाइव जीआईएस नक्शा उपयोग गाइड (NER Live GIS Map Guide)
+
+पूर्वोत्तर के सभी 8 राज्यों के लिए इंटरएक्टिव सैटेलाइट जीआईएस नक्शा:
+
+• 🎨 नक्शे के 3 विज़ुअल मोड:
+  1. Dark Tactical Night View: उच्च-कंट्रास्ट नाइट मोड, आपदा ऑपरेशनों हेतु सर्वोत्तम।
+  2. Standard Light Map: दिन के समय शहरों, कस्बों और सड़कों को स्पष्ट देखने हेतु।
+  3. Satellite Terrain Mode: पहाड़ों, नदियों और भूस्खलन ढलानों की वास्तविक सैटेलाइट तस्वीर।
+• 📍 लाइव परतें और मार्कर (Map Layers):
+  - लाल वृत्त: सक्रिय उच्च-खतरा आपदा क्षेत्र (बाढ़ व भूस्खलन)।
+  - नीले मार्कर: सक्रिय राहत शिविर (उपलब्ध बेड व राशन की जानकारी)।
+  - हरे/लाल क्रॉस: आपातकालीन अस्पताल, आईसीयू बेड व ब्लड बैंक।
+  - नारंगी रेखाएं: राष्ट्रीय राजमार्ग (NH-10, NH-29, NH-6) की वर्तमान सुगमता स्थिति।
+  - चलते हुए ट्रक: 4x4 राहत वाहनों की लाइव जीपीएस ट्रैकिंग।
+• 🔍 इंटरेक्टिव जानकारी: किसी भी पिन पर क्लिक करने से तुरंत उस स्थान का विस्तृत डेटा खुलता है।`,
+        riskLevel: 'INFO',
+        detectedLocation,
+        incidentType: 'लाइव जीआईएस नक्शा नेविगेशन गाइड (Live GIS Map Guide)',
+        actionSteps: [
+          'NER Live GIS Map खोलें',
+          'ऊपर दाईं ओर से सैटेलाइट या डार्क मोड चुनें',
+          'सक्रिय आपदा पिनों पर क्लिक करके लाइव स्थिति देखें',
+          'Safe Corridors लेयर चालू करके सुरक्षित मार्ग जांचें'
+        ],
+        recommendedModule: 'map',
+        recommendedModuleName: 'एनईआर लाइव जीआईएस नक्शा खोलें (NER Live GIS Map)'
+      };
+    }
+
+    return {
+      answerText: `🗺️ HOW TO NAVIGATE THE NER LIVE GIS MAP
+
+Complete operational guide for the interactive geospatial disaster command grid:
+
+• 🎨 3 Dynamic Map Visual Styles:
+  1. Dark Tactical Night Mode: High-contrast military & rescue command palette.
+  2. Standard Humanitarian Light Mode: Crisp civilian road and district boundary view.
+  3. Satellite Terrain Mode: High-resolution topographical relief mapping mountain ridges and river basins.
+• 📍 Interactive Layers & Telemetry Markers:
+  - Red Pulsing Circles: Active hazard zones (landslide slip faces and river breaches).
+  - Blue Shelter Icons: Operational relief camps with real-time bed capacity and stock buffer.
+  - Green Hospital Crosses: Verified healthcare facilities, emergency ICU availability, and oxygen stocks.
+  - Highway Polylines: Color-coded accessibility status for NH-10, NH-29, NH-27, and NH-6.
+  - Animated Vehicles: Real-time GPS movement of 4x4 supply trucks and SDRF convoys.
+• 🔍 Marker Interactivity: Click any icon on the map to inspect live sensor readings and dispatch contacts.`,
+      riskLevel: 'INFO',
+      detectedLocation,
+      incidentType: 'Geospatial GIS Map Navigation Protocols',
+      actionSteps: [
+        'Open NER Live GIS Map from the top navbar or sidebar',
+        'Toggle Satellite Terrain mode to inspect steep mountain slope contours',
+        'Click on nearby relief shelters to view bed availability',
+        'Correlate active highway warnings before starting journey'
+      ],
+      recommendedModule: 'map',
+      recommendedModuleName: 'Open NER Live GIS Map'
     };
   }
 
