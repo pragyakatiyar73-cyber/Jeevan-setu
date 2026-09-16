@@ -1277,9 +1277,9 @@ export default function App() {
               className="rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-amber-500/25 flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border border-amber-300/40"
               title="Watch 10-Minute Official Citizen Video Guide with AI Voiceover"
             >
-              <span className="text-sm">🎥</span>
+              <span className="text-sm">🤝</span>
               <span className="whitespace-nowrap font-black">
-                {language === 'hi' ? '10-मिनट वीडियो गाइड' : '10-Min Video Guide'}
+                {language === 'hi' ? 'आपका साथी (वीडियो)' : 'Aapka Saathi (Video)'}
               </span>
             </button>
 

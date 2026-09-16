@@ -2525,7 +2525,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white shadow-md">
                   <Sparkles className="w-3.5 h-3.5 text-yellow-200 animate-pulse" />
-                  <span>{language === 'hi' ? 'नागरिक वीडियो गाइड (10 MIN)' : 'CITIZEN VIDEO GUIDE (10 MIN)'}</span>
+                  <span>{language === 'hi' ? '🤝 आपका साथी (10 MIN GUIDE)' : '🤝 AAPKA SAATHI (10 MIN GUIDE)'}</span>
                 </span>
                 <span className="text-[11px] font-mono font-bold text-emerald-400 flex items-center gap-1">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
@@ -2537,8 +2537,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               <div className="space-y-1.5">
                 <h3 className="text-base sm:text-lg font-black text-white leading-tight group-hover:text-amber-300 transition">
                   {language === 'hi'
-                    ? '🎥 10-मिनट में सीखें जीवन सेतु का उपयोग'
-                    : '🎥 Learn Jeevan Setu in 10-Minute Video'}
+                    ? '🎥 आपका साथी — 10-मिनट में सीखें जीवन सेतु'
+                    : '🎥 Aapka Saathi — Learn Jeevan Setu in 10-Min Video'}
                 </h3>
                 <p className="text-xs text-slate-300 font-medium leading-relaxed">
                   {language === 'hi'
@@ -2574,7 +2574,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-black text-xs sm:text-sm shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 border border-amber-300/50 active:scale-95 transition cursor-pointer"
               >
                 <span className="text-lg">▶️</span>
-                <span>{language === 'hi' ? '10-मिनट वीडियो प्रेजेंटेशन चलाएं' : 'Play 10-Minute Video Presentation'}</span>
+                <span>{language === 'hi' ? 'चलाएं "आपका साथी" (10-मिनट वीडियो)' : 'Play "Aapka Saathi" (10-Min Video)'}</span>
               </button>
             </div>
 
