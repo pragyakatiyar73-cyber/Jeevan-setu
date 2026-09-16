@@ -1273,30 +1273,6 @@ export default function App() {
               </span>
             </div>
 
-            {/* 📱 Mobile Phone View Simulator Switcher for Laptop */}
-            <button
-              onClick={() => {
-                const nextState = !isMobileSimulated;
-                setIsMobileSimulated(nextState);
-                if (nextState) {
-                  setIsMobileMenuOpen(true);
-                }
-              }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer border shrink-0 ${
-                isMobileSimulated
-                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/40 ring-2 ring-amber-500/30 shadow-md'
-                  : 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30 hover:bg-sky-500/25 shadow-sm'
-              }`}
-              title="Toggle Mobile Phone View Simulator on Laptop"
-            >
-              <span className="text-sm">📱</span>
-              <span className="whitespace-nowrap">
-                {isMobileSimulated
-                  ? (language === 'hi' ? 'फोन व्यू ऑन (बंद करें)' : 'Phone View ON (Exit)')
-                  : (language === 'hi' ? '📱 फोन जैसा व्यू देखें' : '📱 Phone View')}
-              </span>
-            </button>
-
             {/* 🌐 Language Switcher */}
             <div className="shrink-0">
               <LanguageSelector />
