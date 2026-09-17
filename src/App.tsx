@@ -982,57 +982,23 @@ export default function App() {
     );
   };
 
-  if (activeModule === 'home') {
-    return (
-      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
-        <JeevanSetuHomepage
-          onNavigateModule={(mod) => setActiveModule(mod)}
-          onOpenSos={() => {
-            setActiveModule('customdashboard');
-            setIsSosModalOpen(true);
-          }}
-          onOpenDashboard={() => setActiveModule('customdashboard')}
-          onOpenAiChatbot={() => setIsAiAgentOpen(true)}
-          onOpenVideoGuide={() => setIsVideoGuideOpen(true)}
-        />
-
-        {/* Emergency SOS Modal */}
-        <EmergencySOSModal
-          isOpen={isSosModalOpen}
-          onClose={() => setIsSosModalOpen(false)}
-          onTransmitSOSLocation={(locationData) => {
-            if (locationData.sosId) {
-              dismissedSosIdsRef.current.delete(locationData.sosId);
-            }
-            setActiveSosLocation(locationData);
-            setIsSosModalOpen(false);
-            setActiveModule('customdashboard');
-          }}
-        />
-
-        {/* 🤖 Universal AI Agent with Deep Telemetry & Diagnostics */}
-        <AIChatbotWidget
-          isOpenControlled={isAiAgentOpen}
-          onOpenControlled={() => setIsAiAgentOpen(true)}
-          onCloseControlled={() => setIsAiAgentOpen(false)}
-          onNavigateModule={(mod) => setActiveModule(mod as any)}
-          onOpenSos={() => setIsSosModalOpen(true)}
-          activeModule={activeModule}
-        />
-
-        {/* 🎥 10-Minute Official Citizen Video Walkthrough Modal */}
-        <CitizenVideoWalkthroughModal
-          isOpen={isVideoGuideOpen}
-          onClose={() => setIsVideoGuideOpen(false)}
-          onNavigateModule={(mod) => setActiveModule(mod as any)}
-          onTriggerSOS={() => setIsSosModalOpen(true)}
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex h-screen w-full max-w-full bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
+    <>
+      {activeModule === 'home' ? (
+        <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
+          <JeevanSetuHomepage
+            onNavigateModule={(mod) => setActiveModule(mod)}
+            onOpenSos={() => {
+              setActiveModule('customdashboard');
+              setIsSosModalOpen(true);
+            }}
+            onOpenDashboard={() => setActiveModule('customdashboard')}
+            onOpenAiChatbot={() => setIsAiAgentOpen(true)}
+            onOpenVideoGuide={() => setIsVideoGuideOpen(true)}
+          />
+        </div>
+      ) : (
+        <div className="flex h-screen w-full max-w-full bg-slate-100 dark:bg-[#040814] text-slate-900 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
       {renderGlobalSosBanner()}
       
       {/* 1. LEFT SIDEBAR NAVIGATION BAR (Sleek & Perfectly Sized - Hidden in Driver & Mobile Screen View) */}
@@ -2021,38 +1987,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Emergency SOS Modal (Matching media_1787750104900.png) */}
-        <EmergencySOSModal
-          isOpen={isSosModalOpen}
-          onClose={() => setIsSosModalOpen(false)}
-          onTransmitSOSLocation={(locationData) => {
-            if (locationData.sosId) {
-              dismissedSosIdsRef.current.delete(locationData.sosId);
-            }
-            setActiveSosLocation(locationData);
-            setIsSosModalOpen(false);
-            setActiveModule('customdashboard');
-          }}
-        />
-
-        {/* 🤖 Universal AI Agent with Deep Telemetry & Diagnostics */}
-        <AIChatbotWidget
-          isOpenControlled={isAiAgentOpen}
-          onOpenControlled={() => setIsAiAgentOpen(true)}
-          onCloseControlled={() => setIsAiAgentOpen(false)}
-          onNavigateModule={(mod) => setActiveModule(mod as any)}
-          onOpenSos={() => setIsSosModalOpen(true)}
-          activeModule={activeModule}
-        />
-
-        {/* 🎥 10-Minute Official Citizen Video Walkthrough Modal */}
-        <CitizenVideoWalkthroughModal
-          isOpen={isVideoGuideOpen}
-          onClose={() => setIsVideoGuideOpen(false)}
-          onNavigateModule={(mod) => setActiveModule(mod as any)}
-          onTriggerSOS={() => setIsSosModalOpen(true)}
-        />
-
         {/* 🎛️ Floating Action Button on Mobile (Bottom-Right 3-Dots Button) */}
         <button
           onClick={() => setIsMobileMenuOpen(true)}
@@ -2182,9 +2116,41 @@ export default function App() {
         )}
 
       </main>
-    </div>
+        </div>
+      </div>
+    )}
 
+      {/* 🚨 Emergency SOS Modal (Persistent across all page transitions) */}
+      <EmergencySOSModal
+        isOpen={isSosModalOpen}
+        onClose={() => setIsSosModalOpen(false)}
+        onTransmitSOSLocation={(locationData) => {
+          if (locationData.sosId) {
+            dismissedSosIdsRef.current.delete(locationData.sosId);
+          }
+          setActiveSosLocation(locationData);
+          setIsSosModalOpen(false);
+          setActiveModule('customdashboard');
+        }}
+      />
 
-  </div>
+      {/* 🤖 Universal AI Agent with Deep Telemetry & Diagnostics */}
+      <AIChatbotWidget
+        isOpenControlled={isAiAgentOpen}
+        onOpenControlled={() => setIsAiAgentOpen(true)}
+        onCloseControlled={() => setIsAiAgentOpen(false)}
+        onNavigateModule={(mod) => setActiveModule(mod as any)}
+        onOpenSos={() => setIsSosModalOpen(true)}
+        activeModule={activeModule}
+      />
+
+      {/* 🎥 10-Minute Official Citizen Video Walkthrough Modal (Persistent playback across Dashboard/Home transitions) */}
+      <CitizenVideoWalkthroughModal
+        isOpen={isVideoGuideOpen}
+        onClose={() => setIsVideoGuideOpen(false)}
+        onNavigateModule={(mod) => setActiveModule(mod as any)}
+        onTriggerSOS={() => setIsSosModalOpen(true)}
+      />
+    </>
   );
 }
