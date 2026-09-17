@@ -472,32 +472,57 @@ export default function CitizenVideoWalkthroughModal({
 
   if (!isOpen) return null;
 
-  // Ultra-Mini Collapsed Floating Audio Badge for Mobile Phones
+  // Ultra-Mini Collapsed Floating Audio Badge on Right Side (Above Jeeva AI)
   if (isMinimized) {
     return (
       <aside
         aria-label="नागरिक मित्र (मिनी)"
-        className="fixed bottom-3 left-3 z-[100001] bg-[#070d1f]/95 backdrop-blur-md border border-amber-400/90 px-2.5 py-1 rounded-full shadow-xl flex items-center gap-2 text-white select-none animate-in fade-in duration-200"
+        className="fixed bottom-24 right-6 z-[100001] bg-[#070d1f]/95 backdrop-blur-xl border-2 border-amber-400/90 px-3 py-1.5 rounded-full shadow-2xl shadow-amber-950/80 flex items-center gap-2 text-white select-none animate-in slide-in-from-bottom-3 duration-200"
       >
         <button
           type="button"
           onClick={togglePlay}
-          className="h-6 w-6 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold flex items-center justify-center cursor-pointer active:scale-95"
-          title={isPlaying ? 'रोकें' : 'चलाएं'}
+          className="h-7 w-7 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold flex items-center justify-center cursor-pointer active:scale-95 shadow-md shrink-0"
+          title={isPlaying ? 'आवाज़ रोकें' : 'आवाज़ चलाएं'}
         >
-          {isPlaying ? <Pause className="w-3 h-3 fill-slate-950" /> : <Play className="w-3 h-3 fill-slate-950 ml-0.5" />}
+          {isPlaying ? <Pause className="w-3.5 h-3.5 fill-slate-950" /> : <Play className="w-3.5 h-3.5 fill-slate-950 ml-0.5" />}
         </button>
-        <span className="text-[10px] font-mono text-amber-300 font-bold flex items-center gap-1">
-          <span>🎙️</span>
-          <span>{formatTime(currentTime)}</span>
-        </span>
+
         <button
           type="button"
           onClick={() => setIsMinimized(false)}
-          className="p-1 text-slate-300 hover:text-amber-300 transition cursor-pointer"
+          className="flex items-center gap-1.5 cursor-pointer text-left group"
+          title="नागरिक मित्र ऑडियो कंट्रोल विस्तार करें"
+        >
+          <span className="text-xs font-black text-amber-300 flex items-center gap-1">
+            <Volume2 className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            <span>नागरिक मित्र</span>
+          </span>
+          <span className="text-[10px] font-mono text-emerald-400 font-bold bg-slate-900/90 px-2 py-0.5 rounded-full border border-slate-800">
+            {formatTime(currentTime)}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsMinimized(false)}
+          className="p-1 rounded-full text-slate-300 hover:text-amber-300 hover:bg-slate-800 transition cursor-pointer"
           title="कंट्रोल खोलें"
         >
           <Maximize2 className="w-3.5 h-3.5" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setIsPlaying(false);
+            if (synthRef.current) synthRef.current.cancel();
+            onClose();
+          }}
+          className="p-1 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition cursor-pointer ml-0.5"
+          title="बंद करें"
+        >
+          <X className="w-3.5 h-3.5" />
         </button>
       </aside>
     );
