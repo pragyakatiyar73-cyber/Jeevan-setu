@@ -2206,7 +2206,17 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
           {/* RIGHT: Action Tools & Mobile Menu */}
           <div className="flex items-center gap-1.5 sm:gap-2 2xl:gap-2.5 shrink-0">
-            {/* 🤖 AI AGENT WITH VOICE SEARCH BUTTON */}
+            {/* 🎥 NAGRIK MITRA (CITIZEN VIDEO GUIDE) BUTTON */}
+            <button
+              onClick={handleOpenVideoGuide}
+              className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-amber-500/20 hover:shadow-amber-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-amber-300/40 whitespace-nowrap shrink-0 group"
+              title="Nagrik Mitra 10-Minute Video Guide"
+            >
+              <span className="text-sm">🎥</span>
+              <span>{language === 'hi' ? 'नागरिक मित्र' : 'Nagrik Mitra'}</span>
+            </button>
+
+            {/* 🤖 AI AGENT WITH VOICE SEARCH BUTTON (BEHIND / AFTER NAGRIK MITRA) */}
             <button
               onClick={() => {
                 setIsAiAgentOpen((prev) => !prev);
@@ -2221,16 +2231,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <Mic className="h-2.5 w-2.5 text-white animate-pulse" />
                 <span className="hidden sm:inline">Voice</span>
               </span>
-            </button>
-
-            {/* 🎥 NAGRIK MITRA (CITIZEN VIDEO GUIDE) BUTTON RIGHT NEXT TO AI AGENT */}
-            <button
-              onClick={handleOpenVideoGuide}
-              className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-amber-500/20 hover:shadow-amber-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-amber-300/40 whitespace-nowrap shrink-0 group"
-              title="Nagrik Mitra 10-Minute Video Guide"
-            >
-              <span className="text-sm">🎥</span>
-              <span>{language === 'hi' ? 'नागरिक मित्र' : 'Nagrik Mitra'}</span>
             </button>
 
             {/* Search Icon (Moved to right side of AI Agent) */}

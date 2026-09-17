@@ -477,7 +477,7 @@ export default function CitizenVideoWalkthroughModal({
     return (
       <aside
         aria-label="नागरिक मित्र (मिनी)"
-        className="fixed bottom-3 left-3 z-[99999] bg-[#070d1f]/95 backdrop-blur-md border border-amber-400/90 px-2.5 py-1 rounded-full shadow-xl flex items-center gap-2 text-white select-none animate-in fade-in duration-200"
+        className="fixed bottom-3 left-3 z-[100001] bg-[#070d1f]/95 backdrop-blur-md border border-amber-400/90 px-2.5 py-1 rounded-full shadow-xl flex items-center gap-2 text-white select-none animate-in fade-in duration-200"
       >
         <button
           type="button"
@@ -506,7 +506,7 @@ export default function CitizenVideoWalkthroughModal({
   return (
     <aside
       aria-label="नागरिक मित्र वॉइस गाइड"
-      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-[99999] bg-[#070d1f]/95 backdrop-blur-2xl border border-amber-400/80 px-2 py-1 rounded-full shadow-2xl shadow-amber-950/80 flex items-center gap-1.5 animate-in slide-in-from-bottom-5 duration-300 max-w-[96vw] sm:max-w-md text-white select-none"
+      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-[100001] bg-[#070d1f]/95 backdrop-blur-2xl border border-amber-400/80 px-2 py-1 rounded-full shadow-2xl shadow-amber-950/80 flex items-center gap-1.5 animate-in slide-in-from-bottom-5 duration-300 max-w-[96vw] sm:max-w-md text-white select-none"
     >
       {/* Equalizer Icon */}
       <div className="h-6 w-6 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white shadow-md shrink-0 relative">
