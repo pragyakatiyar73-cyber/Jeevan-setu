@@ -471,269 +471,94 @@ export default function CitizenVideoWalkthroughModal({
 
   if (!isOpen) return null;
 
-  const highlightsToDisplay = language === 'hi'
-    ? (currentScene.screenHighlightsHi || currentScene.screenHighlights)
-    : (currentScene.screenHighlightsHi || currentScene.screenHighlights);
-
   return (
-    <div className="fixed inset-0 z-[10000] bg-slate-950/85 backdrop-blur-md flex flex-col justify-center items-center p-2 sm:p-4 animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 w-full max-w-4xl rounded-2xl flex flex-col overflow-hidden shadow-2xl max-h-[92vh]">
-        
-        {/* Header Bar */}
-        <div className="p-3 sm:p-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0c142b] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white shadow-md shadow-amber-500/30 ring-2 ring-amber-400/40 shrink-0">
-              <Sparkles className="w-4 h-4 text-yellow-200 animate-pulse" />
-            </div>
-            <div>
-              <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
-                🎥 नागरिक मित्र — 10-मिनट संपूर्ण नागरिक वीडियो गाइड
-              </h2>
-              <p className="text-[11px] text-amber-600 dark:text-amber-400 font-bold">
-                एआई आवाज़ और चरण-दर-चरण बिना रुके लाइव गाइड
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                setIsPlaying(false);
-                if (synthRef.current) synthRef.current.cancel();
-                onClose();
-              }}
-              className="h-8 w-8 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center hover:bg-rose-500 hover:text-white transition cursor-pointer"
-              title="बंद करें"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Video Player Display Container */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 custom-scrollbar">
-          
-          {/* Main Visual Stage Box */}
-          <div className="relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 bg-slate-900 text-white p-4 sm:p-5 min-h-[220px] flex flex-col justify-between shadow-xl">
-            {/* Ambient Background Glow */}
-            <div className={`absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br ${currentScene.color} opacity-20 rounded-full blur-3xl pointer-events-none`} />
-            <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
-
-            {/* Stage Top Bar */}
-            <div className="relative z-10 flex items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  {currentScene.badgeHi}
-                </span>
-                <span className="text-[11px] font-bold text-slate-400 font-mono">
-                  दृश्य {currentScene.id} / 10
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span className="text-[11px] font-mono font-bold text-emerald-400">
-                  {formatTime(currentTime)} / 10:00
-                </span>
-              </div>
-            </div>
-
-            {/* Stage Center Content */}
-            <div className="relative z-10 my-2.5 space-y-2.5">
-              <div className="flex items-center gap-2.5">
-                <div className={`p-2.5 rounded-xl bg-gradient-to-br ${currentScene.color} text-white shadow-lg shrink-0`}>
-                  <IconComponent className="w-5 h-5" />
-                </div>
-                <h3 className="text-base sm:text-lg font-black text-white tracking-tight">
-                  {currentScene.titleHi}
-                </h3>
-              </div>
-
-              {/* On-screen Visual Highlights in Hindi */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-                {highlightsToDisplay.map((hl, idx) => (
-                  <div key={idx} className="p-2 sm:p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/80 text-[11px] font-semibold text-slate-200 flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span className="truncate">{hl}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* AI Voice Narration Box in Hindi */}
-              <div className="p-3 rounded-xl bg-slate-950/80 border border-amber-500/40 space-y-1 shadow-lg">
-                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-amber-300 tracking-wider">
-                  <Volume2 className="w-3.5 h-3.5 animate-pulse text-amber-300" />
-                  <span>🔊 एआई आवाज़ (बिना रुके बोलकर मार्गदर्शन)</span>
-                </div>
-                <p className="text-xs sm:text-xs font-bold text-amber-200 leading-snug">
-                  "{currentScene.narrationHi}"
-                </p>
-              </div>
-            </div>
-
-            {/* Stage Bottom Direct Action Button */}
-            <div className="relative z-10 pt-1.5 flex items-center justify-between border-t border-slate-800">
-              <span className="text-[11px] text-slate-400 font-medium">
-                लाइव फीचर आजमाने के लिए क्लिक करें:
-              </span>
-
-              <button
-                onClick={() => {
-                  setIsPlaying(false);
-                  if (synthRef.current) synthRef.current.cancel();
-                  onClose();
-                  if (currentScene.moduleKey === 'sos' && onTriggerSOS) {
-                    onTriggerSOS();
-                  } else if (onNavigateModule) {
-                    onNavigateModule(currentScene.moduleKey);
-                  }
-                }}
-                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-black text-xs flex items-center gap-1 shadow-md active:scale-95 transition cursor-pointer"
-              >
-                <span>यह फ़ीचर खोलें ➔</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Video Control Bar */}
-          <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
-            {/* Scrubber Range Input */}
-            <div className="space-y-0.5">
-              <input
-                type="range"
-                min={0}
-                max={600}
-                value={currentTime}
-                onChange={(e) => handleSeek(Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer h-1.5 bg-slate-300 dark:bg-slate-800 rounded-lg"
-              />
-              <div className="flex justify-between text-[9px] font-bold text-slate-400 font-mono">
-                <span>00:00</span>
-                <span>02:00 (आपातकालीन SOS)</span>
-                <span>04:15 (सुरक्षित मार्ग)</span>
-                <span>06:15 (मौसम रडार)</span>
-                <span>08:15 (PDF रिपोर्ट)</span>
-                <span>10:00</span>
-              </div>
-            </div>
-
-            {/* Playback Controls */}
-            <div className="flex items-center justify-between gap-2 pt-0.5">
-              <div className="flex items-center gap-1.5">
-                {/* Seek -10s */}
-                <button
-                  onClick={() => handleSeekDelta(-10)}
-                  className="px-2.5 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 font-black text-xs transition cursor-pointer flex items-center gap-1 active:scale-95"
-                  title="10 सेकेंड पीछे"
-                >
-                  <Rewind className="w-3.5 h-3.5" />
-                  <span>-10से०</span>
-                </button>
-
-                <button
-                  onClick={togglePlay}
-                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-extrabold text-xs shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95 transition border border-amber-300/40"
-                >
-                  {isPlaying ? <Pause className="w-3.5 h-3.5 fill-white" /> : <Play className="w-3.5 h-3.5 fill-white" />}
-                  <span>{isPlaying ? 'रोकें' : '▶️ चलाएं'}</span>
-                </button>
-
-                {/* Seek +10s */}
-                <button
-                  onClick={() => handleSeekDelta(10)}
-                  className="px-2.5 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 font-black text-xs transition cursor-pointer flex items-center gap-1 active:scale-95"
-                  title="10 सेकेंड आगे"
-                >
-                  <span>+10से०</span>
-                  <FastForward className="w-3.5 h-3.5" />
-                </button>
-
-                <button
-                  onClick={() => handleSeek(0)}
-                  className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-                  title="पुनः आरंभ करें (00:00)"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
-
-                <button
-                  onClick={() => setIsMuted(prev => !prev)}
-                  className={`p-2 rounded-lg border transition cursor-pointer ${
-                    isMuted
-                      ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
-                      : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
-                  }`}
-                  title={isMuted ? 'आवाज़ चालू करें' : 'आवाज़ बंद करें'}
-                >
-                  {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-
-              {/* Scene Navigation Prev/Next */}
-              <div className="flex items-center gap-1.5">
-                <button
-                  disabled={currentSceneIndex === 0}
-                  onClick={() => handleSeek(VIDEO_SCENES[Math.max(0, currentSceneIndex - 1)].timestampStart)}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 disabled:opacity-40 text-slate-700 dark:text-slate-300 text-xs font-extrabold flex items-center gap-1 cursor-pointer"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                  <span>पिछला</span>
-                </button>
-
-                <button
-                  disabled={currentSceneIndex === VIDEO_SCENES.length - 1}
-                  onClick={() => handleSeek(VIDEO_SCENES[Math.min(VIDEO_SCENES.length - 1, currentSceneIndex + 1)].timestampStart)}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 disabled:opacity-40 text-slate-700 dark:text-slate-300 text-xs font-extrabold flex items-center gap-1 cursor-pointer"
-                >
-                  <span>अगला</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Scene Playlist Items */}
-          <div className="space-y-1.5">
-            <h4 className="text-[11px] font-black uppercase text-slate-500 dark:text-slate-400">
-              10-मिनट वीडियो दृश्य सूची (प्लेलिस्ट)
-            </h4>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-              {VIDEO_SCENES.map((scene, sIdx) => {
-                const isActive = currentSceneIndex === sIdx;
-                const SceneIcon = scene.icon;
-                return (
-                  <button
-                    key={scene.id}
-                    onClick={() => handleSeek(scene.timestampStart)}
-                    className={`w-full p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition cursor-pointer ${
-                      isActive
-                        ? 'bg-amber-500/15 border-amber-500/60 ring-2 ring-amber-500/30 text-slate-900 dark:text-white'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-white shrink-0 bg-gradient-to-br ${scene.color}`}>
-                      <SceneIcon className="w-3.5 h-3.5" />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="text-xs font-black truncate">
-                          {scene.titleHi}
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-400 shrink-0">
-                          {formatTime(scene.timestampStart)}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-        </div>
+    <aside
+      aria-label="नागरिक मित्र वॉइस गाइड"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] bg-[#070d1f]/95 backdrop-blur-2xl border-2 border-amber-400/90 p-3 rounded-2xl shadow-2xl shadow-amber-950/80 flex items-center gap-3 animate-in slide-in-from-bottom-5 duration-300 max-w-xl w-[92%] sm:w-auto text-white select-none"
+    >
+      {/* Equalizer Pulsing Icon */}
+      <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white shadow-md shrink-0 relative">
+        <Volume2 className="w-5 h-5 text-yellow-200 animate-pulse" />
+        <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400 border-2 border-slate-900 animate-ping"></span>
       </div>
-    </div>
+
+      {/* Voice Status, Scene Title & Speech Snippet */}
+      <div className="flex-1 min-w-0 pr-1">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">
+            🎙️ नागरिक मित्र (आवाज़)
+          </span>
+          <span className="text-[10px] font-mono text-emerald-400 font-bold">
+            {formatTime(currentTime)} / 10:00
+          </span>
+        </div>
+        <p className="text-xs font-black text-white truncate mt-0.5">
+          {currentScene.titleHi}
+        </p>
+        <p className="text-[11px] text-amber-200 truncate font-medium">
+          "{currentScene.narrationHi}"
+        </p>
+      </div>
+
+      {/* Control Buttons: Seek -10s, Play/Pause, Seek +10s, Next Scene, Close */}
+      <div className="flex items-center gap-1.5 shrink-0 border-l border-slate-800/80 pl-2.5">
+        {/* Seek -10s */}
+        <button
+          type="button"
+          onClick={() => handleSeekDelta(-10)}
+          className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-extrabold transition cursor-pointer active:scale-95 flex items-center gap-0.5 text-[10px]"
+          title="10 सेकेंड पीछे"
+        >
+          <Rewind className="w-3.5 h-3.5" />
+          <span>-10से०</span>
+        </button>
+
+        {/* Play / Pause */}
+        <button
+          type="button"
+          onClick={togglePlay}
+          className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold transition cursor-pointer active:scale-95 shadow-md"
+          title={isPlaying ? 'आवाज़ रोकें' : 'आवाज़ चलाएं'}
+        >
+          {isPlaying ? <Pause className="w-4 h-4 fill-slate-950" /> : <Play className="w-4 h-4 fill-slate-950" />}
+        </button>
+
+        {/* Seek +10s */}
+        <button
+          type="button"
+          onClick={() => handleSeekDelta(10)}
+          className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-extrabold transition cursor-pointer active:scale-95 flex items-center gap-0.5 text-[10px]"
+          title="10 सेकेंड आगे"
+        >
+          <span>+10से०</span>
+          <FastForward className="w-3.5 h-3.5" />
+        </button>
+
+        {/* Next Scene */}
+        <button
+          type="button"
+          disabled={currentSceneIndex === VIDEO_SCENES.length - 1}
+          onClick={() => handleSeek(VIDEO_SCENES[Math.min(VIDEO_SCENES.length - 1, currentSceneIndex + 1)].timestampStart)}
+          className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 transition cursor-pointer"
+          title="अगला दृश्य"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+
+        {/* Close Voice Guide */}
+        <button
+          type="button"
+          onClick={() => {
+            setIsPlaying(false);
+            if (synthRef.current) synthRef.current.cancel();
+            onClose();
+          }}
+          className="p-2 rounded-xl bg-slate-800/80 hover:bg-rose-500 text-slate-300 hover:text-white transition cursor-pointer ml-1"
+          title="आवाज़ बंद करें"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </aside>
   );
 }
