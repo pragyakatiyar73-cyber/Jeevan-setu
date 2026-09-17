@@ -303,6 +303,12 @@ export default function CitizenVideoWalkthroughModal({
   const [isMuted, setIsMuted] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
 
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
+
+  const currentSceneIndexRef = useRef(currentSceneIndex);
+  currentSceneIndexRef.current = currentSceneIndex;
+
   const timerRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -328,7 +334,7 @@ export default function CitizenVideoWalkthroughModal({
     }
   }, [currentTime]);
 
-  // Speech Narration Handler with Non-Stop Heartbeat & Chrome GC Fix
+  // Speech Narration Handler with Zero-Gap Auto Next Scene Transition
   const speakSceneNarration = (scene: Scene) => {
     if (!synthRef.current || isMuted) return;
     try {
@@ -346,11 +352,23 @@ export default function CitizenVideoWalkthroughModal({
         utterance.voice = hindiVoice;
       }
       utterance.lang = 'hi-IN';
-      utterance.rate = 0.92;
+      utterance.rate = 1.0;
       utterance.pitch = 1.0;
 
       utterance.onend = () => {
         (window as any)._activeCitizenUtterance = null;
+        // Zero-gap auto advance to next scene speech if playing
+        if (isPlayingRef.current) {
+          const nextIdx = currentSceneIndexRef.current + 1;
+          if (nextIdx < VIDEO_SCENES.length) {
+            const nextScene = VIDEO_SCENES[nextIdx];
+            setCurrentTime(nextScene.timestampStart);
+            setCurrentSceneIndex(nextIdx);
+            speakSceneNarration(nextScene);
+          } else {
+            setIsPlaying(false);
+          }
+        }
       };
       utterance.onerror = () => {
         (window as any)._activeCitizenUtterance = null;
