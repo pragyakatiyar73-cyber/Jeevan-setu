@@ -19,7 +19,9 @@ import {
   ChevronLeft,
   CheckCircle2,
   Share2,
-  PhoneCall
+  PhoneCall,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { useTranslation } from '../i18n';
 
@@ -302,6 +304,7 @@ export default function CitizenVideoWalkthroughModal({
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
+  const [isFullModalOpen, setIsFullModalOpen] = useState(false); // Controls compact vs full screen mode
 
   const isPlayingRef = useRef(isPlaying);
   isPlayingRef.current = isPlaying;
@@ -320,6 +323,17 @@ export default function CitizenVideoWalkthroughModal({
       setSpeechSupported(false);
     }
   }, []);
+
+  // Auto-start audio narration when Nagrik Mitra is opened
+  useEffect(() => {
+    if (isOpen) {
+      setIsPlaying(true);
+    } else {
+      setIsPlaying(false);
+      setIsFullModalOpen(false);
+      if (synthRef.current) synthRef.current.cancel();
+    }
+  }, [isOpen]);
 
   // Update scene index based on currentTime
   useEffect(() => {
@@ -456,6 +470,87 @@ export default function CitizenVideoWalkthroughModal({
     ? (currentScene.screenHighlightsHi || currentScene.screenHighlights)
     : (currentScene.screenHighlightsHi || currentScene.screenHighlights);
 
+  // =========================================================================
+  // MODE 1: COMPACT FLOATING AUDIO BAR (Default on click - does NOT block app)
+  // =========================================================================
+  if (!isFullModalOpen) {
+    return (
+      <div className="fixed bottom-5 right-5 z-[9999] bg-[#0c142b]/95 backdrop-blur-2xl border-2 border-amber-400/80 p-3 rounded-2xl shadow-2xl shadow-amber-950/80 flex items-center gap-3 animate-in slide-in-from-bottom-5 duration-300 max-w-md w-full sm:w-auto text-white">
+        {/* Pulsing Voice Equalizer Icon */}
+        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white shadow-md shrink-0 relative">
+          <Volume2 className="w-5 h-5 text-yellow-200 animate-pulse" />
+          <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400 border-2 border-slate-900 animate-ping"></span>
+        </div>
+
+        {/* Audio Status & Current Hindi Instruction */}
+        <div className="flex-1 min-w-0 pr-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">
+              🎙️ {language === 'hi' ? 'नागरिक मित्र (आवाज़)' : 'Nagrik Mitra Voice'}
+            </span>
+            <span className="text-[10px] font-mono text-emerald-400 font-bold">
+              {formatTime(currentTime)} / 10:00
+            </span>
+          </div>
+          <p className="text-xs font-black text-white truncate mt-0.5">
+            {language === 'hi' ? currentScene.titleHi : currentScene.titleHi}
+          </p>
+          <p className="text-[11px] text-slate-300 truncate font-medium">
+            "{language === 'hi' ? currentScene.narrationHi : currentScene.narrationHi}"
+          </p>
+        </div>
+
+        {/* Controls: Play/Pause, Next, Expand Full Screen, Close */}
+        <div className="flex items-center gap-1 shrink-0 border-l border-slate-800 pl-2">
+          {/* Play / Pause */}
+          <button
+            onClick={togglePlay}
+            className="p-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition cursor-pointer active:scale-95"
+            title={isPlaying ? 'Pause Voice' : 'Play Voice'}
+          >
+            {isPlaying ? <Pause className="w-4 h-4 fill-slate-950" /> : <Play className="w-4 h-4 fill-slate-950" />}
+          </button>
+
+          {/* Next Scene */}
+          <button
+            disabled={currentSceneIndex === VIDEO_SCENES.length - 1}
+            onClick={() => handleSeek(VIDEO_SCENES[Math.min(VIDEO_SCENES.length - 1, currentSceneIndex + 1)].timestampStart)}
+            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 transition cursor-pointer"
+            title="Next Step"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+
+          {/* Expand to Full Screen Presentation Modal */}
+          <button
+            onClick={() => setIsFullModalOpen(true)}
+            className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold transition cursor-pointer active:scale-95 flex items-center gap-1.5 text-xs shadow-md"
+            title="Pura Dekhein / Open Full Screen Presentation"
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[11px] font-black">{language === 'hi' ? 'पूरा देखें ⛶' : 'Full Screen ⛶'}</span>
+          </button>
+
+          {/* Close Floating Audio Bar */}
+          <button
+            onClick={() => {
+              setIsPlaying(false);
+              if (synthRef.current) synthRef.current.cancel();
+              onClose();
+            }}
+            className="p-2 rounded-xl bg-slate-800/80 hover:bg-rose-500 text-slate-300 hover:text-white transition cursor-pointer"
+            title="Close Audio"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // MODE 2: FULL SCREEN PRESENTATION MODAL (Only when user clicks "पूरा देखें ⛶")
+  // =========================================================================
   return (
     <div className="fixed inset-0 z-[10000] bg-slate-950/85 backdrop-blur-md flex flex-col justify-center items-center p-2 sm:p-4 animate-in fade-in duration-200">
       <div className="bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 w-full max-w-4xl rounded-2xl flex flex-col overflow-hidden shadow-2xl max-h-[92vh]">
@@ -478,16 +573,28 @@ export default function CitizenVideoWalkthroughModal({
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              setIsPlaying(false);
-              if (synthRef.current) synthRef.current.cancel();
-              onClose();
-            }}
-            className="h-8 w-8 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center hover:bg-rose-500 hover:text-white transition cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Minimize Button back to Floating Audio Bar */}
+            <button
+              onClick={() => setIsFullModalOpen(false)}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-sky-500 hover:text-white transition cursor-pointer text-xs font-bold flex items-center gap-1"
+              title="Minimize to Floating Audio Bar"
+            >
+              <Minimize2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{language === 'hi' ? 'मिनी बार 🗗' : 'Minimize 🗗'}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setIsPlaying(false);
+                if (synthRef.current) synthRef.current.cancel();
+                onClose();
+              }}
+              className="h-8 w-8 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center hover:bg-rose-500 hover:text-white transition cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Video Player Display Container */}
