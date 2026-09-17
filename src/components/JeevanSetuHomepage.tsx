@@ -1268,7 +1268,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   const [aiMessages, setAiMessages] = useState<Array<{ role: 'user' | 'assistant'; text: string; actionText?: string; actionModule?: string }>>([
     {
       role: 'assistant',
-      text: 'Hello! I am your Jeevan Setu AI Agent. Trained with comprehensive disaster intelligence across all 8 North Eastern states (Assam, Arunachal, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura). Ask me about live road accessibility (NH-10, NH-29, NH-27), weather & temperature, flood/landslide risk, relief camps, or Emergency SOS!'
+      text: 'Hello! I am Jeeva, your Jeevan Setu AI Agent. Trained with comprehensive disaster intelligence across all 8 North Eastern states (Assam, Arunachal, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura). Ask me about live road accessibility (NH-10, NH-29, NH-27), weather & temperature, flood/landslide risk, relief camps, or Emergency SOS!'
     }
   ]);
   const [isAiThinking, setIsAiThinking] = useState(false);
@@ -1280,8 +1280,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {
         role: 'assistant',
         text: language === 'hi'
-          ? 'नमस्ते! मैं जीवन सेतु आधिकारिक एआई एजेंट (Jeevan Setu AI Agent) हूँ 🤖।\n\nपूर्वोत्तर के सभी 8 राज्यों के लिए प्रशिक्षित: सुरक्षित राजमार्ग मार्ग (NH-10, NH-29, NH-27), मौसम व तापमान, भूस्खलन/बाढ़ स्थिति, राहत शिविर, अस्पताल या 24x7 इमरजेंसी एसओएस (SOS) के बारे में पूछें। आप माइक 🎙️ दबाकर बोल भी सकते हैं!'
-          : 'Hello! I am your Jeevan Setu AI Agent 🤖.\n\nTrained with comprehensive disaster intelligence across all 8 North Eastern states (Assam, Arunachal, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura). Ask me about live road accessibility (NH-10, NH-29, NH-27), weather & temperature, flood/landslide risk, relief camps, or Emergency SOS!'
+          ? 'नमस्ते! मैं जीवि (Jeeva) - जीवन सेतु आधिकारिक एआई एजेंट हूँ 🤖।\n\nपूर्वोत्तर के सभी 8 राज्यों के लिए प्रशिक्षित: सुरक्षित राजमार्ग मार्ग (NH-10, NH-29, NH-27), मौसम व तापमान, भूस्खलन/बाढ़ स्थिति, राहत शिविर, अस्पताल या 24x7 इमरजेंसी एसओएस (SOS) के बारे में पूछें। आप माइक 🎙️ दबाकर बोल भी सकते हैं!'
+          : 'Hello! I am Jeeva, your Jeevan Setu AI Agent 🤖.\n\nTrained with comprehensive disaster intelligence across all 8 North Eastern states (Assam, Arunachal, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura). Ask me about live road accessibility (NH-10, NH-29, NH-27), weather & temperature, flood/landslide risk, relief camps, or Emergency SOS!'
       }
     ]);
   }, [language]);
@@ -2223,10 +2223,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 if (onOpenAiChatbot) onOpenAiChatbot();
               }}
               className="bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-sky-500/20 hover:shadow-sky-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-sky-400/40 whitespace-nowrap shrink-0 group"
-              title="AI Agent and Voice Search"
+              title="Jeeva AI Agent and Voice Search"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-300 group-hover:rotate-12 transition transform" />
-              <span>AI Agent</span>
+              <span>Jeeva</span>
               <span className="flex items-center gap-0.5 bg-white/20 px-1.5 py-0.5 rounded-full text-[10px]">
                 <Mic className="h-2.5 w-2.5 text-white animate-pulse" />
                 <span className="hidden sm:inline">Voice</span>
@@ -2373,7 +2373,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {[
                 { name: t('nav.homeNav', 'Home'), action: () => { setActiveTab('Home'); setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
                 {
-                  name: language === 'hi' ? 'एआई एजेंट (आवाज खोज 🎙️)' : 'AI Agent (Voice Search 🎙️)',
+                  name: language === 'hi' ? 'जीवि एआई (Jeeva AI 🎙️)' : 'Jeeva AI (Voice Search 🎙️)',
                   action: () => {
                     setActiveTab('AIChat');
                     setIsMobileMenuOpen(false);
@@ -4103,7 +4103,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm sm:text-base font-black text-white">
-                      {language === 'hi' ? 'जीवन सेतु एआई एजेंट' : 'Jeevan Setu AI Agent'}
+                      {language === 'hi' ? 'जीवन सेतु - जीवि एआई (Jeeva AI)' : 'Jeevan Setu - Jeeva AI'}
                     </h3>
                     <span className="bg-sky-500/20 text-sky-300 border border-sky-400/40 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
@@ -4199,8 +4199,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   <Activity className="h-4 w-4 animate-spin" />
                   <span>
                     {language === 'hi'
-                      ? 'जीवन सेतु एआई आपदा डेटा और रूट्स का विश्लेषण कर रहा है...'
-                      : 'AI Agent is analyzing telemetry, routes & weather data...'}
+                      ? 'जीवि एआई (Jeeva) डेटा और सुरक्षित मार्ग खोज रहा है...'
+                      : 'Jeeva AI is analyzing telemetry, routes & weather data...'}
                   </span>
                 </div>
               )}
@@ -4280,7 +4280,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 placeholder={
                   isListening
                     ? (language === 'hi' ? 'आपकी आवाज सुनी जा रही है...' : 'Listening to your voice...')
-                    : (language === 'hi' ? 'एआई एजेंट से पूछें (मार्ग, मौसम, तापमान, एसओएस)...' : 'Ask AI Agent (Routes, Weather, Temp, Camps, SOS)...')
+                    : (language === 'hi' ? 'जीवि एआई (Jeeva) से पूछें (मार्ग, मौसम, तापमान, एसओएस)...' : 'Ask Jeeva AI (Routes, Weather, Temp, Camps, SOS)...')
                 }
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}

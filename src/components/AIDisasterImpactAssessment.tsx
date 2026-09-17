@@ -131,10 +131,13 @@ export default function AIDisasterImpactAssessment({
   const handleFileUpload = async (file: File) => {
     setUploadError(null);
 
-    // Validation: Type Check
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
-    if (!validTypes.includes(file.type)) {
-      setUploadError('Invalid file format. Please upload JPG, PNG, or WebP disaster imagery.');
+    // Validation: Type & Extension Check
+    const validMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/gif', 'image/bmp', 'image/heic', 'image/tiff', 'image/svg+xml'];
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    const validExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'heic', 'tiff', 'tif', 'jfif', 'svg'];
+    
+    if (!validMimes.includes(file.type) && !validExts.includes(ext)) {
+      setUploadError('Invalid file format. Please upload JPG, PNG, WEBP, or standard image formats.');
       return;
     }
 

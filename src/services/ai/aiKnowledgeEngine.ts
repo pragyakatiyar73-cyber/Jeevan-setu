@@ -1712,7 +1712,7 @@ Guidelines for citizen volunteers and civil society organizations providing disa
   1. ऊपर नेविगेशन बार में 'Language' (🌐 ग्लोब आइकॉन) बटन पर क्लिक करें।
   2. ड्रॉपडाउन सूची से अपनी पसंदीदा भाषा चुनें। पूरी वेबसाइट तुरंत उस भाषा में परिवर्तित हो जाएगी।
 • 🎙️ बोलकर कैसे पूछें (Voice Search):
-  - सर्च बार या AI Agent विंडो में 🎙️ माइक बटन दबाएँ।
+  - सर्च बार या Jeeva AI (जीवि) विंडो में 🎙️ माइक बटन दबाएँ।
   - अपनी भाषा में बोलें (जैसे "गुवाहाटी का मौसम क्या है?" या "NH-10 की स्थिति")।
   - एआई आपकी बात सुनकर लिखित व वॉयस दोनों में उत्तर देगा!`,
         riskLevel: 'INFO',
@@ -1739,7 +1739,7 @@ Jeevan Setu supports native multilingual communication across all 8 North Easter
   1. Click the Language pill with the Globe (🌐) icon in the sticky top navbar.
   2. Select your desired language from the comprehensive dropdown menu. The UI and alerts update instantly.
 • 🎙️ How to Use Voice Search (Voice Assistant):
-  - Click the 🎙️ microphone icon in the search bar or AI Agent modal.
+  - Click the 🎙️ microphone icon in the search bar or Jeeva AI modal.
   - Speak your query naturally in Hindi, English, or regional phonetics.
   - The AI synthesizes the answer and speaks it aloud using natural browser speech synthesis!`,
       riskLevel: 'INFO',

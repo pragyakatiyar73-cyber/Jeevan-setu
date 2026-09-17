@@ -1249,17 +1249,17 @@ export default function App() {
               </span>
             </button>
 
-            {/* 🤖 Executive AI Agent Button with Extra Detail Feature */}
+            {/* 🤖 Executive Jeeva AI Agent Button with Extra Detail Feature */}
             <button
               onClick={() => setIsAiAgentOpen(prev => !prev)}
               className="rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-indigo-600/25 flex items-center gap-1.5 sm:gap-2 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border border-sky-400/30 group"
-              title="Open Jeevan Setu AI Agent with Deep Telemetry & Voice Search"
+              title="Open Jeeva AI Agent with Deep Telemetry & Voice Search"
             >
               <div className="relative flex items-center justify-center">
                 <Sparkles className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-amber-300 animate-pulse shrink-0" />
                 <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping"></span>
               </div>
-              <span className="whitespace-nowrap font-bold tracking-tight">AI Agent</span>
+              <span className="whitespace-nowrap font-bold tracking-tight">Jeeva</span>
               <span className="hidden md:inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider bg-white/20 px-1.5 py-0.5 rounded-md border border-white/20 text-sky-100">
                 <Mic className="h-2.5 w-2.5 text-sky-200 animate-pulse" />
                 <span>VOICE &bull; TELEMETRY</span>

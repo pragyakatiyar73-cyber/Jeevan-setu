@@ -151,8 +151,8 @@ export default function AIChatbotWidget({
         id: 'msg-welcome',
         sender: 'ai',
         text: isHi
-          ? 'नमस्ते! मैं आपका जीवन सेतु एआई सहायक (Jeevan Setu AI Assistant) हूँ 🤖।\n\nपूर्वोत्तर के 8 राज्यों (असम, अरुणाचल, मणिपुर, मेघालय, मिजोरम, नागालैंड, सिक्किम, त्रिपुरा) के लिए प्रशिक्षित। सुरक्षित रास्ते (Routes), मौसम व तापमान, आपदा स्थिति (Landslides, Floods), राहत शिविर या इमरजेंसी एसओएस (Emergency SOS) के बारे में कुछ भी पूछें। आप माइक 🎙️ से बोल भी सकते हैं!'
-          : 'Namaste! I am your Jeevan Setu AI Agent 🤖.\n\nAsk me anything about the Jeevan Setu platform: live disaster status, safe routes & highway detours, weather & temperature, emergency SOS, relief camps, hospital beds, or safety guides across the 8 North Eastern States. You can type, speak using the 🎙️ microphone, or inspect Deep Telemetry!',
+          ? 'नमस्ते! मैं आपका जीवन सेतु एआई सहायक जीवि (Jeeva) हूँ 🤖।\n\nपूर्वोत्तर के 8 राज्यों (असम, अरुणाचल, मणिपुर, मेघालय, मिजोरम, नागालैंड, सिक्किम, त्रिपुरा) के लिए प्रशिक्षित। सुरक्षित रास्ते (Routes), मौसम व तापमान, आपदा स्थिति (Landslides, Floods), राहत शिविर या इमरजेंसी एसओएस (Emergency SOS) के बारे में कुछ भी पूछें। आप माइक 🎙️ से बोल भी सकते हैं!'
+          : 'Namaste! I am Jeeva, your Jeevan Setu AI Agent 🤖.\n\nAsk me anything about the Jeevan Setu platform: live disaster status, safe routes & highway detours, weather & temperature, emergency SOS, relief camps, hospital beds, or safety guides across the 8 North Eastern States. You can type, speak using the 🎙️ microphone, or inspect Deep Telemetry!',
         timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
         analysis: {
           riskLevel: 'INFO',
@@ -348,7 +348,7 @@ export default function AIChatbotWidget({
           </div>
           <div className="hidden sm:flex flex-col items-start pr-1">
             <span className="text-xs font-black tracking-wide flex items-center gap-1">
-              AI Assistant <Sparkles className="h-3 w-3 text-amber-300" />
+              Jeeva <Sparkles className="h-3 w-3 text-amber-300" />
             </span>
             <span className="text-[10px] text-sky-100 font-semibold">Type or Speak 🎙️</span>
           </div>
@@ -364,8 +364,8 @@ export default function AIChatbotWidget({
             onClick={() => setIsOpen(false)}
           />
 
-          {/* Chatbot Window (Positioned Top Right / Below Header) */}
-          <div className="fixed top-16 right-4 sm:top-20 sm:right-6 z-[99999] w-[95vw] sm:w-[420px] max-h-[80vh] h-[580px] bg-slate-950/95 border border-slate-700/80 rounded-3xl shadow-2xl backdrop-blur-xl flex flex-col overflow-hidden text-slate-100 animate-in fade-in slide-in-from-top-4 duration-300">
+          {/* MAIN CHATBOT DRAWER CONTAINER */}
+          <div className="fixed bottom-0 sm:bottom-6 right-0 sm:right-6 w-full sm:w-[460px] h-[92vh] sm:h-[680px] max-h-[92vh] bg-slate-950 border border-slate-800 sm:rounded-3xl shadow-2xl z-[99999] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           
           {/* TOP CHATBOT HEADER */}
           <div className="bg-slate-900/95 px-4 py-3 border-b border-slate-800 flex items-center justify-between shrink-0">
@@ -376,7 +376,7 @@ export default function AIChatbotWidget({
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-black text-white tracking-tight flex items-center gap-1.5">
-                    Jeevan Setu AI Agent
+                    Jeeva AI Agent
                   </h3>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-extrabold flex items-center gap-1">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />

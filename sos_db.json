@@ -1,5 +1,22 @@
 [
   {
+    "sosId": "SOS-2026-3883",
+    "distressType": "⛰️ Landslide / Mudflow",
+    "lat": 27.26,
+    "lon": 92.42,
+    "landmark": "Bomdila Sector",
+    "personsTrapped": "1 to 4 Persons",
+    "triageLevel": "🔴 Level 1: Immediate Rescue",
+    "status": "ACTIVE_DISPATCH",
+    "timestamp": "2026-09-17T01:04:20.736Z",
+    "respondersNotified": [
+      "NDRF 12th Bn",
+      "SDRF Arunachal",
+      "MDoNER Triage Center",
+      "IAF Helicopter Unit Tezpur"
+    ]
+  },
+  {
     "sosId": "SOS-2026-7362",
     "distressType": "🌊 Flash Flood",
     "lat": 27.26,
