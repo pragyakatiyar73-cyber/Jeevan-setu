@@ -23,13 +23,17 @@ import {
   Maximize2,
   Minimize2,
   Rewind,
-  FastForward
+  FastForward,
+  Youtube,
+  ExternalLink,
+  Tv
 } from 'lucide-react';
 import { useTranslation } from '../i18n';
 
 interface CitizenVideoWalkthroughModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpen?: () => void;
   onNavigateModule?: (module: string) => void;
   onTriggerSOS?: () => void;
 }
@@ -297,6 +301,7 @@ export const VIDEO_SCENES: Scene[] = [
 export default function CitizenVideoWalkthroughModal({
   isOpen,
   onClose,
+  onOpen,
   onNavigateModule,
   onTriggerSOS
 }: CitizenVideoWalkthroughModalProps) {
@@ -470,38 +475,142 @@ export default function CitizenVideoWalkthroughModal({
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  if (!isOpen) return null;
-
   return (
-    <aside
-      aria-label="नागरिक मित्र वॉइस गाइड बटन"
-      className="fixed bottom-[90px] right-7 z-[100001] flex items-center justify-center select-none animate-in slide-in-from-bottom-3 duration-300"
-    >
-      <button
-        type="button"
-        onClick={togglePlay}
-        className={`relative h-11 w-11 rounded-full shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-300 active:scale-90 border-2 ${
-          isPlaying
-            ? 'bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 border-white text-slate-950 ring-4 ring-amber-400/40 scale-105'
-            : 'bg-[#070d1f]/95 hover:bg-slate-900 border-amber-400/90 text-amber-300 shadow-amber-950/80 hover:scale-105'
-        }`}
-        title={isPlaying ? 'नागरिक मित्र (आवाज़ रोकें)' : 'नागरिक मित्र (आवाज़ शुरू करें)'}
+    <>
+      {/* 🔴 Floating YouTube Video Guide Button on Right Side (Above Jeeva AI Button) */}
+      <aside
+        aria-label="नागरिक मित्र 10-मिनट वीडियो गाइड (YouTube)"
+        className="fixed bottom-[90px] right-7 z-[99999] flex items-center justify-center select-none animate-in slide-in-from-bottom-3 duration-300"
       >
-        {isPlaying ? (
-          <>
-            <Pause className="w-5 h-5 fill-slate-950 text-slate-950" />
-            <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-400 border-2 border-slate-950 animate-ping" />
-            <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-slate-950" />
-          </>
-        ) : (
-          <>
-            <Volume2 className="w-5 h-5 text-amber-300" />
-            <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-amber-500 text-slate-950 font-black text-[9px] flex items-center justify-center border border-slate-900">
-              ▶
-            </span>
-          </>
-        )}
-      </button>
-    </aside>
+        <button
+          type="button"
+          onClick={() => {
+            if (isOpen) {
+              onClose();
+            } else if (onOpen) {
+              onOpen();
+            }
+          }}
+          className={`relative h-11 w-11 rounded-2xl shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-300 active:scale-90 border-2 ${
+            isOpen
+              ? 'bg-gradient-to-tr from-red-600 via-rose-600 to-amber-500 border-white text-white ring-4 ring-red-500/40 scale-105'
+              : 'bg-[#070d1f]/95 hover:bg-slate-900 border-amber-400/90 text-amber-300 shadow-amber-950/80 hover:scale-105'
+          }`}
+          title={isOpen ? 'वीडियो गाइड बंद करें' : 'नागरिक मित्र 10-मिनट वीडियो गाइड देखें (YouTube)'}
+        >
+          {isOpen ? (
+            <X className="w-5 h-5 text-white" />
+          ) : (
+            <>
+              <Youtube className="w-5 h-5 text-red-500 fill-red-500/20" />
+              <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 border-2 border-slate-950 animate-ping" />
+              <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-600 border-2 border-slate-950" />
+            </>
+          )}
+        </button>
+      </aside>
+
+      {/* 🎥 Embedded YouTube Video Modal Dialog */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[100000] flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+          <div className="relative w-full max-w-4xl bg-slate-950 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto border-amber-500/30">
+            {/* Modal Header */}
+            <div className="px-5 py-4 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-red-600 via-amber-500 to-orange-500 flex items-center justify-center text-white shadow-lg shrink-0">
+                  <Youtube className="w-6 h-6 fill-white text-white" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                    {language === 'hi' ? 'जीवन सेतु - 10-मिनट वीडियो गाइड' : 'Jeevan Setu - 10-Min Official Video Guide'}
+                    <span className="text-[10px] font-black uppercase bg-red-500/20 text-red-400 border border-red-500/40 px-2 py-0.5 rounded-full">
+                      OFFICIAL YOUTUBE
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400 font-medium">
+                    Ministry of Development of North Eastern Region (MoDoNER) & NEC
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://youtu.be/skLTZjde6Z4?si=6_XX7IuhH9GP8ViE"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-sky-400 hover:text-sky-300 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 hover:border-sky-500/40 transition"
+                  title="YouTube पर खोलें"
+                >
+                  <span>Open YouTube</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                  title="बंद करें"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Embedded Responsive YouTube Player */}
+            <div className="p-4 sm:p-6 bg-slate-950 space-y-4">
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-slate-800 bg-black shadow-2xl">
+                <iframe
+                  src="https://www.youtube.com/embed/skLTZjde6Z4?autoplay=1&rel=0"
+                  title="Jeevan Setu Official Video Guide"
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+
+              {/* Bottom Scene Timeline Jump Chips */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
+                  {language === 'hi' ? '⏱️ वीडियो अध्याय (Chapters):' : '⏱️ Video Chapters:'}
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {VIDEO_SCENES.map((scene, idx) => (
+                    <button
+                      key={scene.id}
+                      onClick={() => handleSeek(scene.timestampStart)}
+                      className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                        currentSceneIndex === idx
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-400/60'
+                          : 'bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800 hover:text-white'
+                      }`}
+                    >
+                      <span>{scene.badgeHi || scene.badge}</span>
+                      <span className="text-[10px] text-slate-400">({formatTime(scene.timestampStart)})</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Footer */}
+              <div className="flex items-center justify-between pt-2 border-t border-slate-900">
+                <p className="text-xs text-slate-400">
+                  {language === 'hi'
+                    ? 'उत्तर-पूर्वी भारत के 8 राज्यों (Assam, Sikkim, Meghalaya, etc.) हेतु 3D डिजिटल ट्विन व AI Rerouting गाइड।'
+                    : 'Interactive 3D Digital Twin, Disaster Rerouting & SOS guide for 8 NER states.'}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 font-black transition cursor-pointer active:scale-95 shadow-lg shrink-0 ml-auto"
+                >
+                  {language === 'hi' ? 'प्लेटफॉर्म उपयोग करें ➔' : 'Launch Platform ➔'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
