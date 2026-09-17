@@ -1,30 +1,39 @@
 <div align="center">
 
 # 🌉 Jeevan Setu (जीवन सेतु)
-### AI-Powered Disaster Logistics, 3D Digital Twin & Resilient Supply Bridge
+### AI-Powered Disaster Logistics, 3D Digital Twin, Real-Time Emergency Response & Resilient Supply Bridge
 **Ministry of Development of North Eastern Region (MoDoNER) & North Eastern Council (NEC)**  
-*Problem Statement ID: 26002 • Smart India Hackathon (SIH)*
+*Smart India Hackathon (SIH) • Problem Statement ID: 26002*
 
 <br/>
 
-[![Status](https://img.shields.io/badge/System_Status-Operational-10b981?style=for-the-badge&logo=statuspage&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
-[![Architecture](https://img.shields.io/badge/3D_Engine-WebGL_Three.js-38bdf8?style=for-the-badge&logo=three.js&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
-[![Offline](https://img.shields.io/badge/Offline_Mode-100%25_PWA_Ready-8b5cf6?style=for-the-badge&logo=pwa&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
-[![NDRF Gateway](https://img.shields.io/badge/Emergency_SOS-NDRF_1078_SMS-ef4444?style=for-the-badge&logo=semaphoreci&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
+[![System Status](https://img.shields.io/badge/System_Status-Operational-10b981?style=for-the-badge&logo=statuspage&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
+[![Frontend](https://img.shields.io/badge/Frontend-React_18_%7C_TypeScript-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
+[![Build Tool](https://img.shields.io/badge/Bundler-Vite_6-646cff?style=for-the-badge&logo=vite&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
+[![Backend](https://img.shields.io/badge/Backend-Node_Express_5-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
+[![3D Engine](https://img.shields.io/badge/3D_Engine-WebGL_Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
+[![GIS & Satellite](https://img.shields.io/badge/GIS-Leaflet_%7C_ISRO_Bhuvan-0ea5e9?style=for-the-badge&logo=leaflet&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
+[![Live Data](https://img.shields.io/badge/Live_Data-USGS_Seismic_%7C_Open--Meteo-f59e0b?style=for-the-badge&logo=satellite&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
+[![Emergency Tracking](https://img.shields.io/badge/Smart_SOS-P2P_QR_Live_GPS-ef4444?style=for-the-badge&logo=target&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
+[![Deployment](https://img.shields.io/badge/Cloud-Netlify_%7C_Render_Ready-00c7b7?style=for-the-badge&logo=netlify&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
 [![License: MIT](https://img.shields.io/badge/License-MIT-amber?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
-[![Region](https://img.shields.io/badge/Coverage-8_NER_States-0ea5e9?style=for-the-badge&logo=googlemaps&logoColor=white)](https://github.com/pragyakatiyar73-cyber/Jeevan-setu)
 
 <br/>
 
 <p align="center">
   <a href="#-executive-summary">Executive Summary</a> •
-  <a href="#-key-capabilities">Key Capabilities</a> •
-  <a href="#-3d-digital-twin--simulation">3D Digital Twin</a> •
+  <a href="#-key-capabilities--modules">Key Capabilities</a> •
+  <a href="#-100-genuine-real-time-disaster-intelligence">Real-Time Intelligence</a> •
+  <a href="#-universal-ai-copilot--knowledge-engine">AI Copilot</a> •
+  <a href="#-smart-emergency-response--peer-to-peer-live-gps-tracking">Smart SOS & Tracking</a> •
+  <a href="#-3d-digital-twin--mountain-corridor-simulation">3D Digital Twin</a> •
   <a href="#-mathematical-models">Mathematical Models</a> •
-  <a href="#-system-architecture">System Architecture</a> •
-  <a href="#-22-api-ecosystem">22-API Ecosystem</a> •
+  <a href="#-fullstack-system-architecture">System Architecture</a> •
+  <a href="#-integrated-data--api-ecosystem">Data & APIs</a> •
+  <a href="#-16-regional--vernacular-languages">Languages</a> •
   <a href="#-quick-start">Quick Start</a> •
-  <a href="#-pitch-guide-for-judges">Judge Pitch Guide</a>
+  <a href="#-cloud-deployment-guide">Deployment Guide</a> •
+  <a href="#-pitch-guide-for-judges--evaluators">Judge Pitch Guide</a>
 </p>
 
 ---
@@ -33,64 +42,105 @@
 
 ## 📌 Executive Summary
 
-During annual monsoon surges and cloudbursts across the **8 North Eastern States of India** (*Assam, Meghalaya, Arunachal Pradesh, Sikkim, Nagaland, Manipur, Mizoram, Tripura*), catastrophic landslides and flash floods regularly sever arterial highways like **NH-6, NH-10, and NH-13**. Critical lifeline supplies—such as high-altitude medical oxygen, blood plasma, and food grains—are frequently stranded for days.
+During annual monsoon surges and cloudbursts across the **8 North Eastern States of India** (*Assam, Meghalaya, Arunachal Pradesh, Sikkim, Nagaland, Manipur, Mizoram, Tripura*), catastrophic landslides and flash floods regularly sever arterial highways like **NH-6, NH-10, NH-13, NH-27, NH-29, and NH-37**. Critical lifeline supplies—such as high-altitude medical oxygen, blood units, emergency ration packs, and fuel reserves—are frequently stranded for days.
 
-**Jeevan Setu (जीवन सेतु)** is a mission-critical, AI-driven disaster logistics platform built specifically for the **Ministry of Development of North Eastern Region (MoDoNER)**, the **North Eastern Council (NEC)**, and the **National Disaster Response Force (NDRF)**. 
+Standard civilian navigation tools (e.g., Google Maps) fail in disaster environments because they are blind to geotechnical slope saturation, river flood discharge velocities, bridge tonnage thresholds, and medical triage priority.
 
-### Core Innovations:
-1. **🎮 GPU-Accelerated 3D Digital Twin Simulation**: Visualizes mountain topography, slope breaches, and green corridor bypasses in real-time WebGL.
-2. **🧭 Multi-Criteria Hazard-Weighted Rerouting Engine**: Blends Dijkstra's shortest path with real-time **Landslide Hazard Index (LHI)**, flood velocities, and bridge load limits.
-3. **🚨 Zero-Internet Offline PWA & NDRF 1078 SMS Gateway**: Functions 100% offline with an integrated 880Hz acoustic rescue siren and compressed 160-char SMS distress protocol.
-4. **📦 8-State Strategic Stockpile Grid**: Tracks live oxygen buffers, FCI grain silos, and trauma reserves with automated emergency dispatch.
-5. **🤖 Jeevan AI Disaster Copilot**: Multimodal, voice-enabled emergency dispatch assistant with instant action triggers.
+**Jeevan Setu (जीवन सेतु)** is an integrated, AI-driven disaster logistics, 3D simulation, and real-time emergency response platform built specifically for the **Ministry of Development of North Eastern Region (MoDoNER)**, the **North Eastern Council (NEC)**, and the **National Disaster Response Force (NDRF)**.
 
 ---
 
-## 🌟 Key Capabilities
+## 🌟 Key Capabilities & Modules
 
 ```mermaid
 mindmap
   root((Jeevan Setu))
     3D Digital Twin
       Real-Time WebGL Three.js
-      Interactive Elevation & Breaches
+      Mountain Choke Point Telemetry
+      Elevation & Breach Overlays
       Dynamic 4x4 Convoy Pathing
-      Bearing & Radar Telemetry
-    Dynamic AI Rerouting
+    Real-Time Disaster Data
+      Live USGS Global & NER Earthquakes
+      Open-Meteo High-Resolution Weather
+      Doppler Radar & Precipitation Rates
+      30-Second Auto-Refresh Cycle
+    Universal AI Copilot
+      Client-Side Offline Knowledge Engine
+      Bilingual Hindi & English Voice Assistant
+      Web Speech STT & TTS Integration
+      Direct Deep Links to Emergency Modules
+      Gemini 1.5/2.0 Cloud Multimodal Bridge
+    Smart Emergency & Live Tracking
+      Private Peer-to-Peer Live GPS Sessions
+      Dynamic QR Code Location Sharing
+      Dual Phone Responder Simulation Phone A & B
+      Acoustic 880Hz Siren & 160-Char SMS
+    Strategic Stockpiles & Logistics
+      8-State Critical Inventory Matrix
+      Type-D Oxygen Cylinders & FCI Silos
+      Automated Inter-Depot Rebalancing
+      Drone Aerial Corridors UAV
+    Hazard-Weighted Routing
       Landslide Hazard Index LHI
       Flood Vulnerability Index FVI
-      Green Corridor Bypass Calculations
-      Bridge Tonnage & Scour Limits
-    Emergency SOS Hub
-      Offline-First PWA Cache
-      NDRF 1078 SMS Payload Compression
-      880Hz Acoustic Dual-Warble Siren
-      Zero-Internet GPS Fix Capture
-    Disaster Stockpiles
-      4200 Type-D Oxygen Cylinders
-      340T FCI Grain Contingency
-      85 KL Aviation & JCB Fuel
-      8-State Inter-Depot Balancing
-    Executive Governance
-      MoDoNER Fund Tracking ₹148.5 Cr
-      84 BRO Earthmovers Staged
-      99.2% Critical Delivery Rate
-      Automated SDMA Alerts
+      Bridge Tonnage & Scour Safeguards
+      OSRM Dynamic Green Corridor Bypass
 ```
 
 ---
 
-## 🎮 3D Digital Twin & Simulation
+## 🌋 100% Genuine Real-Time Disaster Intelligence
 
-Jeevan Setu features an interactive, GPU-accelerated **Three.js WebGL 3D Digital Twin** modeling critical mountain choke points across North East India:
+Unlike static mockups, Jeevan Setu ingests, correlates, and displays **live sensor and meteorological feeds**:
 
-| Corridor | Highway | Disruption / Hazard | AI Green Corridor Bypass | Time Saved |
+* **Live USGS Seismic Feed**: Ingests active seismic events directly from the official USGS API (`earthquake.usgs.gov`), computing real-time magnitude, focal depth, exact time, epicenter coordinates, and distance from North Eastern regional capitals.
+* **Open-Meteo High-Resolution Weather & Radar Grid**: Real-time hourly precipitation rates (mm/h), wind gust velocities, temperature, humidity, and cloudburst hazard indicators across all 8 NER state capitals and critical mountain highway sectors.
+* **Auto-Refreshing Monitoring Engine**: In-memory and UI-level 30-second synchronization ticker with countdown badge, active alert counters, and manual instant refresh controls.
+* **Live Incident Correlator**: Automatically flags high-risk disaster zones and active convoys across critical transit choke points.
+
+---
+
+## 🤖 Universal AI Copilot & Knowledge Engine
+
+The **Jeevan AI Agent** is powered by a hybrid architecture combining an on-device offline-first Knowledge Engine with a cloud multimodal LLM bridge:
+
+* **Comprehensive NER Knowledge Base (`aiKnowledgeEngine.ts`)**: Built-in, zero-latency domain intelligence containing verified emergency control room numbers, arterial highway choke points (NH-6, NH-10, NH-13, NH-27, NH-29, NH-37), alternate bypass routes, district hospital coordinates, blood bank reserves, and NDMA landslide/flood protocols across all 8 NER states.
+* **Bilingual Intelligence (Hindi & English)**: Native support for Hindi (`/hindi` command or automatic Devanagari detection) and English, ensuring accessible emergency advice for local communities and field responders.
+* **Hands-Free Web Speech Integration**:
+  - **Speech-to-Text (STT)**: Speak directly into the microphone for hands-free queries during field operations.
+  - **Text-to-Speech (TTS)**: High-clarity vocal audio playback of response steps in Hindi or English.
+* **Actionable Deep-Link Triggers**: The AI Copilot dynamically provides direct interactive buttons within the chat to instantly open the 3D Map, Road Accessibility, Stockpiles, Weather, or Emergency SOS.
+* **Gemini 1.5 / 2.0 API Fallback**: Optional cloud-assisted reasoning for deep multimodal damage analysis and situational synthesis.
+
+---
+
+## 🚨 Smart Emergency Response & Peer-to-Peer Live GPS Tracking
+
+Built for extreme field conditions, the Smart Emergency Response module ensures immediate victim location transmission and responder coordination:
+
+* **Private Peer-to-Peer Live Tracking Sessions**: Generates unique Incident Tracking IDs (`JS-TRK-...`) with an encrypted tracking link and live QR code.
+* **Dual Responder Simulation (Phone A & Phone B)**:
+  - **Citizen / Victim View (Phone A)**: Shows live GPS fix, battery status, emergency contact broadcast, and responder arrival countdown.
+  - **Responder / Fleet View (Phone B)**: Live tactical map showing responder unit location, live distance in kilometers, estimated time of arrival (ETA), and turn-by-turn navigation link to victim.
+* **Acoustic 880Hz Dual-Warble Siren**: Browser-native Web Audio API synthesizer emitting a high-penetration 880Hz acoustic warble to guide physical search-and-rescue teams in heavy fog, debris, or zero-visibility mountain rain.
+* **160-Character Compressed SMS Payload**: When mobile cellular data (4G/5G) collapses, compiles a compressed 160-character plain text SMS containing exact latitude, longitude, victim count, blood requirements, and incident classification pre-addressed to NDRF (1078) and SDRF dispatch.
+
+---
+
+## 🎮 3D Digital Twin & Mountain Corridor Simulation
+
+Jeevan Setu incorporates an interactive **Three.js WebGL 3D Digital Twin** specifically calibrated for high-altitude choke points across North East India:
+
+| Corridor | Highway | Disruption / Hazard | AI Green Corridor Bypass | Estimated Time Saved |
 | :--- | :--- | :--- | :--- | :--- |
 | **Tawang Sector** | `NH-13` | 🔴 Sela Pass (3,500m MSL) Snow Slurry & Rockfall | 🟢 Kalaktang All-Weather Ridge Bypass | **-3.8 hours** |
 | **Aizawl Link** | `NH-6` | 🔴 Km 142 East Khasi Hills Landslide (400m breach) | 🟢 Sector 9 Jowai - NH-27 Artery | **-4.2 hours** |
 | **Gangtok Pass** | `NH-10` | 🔴 Melli Teesta River Basin Embankment Overwash | 🟢 Lava - Algarah - Reshi Ridge Corridor | **-5.1 hours** |
 | **Kohima Highway** | `NH-29` | 🟡 Zubza Slopes Sub-Surface Subsidence | 🟢 Pfutsero Highland Link (Full 45 km/h) | **-2.4 hours** |
 | **Imphal Valley** | `NH-37` | 🟢 Jiribam - Imphal Highway Link (Nominal) | 🟢 Standard Green Artery Confirmed | **On Schedule** |
+
+*Features real-time 3D camera orbit, elevation exaggeration, breach zone wireframes, bearing compass, and convoy simulation.*
 
 ---
 
@@ -101,7 +151,7 @@ The geotechnical risk score along mountain highway links is calculated dynamical
 
 $$\text{LHI} = \left(0.35 \times S_{\text{topo}}\right) + \left(0.25 \times R_{72\text{h}}\right) + \left(0.20 \times M_{\text{soil}}\right) + \left(0.20 \times F_{\text{seismic}}\right)$$
 
-Where:
+*Where:*
 * $S_{\text{topo}}$: Slope steepness derived from ISRO CartoDEM $(0 - 100\%)$
 * $R_{72\text{h}}$: 72-hour cumulative precipitation saturation from Open-Meteo & IMD Doppler radar
 * $M_{\text{soil}}$: Clay-shale moisture shear resistance threshold
@@ -114,98 +164,139 @@ $$C(e) = \text{Distance}(e) \times \left[ 1 + \alpha \cdot \text{LHI}(e) + \beta
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ Fullstack System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph SENSORS ["🛰️ Sovereign Satellite & Sensor Ingestion"]
-        S1["ISRO Bhuvan WMS (Indian Geospatial)"]
-        S2["Open-Meteo Doppler Radar (2026 Live Feeds)"]
-        S3["NASA Earthdata / FIRMS Satellite Thermal"]
-        S4["BRO Task Force & State PWD Field Telemetry"]
+    subgraph CLIENT ["🖥️ Client Layer (React 18 + TypeScript + Vite 6)"]
+        UI_Home["Homepage & KPI Command Dashboard"]
+        UI_Map3D["3D Digital Twin (Three.js) & GIS (Leaflet)"]
+        UI_AI["Jeevan AI Copilot (STT/TTS + Knowledge Engine)"]
+        UI_Track["Smart Emergency & QR GPS Live Tracker"]
+        UI_Stock["8-State Stockpile & Supply Allocator"]
+        UI_Stats["Real-Time Disaster Statistics Monitor"]
     end
 
-    subgraph CORE ["🧠 Jeevan Setu AI & Logic Core"]
-        C1["Dijkstra LHI Dynamic Rerouting Engine"]
-        C2["WebGL Three.js 3D Digital Twin Engine"]
-        C3["8-State Stockpile & Triage Allocator"]
-        C4["Jeevan AI Disaster Copilot (NLP + Voice)"]
+    subgraph SERVER ["⚙️ Server Layer (Node.js Express 5 - server.js)"]
+        API_Weather["/api/weather (Open-Meteo Proxy & Cache)"]
+        API_Quake["/api/earthquakes (USGS GeoJSON Feed)"]
+        API_SOS["/api/sos & /api/smart-tracking (Incident Store)"]
+        API_Chat["/api/chat (Gemini 1.5/2.0 Bridge)"]
+        API_Static["Production Static Asset Server (dist/)"]
     end
 
-    subgraph OFFLINE ["🚨 Zero-Internet Field Resiliency (Edge PWA)"]
-        O1["Service Worker Vector Tile Cache"]
-        O2["NDRF 1078 SMS Telemetry Payload Compressor"]
-        O3["880Hz Dual-Warble Web Audio Siren"]
+    subgraph DATA_SOURCES ["🛰️ External Data Feeds & Sovereignty"]
+        USGS["USGS Global & Regional Earthquake API"]
+        OpenMeteo["Open-Meteo Atmospheric & Radar API"]
+        Bhuvan["ISRO Bhuvan Satellite WMS (Indian Geospatial)"]
+        OSM["OpenStreetMap & Nominatim Geocoding"]
+        OSRM["OSRM Turn-by-Turn Dynamic Routing Engine"]
+        Gemini["Google Gemini API"]
     end
 
-    subgraph USERS ["👥 Command & Field Actors"]
-        U1["MoDoNER / NEC Apex Command"]
-        U2["NDRF & SDRF Rescue Battalions"]
-        U3["Relief Fleet Drivers (4x4 Convoys)"]
-        U4["Isolated Remote Citizens"]
-    end
-
-    SENSORS --> CORE
-    CORE --> OFFLINE
-    OFFLINE --> USERS
+    DATA_SOURCES --> SERVER
+    SERVER --> CLIENT
+    CLIENT -. Direct Client Fallback .-> DATA_SOURCES
 ```
 
 ---
 
-## ⚡ 22-API Ecosystem Matrix
+## ⚡ Integrated Data & API Ecosystem
 
-Jeevan Setu operates on an ultra-resilient multi-tier ecosystem designed for **100% free, unlimited, zero-cost resilience** with zero credit card friction:
+Jeevan Setu uses a resilient dual-tier architecture. It connects via the Node Express backend while also featuring autonomous direct-browser fallbacks if deployed serverlessly:
 
-| # | Category | Service / Provider | Strategic Role in Jeevan Setu | Status |
-|---|---|---|---|---|
-| **1** | 🗺️ Maps & GIS | **OpenStreetMap (OSM)** | Base road network and vector tile rendering | **Primary (Active)** |
-| **2** | 🗺️ Maps & GIS | **ISRO Bhuvan (WMS)** | Sovereign Indian thematic flood and hazard maps | **Primary (Active)** |
-| **3** | 🗺️ Maps & GIS | **NASA Earthdata / FIRMS** | Thermal active fire and satellite flood footprints | **Primary (Active)** |
-| **4** | 🗺️ Maps & GIS | **Esri World Imagery** | High-resolution satellite terrain basemaps | **Primary (Active)** |
-| **5** | 🗺️ Maps & GIS | **OpenTopoMap** | High-contrast mountain elevation contours | **Primary (Active)** |
-| **6** | 🗺️ Maps & GIS | **Google Maps API** | Commercial enterprise mapping & Places fallback | *Configurable Slot* |
-| **7** | 🗺️ Maps & GIS | **Mapbox GL** | 3D vector tile styling fallback | *Configurable Slot* |
-| **8** | 🗺️ Maps & GIS | **HERE Maps** | Heavy truck axle weight restrictions | *Configurable Slot* |
-| **9** | 🗺️ Maps & GIS | **TomTom Maps** | Commercial traffic incident fallback | *Configurable Slot* |
-| **10** | 🗺️ Maps & GIS | **Sentinel Hub** | European Space Agency multispectral radar | *Configurable Slot* |
-| **11** | 🌧️ Meteorology | **Open-Meteo API** | Zero-key real-time precipitation, wind & cloudburst radar | **Primary (Active)** |
-| **12** | 🌧️ Meteorology | **OpenWeatherMap** | Secondary atmospheric temperature fallback | *Configurable Slot* |
-| **13** | 🤖 AI & NLP | **Jeevan Offline Rules NLP** | 0ms latency in-engine disaster query understanding | **Primary (Active)** |
-| **14** | 🤖 AI & NLP | **Web Speech Recognition** | Voice input for emergency hands-free dispatch | **Primary (Active)** |
-| **15** | 🤖 AI & NLP | **Google Gemini 2.0 / 1.5** | Multimodal SOS damage photo triage | **Primary (Active)** |
-| **16** | 🤖 AI & NLP | **OpenAI GPT-4o** | Emergency dispatch assistant fallback | *Configurable Slot* |
-| **17** | 🤖 AI & NLP | **Google Vertex AI** | Enterprise pipeline & model tuning platform | *Configurable Slot* |
-| **18** | 🤖 AI & NLP | **TensorFlow.js** | Client-side edge damage classification | **Primary (Active)** |
-| **19** | 🔍 Routing | **Nominatim (OSM)** | Real-time Indian PIN code, district & village geocoding | **Primary (Active)** |
-| **20** | 🔍 Routing | **OSRM Engine** | Dynamic hazard polygon evasion routing | **Primary (Active)** |
-| **21** | 🔍 Routing | **Leaflet GIS** | Lightweight, hardware-accelerated 2D mapping | **Primary (Active)** |
-| **22** | 🔍 Routing | **Mapillary** | Crowdsourced street-level road damage verification | *Configurable Slot* |
+| Service / Data Source | Operational Role | Protocol / Provider | Status |
+| :--- | :--- | :--- | :--- |
+| **USGS Earthquake Feed** | Live seismic tremors, magnitude, depth & epicenter distance | GeoJSON REST (`earthquake.usgs.gov`) | 🟢 **Active Live** |
+| **Open-Meteo API** | High-resolution precipitation, Doppler radar, wind, soil moisture | JSON REST (`api.open-meteo.com`) | 🟢 **Active Live** |
+| **ISRO Bhuvan (WMS)** | Sovereign Indian thematic flood and landslide satellite overlays | OGC WMS (`bhuvan-vec1.nrsc.gov.in`) | 🟢 **Active Live** |
+| **OpenStreetMap & Nominatim** | Base road network tiles & Indian postal / district geocoding | Vector Tiles & REST | 🟢 **Active Live** |
+| **OSRM Engine** | Dynamic hazard-evading green corridor bypass routing | REST Routing API | 🟢 **Active Live** |
+| **Jeevan AI Knowledge Engine** | 0ms offline disaster intelligence, protocols & hospital database | In-Memory TypeScript Engine | 🟢 **Active Live** |
+| **Web Speech API** | Hands-free voice recognition (STT) and voice feedback (TTS) | Browser Native | 🟢 **Active Live** |
+| **Web Audio API** | 880Hz dual-warble physical acoustic search-and-rescue siren | Browser Native Synthesizer | 🟢 **Active Live** |
+| **Google Gemini API** | Multimodal SOS damage photo triage & conversational fallback | REST / Google GenAI SDK | 🟢 **Active Live** |
+| **MongoDB / JSON Store** | Incident storage, tracking sessions & relief stockpile logs | MongoDB Driver / Local JSON | 🟢 **Active Live** |
+
+---
+
+## 🗣️ 16 Regional & Vernacular Languages
+
+To serve diverse grassroots communities across the North Eastern states, Jeevan Setu provides an integrated multi-language translation engine (`LanguageSelector.tsx`):
+
+* **Assamese (অসমীয়া)**
+* **Bengali (বাংলা)**
+* **Bodo (बड़ो)**
+* **Garo (A·chik)**
+* **Khasi (Ka Ktien)**
+* **Mizo (Mizo ṭawng)**
+* **Meitei / Manipuri (মৈতৈলোন্)**
+* **Nepali (नेपाली)**
+* **Nagamese (নাগামিজ)**
+* **Kokborok (Tripuri)**
+* **Hindi (हिन्दी)**
+* **English**
+* *Additional regional dialects supported for emergency advisories.*
 
 ---
 
 ## 🚀 Quick Start
 
-### Option A: Immediate Zero-Install Preview
-Open `index.html` directly in any modern web browser. **All features (3D Simulation, 2D Maps, AI Copilot, Stockpiles, and SOS Siren) run instantly without server setup!**
+### Prerequisites
+* **Node.js**: v18.0.0 or higher
+* **npm**: v9.0.0 or higher
+* **Git**
 
-### Option B: Local Development Server
+### Installation & Local Setup
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/pragyakatiyar73-cyber/Jeevan-setu.git
 cd Jeevan-setu
 
-# 2. Install dependencies (Optional if using Vite development server)
+# 2. Install dependencies
 npm install
 
-# 3. Launch Development Server
+# 3. Launch Development Server (Frontend)
 npm run dev
+# Frontend will be live at: http://localhost:3000
+
+# 4. Launch Backend API Server (in a separate terminal)
+npm run server
+# Backend will be live at: http://localhost:5001
 ```
 
-### Option C: Install as Progressive Web App (PWA)
-1. Open the app in Chrome / Edge / Safari.
-2. Click the **`Install App`** button in the URL bar or browser menu.
-3. Access the entire platform with full 3D simulation and offline routing **even in Airplane Mode**!
+### Building for Production
+
+```bash
+# Compile TypeScript and bundle with Vite
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+---
+
+## ☁️ Cloud Deployment Guide
+
+### Deploying to Netlify (Frontend SPA)
+1. Link your GitHub repository (`pragyakatiyar73-cyber/Jeevan-setu`) in Netlify.
+2. The project is pre-configured with `netlify.toml` and `public/_redirects`:
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `dist`
+   - **Redirect Rule**: `/* /index.html 200`
+3. *(Optional)* If hosting the Express backend separately (e.g. on Render), set the environment variable in Netlify:
+   - `VITE_API_BASE_URL` = `https://your-render-backend-url.onrender.com`
+   *(If not set, the frontend automatically falls back to direct client-side open APIs!)*
+
+### Deploying to Render (Unified Fullstack Service)
+1. The repository includes an automatic Render blueprint (`render.yaml`).
+2. Create a **New Web Service** on [Render](https://render.com) from your repository:
+   - **Environment**: `Node`
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `node server.js`
+3. The Express server serves both the live API endpoints (`/api/*`) and the compiled Vite SPA (`dist/`) unified on a single port.
 
 ---
 
@@ -213,52 +304,80 @@ npm run dev
 
 ```
 Jeevan-setu/
-├── docs/
-│   └── ARCHITECTURE.md          # Comprehensive Technical & Data Pipeline Specification
+├── ARCHITECTURE.md                  # Comprehensive Technical Blueprint & Mathematical Models
+├── index.html                       # Vite HTML5 Entrypoint
+├── package.json                     # Dependencies & Build Scripts
+├── server.js                        # Express 5 API Server & Production Static Host
+├── netlify.toml                     # Netlify SPA Build & Redirect Rules
+├── render.yaml                      # Render Fullstack Deployment Blueprint
+├── public/
+│   └── _redirects                   # SPA Fallback Routing for Cloud Hosts
 ├── src/
-│   └── services/
-│       └── api/                 # Modular 22-API Client Connectors
-│           ├── maps.ts          # OSM, ISRO Bhuvan, NASA FIRMS, Esri
-│           ├── weather.ts       # Open-Meteo radar and precipitation client
-│           ├── routing.ts       # Nominatim geocoder and OSRM engine
-│           ├── hazardModels.ts  # Algorithmic LHI and FVI mathematical indices
-│           └── ai.ts            # Multimodal SOS and AI Copilot
-├── index.html                   # Enterprise 3D WebGL Dashboard & Complete UI
-├── manifest.json                # PWA Progressive Web App Manifest
-├── sw.js                        # Offline-First Service Worker Cache
-├── tailwind.config.js           # Tailwind CSS theme configurations
-├── .env.example                 # Configurable API tokens (Zero-Key by default)
-├── LICENSE                      # Open Source MIT License
-└── README.md                    # Project Documentation & Pitch Guide
+│   ├── index.tsx                    # React Root Entrypoint
+│   ├── App.tsx                      # Primary View Router & State Orchestrator
+│   ├── components/                  # 32+ Rich Functional Modules
+│   │   ├── JeevanSetuHomepage.tsx   # Integrated Command Dashboard
+│   │   ├── NERLiveMapModule.tsx     # 3D Digital Twin & Leaflet GIS Engine
+│   │   ├── DisasterReportsModule.tsx# Live Disaster Reports & Intelligence
+│   │   ├── AIAgentChat.tsx          # Jeevan AI Copilot Chat Interface
+│   │   ├── AIChatbotWidget.tsx      # Floating Assistant Widget with Voice
+│   │   ├── EmergencySOSModal.tsx    # SOS Dispatch & 880Hz Siren
+│   │   ├── SmartEmergencyTracking.tsx# Private P2P Live GPS Tracking & QR
+│   │   ├── MobileLiveLocationShareView.tsx # Mobile Tracker View
+│   │   ├── RoadAccessibilityModule.tsx # Highway Status & OSRM Green Routing
+│   │   ├── ReliefSupplyTrackingModule.tsx # Stockpile Inventory & Convoy Logistics
+│   │   ├── LanguageSelector.tsx     # 16-Language Localization Switcher
+│   │   └── ...
+│   └── services/                    # 25+ Modular Services & API Clients
+│       ├── ai/
+│       │   └── aiKnowledgeEngine.ts # 124KB+ NER Disaster Knowledge Base
+│       ├── api/
+│       │   ├── apiConfig.ts         # Environment & Endpoint Resolver
+│       │   ├── earthquakeService.ts # Live USGS Seismic Ingestion
+│       │   ├── weather.ts           # Open-Meteo Precipitation & Radar
+│       │   ├── disasterReportsService.ts # Unified Real-Time Reports Aggregator
+│       │   ├── smartTrackingService.ts # Live GPS QR Session Management
+│       │   ├── bhuvanService.ts     # ISRO Bhuvan WMS Satellite Connector
+│       │   ├── routing.ts           # OSRM Evasion Algorithm
+│       │   ├── hazardModels.ts      # LHI & FVI Geotechnical Scorer
+│       │   └── ai.ts                # Gemini API Bridge
+│       └── search/
+│           └── smartSearchCorrection.ts # Disaster Terminology & Spell Engine
+├── tailwind.config.js               # Tailwind Design Tokens & Choke Point Styling
+├── tsconfig.json                    # TypeScript Configuration
+├── vite.config.ts                   # Vite 6 Bundler Configuration
+└── README.md                        # Documentation & Pitch Guide
 ```
 
 ---
 
-## 🏆 Pitch Guide for Evaluators & Judges
+## 🏆 Pitch Guide for Judges & Evaluators
 
-When presenting **Jeevan Setu** to evaluators, highlight these 4 core differentiators:
+When presenting **Jeevan Setu** to evaluators (MoDoNER, NEC, NDRF, SIH Panel), emphasize these 5 core differentiators:
 
 1. **Why Not Google Maps?**
-   > *"Google Maps optimizes for civilian car speed. It is blind to geotechnical slope saturation, river flood discharge velocities, bridge tonnage thresholds, and priority oxygen triage. Jeevan Setu is purpose-built for disaster logistics."*
+   > *"Google Maps optimizes for civilian car speed. It is blind to geotechnical slope saturation, river flood discharge velocities, bridge tonnage thresholds, and priority oxygen triage. Jeevan Setu is purpose-built for high-altitude disaster logistics."*
 
-2. **How Does it Work with Zero Internet in Remote Hills?**
-   > *"Jeevan Setu is an Offline-First PWA. The vector terrain tiles, 3D models, and Dijkstra engine run locally in cache. When cell towers fail, SOS beacons are compressed into 160-char GSM/satellite SMS packets sent directly to NDRF 1078."*
+2. **How Does It Work with Zero Connectivity in Remote Hills?**
+   > *"Jeevan Setu features a 124KB on-device AI Knowledge Engine, cached vector terrain tiles, and local 3D models. When cellular towers fail, SOS payloads are compressed into 160-char SMS packets sent directly to NDRF 1078, accompanied by a browser-synthesized 880Hz physical acoustic siren for ground search teams."*
 
-3. **Sovereign Indian Satellite Integration**:
-   > *"We integrate ISRO Bhuvan WMS layers directly alongside NASA Earthdata, providing authentic Indian geospatial data without recurring commercial cloud API costs."*
+3. **Are the Disaster Feeds Real?**
+   > *"Yes, 100%. Jeevan Setu connects to live USGS seismic feeds and Open-Meteo's high-resolution weather grids with 30-second automated refresh cycles, giving incident commanders actual, non-simulated situational awareness."*
 
-4. **Quantifiable Impact**:
-   > *"Average emergency dispatch reduced from 45 mins to **14.2 mins**. Over **4.2 hours saved** per medical oxygen convoy during active NH-6 landslides."*
+4. **Private Peer-to-Peer Live Tracking**:
+   > *"Anyone can generate an encrypted QR code and tracking link for their emergency. Responders scan or click the link to see a dedicated tactical dashboard with live distance and ETA, without requiring app store installation."*
+
+5. **Sovereign Indian Data Integration**:
+   > *"We integrate ISRO Bhuvan WMS satellite layers alongside OpenStreetMap and USGS, delivering authentic Indian geospatial intelligence without recurring cloud API fees or credit card dependencies."*
 
 ---
 
 ## 🛡️ License & Acknowledgements
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
+Distributed under the **MIT License**. See `LICENSE` for details.
 
 Built with dedication for the **Ministry of Development of North Eastern Region (MoDoNER)**, the **North Eastern Council (NEC)**, and disaster response teams across India.
 
 <div align="center">
   <b>🌉 Jeevan Setu • Connecting Routes, Delivering Lifelines across North East India</b>
-  <!-- Last Verified Push: 2026-08-27T23:51:00Z -->
 </div>

@@ -131,4 +131,4 @@ sequenceDiagram
 
 ## 4. Environment Configuration Reference
 
-Refer to [`.env.example`](file:///c:/Users/arshi/Documents/antigravity/bold-tesla/.env.example) for the complete list of endpoints and configurable tokens. All primary services are pre-configured to operate out-of-the-box with zero required credentials.
+Refer to [`.env.example`](./.env.example) for the complete list of endpoints and configurable tokens. All primary services are pre-configured to operate out-of-the-box with zero required credentials.
