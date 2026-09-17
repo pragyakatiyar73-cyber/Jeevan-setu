@@ -275,7 +275,7 @@ export const VIDEO_SCENES: Scene[] = [
     badgeHi: 'AI आवाज़',
     icon: Bot,
     color: 'from-indigo-600 to-purple-600',
-    narrationHi: 'यदि आपको कोई भी सवाल पूछना हो तो ऊपर AI Agent बटन दबाकर हिंदी में बोलकर पूछें। जीवन सेतु आपकी और आपके परिवार की सुरक्षा के लिए 24 घंटे तत्पर है। आपका साथी हमेशा आपके साथ है। सुरक्षित रहें!',
+    narrationHi: 'यदि आपको कोई भी सवाल पूछना हो तो ऊपर AI Agent बटन दबाकर हिंदी में बोलकर पूछें। जीवन सेतु का नागरिक मित्र आपकी और आपके परिवार की सुरक्षा के लिए 24 घंटे तत्पर है। सुरक्षित रहें!',
     narrationEn: 'Ask any question using Hindi or English voice search via AI Agent. Jeevan Setu is dedicated to protecting lives 24/7.',
     screenHighlights: [
       'Hindi & English Voice AI Emergency Assistant',
@@ -451,8 +451,8 @@ export default function CitizenVideoWalkthroughModal({
             <div>
               <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
                 {language === 'hi'
-                  ? '🎥 आपका साथी (Aapka Saathi) — 10-मिनट संपूर्ण नागरिक वीडियो गाइड'
-                  : '🎥 Aapka Saathi — 10-Minute Official Citizen Video Guide'}
+                  ? '🎥 नागरिक मित्र (Nagrik Mitra) — 10-मिनट संपूर्ण नागरिक वीडियो गाइड'
+                  : '🎥 Nagrik Mitra — 10-Minute Official Citizen Video Guide'}
               </h2>
               <p className="text-[11px] text-amber-600 dark:text-amber-400 font-bold">
                 {language === 'hi' ? 'एआई आवाज़ एवं स्टेप-बाय-स्टेप बिना रुके लाइव गाइड' : 'AI Voice Narration & Step-by-Step Non-Stop Interactive Guide'}
