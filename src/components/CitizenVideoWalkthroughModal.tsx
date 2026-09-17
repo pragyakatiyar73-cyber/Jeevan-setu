@@ -474,64 +474,61 @@ export default function CitizenVideoWalkthroughModal({
   return (
     <aside
       aria-label="नागरिक मित्र वॉइस गाइड"
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] bg-[#070d1f]/95 backdrop-blur-2xl border-2 border-amber-400/90 p-3 rounded-2xl shadow-2xl shadow-amber-950/80 flex items-center gap-3 animate-in slide-in-from-bottom-5 duration-300 max-w-xl w-[92%] sm:w-auto text-white select-none"
+      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-[99999] bg-[#070d1f]/95 backdrop-blur-2xl border border-amber-400/80 px-2.5 py-1.5 rounded-full shadow-2xl shadow-amber-950/80 flex items-center gap-2 animate-in slide-in-from-bottom-5 duration-300 max-w-[95vw] sm:max-w-md text-white select-none"
     >
-      {/* Equalizer Pulsing Icon */}
-      <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white shadow-md shrink-0 relative">
-        <Volume2 className="w-5 h-5 text-yellow-200 animate-pulse" />
-        <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400 border-2 border-slate-900 animate-ping"></span>
+      {/* Equalizer Icon */}
+      <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-white shadow-md shrink-0 relative">
+        <Volume2 className="w-3.5 h-3.5 text-yellow-200 animate-pulse" />
+        <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 border border-slate-900 animate-ping"></span>
       </div>
 
-      {/* Voice Status, Scene Title & Speech Snippet */}
-      <div className="flex-1 min-w-0 pr-1">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">
-            🎙️ नागरिक मित्र (आवाज़)
+      {/* Voice Title & Time */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] font-black text-amber-300 truncate">
+            🎙️ नागरिक मित्र
           </span>
-          <span className="text-[10px] font-mono text-emerald-400 font-bold">
+          <span className="text-[10px] font-mono text-emerald-400 font-bold shrink-0">
             {formatTime(currentTime)} / 10:00
           </span>
         </div>
-        <p className="text-xs font-black text-white truncate mt-0.5">
+        <p className="text-[11px] font-bold text-slate-200 truncate leading-tight">
           {currentScene.titleHi}
-        </p>
-        <p className="text-[11px] text-amber-200 truncate font-medium">
-          "{currentScene.narrationHi}"
         </p>
       </div>
 
-      {/* Control Buttons: Seek -10s, Play/Pause, Seek +10s, Next Scene, Close */}
-      <div className="flex items-center gap-1.5 shrink-0 border-l border-slate-800/80 pl-2.5">
+      {/* Compact Controls */}
+      <div className="flex items-center gap-1 shrink-0 border-l border-slate-800/80 pl-2">
         {/* Seek -10s */}
         <button
           type="button"
           onClick={() => handleSeekDelta(-10)}
-          className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-extrabold transition cursor-pointer active:scale-95 flex items-center gap-0.5 text-[10px]"
+          className="h-7 px-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold transition cursor-pointer active:scale-95 flex items-center gap-0.5 text-[10px]"
           title="10 सेकेंड पीछे"
         >
-          <Rewind className="w-3.5 h-3.5" />
-          <span>-10से०</span>
+          <Rewind className="w-3 h-3" />
+          <span>-10</span>
         </button>
 
         {/* Play / Pause */}
         <button
           type="button"
           onClick={togglePlay}
-          className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold transition cursor-pointer active:scale-95 shadow-md"
+          className="h-7 w-7 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold transition cursor-pointer active:scale-95 shadow-md flex items-center justify-center"
           title={isPlaying ? 'आवाज़ रोकें' : 'आवाज़ चलाएं'}
         >
-          {isPlaying ? <Pause className="w-4 h-4 fill-slate-950" /> : <Play className="w-4 h-4 fill-slate-950" />}
+          {isPlaying ? <Pause className="w-3.5 h-3.5 fill-slate-950" /> : <Play className="w-3.5 h-3.5 fill-slate-950 ml-0.5" />}
         </button>
 
         {/* Seek +10s */}
         <button
           type="button"
           onClick={() => handleSeekDelta(10)}
-          className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-extrabold transition cursor-pointer active:scale-95 flex items-center gap-0.5 text-[10px]"
+          className="h-7 px-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold transition cursor-pointer active:scale-95 flex items-center gap-0.5 text-[10px]"
           title="10 सेकेंड आगे"
         >
-          <span>+10से०</span>
-          <FastForward className="w-3.5 h-3.5" />
+          <span>+10</span>
+          <FastForward className="w-3 h-3" />
         </button>
 
         {/* Next Scene */}
@@ -539,10 +536,10 @@ export default function CitizenVideoWalkthroughModal({
           type="button"
           disabled={currentSceneIndex === VIDEO_SCENES.length - 1}
           onClick={() => handleSeek(VIDEO_SCENES[Math.min(VIDEO_SCENES.length - 1, currentSceneIndex + 1)].timestampStart)}
-          className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 transition cursor-pointer"
+          className="h-7 w-7 rounded-full bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 transition cursor-pointer flex items-center justify-center"
           title="अगला दृश्य"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3.5 h-3.5" />
         </button>
 
         {/* Close Voice Guide */}
@@ -553,10 +550,10 @@ export default function CitizenVideoWalkthroughModal({
             if (synthRef.current) synthRef.current.cancel();
             onClose();
           }}
-          className="p-2 rounded-xl bg-slate-800/80 hover:bg-rose-500 text-slate-300 hover:text-white transition cursor-pointer ml-1"
+          className="h-7 w-7 rounded-full bg-slate-800/80 hover:bg-rose-500 text-slate-300 hover:text-white transition cursor-pointer flex items-center justify-center"
           title="आवाज़ बंद करें"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
         </button>
       </div>
     </aside>
