@@ -112,6 +112,7 @@ The **Jeevan AI Agent** is powered by a hybrid architecture combining an on-devi
   - **Text-to-Speech (TTS)**: High-clarity vocal audio playback of response steps in Hindi or English.
 * **Actionable Deep-Link Triggers**: The AI Copilot dynamically provides direct interactive buttons within the chat to instantly open the 3D Map, Road Accessibility, Stockpiles, Weather, or Emergency SOS.
 * **Gemini 1.5 / 2.0 API Fallback**: Optional cloud-assisted reasoning for deep multimodal damage analysis and situational synthesis.
+* **नागरिक मित्र (Nagrik Mitra) Interactive Voice Walkthrough (`CitizenVideoWalkthroughModal.tsx`)**: Built-in audio-visual guide in pure Hindi and English that walks citizens step-by-step through SOS triggers, offline features, 3D corridor maps, and live emergency tracking with auto-advancing voice narration.
 
 ---
 
@@ -322,6 +323,7 @@ Jeevan-setu/
 │   │   ├── AIAgentChat.tsx          # Jeevan AI Copilot Chat Interface
 │   │   ├── AIChatbotWidget.tsx      # Floating Assistant Widget with Voice
 │   │   ├── EmergencySOSModal.tsx    # SOS Dispatch & 880Hz Siren
+│   │   ├── CitizenVideoWalkthroughModal.tsx # Nagrik Mitra Audio-Visual Guide
 │   │   ├── SmartEmergencyTracking.tsx# Private P2P Live GPS Tracking & QR
 │   │   ├── MobileLiveLocationShareView.tsx # Mobile Tracker View
 │   │   ├── RoadAccessibilityModule.tsx # Highway Status & OSRM Green Routing
