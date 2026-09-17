@@ -493,17 +493,17 @@ export default function CitizenVideoWalkthroughModal({
         <div className="flex-1 min-w-0 pr-1">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">
-              🎙️ {language === 'hi' ? 'नागरिक मित्र (आवाज़)' : 'Nagrik Mitra Voice'}
+              🎙️ नागरिक मित्र (आवाज़)
             </span>
             <span className="text-[10px] font-mono text-emerald-400 font-bold">
               {formatTime(currentTime)} / 10:00
             </span>
           </div>
           <p className="text-xs font-black text-white truncate mt-0.5">
-            {language === 'hi' ? currentScene.titleHi : currentScene.titleHi}
+            {currentScene.titleHi}
           </p>
           <p className="text-[11px] text-slate-300 truncate font-medium">
-            "{language === 'hi' ? currentScene.narrationHi : currentScene.narrationHi}"
+            "{currentScene.narrationHi}"
           </p>
         </div>
 
@@ -513,17 +513,17 @@ export default function CitizenVideoWalkthroughModal({
           <button
             onClick={() => handleSeekDelta(-10)}
             className="px-2 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-extrabold transition cursor-pointer active:scale-95 flex items-center gap-0.5 text-[10px]"
-            title="10 सेकेंड पीछे (Seek -10s)"
+            title="10 सेकेंड पीछे"
           >
             <Rewind className="w-3 h-3" />
-            <span>-10s</span>
+            <span>-10से०</span>
           </button>
 
           {/* Play / Pause */}
           <button
             onClick={togglePlay}
             className="p-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition cursor-pointer active:scale-95"
-            title={isPlaying ? 'Pause Voice' : 'Play Voice'}
+            title={isPlaying ? 'आवाज़ रोकें' : 'आवाज़ चलाएं'}
           >
             {isPlaying ? <Pause className="w-4 h-4 fill-slate-950" /> : <Play className="w-4 h-4 fill-slate-950" />}
           </button>
@@ -532,9 +532,9 @@ export default function CitizenVideoWalkthroughModal({
           <button
             onClick={() => handleSeekDelta(10)}
             className="px-2 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-extrabold transition cursor-pointer active:scale-95 flex items-center gap-0.5 text-[10px]"
-            title="10 सेकेंड आगे (Seek +10s)"
+            title="10 सेकेंड आगे"
           >
-            <span>+10s</span>
+            <span>+10से०</span>
             <FastForward className="w-3 h-3" />
           </button>
 
@@ -543,7 +543,7 @@ export default function CitizenVideoWalkthroughModal({
             disabled={currentSceneIndex === VIDEO_SCENES.length - 1}
             onClick={() => handleSeek(VIDEO_SCENES[Math.min(VIDEO_SCENES.length - 1, currentSceneIndex + 1)].timestampStart)}
             className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 transition cursor-pointer"
-            title="Next Step"
+            title="अगला दृश्य"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -552,10 +552,10 @@ export default function CitizenVideoWalkthroughModal({
           <button
             onClick={() => setIsFullModalOpen(true)}
             className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold transition cursor-pointer active:scale-95 flex items-center gap-1.5 text-xs shadow-md"
-            title="Pura Dekhein / Open Full Screen Presentation"
+            title="पूरा देखें (फूल स्क्रीन)"
           >
             <Maximize2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[11px] font-black">{language === 'hi' ? 'पूरा देखें ⛶' : 'Full Screen ⛶'}</span>
+            <span className="hidden sm:inline text-[11px] font-black">पूरा देखें ⛶</span>
           </button>
 
           {/* Close Floating Audio Bar */}
@@ -566,7 +566,7 @@ export default function CitizenVideoWalkthroughModal({
               onClose();
             }}
             className="p-2 rounded-xl bg-slate-800/80 hover:bg-rose-500 text-slate-300 hover:text-white transition cursor-pointer"
-            title="Close Audio"
+            title="आवाज़ बंद करें"
           >
             <X className="w-4 h-4" />
           </button>
@@ -590,12 +590,10 @@ export default function CitizenVideoWalkthroughModal({
             </div>
             <div>
               <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
-                {language === 'hi'
-                  ? '🎥 नागरिक मित्र (Nagrik Mitra) — 10-मिनट संपूर्ण नागरिक वीडियो गाइड'
-                  : '🎥 Nagrik Mitra — 10-Minute Official Citizen Video Guide'}
+                🎥 नागरिक मित्र — 10-मिनट संपूर्ण नागरिक वीडियो गाइड
               </h2>
               <p className="text-[11px] text-amber-600 dark:text-amber-400 font-bold">
-                {language === 'hi' ? 'एआई आवाज़ एवं स्टेप-बाय-स्टेप बिना रुके लाइव गाइड' : 'AI Voice Narration & Step-by-Step Non-Stop Interactive Guide'}
+                एआई आवाज़ और चरण-दर-चरण बिना रुके लाइव गाइड
               </p>
             </div>
           </div>
@@ -605,10 +603,10 @@ export default function CitizenVideoWalkthroughModal({
             <button
               onClick={() => setIsFullModalOpen(false)}
               className="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-sky-500 hover:text-white transition cursor-pointer text-xs font-bold flex items-center gap-1"
-              title="Minimize to Floating Audio Bar"
+              title="आवाज़ बार में छोटा करें"
             >
               <Minimize2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{language === 'hi' ? 'मिनी बार 🗗' : 'Minimize 🗗'}</span>
+              <span className="hidden sm:inline">छोटा करें 🗗</span>
             </button>
 
             <button
@@ -618,6 +616,7 @@ export default function CitizenVideoWalkthroughModal({
                 onClose();
               }}
               className="h-8 w-8 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center hover:bg-rose-500 hover:text-white transition cursor-pointer"
+              title="बंद करें"
             >
               <X className="w-4 h-4" />
             </button>
@@ -637,10 +636,10 @@ export default function CitizenVideoWalkthroughModal({
             <div className="relative z-10 flex items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  {language === 'hi' ? currentScene.badgeHi : currentScene.badge}
+                  {currentScene.badgeHi}
                 </span>
                 <span className="text-[11px] font-bold text-slate-400 font-mono">
-                  {language === 'hi' ? `दृश्य ${currentScene.id} / 10` : `SCENE ${currentScene.id} / 10`}
+                  दृश्य {currentScene.id} / 10
                 </span>
               </div>
 
@@ -659,7 +658,7 @@ export default function CitizenVideoWalkthroughModal({
                   <IconComponent className="w-5 h-5" />
                 </div>
                 <h3 className="text-base sm:text-lg font-black text-white tracking-tight">
-                  {language === 'hi' ? currentScene.titleHi : currentScene.titleHi}
+                  {currentScene.titleHi}
                 </h3>
               </div>
 
@@ -677,10 +676,10 @@ export default function CitizenVideoWalkthroughModal({
               <div className="p-3 rounded-xl bg-slate-950/80 border border-amber-500/40 space-y-1 shadow-lg">
                 <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-amber-300 tracking-wider">
                   <Volume2 className="w-3.5 h-3.5 animate-pulse text-amber-300" />
-                  <span>{language === 'hi' ? '🔊 AI आवाज़ (बिना रुके बोलकर समझा रहा है)' : '🔊 AI VOICE NARRATION (NON-STOP HINDI)'}</span>
+                  <span>🔊 एआई आवाज़ (बिना रुके बोलकर मार्गदर्शन)</span>
                 </div>
                 <p className="text-xs sm:text-xs font-bold text-amber-200 leading-snug">
-                  "{language === 'hi' ? currentScene.narrationHi : currentScene.narrationHi}"
+                  "{currentScene.narrationHi}"
                 </p>
               </div>
             </div>
@@ -688,7 +687,7 @@ export default function CitizenVideoWalkthroughModal({
             {/* Stage Bottom Direct Action Button */}
             <div className="relative z-10 pt-1.5 flex items-center justify-between border-t border-slate-800">
               <span className="text-[11px] text-slate-400 font-medium">
-                {language === 'hi' ? 'लाइव फीचर आजमाने के लिए क्लिक करें:' : 'Try feature live:'}
+                लाइव फीचर आजमाने के लिए क्लिक करें:
               </span>
 
               <button
@@ -704,7 +703,7 @@ export default function CitizenVideoWalkthroughModal({
                 }}
                 className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-black text-xs flex items-center gap-1 shadow-md active:scale-95 transition cursor-pointer"
               >
-                <span>{language === 'hi' ? 'यह फ़ीचर खोलें ➔' : 'Open This Feature ➔'}</span>
+                <span>यह फ़ीचर खोलें ➔</span>
               </button>
             </div>
           </div>
@@ -723,10 +722,10 @@ export default function CitizenVideoWalkthroughModal({
               />
               <div className="flex justify-between text-[9px] font-bold text-slate-400 font-mono">
                 <span>00:00</span>
-                <span>02:00 (SOS)</span>
-                <span>04:15 (Safe Routes)</span>
-                <span>06:15 (Radar)</span>
-                <span>08:15 (PDF)</span>
+                <span>02:00 (आपातकालीन SOS)</span>
+                <span>04:15 (सुरक्षित मार्ग)</span>
+                <span>06:15 (मौसम रडार)</span>
+                <span>08:15 (PDF रिपोर्ट)</span>
                 <span>10:00</span>
               </div>
             </div>
@@ -738,10 +737,10 @@ export default function CitizenVideoWalkthroughModal({
                 <button
                   onClick={() => handleSeekDelta(-10)}
                   className="px-2.5 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 font-black text-xs transition cursor-pointer flex items-center gap-1 active:scale-95"
-                  title="10 सेकेंड पीछे (Seek -10s)"
+                  title="10 सेकेंड पीछे"
                 >
                   <Rewind className="w-3.5 h-3.5" />
-                  <span>-10s</span>
+                  <span>-10से०</span>
                 </button>
 
                 <button
@@ -749,23 +748,23 @@ export default function CitizenVideoWalkthroughModal({
                   className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-extrabold text-xs shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95 transition border border-amber-300/40"
                 >
                   {isPlaying ? <Pause className="w-3.5 h-3.5 fill-white" /> : <Play className="w-3.5 h-3.5 fill-white" />}
-                  <span>{isPlaying ? (language === 'hi' ? 'रोकें (Pause)' : 'Pause Video') : (language === 'hi' ? '▶️ चलाएं (Play)' : '▶️ Play Video')}</span>
+                  <span>{isPlaying ? 'रोकें' : '▶️ चलाएं'}</span>
                 </button>
 
                 {/* Seek +10s */}
                 <button
                   onClick={() => handleSeekDelta(10)}
                   className="px-2.5 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 font-black text-xs transition cursor-pointer flex items-center gap-1 active:scale-95"
-                  title="10 सेकेंड आगे (Seek +10s)"
+                  title="10 सेकेंड आगे"
                 >
-                  <span>+10s</span>
+                  <span>+10से०</span>
                   <FastForward className="w-3.5 h-3.5" />
                 </button>
 
                 <button
                   onClick={() => handleSeek(0)}
                   className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
-                  title="Reset to 00:00"
+                  title="पुनः आरंभ करें (00:00)"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                 </button>
@@ -777,7 +776,7 @@ export default function CitizenVideoWalkthroughModal({
                       ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
                       : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent'
                   }`}
-                  title={isMuted ? 'Unmute AI Voice' : 'Mute AI Voice'}
+                  title={isMuted ? 'आवाज़ चालू करें' : 'आवाज़ बंद करें'}
                 >
                   {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                 </button>
@@ -791,7 +790,7 @@ export default function CitizenVideoWalkthroughModal({
                   className="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 disabled:opacity-40 text-slate-700 dark:text-slate-300 text-xs font-extrabold flex items-center gap-1 cursor-pointer"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
-                  <span>{language === 'hi' ? 'पिछला' : 'Prev'}</span>
+                  <span>पिछला</span>
                 </button>
 
                 <button
@@ -799,7 +798,7 @@ export default function CitizenVideoWalkthroughModal({
                   onClick={() => handleSeek(VIDEO_SCENES[Math.min(VIDEO_SCENES.length - 1, currentSceneIndex + 1)].timestampStart)}
                   className="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 disabled:opacity-40 text-slate-700 dark:text-slate-300 text-xs font-extrabold flex items-center gap-1 cursor-pointer"
                 >
-                  <span>{language === 'hi' ? 'अगला' : 'Next'}</span>
+                  <span>अगला</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -809,7 +808,7 @@ export default function CitizenVideoWalkthroughModal({
           {/* Scene Playlist Items */}
           <div className="space-y-1.5">
             <h4 className="text-[11px] font-black uppercase text-slate-500 dark:text-slate-400">
-              {language === 'hi' ? '10-मिनट वीडियो दृश्य सूची (Playlist)' : '10-Minute Video Scene Playlist'}
+              10-मिनट वीडियो दृश्य सूची (प्लेलिस्ट)
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
@@ -833,7 +832,7 @@ export default function CitizenVideoWalkthroughModal({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="text-xs font-black truncate">
-                          {language === 'hi' ? scene.titleHi : scene.titleHi}
+                          {scene.titleHi}
                         </span>
                         <span className="text-[10px] font-mono text-slate-400 shrink-0">
                           {formatTime(scene.timestampStart)}
