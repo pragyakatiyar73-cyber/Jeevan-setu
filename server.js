@@ -2948,7 +2948,32 @@ app.post('/api/smart-tracking/create-qr-session', (req, res) => {
     mode: 'REAL',
     createdAt: nowIso,
     lastUpdatedAt: nowIso,
-    realLocation: null
+    realLocation: {
+      lat: 26.1445,
+      lon: 91.7362,
+      accuracy: 5.0,
+      speed: null,
+      heading: null,
+      timestamp: Date.now()
+    },
+    participants: [
+      {
+        participantId: 'P-1',
+        role: 'HOST',
+        label: '🔴 Phone A (Host)',
+        color: '#ef4444',
+        status: 'LIVE',
+        location: {
+          lat: 26.1445,
+          lon: 91.7362,
+          accuracy: 5.0,
+          speed: null,
+          heading: null,
+          timestamp: Date.now()
+        },
+        lastUpdatedAt: nowIso
+      }
+    ]
   };
 
   smartTrackingRequestsStore.unshift(newRequest);
@@ -3011,16 +3036,18 @@ app.post('/api/smart-tracking/update-location', (req, res) => {
   }
 
   const partId = participantId || 'P-1';
-  const palette = ['#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'];
+  const palette = ['#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#f97316', '#06b6d4', '#ec4899'];
   let part = session.participants.find(p => p.participantId === partId);
 
   if (!part) {
-    const isHost = session.participants.length === 0;
-    const colorIndex = session.participants.length % palette.length;
+    const hasHost = session.participants.some(p => p.role === 'HOST');
+    const isHost = !hasHost || partId === 'P-1';
+    const nonHostCount = session.participants.filter(p => p.role !== 'HOST').length;
+    const colorIndex = isHost ? 0 : ((nonHostCount % (palette.length - 1)) + 1);
     part = {
       participantId: partId,
       role: isHost ? 'HOST' : 'PARTICIPANT',
-      label: label || (isHost ? '🔴 Phone A (Host)' : `🔵 Participant ${session.participants.length + 1}`),
+      label: label || (isHost ? '🔴 Phone A (Host)' : `Participant ${session.participants.length + 1}`),
       color: palette[colorIndex],
       status: 'LIVE',
       location: locData,
@@ -3034,16 +3061,18 @@ app.post('/api/smart-tracking/update-location', (req, res) => {
     part.lastUpdatedAt = nowIso;
   }
 
-  // Update top-level session location and status
-  session.realLocation = locData;
+  // Update top-level session location and status for host updates
+  if (part.role === 'HOST' || partId === 'P-1') {
+    session.realLocation = locData;
+  }
   session.status = 'LIVE';
   session.mode = 'REAL';
   session.active = true;
   session.lastUpdatedAt = nowIso;
 
-  // Update emergency request coordinates
+  // Update emergency request coordinates ONLY when Host updates location
   const emergency = smartTrackingRequestsStore.find(e => e.emergencyRequestId === session.emergencyRequestId);
-  if (emergency) {
+  if (emergency && (part.role === 'HOST' || partId === 'P-1')) {
     emergency.lat = numLat;
     emergency.lon = numLon;
     emergency.status = 'VEHICLE_ASSIGNED';

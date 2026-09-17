@@ -172,8 +172,14 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
       activeCoords.push([lat, lon]);
 
       const isMe = part.participantId === myParticipantId;
-      const markerColor = isMe ? '#ef4444' : part.color || (index === 1 ? '#3b82f6' : '#10b981');
-      const badgeIcon = isMe ? '🔴' : index === 1 ? '🔵' : '🟢';
+      const friendBadges = ['🔵', '🟢', '🟣', '🟠', '🔷', '🩷', '🟡'];
+      const palette = ['#3b82f6', '#10b981', '#8b5cf6', '#f97316', '#06b6d4', '#ec4899'];
+      
+      const friendParts = participantList.filter(p => p.participantId !== myParticipantId);
+      const friendIdx = friendParts.findIndex(p => p.participantId === part.participantId);
+      
+      const markerColor = isMe ? '#ef4444' : part.color || palette[friendIdx >= 0 ? friendIdx % palette.length : 0];
+      const badgeIcon = isMe ? '🔴' : (friendBadges[friendIdx >= 0 ? friendIdx % friendBadges.length : 0] || '🔵');
 
       const icon = L.divIcon({
         className: `custom-participant-marker-${part.participantId}`,

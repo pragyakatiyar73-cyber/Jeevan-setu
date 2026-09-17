@@ -680,8 +680,14 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
         activeBoundsCoords.push([lat, lon]);
 
         const isHost = part.role === 'HOST';
-        const markerColor = part.color || (isHost ? '#ef4444' : index === 1 ? '#3b82f6' : '#10b981');
-        const badgeEmoji = isHost ? '🔴' : index === 1 ? '🔵' : '🟢';
+        const friendBadges = ['🔵', '🟢', '🟣', '🟠', '🔷', '🩷', '🟡'];
+        const palette = ['#3b82f6', '#10b981', '#8b5cf6', '#f97316', '#06b6d4', '#ec4899'];
+        
+        const friendParts = participants.filter(p => p.role !== 'HOST');
+        const friendIdx = friendParts.findIndex(p => p.participantId === part.participantId);
+        
+        const markerColor = part.color || (isHost ? '#ef4444' : palette[friendIdx >= 0 ? friendIdx % palette.length : 0]);
+        const badgeEmoji = isHost ? '🔴' : (friendBadges[friendIdx >= 0 ? friendIdx % friendBadges.length : 0] || '🔵');
 
         const icon = L.divIcon({
           className: `private-participant-marker-${part.participantId}`,
