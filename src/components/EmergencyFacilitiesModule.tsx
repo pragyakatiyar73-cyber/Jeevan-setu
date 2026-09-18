@@ -875,152 +875,154 @@ export default function EmergencyFacilitiesModule({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column: Interactive GIS Map */}
-        <div className="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-4 transition-colors duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <span>🗺️</span> NER Emergency Facilities Interactive Leaflet Map
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                {isHi ? 'मैप पर किसी भी केंद्र पर क्लिक करके सीधा सुरक्षित मार्ग और टेलीमेट्री देखें' : 'Click any emergency facility pin on map to preview direct safe route & telemetry'}
-              </p>
-            </div>
-
-            {/* Map Layer Controls */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                type="button"
-                onClick={() => setActiveMapStyle('dark')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
-                  activeMapStyle === 'dark'
-                    ? 'bg-sky-500 text-white border-sky-400 shadow-md shadow-sky-500/20'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
-                }`}
-                title="Dark Base Map"
-              >
-                🗺️ {isHi ? 'डार्क' : 'Dark'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveMapStyle('satellite')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
-                  activeMapStyle === 'satellite'
-                    ? 'bg-sky-500 text-white border-sky-400 shadow-md shadow-sky-500/20'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
-                }`}
-                title="Satellite Image Base Map"
-              >
-                🛰️ {isHi ? 'सैटेलाइट' : 'Satellite'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveMapStyle('street')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
-                  activeMapStyle === 'street'
-                    ? 'bg-sky-500 text-white border-sky-400 shadow-md shadow-sky-500/20'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
-                }`}
-                title="OpenStreetMap Street Layer"
-              >
-                🌐 {isHi ? 'स्ट्रीट' : 'Street'}
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Action Toolbar on top of map */}
-          <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-900/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5 text-sky-500" />
-                {activeUserLoc.name}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {nearestFacility && (
-                <button
-                  type="button"
-                  onClick={() => setSelectedFacility(nearestFacility)}
-                  className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
-                >
-                  ⚡ {isHi ? 'निकटतम केंद्र' : 'Focus Nearest'} ({nearestFacility.distanceKm} km)
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  if (mapInstanceRef.current) {
-                    mapInstanceRef.current.setView([activeUserLoc.lat, activeUserLoc.lon], 12);
-                  }
-                }}
-                className="px-2.5 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
-              >
-                🎯 {isHi ? 'यूज़र स्थान' : 'Recenter Origin'}
-              </button>
-            </div>
-          </div>
-
-          {/* Interactive Leaflet Map Container */}
-          <div ref={mapContainerRef} className="h-[420px] sm:h-[460px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner relative z-0" />
-
-          {/* Selected Facility Interactive Route Bar */}
-          {selectedFacility && (
-            <div className="p-3.5 rounded-xl border border-sky-500/30 bg-sky-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-300">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-black uppercase px-2 py-0.5 rounded bg-sky-500 text-white">
-                    {selectedFacility.type}
-                  </span>
-                  <h4 className="text-sm font-black text-slate-900 dark:text-white">
-                    {selectedFacility.name}
-                  </h4>
-                </div>
-                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-                  {selectedFacility.address} &bull; <b className="text-sky-400">{selectedFacility.distanceKm} km {isHi ? 'दूरी' : 'away'}</b>
+        <div className="lg:col-span-7 space-y-3">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-4 transition-colors duration-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>🗺️</span> NER Emergency Facilities Interactive Leaflet Map
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  {isHi ? 'मैप पर किसी भी केंद्र पर क्लिक करके सीधा सुरक्षित मार्ग और टेलीमेट्री देखें' : 'Click any emergency facility pin on map to preview direct safe route & telemetry'}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                {selectedFacility.contact && selectedFacility.contact !== 'Not available' ? (
-                  <a
-                    href={`tel:${selectedFacility.contact}`}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition"
-                  >
-                    <Phone className="h-3.5 w-3.5" />
-                    <span>{selectedFacility.contact}</span>
-                  </a>
-                ) : (
-                  <span className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 text-xs font-bold flex items-center gap-1.5 border border-slate-700">
-                    <Phone className="h-3.5 w-3.5 text-slate-500" />
-                    <span>No Direct Phone</span>
-                  </span>
-                )}
+              {/* Map Layer Controls */}
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
-                  onClick={() => handleGetSafeRoute(selectedFacility)}
-                  disabled={isCalculatingRoute}
-                  className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-black flex items-center gap-1.5 shadow transition cursor-pointer disabled:opacity-50"
+                  onClick={() => setActiveMapStyle('dark')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
+                    activeMapStyle === 'dark'
+                      ? 'bg-sky-500 text-white border-sky-400 shadow-md shadow-sky-500/20'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
+                  }`}
+                  title="Dark Base Map"
                 >
-                  <Navigation className="h-3.5 w-3.5" />
-                  <span>{isCalculatingRoute ? (isHi ? 'मार्ग की गणना...' : 'Calculating...') : (isHi ? 'सुरक्षित मार्ग प्राप्त करें ➔' : 'Get Safe Route ➔')}</span>
+                  🗺️ {isHi ? 'डार्क' : 'Dark'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveMapStyle('satellite')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
+                    activeMapStyle === 'satellite'
+                      ? 'bg-sky-500 text-white border-sky-400 shadow-md shadow-sky-500/20'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
+                  }`}
+                  title="Satellite Image Base Map"
+                >
+                  🛰️ {isHi ? 'सैटेलाइट' : 'Satellite'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveMapStyle('street')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
+                    activeMapStyle === 'street'
+                      ? 'bg-sky-500 text-white border-sky-400 shadow-md shadow-sky-500/20'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
+                  }`}
+                  title="OpenStreetMap Street Layer"
+                >
+                  🌐 {isHi ? 'स्ट्रीट' : 'Street'}
                 </button>
               </div>
             </div>
-          )}
 
-          <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 font-mono">
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span> Hospital</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Police</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span> Fire</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> Ambulance</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-teal-500 inline-block"></span> Shelter</span>
+            {/* Quick Action Toolbar on top of map */}
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-900/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5 text-sky-500" />
+                  {activeUserLoc.name}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                {nearestFacility && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFacility(nearestFacility)}
+                    className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                  >
+                    ⚡ {isHi ? 'निकटतम केंद्र' : 'Focus Nearest'} ({nearestFacility.distanceKm} km)
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (mapInstanceRef.current) {
+                      mapInstanceRef.current.setView([activeUserLoc.lat, activeUserLoc.lon], 12);
+                    }
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                >
+                  🎯 {isHi ? 'यूज़र स्थान' : 'Recenter Origin'}
+                </button>
+              </div>
             </div>
-            <span>Showing {facilities.length} verified points</span>
+
+            {/* Interactive Leaflet Map Container */}
+            <div ref={mapContainerRef} className="h-[420px] sm:h-[460px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner relative z-0" />
+
+            {/* Selected Facility Interactive Route Bar */}
+            {selectedFacility && (
+              <div className="p-3.5 rounded-xl border border-sky-500/30 bg-sky-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-300">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black uppercase px-2 py-0.5 rounded bg-sky-500 text-white">
+                      {selectedFacility.type}
+                    </span>
+                    <h4 className="text-sm font-black text-slate-900 dark:text-white">
+                      {selectedFacility.name}
+                    </h4>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                    {selectedFacility.address} &bull; <b className="text-sky-400">{selectedFacility.distanceKm} km {isHi ? 'दूरी' : 'away'}</b>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {selectedFacility.contact && selectedFacility.contact !== 'Not available' ? (
+                    <a
+                      href={`tel:${selectedFacility.contact}`}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition"
+                    >
+                      <Phone className="h-3.5 w-3.5" />
+                      <span>{selectedFacility.contact}</span>
+                    </a>
+                  ) : (
+                    <span className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 text-xs font-bold flex items-center gap-1.5 border border-slate-700">
+                      <Phone className="h-3.5 w-3.5 text-slate-500" />
+                      <span>No Direct Phone</span>
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleGetSafeRoute(selectedFacility)}
+                    disabled={isCalculatingRoute}
+                    className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-black flex items-center gap-1.5 shadow transition cursor-pointer disabled:opacity-50"
+                  >
+                    <Navigation className="h-3.5 w-3.5" />
+                    <span>{isCalculatingRoute ? (isHi ? 'मार्ग की गणना...' : 'Calculating...') : (isHi ? 'सुरक्षित मार्ग प्राप्त करें ➔' : 'Get Safe Route ➔')}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 font-mono">
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span> Hospital</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Police</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span> Fire</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> Ambulance</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-teal-500 inline-block"></span> Shelter</span>
+              </div>
+              <span>Showing {facilities.length} verified points</span>
+            </div>
           </div>
         </div>
 
         {/* Right Column: Facilities List Cards */}
-        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col h-[580px] sm:h-[620px] transition-colors duration-300">
+        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col h-full min-h-[580px] max-h-[640px] transition-colors duration-300">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
             <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span>🏥</span> {isHi ? 'आपदा आपातकालीन सुविधा निर्देशिका' : 'Emergency Facilities Directory'}
