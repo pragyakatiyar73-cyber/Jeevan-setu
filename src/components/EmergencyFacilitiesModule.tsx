@@ -144,8 +144,14 @@ export default function EmergencyFacilitiesModule({
         setDataStatusTag(res.dataStatus);
         setDataSourceSummary(res.dataSourceSummary);
 
-        if (res.facilities.length > 0 && !selectedFacility) {
-          setSelectedFacility(res.facilities[0]);
+        if (res.facilities.length > 0) {
+          setSelectedFacility(prev => {
+            if (!prev) return res.facilities[0];
+            const exists = res.facilities.find(f => f.id === prev.id);
+            return exists || res.facilities[0];
+          });
+        } else {
+          setSelectedFacility(null);
         }
       }
     } catch (err) {
@@ -785,13 +791,20 @@ export default function EmergencyFacilitiesModule({
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <a
-                    href={`tel:${selectedFacility.contact}`}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition"
-                  >
-                    <Phone className="h-3.5 w-3.5" />
-                    <span>{selectedFacility.contact}</span>
-                  </a>
+                  {selectedFacility.contact && selectedFacility.contact !== 'Not available' ? (
+                    <a
+                      href={`tel:${selectedFacility.contact}`}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition"
+                    >
+                      <Phone className="h-3.5 w-3.5" />
+                      <span>{selectedFacility.contact}</span>
+                    </a>
+                  ) : (
+                    <span className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 text-xs font-bold flex items-center gap-1.5 border border-slate-700">
+                      <Phone className="h-3.5 w-3.5 text-slate-500" />
+                      <span>No Direct Phone</span>
+                    </span>
+                  )}
                   <button
                     type="button"
                     onClick={() => handleGetSafeRoute(selectedFacility)}

@@ -9,6 +9,7 @@
 
 import { isPointInNER, NER_STATES, NERStateName } from '../../utils/nerBoundary';
 import { getDidYouMeanSuggestion } from '../../utils/locationSpellCheck';
+import { NER_STATES_DISTRICTS } from './disasterReportsService';
 
 export type EmergencyFacilityType =
   | 'Hospital'
@@ -977,68 +978,80 @@ function getDistrictCoords(stateName: string, districtName: string): [number, nu
   return [Number((base[0] + offsetLat).toFixed(4)), Number((base[1] + offsetLon).toFixed(4))];
 }
 
+export function getCorrectStateForDistrict(districtName: string): NERStateName | null {
+  const dNorm = String(districtName || '').trim().toLowerCase();
+  if (!dNorm) return null;
+  for (const [st, dists] of Object.entries(NER_STATES_DISTRICTS)) {
+    if (dists.some(d => d.toLowerCase() === dNorm || d.toLowerCase().includes(dNorm) || dNorm.includes(d.toLowerCase()))) {
+      return st as NERStateName;
+    }
+  }
+  return null;
+}
+
 function generateDistrictEmergencyFacilities(stateName: NERStateName, districtName: string): EmergencyFacility[] {
-  const [lat, lon] = getDistrictCoords(stateName, districtName);
+  const actualState = getCorrectStateForDistrict(districtName) || stateName;
+  const [lat, lon] = getDistrictCoords(actualState, districtName);
 
   return [
     {
-      id: `FAC-${stateName.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-HOSP-01`,
+      id: `FAC-${actualState.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-HOSP-01`,
       name: `${districtName} District Civil Hospital & Emergency Unit`,
       type: 'Hospital',
-      state: stateName,
+      state: actualState,
       district: districtName,
       lat: Number((lat + 0.005).toFixed(4)),
       lon: Number((lon + 0.005).toFixed(4)),
-      address: `Civil Hospital Road, ${districtName}, ${stateName}`,
+      address: `Civil Hospital Road, ${districtName}, ${actualState}`,
       contact: '0385-2410100',
       operatingHours: '24/7 Trauma & Emergency Casualty',
       dataStatus: 'VERIFIED',
-      dataSource: `Department of Health & Family Welfare, Govt. of ${stateName}`,
+      dataSource: `Department of Health & Family Welfare, Govt. of ${actualState}`,
       lastUpdated: new Date().toISOString(),
       is24x7: true,
       notes: 'Level 2 Trauma Unit, Emergency ICUs & Ambulance Bay'
     },
     {
-      id: `FAC-${stateName.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-POL-01`,
+      id: `FAC-${actualState.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-POL-01`,
       name: `${districtName} Central Police Station & Emergency Control Room`,
       type: 'Police',
-      state: stateName,
+      state: actualState,
       district: districtName,
       lat: Number((lat - 0.004).toFixed(4)),
       lon: Number((lon - 0.004).toFixed(4)),
-      address: `Main Station Road, ${districtName}, ${stateName}`,
+      address: `Main Station Road, ${districtName}, ${actualState}`,
       contact: '0385-2450099',
       operatingHours: '24/7 Control Room & Patrol Dispatch',
       dataStatus: 'VERIFIED',
-      dataSource: `${stateName} Police Headquarters & Highway Command`,
+      dataSource: `${actualState} Police Headquarters & Highway Command`,
       lastUpdated: new Date().toISOString(),
       is24x7: true
     },
     {
-      id: `FAC-${stateName.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-FIRE-01`,
+      id: `FAC-${actualState.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-FIRE-01`,
       name: `${districtName} District Fire Station & Rescue Unit`,
       type: 'Fire Station',
-      state: stateName,
+      state: actualState,
       district: districtName,
       lat: Number((lat + 0.008).toFixed(4)),
       lon: Number((lon - 0.003).toFixed(4)),
-      address: `Fire Station Complex, ${districtName}, ${stateName}`,
+      address: `Fire Station Complex, ${districtName}, ${actualState}`,
       contact: '101',
       operatingHours: '24/7 Emergency Fire & Search Operations',
       dataStatus: 'VERIFIED',
-      dataSource: `${stateName} Fire & Emergency Services`,
+      dataSource: `${actualState} Fire & Emergency Services`,
       lastUpdated: new Date().toISOString(),
       is24x7: true
     },
     {
-      id: `FAC-${stateName.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-AMB-01`,
+      id: `FAC-${actualState.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-AMB-01`,
       name: `${districtName} District 108 Emergency Ambulance Hub`,
       type: 'Ambulance',
-      state: stateName,
+      state: actualState,
       district: districtName,
       lat: Number((lat - 0.002).toFixed(4)),
       lon: Number((lon + 0.007).toFixed(4)),
-      address: `108 Ambulance Dispatch Center, ${districtName}, ${stateName}`,
+      address: `108 Ambulance Dispatch Center, ${districtName}, ${actualState}`,
       contact: '108',
       operatingHours: '24/7 Rapid Medical Evacuation',
       dataStatus: 'LIVE',
@@ -1047,14 +1060,14 @@ function generateDistrictEmergencyFacilities(stateName: NERStateName, districtNa
       is24x7: true
     },
     {
-      id: `FAC-${stateName.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-SHEL-01`,
+      id: `FAC-${actualState.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-SHEL-01`,
       name: `${districtName} Disaster Evacuation & Relief Shelter`,
       type: 'Relief Shelter',
-      state: stateName,
+      state: actualState,
       district: districtName,
       lat: Number((lat + 0.012).toFixed(4)),
       lon: Number((lon + 0.010).toFixed(4)),
-      address: `Community High School Complex, ${districtName}, ${stateName}`,
+      address: `Community High School Complex, ${districtName}, ${actualState}`,
       contact: 'Not available',
       operatingHours: 'Active during Disaster Emergencies',
       dataStatus: 'STATIC',
@@ -1063,18 +1076,18 @@ function generateDistrictEmergencyFacilities(stateName: NERStateName, districtNa
       notes: 'Capacity: 1,200 evacuees, equipped with medical supplies & water filtration'
     },
     {
-      id: `FAC-${stateName.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-GOV-01`,
+      id: `FAC-${actualState.slice(0, 2).toUpperCase()}-${districtName.replace(/\s+/g, '').toUpperCase()}-GOV-01`,
       name: `${districtName} District Emergency Operation Centre (DDMA ${districtName})`,
       type: 'Government Emergency Facility',
-      state: stateName,
+      state: actualState,
       district: districtName,
       lat: Number((lat - 0.007).toFixed(4)),
       lon: Number((lon - 0.008).toFixed(4)),
-      address: `Deputy Commissioner Office, ${districtName}, ${stateName}`,
+      address: `Deputy Commissioner Office, ${districtName}, ${actualState}`,
       contact: '1077',
       operatingHours: '24/7 DDMA Command & Triage',
       dataStatus: 'VERIFIED',
-      dataSource: `State Disaster Management Authority (SDMA ${stateName})`,
+      dataSource: `State Disaster Management Authority (SDMA ${actualState})`,
       lastUpdated: new Date().toISOString(),
       is24x7: true
     }
