@@ -178,7 +178,7 @@ export default function EmergencyFacilitiesModule({
         zoomControl: true
       });
 
-      const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      const tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
 
       tileLayerRef.current = L.tileLayer(tileUrl, {
         maxZoom: 18,
@@ -221,15 +221,19 @@ export default function EmergencyFacilitiesModule({
       mapInstanceRef.current.removeLayer(tileLayerRef.current);
     }
 
-    let tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    let tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+    let subdomains: string[] | undefined = undefined;
+
     if (activeMapStyle === 'satellite') {
-      tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+      tileUrl = 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}';
+      subdomains = ['mt0', 'mt1', 'mt2', 'mt3'];
     } else if (activeMapStyle === 'street') {
       tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     }
 
     tileLayerRef.current = L.tileLayer(tileUrl, {
       maxZoom: 18,
+      subdomains: subdomains,
       attribution: 'Jeevan Setu GIS Telemetry'
     }).addTo(mapInstanceRef.current);
   }, [activeMapStyle]);
