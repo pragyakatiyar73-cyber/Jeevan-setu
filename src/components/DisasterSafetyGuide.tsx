@@ -305,8 +305,8 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                 className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs font-black px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 outline-none cursor-pointer hover:border-sky-500 transition"
                 title="Select Feature Language"
               >
-                <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
                 <option value="en">🇬🇧 English (EN)</option>
+                <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
                 <option value="as">🌿 असमीया (Assamese)</option>
                 <option value="bn">🌸 বাংলা (Bengali)</option>
                 <option value="brx">🏹 बड़ो (Bodo)</option>

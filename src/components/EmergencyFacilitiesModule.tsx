@@ -884,7 +884,7 @@ export default function EmergencyFacilitiesModule({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Column: Interactive GIS Map */}
-        <div className="lg:col-span-7 flex flex-col h-full min-h-[580px] max-h-[640px]">
+        <div className="lg:col-span-7 flex flex-col h-full min-h-[680px] sm:min-h-[720px] xl:min-h-[780px]">
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col h-full transition-colors duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
               <div>
@@ -985,8 +985,8 @@ export default function EmergencyFacilitiesModule({
               </div>
             </div>
 
-            {/* Interactive Leaflet Map Container - flex-1 min-h-[340px] */}
-            <div className="relative flex-1 min-h-[340px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner my-1">
+            {/* Interactive Leaflet Map Container - flex-1 min-h-[440px] */}
+            <div className="relative flex-1 min-h-[440px] sm:min-h-[480px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner my-1">
               <div ref={mapContainerRef} className="absolute inset-0 w-full h-full z-0" />
               
               {/* Floating Live Location Overlay Button inside map */}
@@ -1060,7 +1060,7 @@ export default function EmergencyFacilitiesModule({
         </div>
 
         {/* Right Column: Facilities List Cards */}
-        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col h-full min-h-[580px] max-h-[640px] transition-colors duration-300">
+        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col h-full min-h-[680px] sm:min-h-[720px] xl:min-h-[780px] transition-colors duration-300">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
             <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span>🏥</span> {isHi ? 'आपदा आपातकालीन सुविधा निर्देशिका' : 'Emergency Facilities Directory'}

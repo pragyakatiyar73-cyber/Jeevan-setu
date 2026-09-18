@@ -94,7 +94,7 @@ const translations: Record<LanguageCode, any> = {
   lep: lepJSON
 };
 
-const STORAGE_KEY = "jeevan_setu_language";
+const STORAGE_KEY = "jeevan_setu_lang_v3";
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
