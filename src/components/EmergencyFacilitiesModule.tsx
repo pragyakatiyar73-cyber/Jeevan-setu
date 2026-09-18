@@ -102,6 +102,9 @@ export default function EmergencyFacilitiesModule({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.LayerGroup | null>(null);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
+  const routePolylineRef = useRef<L.Polyline | null>(null);
+  const [activeMapStyle, setActiveMapStyle] = useState<'dark' | 'satellite' | 'street'>('dark');
 
   // Load facilities data
   const loadFacilities = async () => {
@@ -157,12 +160,11 @@ export default function EmergencyFacilitiesModule({
     loadFacilities();
   }, [selectedType, selectedState, selectedDistrict, searchQuery, activeUserLoc]);
 
-  // Leaflet Map Initialization & Rendering
+  // Leaflet Map Initialization
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
     if (!mapInstanceRef.current) {
-      // Fix default Leaflet icon paths
       delete (L.Icon.Default.prototype as any)._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
@@ -170,11 +172,17 @@ export default function EmergencyFacilitiesModule({
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
       });
 
-      const map = L.map(mapContainerRef.current).setView([25.8, 92.5], 7);
+      const map = L.map(mapContainerRef.current, {
+        center: [25.8, 92.5],
+        zoom: 7,
+        zoomControl: true
+      });
 
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 16,
-        attribution: 'Jeevan Setu GIS Telemetry &bull; Esri Dark Canvas'
+      const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+      tileLayerRef.current = L.tileLayer(tileUrl, {
+        maxZoom: 18,
+        attribution: 'Jeevan Setu GIS Telemetry'
       }).addTo(map);
 
       // Render Master 8-State NER Boundary Polygon
@@ -189,15 +197,54 @@ export default function EmergencyFacilitiesModule({
 
       markersRef.current = L.layerGroup().addTo(map);
       mapInstanceRef.current = map;
+
+      // Observe map container resize so Leaflet always fits container properly
+      const resizeObserver = new ResizeObserver(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      });
+      resizeObserver.observe(mapContainerRef.current);
     }
 
-    // Clear previous markers
-    if (markersRef.current) {
-      markersRef.current.clearLayers();
+    setTimeout(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    }, 200);
+  }, []);
+
+  // Update Tile Layer on Style Switch
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    if (tileLayerRef.current) {
+      mapInstanceRef.current.removeLayer(tileLayerRef.current);
     }
 
+    let tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    if (activeMapStyle === 'satellite') {
+      tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+    } else if (activeMapStyle === 'street') {
+      tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    }
+
+    tileLayerRef.current = L.tileLayer(tileUrl, {
+      maxZoom: 18,
+      attribution: 'Jeevan Setu GIS Telemetry'
+    }).addTo(mapInstanceRef.current);
+  }, [activeMapStyle]);
+
+  // Update Markers & Route Polyline
+  useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map || !markersRef.current) return;
+
+    markersRef.current.clearLayers();
+
+    if (routePolylineRef.current) {
+      map.removeLayer(routePolylineRef.current);
+      routePolylineRef.current = null;
+    }
 
     // User Location Pin Marker
     if (!isLocationOutsideNER) {
@@ -242,22 +289,22 @@ export default function EmergencyFacilitiesModule({
           <div style="
             background: ${iconColor};
             color: #ffffff;
-            width: ${isSelected ? '34px' : '28px'};
-            height: ${isSelected ? '34px' : '28px'};
+            width: ${isSelected ? '36px' : '28px'};
+            height: ${isSelected ? '36px' : '28px'};
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: ${isSelected ? '16px' : '14px'};
-            border: ${isSelected ? '3px solid #ffffff' : '2px solid #ffffff'};
-            box-shadow: ${isSelected ? `0 0 16px ${iconColor}` : '0 2px 6px rgba(0,0,0,0.4)'};
+            font-size: ${isSelected ? '18px' : '14px'};
+            border: ${isSelected ? '3px solid #38bdf8' : '2px solid #ffffff'};
+            box-shadow: ${isSelected ? `0 0 20px ${iconColor}` : '0 2px 6px rgba(0,0,0,0.4)'};
             transition: all 0.2s ease;
           ">
             ${symbol}
           </div>
         `,
-        iconSize: [isSelected ? 34 : 28, isSelected ? 34 : 28],
-        iconAnchor: [isSelected ? 17 : 14, isSelected ? 17 : 14]
+        iconSize: [isSelected ? 36 : 28, isSelected ? 36 : 28],
+        iconAnchor: [isSelected ? 18 : 14, isSelected ? 18 : 14]
       });
 
       const marker = L.marker([fac.lat, fac.lon], { icon: customDivIcon });
@@ -278,14 +325,41 @@ export default function EmergencyFacilitiesModule({
       markersRef.current.addLayer(marker);
     });
 
-    // Auto-fit map camera bounds to encompass facilities and user location
-    if (facilities.length > 0) {
+    // Draw route polyline to selected facility
+    if (selectedFacility && !isLocationOutsideNER) {
+      const routeLine = L.polyline(
+        [
+          [activeUserLoc.lat, activeUserLoc.lon],
+          [selectedFacility.lat, selectedFacility.lon]
+        ],
+        {
+          color: '#38bdf8',
+          weight: 4,
+          dashArray: '8, 8',
+          opacity: 0.95
+        }
+      );
+      routeLine.addTo(map);
+      routePolylineRef.current = routeLine;
+
+      const bounds = L.latLngBounds([
+        [activeUserLoc.lat, activeUserLoc.lon],
+        [selectedFacility.lat, selectedFacility.lon]
+      ]);
+      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 13 });
+    } else if (facilities.length > 0) {
       const bounds = L.latLngBounds(facilities.map(f => [f.lat, f.lon]));
       if (!isLocationOutsideNER) {
         bounds.extend([activeUserLoc.lat, activeUserLoc.lon]);
       }
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
     }
+
+    setTimeout(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    }, 200);
   }, [facilities, selectedFacility, activeUserLoc, isLocationOutsideNER]);
 
   // Handle Safe Route Click
@@ -570,17 +644,130 @@ export default function EmergencyFacilitiesModule({
         
         {/* Left Column: Interactive GIS Map */}
         <div className="lg:col-span-7 space-y-3">
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-3 transition-colors duration-300">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <span>🗺️</span> NER Emergency Facilities Interactive Leaflet Map
-              </h3>
-              <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/30">
-                ● 8 States Covered
-              </span>
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-4 transition-colors duration-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>🗺️</span> NER Emergency Facilities Interactive Leaflet Map
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  {isHi ? 'मैप पर किसी भी केंद्र पर क्लिक करके सीधा सुरक्षित मार्ग और टेलीमेट्री देखें' : 'Click any emergency facility pin on map to preview direct safe route & telemetry'}
+                </p>
+              </div>
+
+              {/* Map Layer Controls */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setActiveMapStyle('dark')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
+                    activeMapStyle === 'dark'
+                      ? 'bg-sky-500 text-white border-sky-400 shadow-md shadow-sky-500/20'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
+                  }`}
+                  title="Dark Base Map"
+                >
+                  🗺️ {isHi ? 'डार्क' : 'Dark'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveMapStyle('satellite')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
+                    activeMapStyle === 'satellite'
+                      ? 'bg-sky-500 text-white border-sky-400 shadow-md shadow-sky-500/20'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
+                  }`}
+                  title="Satellite Image Base Map"
+                >
+                  🛰️ {isHi ? 'सैटेलाइट' : 'Satellite'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveMapStyle('street')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
+                    activeMapStyle === 'street'
+                      ? 'bg-sky-500 text-white border-sky-400 shadow-md shadow-sky-500/20'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
+                  }`}
+                  title="OpenStreetMap Street Layer"
+                >
+                  🌐 {isHi ? 'स्ट्रीट' : 'Street'}
+                </button>
+              </div>
             </div>
 
-            <div ref={mapContainerRef} className="h-96 w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner" />
+            {/* Quick Action Toolbar on top of map */}
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-900/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5 text-sky-500" />
+                  {activeUserLoc.name}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                {nearestFacility && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFacility(nearestFacility)}
+                    className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                  >
+                    ⚡ {isHi ? 'निकटतम केंद्र' : 'Focus Nearest'} ({nearestFacility.distanceKm} km)
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (mapInstanceRef.current) {
+                      mapInstanceRef.current.setView([activeUserLoc.lat, activeUserLoc.lon], 12);
+                    }
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                >
+                  🎯 {isHi ? 'यूज़र स्थान' : 'Recenter Origin'}
+                </button>
+              </div>
+            </div>
+
+            {/* Interactive Leaflet Map Container */}
+            <div ref={mapContainerRef} className="h-[420px] sm:h-[460px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner relative z-0" />
+
+            {/* Selected Facility Interactive Route Bar */}
+            {selectedFacility && (
+              <div className="p-3.5 rounded-xl border border-sky-500/30 bg-sky-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-300">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black uppercase px-2 py-0.5 rounded bg-sky-500 text-white">
+                      {selectedFacility.type}
+                    </span>
+                    <h4 className="text-sm font-black text-slate-900 dark:text-white">
+                      {selectedFacility.name}
+                    </h4>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                    {selectedFacility.address} &bull; <b className="text-sky-400">{selectedFacility.distanceKm} km {isHi ? 'दूरी' : 'away'}</b>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href={`tel:${selectedFacility.contact}`}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    <span>{selectedFacility.contact}</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => handleGetSafeRoute(selectedFacility)}
+                    disabled={isCalculatingRoute}
+                    className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-black flex items-center gap-1.5 shadow transition cursor-pointer disabled:opacity-50"
+                  >
+                    <Navigation className="h-3.5 w-3.5" />
+                    <span>{isCalculatingRoute ? (isHi ? 'मार्ग की गणना...' : 'Calculating...') : (isHi ? 'सुरक्षित मार्ग प्राप्त करें ➔' : 'Get Safe Route ➔')}</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 font-mono">
               <div className="flex items-center gap-3">
