@@ -2214,7 +2214,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               title={isVideoGuideOpen ? "ऋष (आवाज़ बंद करने के लिए क्लिक करें)" : "Rish 10-Minute Video Guide (Click to Start Instruction)"}
             >
               <span className="text-sm">🎥</span>
-              <span>{language === 'hi' ? 'ऋष' : 'Rish'}</span>
+              <span>{language === 'hi' ? 'ऋष (गाइड)' : 'Rish (Guide)'}</span>
               {isVideoGuideOpen && (
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping ml-0.5" />
               )}
@@ -2501,7 +2501,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {/* 4 Feature Indicator Pills (Opens Compact Centered Modal in Middle of Screen) */}
               <div className="pt-1.5 flex flex-wrap items-center gap-1.5 sm:gap-2">
                 {[
-                  { label: language === 'hi' ? '🎥 ऋष' : '🎥 Rish', icon: Sparkles, action: handleOpenVideoGuide },
+                  { label: language === 'hi' ? '🎥 ऋष (गाइड)' : '🎥 Rish (Guide)', icon: Sparkles, action: handleOpenVideoGuide },
                   { label: 'AI Analysis', icon: Cpu, action: () => setActiveFeatureModal('ai') },
                   { label: 'Live Data', icon: CloudRain, action: () => setActiveFeatureModal('livedata') },
                   { label: 'GIS Mapping', icon: MapPin, action: () => setActiveFeatureModal('gis') },
