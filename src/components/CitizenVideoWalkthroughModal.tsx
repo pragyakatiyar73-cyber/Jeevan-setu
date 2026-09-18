@@ -280,7 +280,7 @@ export const VIDEO_SCENES: Scene[] = [
     badgeHi: 'AI आवाज़',
     icon: Bot,
     color: 'from-indigo-600 to-purple-600',
-    narrationHi: 'यदि आपको कोई भी सवाल पूछना हो तो ऊपर Jeeva AI (जीवि) बटन दबाकर हिंदी में बोलकर पूछें। जीवन सेतु का नागरिक मित्र आपकी और आपके परिवार की सुरक्षा के लिए 24 घंटे तत्पर है। सुरक्षित रहें!',
+    narrationHi: 'यदि आपको कोई भी सवाल पूछना हो तो ऊपर Jeeva AI (जीवि) बटन दबाकर हिंदी में बोलकर पूछें। जीवन सेतु का ऋष (Rish) आपकी और आपके परिवार की सुरक्षा के लिए 24 घंटे तत्पर है। सुरक्षित रहें!',
     narrationEn: 'Ask any question using Hindi or English voice search via Jeeva AI. Jeevan Setu is dedicated to protecting lives 24/7.',
     screenHighlights: [
       'Hindi & English Jeeva Voice AI Emergency Assistant',

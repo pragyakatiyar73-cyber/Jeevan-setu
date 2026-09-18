@@ -2208,16 +2208,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
 
           {/* RIGHT: Action Tools & Mobile Menu */}
           <div className="flex items-center gap-1.5 sm:gap-2 2xl:gap-2.5 shrink-0">
-            {/* 🎥 NAGRIK MITRA (CITIZEN VIDEO GUIDE) BUTTON */}
+            {/* 🎥 RISH (CITIZEN VIDEO GUIDE) BUTTON */}
             <button
               onClick={handleOpenVideoGuide}
               className={`bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-amber-500/20 hover:shadow-amber-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border whitespace-nowrap shrink-0 group ${
                 isVideoGuideOpen ? 'ring-2 ring-emerald-400 border-emerald-300 animate-pulse' : 'border-amber-300/40'
               }`}
-              title={isVideoGuideOpen ? "नागरिक मित्र (आवाज़ बंद करने के लिए क्लिक करें)" : "Nagrik Mitra 10-Minute Video Guide (Click to Start Instruction)"}
+              title={isVideoGuideOpen ? "ऋष (आवाज़ बंद करने के लिए क्लिक करें)" : "Rish 10-Minute Video Guide (Click to Start Instruction)"}
             >
               <span className="text-sm">🎥</span>
-              <span>{language === 'hi' ? 'नागरिक मित्र' : 'Nagrik Mitra'}</span>
+              <span>{language === 'hi' ? 'ऋष' : 'Rish'}</span>
               {isVideoGuideOpen && (
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping ml-0.5" />
               )}
@@ -2505,7 +2505,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {/* 4 Feature Indicator Pills (Opens Compact Centered Modal in Middle of Screen) */}
               <div className="pt-2 flex flex-wrap items-center gap-2 sm:gap-2.5">
                 {[
-                  { label: language === 'hi' ? '🎥 नागरिक मित्र' : '🎥 Nagrik Mitra', icon: Sparkles, action: handleOpenVideoGuide },
+                  { label: language === 'hi' ? '🎥 ऋष' : '🎥 Rish', icon: Sparkles, action: handleOpenVideoGuide },
                   { label: 'AI Analysis', icon: Cpu, action: () => setActiveFeatureModal('ai') },
                   { label: 'Live Data', icon: CloudRain, action: () => setActiveFeatureModal('livedata') },
                   { label: 'GIS Mapping', icon: MapPin, action: () => setActiveFeatureModal('gis') },

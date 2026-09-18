@@ -1246,11 +1246,11 @@ export default function App() {
               className={`rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-amber-500/25 flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border ${
                 isVideoGuideOpen ? 'ring-2 ring-emerald-400 border-emerald-300 animate-pulse' : 'border-amber-300/40'
               }`}
-              title={isVideoGuideOpen ? "नागरिक मित्र (गाइड आवाज़ रोकने के लिए क्लिक करें)" : "नागरिक मित्र — 10-मिनट संपूर्ण नागरिक वीडियो गाइड (गाइड आवाज़ शुरू करने के लिए क्लिक करें)"}
+              title={isVideoGuideOpen ? "ऋष (गाइड आवाज़ रोकने के लिए क्लिक करें)" : "ऋष — 10-मिनट संपूर्ण नागरिक वीडियो गाइड (गाइड आवाज़ शुरू करने के लिए क्लिक करें)"}
             >
               <span className="text-sm">🎥</span>
               <span className="whitespace-nowrap font-black">
-                {language === 'hi' ? 'नागरिक मित्र (गाइड)' : 'Nagrik Mitra (Guide)'}
+                {language === 'hi' ? 'ऋष (गाइड)' : 'Rish (Guide)'}
               </span>
               {isVideoGuideOpen && (
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping ml-0.5" />
