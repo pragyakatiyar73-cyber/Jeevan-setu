@@ -2453,12 +2453,12 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <div className="max-w-2xl space-y-4">
               
               {/* Upper Label */}
-              <div className="text-xs sm:text-xs font-bold uppercase tracking-wider text-[#38BDF8] font-sans drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+              <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#38BDF8] font-sans drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
                 {t('home.badge', 'DISASTER RESPONSE & GIS INTELLIGENCE')}
               </div>
 
               {/* Title with "Jeevan" in White and "Setu" in Cyan */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white font-sans leading-tight drop-shadow-[0_3px_12px_rgba(0,0,0,0.8)]">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-sans leading-tight drop-shadow-[0_3px_12px_rgba(0,0,0,0.8)]">
                 {(() => {
                   const parts = t('nav.brandTitle', 'Jeevan Setu').split(' ');
                   return (
@@ -2467,39 +2467,39 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 })()}
               </h1>
 
-              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+              <p className="text-base sm:text-lg lg:text-xl font-bold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
                 {t('home.heroSub', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </p>
 
-              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal max-w-xl drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+              <p className="text-xs sm:text-xs text-slate-200 leading-relaxed font-normal max-w-lg drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
                 {t('home.heroDesc', 'Jeevan Setu combines AI, GIS, satellite data, weather intelligence and real-time disaster information to help people understand risks, find emergency resources and respond faster.')}
               </p>
 
               {/* TWO REAL WORKING CALL TO ACTION BUTTONS */}
-              <div className="pt-2 flex flex-wrap items-center gap-3 z-30">
+              <div className="pt-1.5 flex flex-wrap items-center gap-2.5 z-30">
                 <button
                   type="button"
                   onClick={() => onNavigateModule('customdashboard')}
-                  className="bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369a1] hover:from-[#7dd3fc] hover:to-[#38BDF8] text-slate-950 font-bold px-6 py-3 rounded-full shadow-xl shadow-sky-500/30 flex items-center gap-2 text-sm sm:text-base transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-sky-500/50 cursor-pointer border border-sky-200/60 group"
+                  className="bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369a1] hover:from-[#7dd3fc] hover:to-[#38BDF8] text-slate-950 font-bold px-4 py-2 rounded-full shadow-lg shadow-sky-500/25 flex items-center gap-1.5 text-xs sm:text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] cursor-pointer border border-sky-200/60 group"
                 >
-                  <LayoutDashboard className="h-5 w-5 text-slate-950 group-hover:scale-105 transition duration-300" />
+                  <LayoutDashboard className="h-4 w-4 text-slate-950 group-hover:scale-105 transition duration-300" />
                   <span>{t('home.exploreDashboard', 'Explore Dashboard')}</span>
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition duration-300" />
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition duration-300" />
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setActiveSidePanel('livemap')}
-                  className="bg-slate-950/85 hover:bg-slate-900 text-white font-bold px-6 py-3 rounded-full border border-[#38BDF8]/70 hover:border-[#38BDF8] backdrop-blur-xl flex items-center gap-2 text-sm sm:text-base transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-xl hover:shadow-sky-500/25 cursor-pointer shadow-lg group"
+                  className="bg-slate-950/85 hover:bg-slate-900 text-white font-bold px-4 py-2 rounded-full border border-[#38BDF8]/70 hover:border-[#38BDF8] backdrop-blur-xl flex items-center gap-1.5 text-xs sm:text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] cursor-pointer shadow-md group"
                 >
-                  <MapPin className="h-5 w-5 text-[#38BDF8] group-hover:scale-105 transition duration-300" />
+                  <MapPin className="h-4 w-4 text-[#38BDF8] group-hover:scale-105 transition duration-300" />
                   <span>{t('home.exploreLiveMap', 'Explore Live Map')}</span>
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition duration-300" />
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition duration-300" />
                 </button>
               </div>
 
               {/* 4 Feature Indicator Pills (Opens Compact Centered Modal in Middle of Screen) */}
-              <div className="pt-2 flex flex-wrap items-center gap-2 sm:gap-2.5">
+              <div className="pt-1.5 flex flex-wrap items-center gap-1.5 sm:gap-2">
                 {[
                   { label: language === 'hi' ? '🎥 ऋष' : '🎥 Rish', icon: Sparkles, action: handleOpenVideoGuide },
                   { label: 'AI Analysis', icon: Cpu, action: () => setActiveFeatureModal('ai') },
@@ -2515,10 +2515,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       onClick={item.action}
                       title={`Click to preview ${item.label}`}
                       aria-label={`Preview ${item.label}`}
-                      className="bg-slate-950/85 backdrop-blur-xl border border-[#38BDF8]/50 hover:border-[#38BDF8] px-3.5 py-1.5 rounded-full text-xs font-semibold text-white flex items-center gap-1.5 shadow-md shadow-sky-500/15 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.04] active:scale-95 cursor-pointer group"
+                      className="bg-slate-950/85 backdrop-blur-xl border border-[#38BDF8]/50 hover:border-[#38BDF8] px-2.5 py-1 rounded-full text-[11px] font-semibold text-white flex items-center gap-1 shadow-sm transition-all duration-200 hover:scale-[1.03] cursor-pointer group"
                     >
-                      <Icon className="h-3.5 w-3.5 text-[#38BDF8] group-hover:scale-115 transition duration-300 drop-shadow-[0_0_6px_rgba(56,189,248,0.5)]" />
-                      <span className="font-semibold tracking-wide">{item.label}</span>
+                      <Icon className="h-3 w-3 text-[#38BDF8] group-hover:scale-115 transition duration-300 drop-shadow-[0_0_6px_rgba(56,189,248,0.5)]" />
+                      <span>{item.label}</span>
                     </button>
                   );
                 })}
@@ -2662,10 +2662,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                         </span>
                       )}
                     </div>
-                    <h3 className={`text-sm sm:text-base font-bold text-slate-900 dark:text-white ${card.hoverText} transition leading-snug`}>
+                    <h3 className={`text-xs sm:text-sm font-bold text-slate-900 dark:text-white ${card.hoverText} transition leading-snug`}>
                       {card.title}
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-normal leading-relaxed">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 font-normal leading-snug">
                       {card.desc}
                     </p>
                   </div>
