@@ -981,7 +981,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
           {/* Left Column: Interactive GIS Map */}
-          <div className={`lg:col-span-7 rounded-2xl border p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px] ${
+          <div className={`lg:col-span-7 h-full rounded-2xl border p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px] ${
             isDarkMode ? 'bg-[#070d1e] border-slate-800' : 'bg-white border-slate-200'
           }`}>
               {/* Map Header & Controls */}
@@ -1100,7 +1100,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
           </div>
 
         {/* Right Column: Emergency Request Form Cards Panel */}
-        <div className={`lg:col-span-5 rounded-2xl border p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px] ${
+        <div className={`lg:col-span-5 h-full rounded-2xl border p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px] ${
           isDarkMode ? 'bg-[#070d1e] border-slate-800' : 'bg-white border-slate-200'
         }`}>
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
