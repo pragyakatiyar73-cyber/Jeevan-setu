@@ -474,49 +474,5 @@ export default function CitizenVideoWalkthroughModal({
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  if (!isOpen) return null;
-
-  return (
-    <aside
-      aria-label="नागरिक मित्र वॉइस गाइड बटन"
-      className="fixed bottom-[90px] right-7 z-[100001] flex items-center gap-2 select-none animate-in slide-in-from-bottom-3 duration-300"
-    >
-      <a
-        href="https://youtu.be/skLTZjde6Z4?si=6_XX7IuhH9GP8ViE"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="h-10 px-3 rounded-full bg-red-600 hover:bg-red-500 text-white font-black text-xs shadow-2xl flex items-center gap-1.5 border-2 border-white/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-        title="YouTube पर आधिकारिक वीडियो देखें (Watch Official Video on YouTube)"
-      >
-        <Youtube className="w-4 h-4 text-white fill-white" />
-        <span className="hidden sm:inline whitespace-nowrap">YouTube वीडियो</span>
-      </a>
-
-      <button
-        type="button"
-        onClick={togglePlay}
-        className={`relative h-11 w-11 rounded-full shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-300 active:scale-90 border-2 ${
-          isPlaying
-            ? 'bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 border-white text-slate-950 ring-4 ring-amber-400/40 scale-105'
-            : 'bg-[#070d1f]/95 hover:bg-slate-900 border-amber-400/90 text-amber-300 shadow-amber-950/80 hover:scale-105'
-        }`}
-        title={isPlaying ? 'नागरिक मित्र (आवाज़ रोकें)' : 'नागरिक मित्र (आवाज़ शुरू करें)'}
-      >
-        {isPlaying ? (
-          <>
-            <Pause className="w-5 h-5 fill-slate-950 text-slate-950" />
-            <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-400 border-2 border-slate-950 animate-ping" />
-            <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-slate-950" />
-          </>
-        ) : (
-          <>
-            <Volume2 className="w-5 h-5 text-amber-300" />
-            <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-amber-500 text-slate-950 font-black text-[9px] flex items-center justify-center border border-slate-900">
-              ▶
-            </span>
-          </>
-        )}
-      </button>
-    </aside>
-  );
+  return null;
 }
