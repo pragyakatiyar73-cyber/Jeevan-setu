@@ -872,7 +872,7 @@ export default function EmergencyFacilitiesModule({
       )}
 
       {/* 🗺️ INTERACTIVE GIS MAP & FACILITY CARDS LAYOUT */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Column: Interactive GIS Map */}
         <div className="lg:col-span-7 space-y-3">
@@ -1022,31 +1022,31 @@ export default function EmergencyFacilitiesModule({
         </div>
 
         {/* Right Column: Facilities List Cards */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col h-full min-h-[580px] transition-colors duration-300">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
             <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <span>🏥</span> Emergency Facilities Directory
+              <span>🏥</span> {isHi ? 'आपदा आपातकालीन सुविधा निर्देशिका' : 'Emergency Facilities Directory'}
             </h3>
             <span className="text-xs font-mono text-slate-500 font-bold">
-              {facilities.length} Available
+              {facilities.length} {isHi ? 'उपलब्ध बिंदु' : 'Available'}
             </span>
           </div>
 
           {loading ? (
-            <div className="py-12 text-center text-slate-500 space-y-2">
-              <RefreshCw className="h-8 w-8 animate-spin mx-auto text-sky-500" />
-              <p className="text-xs font-bold">Loading emergency facilities across 8 NER states...</p>
+            <div className="py-12 flex-1 flex flex-col items-center justify-center text-slate-500 space-y-2">
+              <RefreshCw className="h-8 w-8 animate-spin text-sky-500" />
+              <p className="text-xs font-bold">{isHi ? 'सुविधाएं लोड हो रही हैं...' : 'Loading emergency facilities across 8 NER states...'}</p>
             </div>
           ) : errorNotice ? (
-            <div className="p-6 rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 text-center font-bold text-sm">
+            <div className="p-6 flex-1 rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 text-center font-bold text-sm flex items-center justify-center">
               {errorNotice}
             </div>
           ) : facilities.length === 0 ? (
-            <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] text-center text-slate-500 text-xs font-bold">
-              No facilities found matching selected filter criteria inside NER.
+            <div className="p-6 flex-1 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 text-center text-slate-500 text-xs font-bold flex items-center justify-center">
+              {isHi ? 'चयनित फिल्टर के लिए कोई सुविधा नहीं मिली।' : 'No facilities found matching selected filter criteria inside NER.'}
             </div>
           ) : (
-            <div className="space-y-3.5 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-3.5 flex-1 max-h-[600px] overflow-y-auto pr-1 custom-scrollbar">
               {facilities.map(fac => {
                 const isSelected = selectedFacility && selectedFacility.id === fac.id;
                 return (
