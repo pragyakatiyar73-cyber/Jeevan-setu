@@ -105,14 +105,14 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     if (saved && validCodes.includes(saved)) {
       return saved;
     }
-    return "hi";
+    return "en";
   });
 
-  // Force default to Hindi on initial mount if not explicitly toggled in session
+  // Force default to English on initial mount if not explicitly toggled in session
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) {
-      localStorage.setItem(STORAGE_KEY, "hi");
+      localStorage.setItem(STORAGE_KEY, "en");
     }
   }, []);
 

@@ -7,7 +7,7 @@ export interface UseVoiceRecognitionOptions {
 }
 
 export function useVoiceRecognition(options: UseVoiceRecognitionOptions = {}) {
-  const { language = 'hi-IN', onResult, onError } = options;
+  const { language = 'en-IN', onResult, onError } = options;
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
