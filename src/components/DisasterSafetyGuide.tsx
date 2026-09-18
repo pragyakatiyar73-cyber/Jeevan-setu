@@ -261,8 +261,8 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
     }
   };
 
-  const isHindi = language === 'hi';
-  const safetyData = isHindi ? safetyDataHi : safetyDataEn;
+  const isHindi = true; // Always present guidelines in Hindi as requested by user
+  const safetyData = safetyDataHi;
 
   const checkedCount = Object.values(kitChecked).filter(Boolean).length;
   const totalCount = Object.keys(kitChecked).length;
@@ -280,15 +280,15 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
           <div className="space-y-3 max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 dark:bg-sky-500/20 border border-sky-200 dark:border-sky-500/40 text-sky-700 dark:text-sky-300 text-xs font-black uppercase tracking-wider">
               <BookOpen className="w-3.5 h-3.5" />
-              <span>{isHindi ? 'आधिकारिक आपदा उत्तरजीविता निर्देशिका' : 'OFFICIAL DISASTER SURVIVAL GUIDE'}</span>
+              <span>आधिकारिक आपदा उत्तरजीविता निर्देशिका (OFFICIAL SURVIVAL GUIDE)</span>
             </div>
             
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-              {isHindi ? 'आपदा तैयारी एवं सुरक्षा दिशानिर्देश' : 'Disaster Preparedness & Safety Guidelines'}
+              आपदा तैयारी एवं सुरक्षा दिशानिर्देश (Disaster Preparedness & Safety)
             </h1>
             
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-              {isHindi ? 'बाढ़, भूस्खलन, भूकंप और चक्रवात आपात स्थितियों के लिए त्वरित उत्तरजीविता नियम, आपातकालीन चेकलिस्ट, क्या करें और क्या न करें, एवं 24/7 टोल-फ्री हेल्पलाइन नंबर।' : 'Actionable survival protocols, emergency checklists, do’s and don’ts, and 24/7 toll-free helpline numbers approved for flood, landslide, earthquake, and cyclone emergencies.'}
+              बाढ़, भूस्खलन, भूकंप और चक्रवात आपात स्थितियों के लिए त्वरित उत्तरजीविता नियम, आपातकालीन चेकलिस्ट, क्या करें और क्या न करें, एवं 24/7 टोल-फ्री हेल्पलाइन नंबर।
             </p>
           </div>
 
@@ -305,7 +305,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
               >
                 <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
                 <option value="en">🇬🇧 English (EN)</option>
-                <option value="as">🌿 অসমীয়া (Assamese)</option>
+                <option value="as">🌿 असमीया (Assamese)</option>
                 <option value="bn">🌸 বাংলা (Bengali)</option>
                 <option value="brx">🏹 बड़ो (Bodo)</option>
                 <option value="mni">🦚 মৈতৈলোন্ (Manipuri)</option>
@@ -322,7 +322,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                 className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-xs sm:text-sm shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2 border border-rose-400/30 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
               >
                 <ShieldAlert className="w-4 h-4" />
-                <span>{isHindi ? 'आपातकालीन SOS बटन 🚨' : 'TRIGGER SOS DISTRESS 🚨'}</span>
+                <span>आपातकालीन SOS बटन 🚨</span>
               </button>
             )}
           </div>
@@ -333,7 +333,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
       <div className="space-y-3">
         <h2 className="text-sm font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
           <PhoneCall className="w-4 h-4 text-sky-500" />
-          <span>{t('safety.helplinesTitle', '24/7 Emergency Toll-Free Helplines')}</span>
+          <span>24/7 आपातकालीन टोल-फ्री हेल्पलाइन (24/7 Emergency Helplines)</span>
         </h2>
         
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-3.5">
@@ -371,7 +371,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                   className="mt-3 w-full py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition cursor-pointer"
                 >
                   <PhoneCall className="w-3.5 h-3.5" />
-                  <span>{t('safety.callNow', 'Call')} {contact.number} {t('safety.now', 'Now')}</span>
+                  <span>{contact.number} पर कॉल करें (Call Now)</span>
                 </a>
               </div>
             );
@@ -382,11 +382,11 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
       {/* 3. DISASTER CATEGORY SELECTOR TABS */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
         {[
-          { id: 'flood', label: t('safety.tabFlood', '🌊 Flood Safety'), color: 'from-blue-600 to-cyan-600' },
-          { id: 'landslide', label: t('safety.tabLandslide', '⛰️ Landslide Safety'), color: 'from-amber-600 to-orange-600' },
-          { id: 'earthquake', label: t('safety.tabEarthquake', '🌋 Earthquake Safety'), color: 'from-rose-600 to-red-600' },
-          { id: 'cyclone', label: t('safety.tabCyclone', '⚡ Cyclone & Lightning'), color: 'from-purple-600 to-indigo-600' },
-          { id: 'kit', label: t('safety.tabKit', '🎒 72-Hour Survival Kit'), color: 'from-emerald-600 to-teal-600' }
+          { id: 'flood', label: '🌊 बाढ़ सुरक्षा निर्देश (Flood Safety)', color: 'from-blue-600 to-cyan-600' },
+          { id: 'landslide', label: '⛰️ भूस्खलन सुरक्षा निर्देश (Landslide Safety)', color: 'from-amber-600 to-orange-600' },
+          { id: 'earthquake', label: '🌋 भूकंप सुरक्षा निर्देश (Earthquake Safety)', color: 'from-rose-600 to-red-600' },
+          { id: 'cyclone', label: '⚡ चक्रवात सुरक्षा निर्देश (Cyclone Safety)', color: 'from-purple-600 to-indigo-600' },
+          { id: 'kit', label: '🎒 72-घंटे की उत्तरजीविता किट (72-Hour Survival Kit)', color: 'from-emerald-600 to-teal-600' }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -450,7 +450,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-black text-sm uppercase tracking-wide">
                       <CheckCircle2 className="w-5 h-5" />
-                      <span>{t('safety.recommendedDos', "RECOMMENDED DO'S (KYA KAREIN)")}</span>
+                      <span>अनुशंसित कार्य - क्या करें (RECOMMENDED DO'S)</span>
                     </div>
 
                     <div className="space-y-2.5">
@@ -467,7 +467,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-black text-sm uppercase tracking-wide">
                       <XCircle className="w-5 h-5" />
-                      <span>{t('safety.criticalDonts', "CRITICAL DONT'S (KYA NA KAREIN)")}</span>
+                      <span>महत्वपूर्ण निषेध - क्या न करें (CRITICAL DONT'S)</span>
                     </div>
 
                     <div className="space-y-2.5">
