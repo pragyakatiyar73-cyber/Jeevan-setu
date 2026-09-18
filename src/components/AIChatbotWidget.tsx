@@ -334,26 +334,6 @@ export default function AIChatbotWidget({
 
   return (
     <>
-      {/* 🔴 FLOATING BOT TOGGLE BUTTON (BOTTOM RIGHT - ONLY SHOWN ON HOMEPAGE) */}
-      {!isOpen && shouldShowFloating && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-[99999] bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center gap-3 border-2 border-white/30 group cursor-pointer"
-          title="Open Jeevan Setu AI Disaster Chatbot"
-        >
-          <div className="relative">
-            <Bot className="h-7 w-7 group-hover:rotate-12 transition-transform duration-300" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-emerald-400 rounded-full animate-ping border border-slate-900" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-emerald-500 rounded-full border border-slate-900" />
-          </div>
-          <div className="hidden sm:flex flex-col items-start pr-1">
-            <span className="text-xs font-black tracking-wide flex items-center gap-1">
-              Jeeva <Sparkles className="h-3 w-3 text-amber-300" />
-            </span>
-            <span className="text-[10px] text-sky-100 font-semibold">Type or Speak 🎙️</span>
-          </div>
-        </button>
-      )}
 
       {/* 🤖 EXPANDABLE AI CHATBOT PANEL & OVERLAY */}
       {isOpen && (
