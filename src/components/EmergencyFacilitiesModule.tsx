@@ -104,6 +104,7 @@ export default function EmergencyFacilitiesModule({
   const markersRef = useRef<L.LayerGroup | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const routePolylineRef = useRef<L.Polyline | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const [activeMapStyle, setActiveMapStyle] = useState<'dark' | 'satellite' | 'street'>('dark');
 
   // Load facilities data
@@ -204,12 +205,17 @@ export default function EmergencyFacilitiesModule({
         mapInstanceRef.current = map;
 
         // Observe map container resize so Leaflet always fits container properly
-        const resizeObserver = new ResizeObserver(() => {
+        if (resizeObserverRef.current) {
+          resizeObserverRef.current.disconnect();
+        }
+        resizeObserverRef.current = new ResizeObserver(() => {
           if (mapInstanceRef.current) {
-            mapInstanceRef.current.invalidateSize();
+            try {
+              mapInstanceRef.current.invalidateSize();
+            } catch (_) {}
           }
         });
-        resizeObserver.observe(mapContainerRef.current);
+        resizeObserverRef.current.observe(mapContainerRef.current);
       }
     } catch (e) {
       console.warn("Leaflet Map init safe catch:", e);
@@ -217,12 +223,18 @@ export default function EmergencyFacilitiesModule({
 
     const timer = setTimeout(() => {
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize();
+        try {
+          mapInstanceRef.current.invalidateSize();
+        } catch (_) {}
       }
     }, 200);
 
     return () => {
       clearTimeout(timer);
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
       if (mapInstanceRef.current) {
         try {
           mapInstanceRef.current.remove();
@@ -236,24 +248,26 @@ export default function EmergencyFacilitiesModule({
   useEffect(() => {
     if (!mapInstanceRef.current) return;
     if (tileLayerRef.current) {
-      mapInstanceRef.current.removeLayer(tileLayerRef.current);
+      try {
+        mapInstanceRef.current.removeLayer(tileLayerRef.current);
+      } catch (_) {}
     }
 
     let tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
-    let subdomains: string[] | undefined = undefined;
+    const options: L.TileLayerOptions = {
+      maxZoom: 18,
+      attribution: 'Jeevan Setu GIS Telemetry'
+    };
 
     if (activeMapStyle === 'satellite') {
       tileUrl = 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}';
-      subdomains = ['mt0', 'mt1', 'mt2', 'mt3'];
+      options.subdomains = ['mt0', 'mt1', 'mt2', 'mt3'];
     } else if (activeMapStyle === 'street') {
       tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      options.subdomains = ['a', 'b', 'c'];
     }
 
-    tileLayerRef.current = L.tileLayer(tileUrl, {
-      maxZoom: 18,
-      subdomains: subdomains,
-      attribution: 'Jeevan Setu GIS Telemetry'
-    }).addTo(mapInstanceRef.current);
+    tileLayerRef.current = L.tileLayer(tileUrl, options).addTo(mapInstanceRef.current);
   }, [activeMapStyle]);
 
   // Update Markers & Route Polyline
