@@ -324,16 +324,25 @@ export default function EmergencyFacilitiesModule({
       console.warn("Leaflet Map init safe catch:", e);
     }
 
-    const timer = setTimeout(() => {
+    const timer1 = setTimeout(() => {
       if (mapInstanceRef.current) {
         try {
           mapInstanceRef.current.invalidateSize();
         } catch (_) {}
       }
-    }, 200);
+    }, 100);
+
+    const timer2 = setTimeout(() => {
+      if (mapInstanceRef.current) {
+        try {
+          mapInstanceRef.current.invalidateSize();
+        } catch (_) {}
+      }
+    }, 500);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect();
         resizeObserverRef.current = null;
@@ -872,23 +881,38 @@ export default function EmergencyFacilitiesModule({
       )}
 
       {/* 🗺️ INTERACTIVE GIS MAP & FACILITY CARDS LAYOUT */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Column: Interactive GIS Map */}
-        <div className="lg:col-span-7 space-y-3">
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-4 transition-colors duration-300">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="lg:col-span-7 flex flex-col h-full min-h-[580px] max-h-[640px]">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col h-full transition-colors duration-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
               <div>
                 <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <span>🗺️</span> NER Emergency Facilities Interactive Leaflet Map
+                  <span>🗺️</span> {isHi ? 'आपातकालीन सुविधा इंटरएक्टिव मैप' : 'Emergency Facilities Interactive Map'}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  {isHi ? 'मैप पर किसी भी केंद्र पर क्लिक करके सीधा सुरक्षित मार्ग और टेलीमेट्री देखें' : 'Click any emergency facility pin on map to preview direct safe route & telemetry'}
+                  {isHi ? 'सुरक्षित मार्ग और दूरी देखने के लिए पिन पर क्लिक करें' : 'Click any facility pin to preview direct safe route & distance'}
                 </p>
               </div>
 
-              {/* Map Layer Controls */}
+              {/* Map Layer Controls & Quick Live Location */}
               <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleDetectLiveGPS}
+                  disabled={isLocatingUser}
+                  className={`px-3 py-1 rounded-lg text-xs font-black transition flex items-center gap-1.5 cursor-pointer border shadow ${
+                    isLiveGpsActive
+                      ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400 shadow-emerald-600/30'
+                      : 'bg-sky-600 hover:bg-sky-500 text-white border-sky-400 shadow-sky-600/30'
+                  }`}
+                  title="Detect live GPS coordinates"
+                >
+                  <Radio className={`h-3.5 w-3.5 ${isLocatingUser ? 'animate-spin' : isLiveGpsActive ? 'animate-pulse' : ''}`} />
+                  <span>{isLocatingUser ? (isHi ? 'खोज रहे हैं...' : 'Locating...') : isLiveGpsActive ? (isHi ? 'लाइव GPS ON' : 'Live GPS ON') : (isHi ? '📍 लाइव लोकेशन' : '📍 Live Location')}</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => setActiveMapStyle('dark')}
@@ -929,11 +953,11 @@ export default function EmergencyFacilitiesModule({
             </div>
 
             {/* Quick Action Toolbar on top of map */}
-            <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-900/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-900/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 my-2 shrink-0">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5 text-sky-500" />
-                  {activeUserLoc.name}
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1 truncate max-w-[220px]">
+                  <MapPin className="h-3.5 w-3.5 text-sky-500 shrink-0" />
+                  <span className="truncate">{activeUserLoc.name}</span>
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -951,6 +975,7 @@ export default function EmergencyFacilitiesModule({
                   onClick={() => {
                     if (mapInstanceRef.current) {
                       mapInstanceRef.current.setView([activeUserLoc.lat, activeUserLoc.lon], 12);
+                      mapInstanceRef.current.invalidateSize();
                     }
                   }}
                   className="px-2.5 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
@@ -960,22 +985,35 @@ export default function EmergencyFacilitiesModule({
               </div>
             </div>
 
-            {/* Interactive Leaflet Map Container */}
-            <div ref={mapContainerRef} className="h-[420px] sm:h-[460px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner relative z-0" />
+            {/* Interactive Leaflet Map Container - flex-1 min-h-[340px] */}
+            <div className="relative flex-1 min-h-[340px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner my-1">
+              <div ref={mapContainerRef} className="absolute inset-0 w-full h-full z-0" />
+              
+              {/* Floating Live Location Overlay Button inside map */}
+              <button
+                type="button"
+                onClick={handleDetectLiveGPS}
+                disabled={isLocatingUser}
+                className="absolute bottom-3 right-3 z-[400] px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-900 text-white text-xs font-black shadow-2xl border border-sky-500/50 backdrop-blur-md flex items-center gap-2 cursor-pointer transition hover:scale-105 active:scale-95"
+              >
+                <Radio className={`h-4 w-4 ${isLocatingUser ? 'animate-spin text-sky-400' : isLiveGpsActive ? 'text-emerald-400 animate-pulse' : 'text-sky-400'}`} />
+                <span>{isLocatingUser ? (isHi ? 'स्थान खोज रहे हैं...' : 'Locating...') : isLiveGpsActive ? (isHi ? '📡 लाइव लोकेशन ऑन' : '📡 Live Location Active') : (isHi ? '📍 लाइव लोकेशन चालू करें' : '📍 Detect Live Location')}</span>
+              </button>
+            </div>
 
             {/* Selected Facility Interactive Route Bar */}
             {selectedFacility && (
-              <div className="p-3.5 rounded-xl border border-sky-500/30 bg-sky-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-300">
+              <div className="p-3 rounded-xl border border-sky-500/30 bg-sky-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 animate-in fade-in duration-300 shrink-0 my-1">
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black uppercase px-2 py-0.5 rounded bg-sky-500 text-white">
                       {selectedFacility.type}
                     </span>
-                    <h4 className="text-sm font-black text-slate-900 dark:text-white">
+                    <h4 className="text-sm font-black text-slate-900 dark:text-white truncate max-w-[280px]">
                       {selectedFacility.name}
                     </h4>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium truncate max-w-[340px]">
                     {selectedFacility.address} &bull; <b className="text-sky-400">{selectedFacility.distanceKm} km {isHi ? 'दूरी' : 'away'}</b>
                   </p>
                 </div>
@@ -992,7 +1030,7 @@ export default function EmergencyFacilitiesModule({
                   ) : (
                     <span className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 text-xs font-bold flex items-center gap-1.5 border border-slate-700">
                       <Phone className="h-3.5 w-3.5 text-slate-500" />
-                      <span>No Direct Phone</span>
+                      <span>No Phone</span>
                     </span>
                   )}
                   <button
@@ -1002,13 +1040,13 @@ export default function EmergencyFacilitiesModule({
                     className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-black flex items-center gap-1.5 shadow transition cursor-pointer disabled:opacity-50"
                   >
                     <Navigation className="h-3.5 w-3.5" />
-                    <span>{isCalculatingRoute ? (isHi ? 'मार्ग की गणना...' : 'Calculating...') : (isHi ? 'सुरक्षित मार्ग प्राप्त करें ➔' : 'Get Safe Route ➔')}</span>
+                    <span>{isCalculatingRoute ? (isHi ? 'मार्ग की गणना...' : 'Calculating...') : (isHi ? 'सुरक्षित मार्ग ➔' : 'Safe Route ➔')}</span>
                   </button>
                 </div>
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 font-mono">
+            <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 font-mono shrink-0">
               <div className="flex items-center gap-3">
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span> Hospital</span>
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Police</span>
