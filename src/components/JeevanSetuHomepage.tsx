@@ -3321,20 +3321,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   <Youtube className="h-4 w-4 text-red-500 hover:text-white" />
                 </a>
                 <a
-                  href="#twitter"
-                  className="p-2 bg-slate-800 hover:bg-sky-500 rounded-xl text-slate-300 hover:text-slate-950 transition-all duration-300 transform hover:-translate-y-1 hover:scale-125 hover:shadow-lg hover:shadow-sky-500/40 cursor-pointer"
-                  title="Twitter"
-                >
-                  <Twitter className="h-4 w-4" />
-                </a>
-                <a
-                  href="#instagram"
-                  className="p-2 bg-slate-800 hover:bg-pink-600 rounded-xl text-slate-300 hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-125 hover:shadow-lg hover:shadow-pink-600/40 cursor-pointer"
-                  title="Instagram"
-                >
-                  <Instagram className="h-4 w-4" />
-                </a>
-                <a
                   href="#linkedin"
                   className="p-2 bg-slate-800 hover:bg-blue-600 rounded-xl text-slate-300 hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-125 hover:shadow-lg hover:shadow-blue-600/40 cursor-pointer"
                   title="LinkedIn"
