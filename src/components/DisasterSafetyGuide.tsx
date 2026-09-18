@@ -17,7 +17,8 @@ import {
   CheckSquare,
   Square,
   HelpCircle,
-  ArrowRight
+  ArrowRight,
+  Globe
 } from 'lucide-react';
 import { useTranslation } from '../i18n';
 
@@ -26,7 +27,7 @@ interface DisasterSafetyGuideProps {
 }
 
 export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuideProps) {
-  const { t, language } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<'flood' | 'landslide' | 'earthquake' | 'cyclone' | 'kit'>('flood');
   
   // Interactive Emergency Kit Checkbox State
@@ -260,7 +261,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
     }
   };
 
-  const isHindi = language === 'hi' || true; // Default to Hindi as per user request
+  const isHindi = language === 'hi';
   const safetyData = isHindi ? safetyDataHi : safetyDataEn;
 
   const checkedCount = Object.values(kitChecked).filter(Boolean).length;
@@ -268,7 +269,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
   const kitPercentage = Math.round((checkedCount / totalCount) * 100);
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 font-sans">
+    <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 font-sans select-none">
       
       {/* 1. TOP HEADER BANNER */}
       <div className="relative rounded-3xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white p-6 sm:p-8 lg:p-10 shadow-xl dark:shadow-2xl">
@@ -279,27 +280,49 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
           <div className="space-y-3 max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 dark:bg-sky-500/20 border border-sky-200 dark:border-sky-500/40 text-sky-700 dark:text-sky-300 text-xs font-black uppercase tracking-wider">
               <BookOpen className="w-3.5 h-3.5" />
-              <span>{t('safety.badge', 'OFFICIAL DISASTER SURVIVAL GUIDE')}</span>
+              <span>{isHindi ? 'आधिकारिक आपदा उत्तरजीविता निर्देशिका' : 'OFFICIAL DISASTER SURVIVAL GUIDE'}</span>
             </div>
             
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-              {t('safety.title', 'Disaster Preparedness & Safety Guidelines')}
+              {isHindi ? 'आपदा तैयारी एवं सुरक्षा दिशानिर्देश' : 'Disaster Preparedness & Safety Guidelines'}
             </h1>
             
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-              {t('safety.subtitle', 'Actionable survival protocols, emergency checklists, do’s and don’ts, and 24/7 toll-free helpline numbers approved for flood, landslide, earthquake, and cyclone emergencies.')}
+              {isHindi ? 'बाढ़, भूस्खलन, भूकंप और चक्रवात आपात स्थितियों के लिए त्वरित उत्तरजीविता नियम, आपातकालीन चेकलिस्ट, क्या करें और क्या न करें, एवं 24/7 टोल-फ्री हेल्पलाइन नंबर।' : 'Actionable survival protocols, emergency checklists, do’s and don’ts, and 24/7 toll-free helpline numbers approved for flood, landslide, earthquake, and cyclone emergencies.'}
             </p>
           </div>
 
-          {/* Quick SOS Call to Action Button */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+          {/* Quick SOS & Feature Language Selector Toolbar */}
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {/* 🌐 Dedicated Feature Language Selector */}
+            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/80 px-3 py-2 rounded-2xl border border-slate-300 dark:border-slate-700/80 shadow-inner">
+              <Globe className="w-4 h-4 text-sky-500 shrink-0" />
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as any)}
+                className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs font-black px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 outline-none cursor-pointer hover:border-sky-500 transition"
+                title="Select Feature Language"
+              >
+                <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+                <option value="en">🇬🇧 English (EN)</option>
+                <option value="as">🌿 অসমীয়া (Assamese)</option>
+                <option value="bn">🌸 বাংলা (Bengali)</option>
+                <option value="brx">🏹 बड़ो (Bodo)</option>
+                <option value="mni">🦚 মৈতৈলোন্ (Manipuri)</option>
+                <option value="mzo">🌄 Mizo</option>
+                <option value="kha">🏔️ Khasi</option>
+                <option value="ne">🏔️ नेपाली (Nepali)</option>
+                <option value="nag">🏕️ Nagamese</option>
+              </select>
+            </div>
+
             {onTriggerSOS && (
               <button
                 onClick={onTriggerSOS}
                 className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-xs sm:text-sm shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2 border border-rose-400/30 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
               >
                 <ShieldAlert className="w-4 h-4" />
-                <span>{t('safety.triggerSos', 'TRIGGER SOS DISTRESS 🚨')}</span>
+                <span>{isHindi ? 'आपातकालीन SOS बटन 🚨' : 'TRIGGER SOS DISTRESS 🚨'}</span>
               </button>
             )}
           </div>
