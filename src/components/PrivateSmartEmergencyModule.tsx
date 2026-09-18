@@ -1412,62 +1412,17 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                         isDarkMode ? 'text-white' : 'text-slate-900'
                       }`}>
                         {language === 'hi'
-                          ? `बहु-सहभागी लाइव जीपीएस सत्र (${trackingData.participants?.length || 1})`
-                          : `Multi-Participant Live GPS Session (${trackingData.participants?.length || 1})`}
+                          ? `लाइव जीपीएस सत्र प्रतिभागी (${trackingData.participants?.length || 1})`
+                          : `Live GPS Session Participants (${trackingData.participants?.length || 1})`}
                       </h3>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <button
-                        onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'मित्र 1 (राहुल)' : 'Friend 1 (Rahul)')}
-                        disabled={addingFriend}
-                        className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1 cursor-pointer transition"
-                      >
-                        + {language === 'hi' ? 'मित्र 1 (राहुल)' : 'Friend 1 (Rahul)'}
-                      </button>
-                      <button
-                        onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'मित्र 2 (प्रिया)' : 'Friend 2 (Priya)')}
-                        disabled={addingFriend}
-                        className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1 cursor-pointer transition"
-                      >
-                        + {language === 'hi' ? 'मित्र 2 (प्रिया)' : 'Friend 2 (Priya)'}
-                      </button>
-                      <button
-                        onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'रेस्पोंडर (अमित)' : 'Responder (Amit)')}
-                        disabled={addingFriend}
-                        className="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1 cursor-pointer transition"
-                      >
-                        + {language === 'hi' ? 'रेस्पोंडर 3' : 'Responder 3'}
-                      </button>
-                      <button
-                        onClick={handleOpenQrModal}
-                        className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Share2 className="w-3.5 h-3.5" />
-                        {language === 'hi' ? '+ QR द्वारा आमंत्रित करें' : '+ Invite Friend (QR)'}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Add Custom Friend Name Row */}
-                  <div className={`p-2.5 rounded-xl border flex flex-col sm:flex-row items-center gap-2 ${
-                    isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
-                  }`}>
-                    <input
-                      type="text"
-                      value={customFriendName}
-                      onChange={e => setCustomFriendName(e.target.value)}
-                      placeholder={language === 'hi' ? 'मित्र का नाम दर्ज करें (उदा. विक्रम, स्नेहा)...' : 'Enter friend name (e.g. Vikram, Sneha)...'}
-                      className={`w-full sm:flex-1 px-3 py-1.5 rounded-lg text-xs border outline-none ${
-                        isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-300 text-slate-900'
-                      }`}
-                    />
                     <button
-                      onClick={() => handleAddSimulatedFriend()}
-                      disabled={addingFriend}
-                      className="w-full sm:w-auto px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs shadow cursor-pointer transition shrink-0"
+                      onClick={handleOpenQrModal}
+                      className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs shadow flex items-center gap-2 cursor-pointer transition"
                     >
-                      {addingFriend ? (language === 'hi' ? 'जोड़ा जा रहा है...' : 'Adding...') : (language === 'hi' ? '+ लाइव मानचित्र पर मित्र जोड़ें' : '+ Add Live Friend to Map')}
+                      <Share2 className="w-4 h-4" />
+                      {language === 'hi' ? '📱 QR कोड / लिंक द्वारा आमंत्रित करें' : '📱 Invite Live Participant (QR Code)'}
                     </button>
                   </div>
 

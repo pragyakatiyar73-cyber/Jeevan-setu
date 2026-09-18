@@ -1,6 +1,91 @@
 {
   "requests": [
     {
+      "emergencyRequestId": "JS-QR-EMG-3953",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-555338",
+      "createdAt": "2026-09-18T18:19:15.338Z",
+      "updatedAt": "2026-09-18T18:19:15.338Z"
+    },
+    {
+      "emergencyRequestId": "JS-QR-EMG-4429",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-539050",
+      "createdAt": "2026-09-18T18:18:59.050Z",
+      "updatedAt": "2026-09-18T18:18:59.050Z"
+    },
+    {
+      "emergencyRequestId": "JS-QR-EMG-5943",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-528164",
+      "createdAt": "2026-09-18T18:18:48.164Z",
+      "updatedAt": "2026-09-18T18:18:48.164Z"
+    },
+    {
+      "emergencyRequestId": "JS-QR-EMG-8267",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-107160",
+      "createdAt": "2026-09-18T18:11:47.160Z",
+      "updatedAt": "2026-09-18T18:11:47.160Z"
+    },
+    {
+      "emergencyRequestId": "JS-QR-EMG-6276",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-021594",
+      "createdAt": "2026-09-18T18:10:21.594Z",
+      "updatedAt": "2026-09-18T18:10:21.594Z"
+    },
+    {
       "emergencyRequestId": "JS-QR-EMG-1011",
       "emergencyType": "Medical",
       "requirement": "Real Phone Emergency GPS Live Tracking",
@@ -1277,6 +1362,319 @@
     }
   ],
   "sessions": [
+    {
+      "sessionId": "QR-555338",
+      "token": "tok_kq0zb2n4xleh1sp0",
+      "emergencyRequestId": "JS-QR-EMG-3953",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "WAITING_FOR_GPS",
+      "mode": "REAL",
+      "createdAt": "2026-09-18T18:19:15.338Z",
+      "lastUpdatedAt": "2026-09-18T18:19:15.338Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789755555338
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "LIVE",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755555338
+          },
+          "lastUpdatedAt": "2026-09-18T18:19:15.338Z"
+        }
+      ]
+    },
+    {
+      "sessionId": "QR-539050",
+      "token": "tok_42ojg3eqtd47cpv3",
+      "emergencyRequestId": "JS-QR-EMG-4429",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "LIVE",
+      "mode": "REAL",
+      "createdAt": "2026-09-18T18:18:59.050Z",
+      "lastUpdatedAt": "2026-09-18T18:19:16.778Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789755539050
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "LIVE",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755539050
+          },
+          "lastUpdatedAt": "2026-09-18T18:18:59.050Z"
+        },
+        {
+          "participantId": "P-FRIEND-6763-1",
+          "role": "PARTICIPANT",
+          "label": "Responder (Amit)",
+          "color": "#3b82f6",
+          "status": "LIVE",
+          "location": {
+            "lat": 26.14794,
+            "lon": 91.73379,
+            "accuracy": 5.1,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755556763
+          },
+          "lastUpdatedAt": "2026-09-18T18:19:16.778Z"
+        }
+      ]
+    },
+    {
+      "sessionId": "QR-528164",
+      "token": "tok_qosqj3ipar95k3o2",
+      "emergencyRequestId": "JS-QR-EMG-5943",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "LIVE",
+      "mode": "REAL",
+      "createdAt": "2026-09-18T18:18:48.164Z",
+      "lastUpdatedAt": "2026-09-18T18:19:07.828Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789755528164
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "LIVE",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755528164
+          },
+          "lastUpdatedAt": "2026-09-18T18:18:48.164Z"
+        },
+        {
+          "participantId": "P-FRIEND-7809-1",
+          "role": "PARTICIPANT",
+          "label": "Friend 2 (Priya)",
+          "color": "#3b82f6",
+          "status": "LIVE",
+          "location": {
+            "lat": 26.14794,
+            "lon": 91.73379,
+            "accuracy": 6.1,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755547809
+          },
+          "lastUpdatedAt": "2026-09-18T18:19:07.828Z"
+        }
+      ]
+    },
+    {
+      "sessionId": "QR-107160",
+      "token": "tok_ck1q6bzlpg45jeu7",
+      "emergencyRequestId": "JS-QR-EMG-8267",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "STOPPED",
+      "mode": "REAL",
+      "createdAt": "2026-09-18T18:11:47.160Z",
+      "lastUpdatedAt": "2026-09-18T18:15:17.596Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789755107160
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "EXPIRED",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755107160
+          },
+          "lastUpdatedAt": "2026-09-18T18:11:47.160Z"
+        },
+        {
+          "participantId": "P-FRIEND-6799-1",
+          "role": "PARTICIPANT",
+          "label": "Friend 2 (Priya)",
+          "color": "#3b82f6",
+          "status": "EXPIRED",
+          "location": {
+            "lat": 26.14794,
+            "lon": 91.73379,
+            "accuracy": 4.2,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755136799
+          },
+          "lastUpdatedAt": "2026-09-18T18:12:16.811Z"
+        },
+        {
+          "participantId": "P-FRIEND-9303-2",
+          "role": "PARTICIPANT",
+          "label": "Responder (Amit)",
+          "color": "#10b981",
+          "status": "EXPIRED",
+          "location": {
+            "lat": 26.13943,
+            "lon": 91.73435,
+            "accuracy": 7.5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755139303
+          },
+          "lastUpdatedAt": "2026-09-18T18:12:19.316Z"
+        },
+        {
+          "participantId": "P-FRIEND-2265-3",
+          "role": "PARTICIPANT",
+          "label": "Friend 1 (Rahul)",
+          "color": "#8b5cf6",
+          "status": "EXPIRED",
+          "location": {
+            "lat": 26.14621,
+            "lon": 91.74258,
+            "accuracy": 6.4,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755142265
+          },
+          "lastUpdatedAt": "2026-09-18T18:12:22.277Z"
+        },
+        {
+          "participantId": "P-FRIEND-9156-4",
+          "role": "PARTICIPANT",
+          "label": "Friend 1 (Rahul)",
+          "color": "#f97316",
+          "status": "EXPIRED",
+          "location": {
+            "lat": 26.14951,
+            "lon": 91.73022,
+            "accuracy": 7.7,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755229156
+          },
+          "lastUpdatedAt": "2026-09-18T18:13:49.165Z"
+        },
+        {
+          "participantId": "P-FRIEND-7588-5",
+          "role": "PARTICIPANT",
+          "label": "Friend 2 (Priya)",
+          "color": "#06b6d4",
+          "status": "EXPIRED",
+          "location": {
+            "lat": 26.13553,
+            "lon": 91.73542,
+            "accuracy": 6,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755317588
+          },
+          "lastUpdatedAt": "2026-09-18T18:15:17.596Z"
+        }
+      ]
+    },
+    {
+      "sessionId": "QR-021594",
+      "token": "tok_kg45dmzykjvy8bq4",
+      "emergencyRequestId": "JS-QR-EMG-6276",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "STALE",
+      "mode": "REAL",
+      "createdAt": "2026-09-18T18:10:21.594Z",
+      "lastUpdatedAt": "2026-09-18T18:10:31.856Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789755021594
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "STALE",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755021594
+          },
+          "lastUpdatedAt": "2026-09-18T18:10:21.594Z"
+        },
+        {
+          "participantId": "P-FRIEND-1843-1",
+          "role": "PARTICIPANT",
+          "label": "Friend 2 (Priya)",
+          "color": "#3b82f6",
+          "status": "STALE",
+          "location": {
+            "lat": 26.14794,
+            "lon": 91.73379,
+            "accuracy": 6.4,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789755031843
+          },
+          "lastUpdatedAt": "2026-09-18T18:10:31.856Z"
+        }
+      ]
+    },
     {
       "sessionId": "QR-962682",
       "token": "tok_oq93cpkyvyhtrrum",
