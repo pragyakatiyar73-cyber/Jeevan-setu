@@ -872,10 +872,10 @@ export default function EmergencyFacilitiesModule({
       )}
 
       {/* 🗺️ INTERACTIVE GIS MAP & FACILITY CARDS LAYOUT */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column: Interactive GIS Map */}
-        <div className="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-4 transition-colors duration-300 flex flex-col justify-between">
+        <div className="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl space-y-4 transition-colors duration-300">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
@@ -1020,7 +1020,7 @@ export default function EmergencyFacilitiesModule({
         </div>
 
         {/* Right Column: Facilities List Cards */}
-        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col h-full min-h-[480px] lg:min-h-0 transition-colors duration-300">
+        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col h-[580px] sm:h-[620px] transition-colors duration-300">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
             <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span>🏥</span> {isHi ? 'आपदा आपातकालीन सुविधा निर्देशिका' : 'Emergency Facilities Directory'}
@@ -1044,14 +1044,14 @@ export default function EmergencyFacilitiesModule({
               {isHi ? 'चयनित फिल्टर के लिए कोई सुविधा नहीं मिली।' : 'No facilities found matching selected filter criteria inside NER.'}
             </div>
           ) : (
-            <div className="space-y-3.5 flex-1 min-h-0 overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1.5 custom-scrollbar">
               {facilities.map(fac => {
                 const isSelected = selectedFacility && selectedFacility.id === fac.id;
                 return (
                   <div
                     key={fac.id}
                     onClick={() => setSelectedFacility(fac)}
-                    className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 space-y-2.5 ${
+                    className={`p-3.5 rounded-xl border cursor-pointer transition-all duration-200 space-y-2 ${
                       isSelected
                         ? 'border-sky-500 bg-sky-500/10 shadow-lg ring-1 ring-sky-500/50'
                         : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] hover:border-slate-300 dark:hover:border-slate-700'
@@ -1068,7 +1068,7 @@ export default function EmergencyFacilitiesModule({
                         }`}>
                           {fac.type}
                         </span>
-                        <h4 className="font-black text-sm text-slate-900 dark:text-white mt-1">
+                        <h4 className="font-black text-xs sm:text-sm text-slate-900 dark:text-white mt-1">
                           {fac.name}
                         </h4>
                       </div>
@@ -1093,7 +1093,7 @@ export default function EmergencyFacilitiesModule({
                       📍 {fac.address}
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-2 text-xs">
+                    <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-1.5 text-xs">
                       <span className="font-mono text-slate-700 dark:text-slate-300 font-bold">
                         📞 {fac.contact}
                       </span>

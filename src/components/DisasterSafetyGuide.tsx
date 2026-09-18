@@ -261,8 +261,8 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
     }
   };
 
-  const isHindi = true; // Always present guidelines in Hindi as requested by user
-  const safetyData = safetyDataHi;
+  const isHindi = language === 'hi';
+  const safetyData = isHindi ? safetyDataHi : safetyDataEn;
 
   const checkedCount = Object.values(kitChecked).filter(Boolean).length;
   const totalCount = Object.keys(kitChecked).length;
@@ -280,15 +280,15 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
           <div className="space-y-3 max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 dark:bg-sky-500/20 border border-sky-200 dark:border-sky-500/40 text-sky-700 dark:text-sky-300 text-xs font-black uppercase tracking-wider">
               <BookOpen className="w-3.5 h-3.5" />
-              <span>आधिकारिक आपदा उत्तरजीविता निर्देशिका (OFFICIAL SURVIVAL GUIDE)</span>
+              <span>{isHindi ? 'आधिकारिक आपदा उत्तरजीविता निर्देशिका' : 'OFFICIAL DISASTER SURVIVAL GUIDE'}</span>
             </div>
             
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-              आपदा तैयारी एवं सुरक्षा दिशानिर्देश (Disaster Preparedness & Safety)
+              {isHindi ? 'आपदा तैयारी एवं सुरक्षा दिशानिर्देश' : 'Disaster Preparedness & Safety Guidelines'}
             </h1>
             
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-              बाढ़, भूस्खलन, भूकंप और चक्रवात आपात स्थितियों के लिए त्वरित उत्तरजीविता नियम, आपातकालीन चेकलिस्ट, क्या करें और क्या न करें, एवं 24/7 टोल-फ्री हेल्पलाइन नंबर।
+              {isHindi ? 'बाढ़, भूस्خलन, भूकंप और चक्रवात आपात स्थितियों के लिए त्वरित उत्तरजीविता नियम, आपातकालीन चेकलिस्ट, क्या करें और क्या न करें, एवं 24/7 टोल-फ्री हेल्पलाइन नंबर।' : 'Actionable survival protocols, emergency checklists, do’s and don’ts, and 24/7 toll-free helpline numbers approved for flood, landslide, earthquake, and cyclone emergencies.'}
             </p>
           </div>
 
@@ -322,7 +322,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                 className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-xs sm:text-sm shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2 border border-rose-400/30 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
               >
                 <ShieldAlert className="w-4 h-4" />
-                <span>आपातकालीन SOS बटन 🚨</span>
+                <span>{isHindi ? 'आपातकालीन SOS बटन 🚨' : 'TRIGGER SOS DISTRESS 🚨'}</span>
               </button>
             )}
           </div>
@@ -333,7 +333,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
       <div className="space-y-3">
         <h2 className="text-sm font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
           <PhoneCall className="w-4 h-4 text-sky-500" />
-          <span>24/7 आपातकालीन टोल-फ्री हेल्पलाइन (24/7 Emergency Helplines)</span>
+          <span>{isHindi ? '24/7 आपातकालीन टोल-फ्री हेल्पलाइन' : '24/7 Emergency Toll-Free Helplines'}</span>
         </h2>
         
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-3.5">
@@ -371,7 +371,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                   className="mt-3 w-full py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition cursor-pointer"
                 >
                   <PhoneCall className="w-3.5 h-3.5" />
-                  <span>{contact.number} पर कॉल करें (Call Now)</span>
+                  <span>{isHindi ? `${contact.number} पर कॉल करें` : `Call ${contact.number} Now`}</span>
                 </a>
               </div>
             );
@@ -382,11 +382,11 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
       {/* 3. DISASTER CATEGORY SELECTOR TABS */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
         {[
-          { id: 'flood', label: '🌊 बाढ़ सुरक्षा निर्देश (Flood Safety)', color: 'from-blue-600 to-cyan-600' },
-          { id: 'landslide', label: '⛰️ भूस्खलन सुरक्षा निर्देश (Landslide Safety)', color: 'from-amber-600 to-orange-600' },
-          { id: 'earthquake', label: '🌋 भूकंप सुरक्षा निर्देश (Earthquake Safety)', color: 'from-rose-600 to-red-600' },
-          { id: 'cyclone', label: '⚡ चक्रवात सुरक्षा निर्देश (Cyclone Safety)', color: 'from-purple-600 to-indigo-600' },
-          { id: 'kit', label: '🎒 72-घंटे की उत्तरजीविता किट (72-Hour Survival Kit)', color: 'from-emerald-600 to-teal-600' }
+          { id: 'flood', label: isHindi ? '🌊 बाढ़ सुरक्षा निर्देश' : '🌊 Flood Safety', color: 'from-blue-600 to-cyan-600' },
+          { id: 'landslide', label: isHindi ? '⛰️ भूस्खलन सुरक्षा निर्देश' : '⛰️ Landslide Safety', color: 'from-amber-600 to-orange-600' },
+          { id: 'earthquake', label: isHindi ? '🌋 भूकंप सुरक्षा निर्देश' : '🌋 Earthquake Safety', color: 'from-rose-600 to-red-600' },
+          { id: 'cyclone', label: isHindi ? '⚡ चक्रवात सुरक्षा निर्देश' : '⚡ Cyclone & Lightning', color: 'from-purple-600 to-indigo-600' },
+          { id: 'kit', label: isHindi ? '🎒 72-घंटे की उत्तरजीविता किट' : '🎒 72-Hour Survival Kit', color: 'from-emerald-600 to-teal-600' }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -499,10 +499,10 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
               </div>
               <div>
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  72-घंटे की आपदा आपातकालीन उत्तरजीविता किट (72-Hour Survival Kit)
+                  {isHindi ? '72-घंटे की आपदा आपातकालीन उत्तरजीविता किट' : '72-Hour Emergency Survival Kit'}
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                  बाढ़, भूस्खलन या आपातकालीन निकासी के समय परिवार की उत्तरजीविता के लिए आवश्यक वस्तुओं की चेकलिस्ट।
+                  {isHindi ? 'बाढ़, भूस्खलन या आपातकालीन निकासी के समय परिवार की उत्तरजीविता के लिए आवश्यक वस्तुओं की चेकलिस्ट।' : 'Essential items checklist for family survival during flood, landslide, or emergency evacuations.'}
                 </p>
               </div>
             </div>
@@ -510,8 +510,8 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
             {/* Progress Meter Bar */}
             <div className="w-full sm:w-64 p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 space-y-1.5 shrink-0">
               <div className="flex items-center justify-between text-xs font-black text-slate-900 dark:text-white">
-                <span>किट तैयारी स्थिति (Kit Readiness)</span>
-                <span className="text-emerald-500">{kitPercentage}% तैयार</span>
+                <span>{isHindi ? 'किट तैयारी स्थिति' : 'Kit Readiness'}</span>
+                <span className="text-emerald-500">{isHindi ? `${kitPercentage}% तैयार` : `${kitPercentage}% Ready`}</span>
               </div>
               <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                 <div
@@ -525,16 +525,16 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
           {/* CHECKLIST ITEMS GRID */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-3.5">
             {[
-              { key: 'water', label: 'पीने का पानी (प्रति व्यक्ति 3 लीटर प्रतिदिन)', desc: 'कम से कम 3 दिनों के लिए सीलबंद बोतलें' },
-              { key: 'firstaid', label: 'फर्स्ट एड किट एवं पट्टियां (First Aid)', desc: 'एंटीसेप्टिक, गॉज, मेडिकल टेप, चिमटी' },
-              { key: 'torch', label: 'एलईडी टॉर्च / इमरजेंसी लाइट (Torch)', desc: 'अतिरिक्त रिचार्जेबल या ड्राई सेल बैटरियों के साथ' },
-              { key: 'radio', label: 'बैटरी से चलने वाला / हैंड-क्रैंक रेडियो', desc: 'आधिकारिक IMD/SDMA मौसम प्रसारण सुनने के लिए' },
-              { key: 'food', label: 'सूखा और पैक्ड गैर-खराब भोजन (Food)', desc: 'एनर्जी बार, डिब्बाबंद खाना, मेवे/ड्राई फ्रूट्स' },
-              { key: 'documents', label: 'आधार / आईडी एवं भूमि दस्तावेज (Documents)', desc: 'वाटरप्रूफ जिपलॉक प्लास्टिक पाउच में सुरक्षित रखें' },
-              { key: 'whistle', label: 'इमरजेंसी सीटी (Signal Whistle)', desc: 'खोज एवं बचाव टीमों को मदद का संकेत देने के लिए' },
-              { key: 'powerbank', label: 'चार्ज्ड मोबाइल पावर बैंक (Power Bank)', desc: 'आपातकालीन कॉल के लिए न्यूनतम 10,000 mAh' },
-              { key: 'medicines', label: 'डॉक्टर द्वारा दी गई आवश्यक दवाएं', desc: '7 दिनों की दैनिक स्वास्थ्य दवाओं का स्टॉक' },
-              { key: 'warmclothes', label: 'रेनप्रूफ जैकेट एवं गरम कंबल (Poncho)', desc: 'कॉम्पेक्ट थर्मल कंबल और वाटरप्रूफ पोंचो' }
+              { key: 'water', label: isHindi ? 'पीने का पानी (प्रति व्यक्ति 3 लीटर प्रतिदिन)' : 'Drinking Water (3 Liters per person/day)', desc: isHindi ? 'कम से कम 3 दिनों के लिए सीलबंद बोतलें' : 'Sealed bottles for at least 3 days' },
+              { key: 'firstaid', label: isHindi ? 'फर्स्ट एड किट एवं पट्टियां (First Aid)' : 'First Aid Kit & Bandages', desc: isHindi ? 'एंटीसेप्टिक, गॉज, मेडिकल टेप, चिमटी' : 'Antiseptic, gauze, medical tape, tweezers' },
+              { key: 'torch', label: isHindi ? 'एलईडी टॉर्च / इमरजेंसी लाइट (Torch)' : 'LED Torch / Emergency Light', desc: isHindi ? 'अतिरिक्त रिचार्जेबल या ड्राई सेल बैटरियों के साथ' : 'With extra rechargeable or dry cell batteries' },
+              { key: 'radio', label: isHindi ? 'बैटरी से चलने वाला / हैंड-क्रैंक रेडियो' : 'Battery-Powered / Hand-Crank Radio', desc: isHindi ? 'आधिकारिक IMD/SDMA मौसम प्रसारण सुनने के लिए' : 'To listen to official IMD/SDMA weather broadcasts' },
+              { key: 'food', label: isHindi ? 'सूखा और पैक्ड गैर-खराब भोजन (Food)' : 'Non-Perishable Packaged Food', desc: isHindi ? 'एनर्जी बार, डिब्बाबंद खाना, मेवे/ड्राई फ्रूट्स' : 'Energy bars, canned food, dry fruits' },
+              { key: 'documents', label: isHindi ? 'आधार / आईडी एवं भूमि दस्तावेज (Documents)' : 'Aadhaar / ID & Land Documents', desc: isHindi ? 'वाटरप्रूफ जिपलॉक प्लास्टिक पाउच में सुरक्षित रखें' : 'Keep safe in waterproof ziplock plastic pouch' },
+              { key: 'whistle', label: isHindi ? 'इमरजेंसी सीटी (Signal Whistle)' : 'Emergency Signal Whistle', desc: isHindi ? 'खोज एवं बचाव टीमों को मदद का संकेत देने के लिए' : 'To signal rescue teams for help' },
+              { key: 'powerbank', label: isHindi ? 'चार्ज्ड मोबाइल पावर बैंक (Power Bank)' : 'Charged Mobile Power Bank', desc: isHindi ? 'आपातकालीन कॉल के लिए न्यूनतम 10,000 mAh' : 'Minimum 10,000 mAh for emergency calls' },
+              { key: 'medicines', label: isHindi ? 'डॉक्टर द्वारा दी गई आवश्यक दवाएं' : 'Prescription Medicines', desc: isHindi ? '7 दिनों की दैनिक स्वास्थ्य दवाओं का स्टॉक' : 'Stock of 7 days daily health medication' },
+              { key: 'warmclothes', label: isHindi ? 'रेनप्रूफ जैकेट एवं गरम कंबल (Poncho)' : 'Rainproof Jacket & Thermal Blanket', desc: isHindi ? 'कॉम्पेक्ट थर्मल कंबल और वाटरप्रूफ पोंचो' : 'Compact thermal blanket & waterproof poncho' }
             ].map((item) => {
               const isChecked = kitChecked[item.key] || false;
               return (
