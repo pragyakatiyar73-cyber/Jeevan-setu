@@ -1959,16 +1959,14 @@ export default function App() {
         )}
 
         {/* 7D. EMERGENCY FACILITIES & RESCUE POINTS INTELLIGENCE VIEW */}
-        {activeModule === 'facilities' && (
-          <EmergencyFacilitiesModule
-            onNavigateToMap={() => setActiveModule('map')}
-            onNavigateToReroute={(origin, dest) => {
-              setRouteStart(origin);
-              setRouteDest(dest);
-              setActiveModule('rerouting');
-            }}
-            onTriggerSOS={() => setIsSosModalOpen(true)}
-          />
+        {(activeModule === 'facilities' || activeModule === 'emergency-facilities') && (
+          <div className="h-full overflow-y-auto">
+            <EmergencyFacilitiesModule
+              onNavigateToMap={() => setActiveModule('map')}
+              onNavigateToReroute={() => setActiveModule('rerouting')}
+              onTriggerSOS={() => setIsSosModalOpen(true)}
+            />
+          </div>
         )}
 
         {/* LOCATION 360° INTELLIGENCE MODULE */}
