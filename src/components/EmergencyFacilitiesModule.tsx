@@ -670,14 +670,14 @@ export default function EmergencyFacilitiesModule({
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 sm:p-6 shadow-xl space-y-5 transition-colors duration-300">
         
         {/* Row 1: Location Presets & Search Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
           
           {/* Preset User Location Selector */}
-          <div className="md:col-span-5 space-y-1.5">
+          <div className="xl:col-span-6 space-y-1.5 min-w-0">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-sky-500" /> User Search Location (NER Base)
+              <MapPin className="h-3.5 w-3.5 text-sky-500" /> {isHi ? 'यूज़र स्थान (NER बेस)' : 'User Search Location (NER Base)'}
             </label>
-            <div className="flex gap-2 items-center">
+            <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
               <select
                 value={activeUserLoc.name}
                 onChange={(e) => {
@@ -687,7 +687,7 @@ export default function EmergencyFacilitiesModule({
                     setActiveUserLoc(found);
                   }
                 }}
-                className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 outline-none"
+                className="flex-1 min-w-0 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 outline-none truncate"
               >
                 {isLiveGpsActive && (
                   <option value={activeUserLoc.name}>{activeUserLoc.name}</option>
@@ -703,7 +703,7 @@ export default function EmergencyFacilitiesModule({
                 type="button"
                 onClick={handleDetectLiveGPS}
                 disabled={isLocatingUser}
-                className={`px-3 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition shrink-0 cursor-pointer shadow ${
+                className={`px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition shrink-0 cursor-pointer shadow whitespace-nowrap ${
                   isLiveGpsActive
                     ? 'bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 shadow-emerald-600/30'
                     : 'bg-sky-600 hover:bg-sky-500 text-white border border-sky-400 shadow-sky-600/30'
@@ -711,7 +711,7 @@ export default function EmergencyFacilitiesModule({
                 title="Detect your device's live GPS coordinates"
               >
                 <Radio className={`h-4 w-4 ${isLocatingUser ? 'animate-spin text-sky-200' : isLiveGpsActive ? 'animate-pulse text-emerald-200' : ''}`} />
-                <span>{isLocatingUser ? 'Locating...' : isLiveGpsActive ? 'Live GPS Active' : 'Auto-Detect Live GPS'}</span>
+                <span>{isLocatingUser ? (isHi ? 'स्थान खोज रहे हैं...' : 'Locating...') : isLiveGpsActive ? (isHi ? 'लाइव GPS सक्रिय' : 'Live GPS Active') : (isHi ? 'ऑटो GPS खोजें' : 'Auto Detect GPS')}</span>
               </button>
             </div>
             {gpsErrorMessage && (
@@ -720,19 +720,19 @@ export default function EmergencyFacilitiesModule({
           </div>
 
           {/* Search Query Input */}
-          <div className="md:col-span-7 space-y-1.5">
+          <div className="xl:col-span-6 space-y-1.5 min-w-0">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <Search className="h-3.5 w-3.5 text-emerald-500" /> Search State, District, City or Facility Name
+              <Search className="h-3.5 w-3.5 text-emerald-500" /> {isHi ? 'राज्य, ज़िला, शहर या सुविधा खोजें' : 'Search State, District, City or Facility Name'}
             </label>
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search e.g. GMCH Guwahati, NEIGRIHMS Shillong, STNM Gangtok..."
+                placeholder={isHi ? "खोजें उदा. GMCH गुवाहाटी, NEIGRIHMS शिलोंग..." : "Search e.g. GMCH Guwahati, NEIGRIHMS Shillong, STNM Gangtok..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 pl-10 pr-4 py-2.5 text-xs sm:text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 outline-none"
               />
-              <Search className="absolute left-3.5 top-3 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
             </div>
 
             {/* 💡 SPELLING CORRECTION & "DID YOU MEAN?" OPTION BANNER */}
