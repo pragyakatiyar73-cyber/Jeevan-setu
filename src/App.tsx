@@ -245,14 +245,16 @@ export default function App() {
     (document.body.style as any).zoom = "100%";
   }, []);
 
-  // Listen for openVideoGuide custom event from anywhere in the app
+  // Listen for openVideoGuide/toggleVideoGuide custom event from anywhere in the app
   useEffect(() => {
-    const handleOpenVideoGuide = () => {
-      setIsVideoGuideOpen(true);
+    const handleToggleVideoGuide = () => {
+      setIsVideoGuideOpen(prev => !prev);
     };
-    window.addEventListener('openVideoGuide', handleOpenVideoGuide);
+    window.addEventListener('openVideoGuide', handleToggleVideoGuide);
+    window.addEventListener('toggleVideoGuide', handleToggleVideoGuide);
     return () => {
-      window.removeEventListener('openVideoGuide', handleOpenVideoGuide);
+      window.removeEventListener('openVideoGuide', handleToggleVideoGuide);
+      window.removeEventListener('toggleVideoGuide', handleToggleVideoGuide);
     };
   }, []);
 
@@ -994,7 +996,8 @@ export default function App() {
             }}
             onOpenDashboard={() => setActiveModule('customdashboard')}
             onOpenAiChatbot={() => setIsAiAgentOpen(true)}
-            onOpenVideoGuide={() => setIsVideoGuideOpen(true)}
+            onOpenVideoGuide={() => setIsVideoGuideOpen(prev => !prev)}
+            isVideoGuideOpen={isVideoGuideOpen}
           />
         </div>
       ) : (
@@ -1239,14 +1242,19 @@ export default function App() {
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-50 ml-auto">
             {/* 🎥 10-Minute Official Citizen Video Walkthrough Button */}
             <button
-              onClick={() => setIsVideoGuideOpen(true)}
-              className="rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-amber-500/25 flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border border-amber-300/40"
-              title="नागरिक मित्र — 10-मिनट संपूर्ण नागरिक वीडियो गाइड"
+              onClick={() => setIsVideoGuideOpen(prev => !prev)}
+              className={`rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-amber-500/25 flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border ${
+                isVideoGuideOpen ? 'ring-2 ring-emerald-400 border-emerald-300 animate-pulse' : 'border-amber-300/40'
+              }`}
+              title={isVideoGuideOpen ? "नागरिक मित्र (गाइड आवाज़ रोकने के लिए क्लिक करें)" : "नागरिक मित्र — 10-मिनट संपूर्ण नागरिक वीडियो गाइड (गाइड आवाज़ शुरू करने के लिए क्लिक करें)"}
             >
               <span className="text-sm">🎥</span>
               <span className="whitespace-nowrap font-black">
-                नागरिक मित्र (गाइड)
+                {language === 'hi' ? 'नागरिक मित्र (गाइड)' : 'Nagrik Mitra (Guide)'}
               </span>
+              {isVideoGuideOpen && (
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping ml-0.5" />
+              )}
             </button>
 
             {/* 🤖 Executive Jeeva AI Agent Button with Extra Detail Feature */}
@@ -1377,7 +1385,8 @@ export default function App() {
                 setIsSosModalOpen(true);
               }}
               onOpenAiChatbot={() => setIsAiAgentOpen(true)}
-              onOpenVideoGuide={() => setIsVideoGuideOpen(true)}
+              onOpenVideoGuide={() => setIsVideoGuideOpen(prev => !prev)}
+              isVideoGuideOpen={isVideoGuideOpen}
             />
           </div>
         )}

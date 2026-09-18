@@ -68,6 +68,7 @@ interface JeevanSetuHomepageProps {
   onOpenDashboard?: () => void;
   onOpenAiChatbot?: () => void;
   onOpenVideoGuide?: () => void;
+  isVideoGuideOpen?: boolean;
 }
 
 export interface DisasterMarkerItem {
@@ -831,16 +832,17 @@ function evaluateImageDisasterTriage(photoUrl: string, fileName: string, focusDi
   });
 }
 
-export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpenDashboard, onOpenAiChatbot, onOpenVideoGuide }: JeevanSetuHomepageProps) {
+export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpenDashboard, onOpenAiChatbot, onOpenVideoGuide, isVideoGuideOpen = false }: JeevanSetuHomepageProps) {
   const { t, language, setLanguage } = useTranslation();
 
   const handleOpenVideoGuide = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (onOpenVideoGuide) {
       onOpenVideoGuide();
+    } else {
+      const event = new CustomEvent('toggleVideoGuide');
+      window.dispatchEvent(event);
     }
-    const event = new CustomEvent('openVideoGuide');
-    window.dispatchEvent(event);
   };
 
   const handleOpenDashboard = () => {
@@ -2209,11 +2211,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* 🎥 NAGRIK MITRA (CITIZEN VIDEO GUIDE) BUTTON */}
             <button
               onClick={handleOpenVideoGuide}
-              className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-amber-500/20 hover:shadow-amber-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-amber-300/40 whitespace-nowrap shrink-0 group"
-              title="Nagrik Mitra 10-Minute Video Guide"
+              className={`bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-amber-500/20 hover:shadow-amber-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border whitespace-nowrap shrink-0 group ${
+                isVideoGuideOpen ? 'ring-2 ring-emerald-400 border-emerald-300 animate-pulse' : 'border-amber-300/40'
+              }`}
+              title={isVideoGuideOpen ? "नागरिक मित्र (आवाज़ बंद करने के लिए क्लिक करें)" : "Nagrik Mitra 10-Minute Video Guide (Click to Start Instruction)"}
             >
               <span className="text-sm">🎥</span>
               <span>{language === 'hi' ? 'नागरिक मित्र' : 'Nagrik Mitra'}</span>
+              {isVideoGuideOpen && (
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping ml-0.5" />
+              )}
             </button>
 
             {/* 🤖 AI AGENT WITH VOICE SEARCH BUTTON (BEHIND / AFTER NAGRIK MITRA) */}

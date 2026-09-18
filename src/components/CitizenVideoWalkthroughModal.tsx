@@ -327,29 +327,6 @@ export default function CitizenVideoWalkthroughModal({
     }
   }, []);
 
-  // Auto-start audio narration when Nagrik Mitra is opened
-  useEffect(() => {
-    if (isOpen) {
-      setIsPlaying(true);
-    } else {
-      setIsPlaying(false);
-      if (synthRef.current) synthRef.current.cancel();
-    }
-  }, [isOpen]);
-
-  // Update scene index based on currentTime
-  useEffect(() => {
-    const foundIdx = VIDEO_SCENES.findIndex(
-      s => currentTime >= s.timestampStart && currentTime < s.timestampEnd
-    );
-    if (foundIdx !== -1 && foundIdx !== currentSceneIndex) {
-      setCurrentSceneIndex(foundIdx);
-      if (isPlaying && !isMuted && synthRef.current) {
-        speakSceneNarration(VIDEO_SCENES[foundIdx]);
-      }
-    }
-  }, [currentTime]);
-
   // Speech Narration Handler with Zero-Gap Auto Next Scene Transition
   const speakSceneNarration = (scene: Scene) => {
     if (!synthRef.current || isMuted) return;
@@ -394,6 +371,32 @@ export default function CitizenVideoWalkthroughModal({
       synthRef.current.speak(utterance);
     } catch (_) {}
   };
+
+  // Auto-start audio narration when Nagrik Mitra is opened & cancel when closed
+  useEffect(() => {
+    if (isOpen) {
+      setIsPlaying(true);
+      if (!isMuted && synthRef.current) {
+        speakSceneNarration(VIDEO_SCENES[currentSceneIndex]);
+      }
+    } else {
+      setIsPlaying(false);
+      if (synthRef.current) synthRef.current.cancel();
+    }
+  }, [isOpen]);
+
+  // Update scene index based on currentTime
+  useEffect(() => {
+    const foundIdx = VIDEO_SCENES.findIndex(
+      s => currentTime >= s.timestampStart && currentTime < s.timestampEnd
+    );
+    if (foundIdx !== -1 && foundIdx !== currentSceneIndex) {
+      setCurrentSceneIndex(foundIdx);
+      if (isPlaying && !isMuted && synthRef.current) {
+        speakSceneNarration(VIDEO_SCENES[foundIdx]);
+      }
+    }
+  }, [currentTime]);
 
   // Play / Pause timer with continuous Speech Heartbeat
   useEffect(() => {
