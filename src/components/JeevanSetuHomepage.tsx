@@ -2176,9 +2176,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   {language === "hi" ? <>जीवन <span className="text-sky-400">सेतु</span></> : <>Jeevan <span className="text-sky-400">Setu</span></>}
                 </span>
               </div>
-              <span className="text-[10px] font-semibold text-sky-400/90 tracking-wide leading-tight mt-0.5 hidden 2xl:block whitespace-nowrap">
-                {t('nav.brandSubtitle', 'AI Powered Disaster Response & GIS Intelligence Platform')}
-              </span>
             </div>
           </div>
 
@@ -2349,11 +2346,10 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             {/* NER Coverage Badge */}
             <button
               onClick={() => onNavigateModule('gov')}
-              className="h-9 px-3 rounded-full text-xs font-bold bg-sky-500/15 text-sky-300 border border-sky-400/40 hover:bg-sky-500/25 hover:border-sky-400 transition-all duration-200 cursor-pointer hidden xl:flex items-center gap-1.5 shadow-sm whitespace-nowrap shrink-0"
+              className="h-9 px-3.5 rounded-full text-xs font-bold bg-sky-500/15 text-sky-300 border border-sky-400/40 hover:bg-sky-500/25 hover:border-sky-400 transition-all duration-200 cursor-pointer hidden xl:flex items-center gap-1.5 shadow-sm whitespace-nowrap shrink-0"
             >
               <span>🏛️</span>
-              <span className="hidden 2xl:inline">Data Coverage: North Eastern Region — 8 States</span>
-              <span className="inline 2xl:hidden">NER Coverage: 8 States</span>
+              <span>NER Coverage: 8 States</span>
             </button>
 
             {/* Theme Toggle Switch */}
