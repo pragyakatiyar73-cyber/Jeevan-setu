@@ -26,7 +26,7 @@ interface DisasterSafetyGuideProps {
 }
 
 export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuideProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<'flood' | 'landslide' | 'earthquake' | 'cyclone' | 'kit'>('flood');
   
   // Interactive Emergency Kit Checkbox State
@@ -48,13 +48,116 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
   };
 
   const emergencyContacts = [
-    { name: t('safety.ndrfHelpline', 'NDRF National Helpline'), number: '1078', desc: t('safety.ndrfDesc', 'National Disaster Response Force Dispatch'), icon: ShieldAlert, color: 'text-rose-500 bg-rose-500/10 border-rose-500/30' },
-    { name: t('safety.nationalEmergency', 'National Emergency Number'), number: '112', desc: t('safety.nationalEmergencyDesc', 'All-in-One Emergency Services (Police/Fire/Ambulance)'), icon: PhoneCall, color: 'text-sky-500 bg-sky-500/10 border-sky-500/30' },
-    { name: t('safety.sdma', 'State Disaster Management (SDMA)'), number: '1070', desc: t('safety.sdmaDesc', 'State Control Room & Flood Triage'), icon: Info, color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' },
-    { name: t('safety.ambulance', 'Medical Emergency Ambulance'), number: '108', desc: t('safety.ambulanceDesc', '24/7 Advanced Life Support Ambulance'), icon: Zap, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' }
+    { name: t('safety.ndrfHelpline', 'NDRF राष्ट्रीय हेल्पलाइन (NDRF Helpline)'), number: '1078', desc: t('safety.ndrfDesc', 'राष्ट्रीय आपदा प्रतिक्रिया बल प्रेषण कक्ष'), icon: ShieldAlert, color: 'text-rose-500 bg-rose-500/10 border-rose-500/30' },
+    { name: t('safety.nationalEmergency', 'राष्ट्रीय आपातकालीन नंबर (National Emergency Number)'), number: '112', desc: t('safety.nationalEmergencyDesc', 'ऑल-इन-वन आपातकालीन सेवाएं (पुलिस/अग्नि/एम्बुलेंस)'), icon: PhoneCall, color: 'text-sky-500 bg-sky-500/10 border-sky-500/30' },
+    { name: t('safety.sdma', 'राज्य आपदा प्रबंधन प्राधिकरण (SDMA)'), number: '1070', desc: t('safety.sdmaDesc', 'राज्य नियंत्रण कक्ष एवं बाढ़ राहत केंद्र'), icon: Info, color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' },
+    { name: t('safety.ambulance', 'चिकित्सा आपातकालीन एम्बुलेंस (Ambulance)'), number: '108', desc: t('safety.ambulanceDesc', '24/7 उन्नत जीवन सहायता एम्बुलेंस सेवा'), icon: Zap, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' }
   ];
 
-  const safetyData = {
+  const safetyDataHi = {
+    flood: {
+      title: 'बाढ़ एवं जलभराव सुरक्षा निर्देश (Flood Safety Guide)',
+      subtitle: 'मूसलाधार बारिश, नदियों के उफान और बांध से पानी छोड़े जाने के दौरान बचाव हेतु दिशानिर्देश।',
+      icon: CloudRain,
+      color: 'from-blue-600 to-cyan-600',
+      dos: [
+        'खिड़कियों से दूर कंक्रीट की मजबूत इमारतों के ऊंचे स्थानों या ऊपरी मंजिलों पर तुरंत जाएं।',
+        'आपातकालीन किट, पीने का पानी और आवश्यक दवाएं वाटरप्रूफ बैग में तैयार रखें।',
+        'स्थान छोड़ने (निकासी) से पहले मुख्य बिजली के स्विच और गैस वाल्व बंद कर दें।',
+        'बैटरी से चलने वाले रेडियो या मोबाइल पर आधिकारिक IMD/CWC मौसम चेतावनियां और अलर्ट सुनें।',
+        'जलजनित बीमारियों से बचने के लिए पीने के पानी को हमेशा उबालकर ही प्रयोग करें।'
+      ],
+      donts: [
+        'बाढ़ के बहते पानी में कभी न चलें, तैरें या वाहन न चलाएं (केवल 6 इंच बहता पानी भी आपको गिरा सकता है)।',
+        'टूटे या गिरे हुए बिजली के तारों और जलमग्न बिजली के खंभों को बिल्कुल न छुएं।',
+        'बाढ़ के पानी के सीधे संपर्क में आए भोजन या खाद्य पदार्थों का सेवन न करें।',
+        'अफवाहें न फैलाएं; आपदा संबंधी सभी समाचारों का आधिकारिक सरकारी स्रोतों से ही सत्यापन करें।',
+        'नदियों के किनारों, कमजोर पुलों या निचले जल निकासी मार्गों के पास वाहन पार्क न करें।'
+      ],
+      steps: [
+        { title: '1. प्रारंभिक चेतावनी चरण (Watch Phase)', desc: '72-घंटे की आपातकालीन उत्तरजीविता किट पैक करें और मवेशियों को ऊंचे स्थान पर ले जाएं।' },
+        { title: '2. निकासी चरण (Evacuation Phase)', desc: 'निकटतम सुरक्षित राहत शिविर तक पहुंचने के लिए निर्धारित ग्रीन कॉरिडोर का पालन करें।' },
+        { title: '3. बाढ़ के बाद की सुरक्षा (Post-Flood)', desc: 'जब तक भवन की संरचनात्मक सुरक्षा प्रमाणित न हो, जलमग्न घरों में प्रवेश न करें।' }
+      ]
+    },
+    landslide: {
+      title: 'भूस्खलन एवं ढलान जोखिम सुरक्षा निर्देश (Landslide Safety Guide)',
+      subtitle: 'पहाड़ी ढलानों के खिसकने, मलबे के बहाव और चट्टानों के गिरने से सुरक्षा के उपाय।',
+      icon: ShieldAlert,
+      color: 'from-amber-600 to-orange-600',
+      dos: [
+        'शुरुआती संकेतों पर नजर रखें: जमीन में अचानक दरारें, झुकते हुए पेड़ या मटमैला पानी का बहाव।',
+        'यदि आपको पेड़ों के टूटने या पत्थरों के टकराने की असामान्य आवाजें सुनाई दें, तो तुरंत क्षेत्र खाली कर दें।',
+        'भूस्खलन या मलबे के बहाव के रास्ते से जितनी जल्दी हो सके दूर चले जाएं।',
+        'यदि ढलान धंसने के दौरान निकलना असंभव हो, तो शरीर को गोल मोड़कर अपने सिर और गर्दन की रक्षा करें।',
+        'स्थानीय सीमा सड़क संगठन (BRO) या आपदा नियंत्रण कक्ष को ढलान खिसकने की तुरंत सूचना दें।'
+      ],
+      donts: [
+        'मूसलाधार बारिश के दौरान घाटी के निचले हिस्सों या प्राकृतिक जल निकासी मार्गों में न ठहरें।',
+        'जब तक भू-तकनीकी सुरक्षा मंजूरी न मिले, तब तक सक्रिय भूस्खलन मलबे वाले क्षेत्रों को पार न करें।',
+        'खड़ी कमजोर ढलानों या कच्चे शेल तटबंधों के पास घर न बनाएं।',
+        'पहाड़ी नालों में पानी के स्तर में अचानक आई कमी को नजरअंदाज न करें (यह ऊपर रुकावट का संकेत है)।',
+        'भारी बारिश के दौरान रात के समय असुरक्षित पहाड़ी राजमार्गों पर वाहन न चलाएं।'
+      ],
+      steps: [
+        { title: '1. ढलान निरीक्षण चरण (Inspection)', desc: 'खतरनाक ढलानों की पहचान करें और बंद जल निकासी नालियों को साफ रखें।' },
+        { title: '2. तत्काल बचाव चरण (Escape)', desc: 'भूस्खलन के बहाव की दिशा के समकोण (लंबवत) होकर तुरंत दूर भागें।' },
+        { title: '3. रेस्क्यू अलर्ट (Rescue Alert)', desc: 'BRO और रेस्क्यू टीम की मदद के लिए Jeevan Setu SOS से तुरंत जीपीएस लोकेशन भेजें।' }
+      ]
+    },
+    earthquake: {
+      title: 'भूकंप सुरक्षा निर्देश (Earthquake Safety Guide)',
+      subtitle: 'भूकंपीय झटकों के दौरान झुकें, ढकें और पकड़ें (Drop, Cover & Hold On) के नियम।',
+      icon: AlertTriangle,
+      color: 'from-rose-600 to-red-600',
+      dos: [
+        'कंपन शुरू होते ही तुरंत अपने हाथों और घुटनों के बल जमीन पर झुक जाएं (DROP)।',
+        'किसी मजबूत मेज या डेस्क के नीचे अपने सिर और गर्दन को अच्छी तरह ढकें (COVER)।',
+        'जब तक कंपन पूरी तरह बंद न हो जाए, अपनी मेज/आश्रय को कसकर पकड़े रखें (HOLD ON)।',
+        'यदि आप बाहर हैं, तो ऊंची इमारतों, पेड़ों, खंभों और बिजली की लाइनों से दूर खुले मैदान में चले जाएं।',
+        'बाद के झटकों (Aftershocks) के लिए तैयार रहें; गैस लीक या आग के खतरों के प्रति सतर्क रहें।'
+      ],
+      donts: [
+        'भूकंप के दौरान या तुरंत बाद लिफ्ट/एलिवेटर का उपयोग बिल्कुल न करें।',
+        'दरवाजों के चौखट के नीचे, कांच की खिड़कियों, शीशों या भारी अलमारी के पास न खड़े हों।',
+        'कंपन के दौरान बाहर भागने की कोशिश न करें (गिरने वाले मलबे से सबसे ज्यादा चोटें आती हैं)।',
+        'यदि गैस रिसाव का संदेह हो, तो माचिस, लाइटर न जलाएं और न ही बिजली के स्विच ऑन/ऑफ करें।',
+        'जब तक संरचनात्मक इंजीनियरों द्वारा जांच न की जाए, तब तक क्षतिग्रस्त इमारतों में प्रवेश न करें।'
+      ],
+      steps: [
+        { title: '1. कंपन अवधि नियम (Shaking)', desc: 'मजबूत मेज के नीचे तुरंत झुकें (Drop), सिर ढकें (Cover) और कसकर पकड़ें (Hold On)।' },
+        { title: '2. सुरक्षित निकासी (Exit)', desc: 'सीढ़ियों का सावधानीपूर्वक प्रयोग करें और खुले मैदान में एकत्र हों।' },
+        { title: '3. प्राथमिक चिकित्सा (Triage)', desc: 'परिवार के सदस्यों की चोटों की जांच करें और तुरंत फर्स्ट एड दें।' }
+      ]
+    },
+    cyclone: {
+      title: 'चक्रवात एवं वज्रपात सुरक्षा निर्देश (Cyclone Safety Guide)',
+      subtitle: 'तेज चक्रवाती हवाओं, बिजली चमकने और समुद्री तूफान के खतरों से बचाव के उपाय।',
+      icon: Zap,
+      color: 'from-purple-600 to-indigo-600',
+      dos: [
+        'खिड़कियों से दूर मजबूत कंक्रीट की इमारत में सुरक्षित आश्रय लें।',
+        'भारी बिजली तूफान के दौरान संवेदनशील इलेक्ट्रॉनिक उपकरणों को स्विच से अनप्लग कर दें।',
+        'पर्याप्त मात्रा में सूखा भोजन, ताजा पीने का पानी और आपातकालीन बैटरियां तैयार रखें।',
+        'चक्रवात का मौसम शुरू होने से पहले घर की छतों के पास की सूखी/मृत पेड़ की शाखाओं को काट दें।',
+        'यदि बिजली चमकने के दौरान खुले में फंस जाएं, तो पंजों के बल नीचे झुककर बैठ जाएं।'
+      ],
+      donts: [
+        'चक्रवात की आंख ("Eye of the Cyclone") के दौरान बाहर न निकलें (हवाएं उल्टी दिशा से भयानक रूप से शुरू होंगी)।',
+        'बिजली चमकने के दौरान ऊंचे अकेले पेड़ों या लोहे के खंभों के नीचे आश्रय न लें।',
+        'गरज के साथ तूफान के दौरान लोहे की बाड़, टिन की छतों या पानी के पाइपों को न छुएं।',
+        'उच्च समुद्री लहरों की चेतावनी सक्रिय होने पर समुद्र या तटीय क्षेत्रों में न जाएं।',
+        'जिला कलेक्टर या प्रशासन द्वारा जारी तटीय निकासी आदेशों की बिल्कुल अनदेखी न करें।'
+      ],
+      steps: [
+        { title: '1. वॉच (निगरानी) चरण (Watch Phase)', desc: 'कांच की खिड़कियों को बंद करें और छत की ढीली वस्तुओं को बांधकर सुरक्षित करें।' },
+        { title: '2. तीव्र हवाओं का चरण (Severe Gusts)', desc: 'खिड़कियों से दूर घर के सबसे अंदरूनी कमरे या हॉलवे में रहें।' },
+        { title: '3. ऑल-क्लियर संकेत (All-Clear)', desc: 'बाहर निकलने से पहले आधिकारिक रेडियो या मौसम बुलेटिन का इंतजार करें।' }
+      ]
+    }
+  };
+
+  const safetyDataEn = {
     flood: {
       title: 'Flood & Flash Flood Safety Guide',
       subtitle: 'Guidelines for heavy cloudbursts, river overtopping, and dam release warnings.',
@@ -156,6 +259,9 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
       ]
     }
   };
+
+  const isHindi = language === 'hi' || true; // Default to Hindi as per user request
+  const safetyData = isHindi ? safetyDataHi : safetyDataEn;
 
   const checkedCount = Object.values(kitChecked).filter(Boolean).length;
   const totalCount = Object.keys(kitChecked).length;
@@ -370,10 +476,10 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
               </div>
               <div>
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  72-Hour Disaster Emergency Survival Kit
+                  72-घंटे की आपदा आपातकालीन उत्तरजीविता किट (72-Hour Survival Kit)
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                  Interactive checklist for essential family survival items during flood or evacuation.
+                  बाढ़, भूस्खलन या आपातकालीन निकासी के समय परिवार की उत्तरजीविता के लिए आवश्यक वस्तुओं की चेकलिस्ट।
                 </p>
               </div>
             </div>
@@ -381,8 +487,8 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
             {/* Progress Meter Bar */}
             <div className="w-full sm:w-64 p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 space-y-1.5 shrink-0">
               <div className="flex items-center justify-between text-xs font-black text-slate-900 dark:text-white">
-                <span>Kit Readiness</span>
-                <span className="text-emerald-500">{kitPercentage}% Ready</span>
+                <span>किट तैयारी स्थिति (Kit Readiness)</span>
+                <span className="text-emerald-500">{kitPercentage}% तैयार</span>
               </div>
               <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                 <div
@@ -396,16 +502,16 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
           {/* CHECKLIST ITEMS GRID */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-3.5">
             {[
-              { key: 'water', label: 'Drinking Water (3 Liters per person per day)', desc: '1-Gallon sealed bottles for min 3 days' },
-              { key: 'firstaid', label: 'First Aid Kit & Bandages', desc: 'Antiseptics, gauze, medical tape, tweezers' },
-              { key: 'torch', label: 'LED Flashlight / Torch', desc: 'With extra rechargeable/dry cell batteries' },
-              { key: 'radio', label: 'Battery-Powered / Crank Radio', desc: 'To receive official IMD/SDMA weather broadcasts' },
-              { key: 'food', label: 'Non-Perishable Packaged Food', desc: 'Energy bars, canned beans, dried fruits' },
-              { key: 'documents', label: 'Aadhaar / ID & Land Documents', desc: 'Kept in a waterproof ziplock plastic pouch' },
-              { key: 'whistle', label: 'Signal Whistle', desc: 'To signal for help to rescue search teams' },
-              { key: 'powerbank', label: 'Charged Mobile Power Bank', desc: 'Min 10,000 mAh for emergency communication' },
-              { key: 'medicines', label: 'Prescription Medicines', desc: '7-day supply of daily maintenance medications' },
-              { key: 'warmclothes', label: 'Warm Rainproof Jacket & Blanket', desc: 'Compact thermal blankets and waterproof poncho' }
+              { key: 'water', label: 'पीने का पानी (प्रति व्यक्ति 3 लीटर प्रतिदिन)', desc: 'कम से कम 3 दिनों के लिए सीलबंद बोतलें' },
+              { key: 'firstaid', label: 'फर्स्ट एड किट एवं पट्टियां (First Aid)', desc: 'एंटीसेप्टिक, गॉज, मेडिकल टेप, चिमटी' },
+              { key: 'torch', label: 'एलईडी टॉर्च / इमरजेंसी लाइट (Torch)', desc: 'अतिरिक्त रिचार्जेबल या ड्राई सेल बैटरियों के साथ' },
+              { key: 'radio', label: 'बैटरी से चलने वाला / हैंड-क्रैंक रेडियो', desc: 'आधिकारिक IMD/SDMA मौसम प्रसारण सुनने के लिए' },
+              { key: 'food', label: 'सूखा और पैक्ड गैर-खराब भोजन (Food)', desc: 'एनर्जी बार, डिब्बाबंद खाना, मेवे/ड्राई फ्रूट्स' },
+              { key: 'documents', label: 'आधार / आईडी एवं भूमि दस्तावेज (Documents)', desc: 'वाटरप्रूफ जिपलॉक प्लास्टिक पाउच में सुरक्षित रखें' },
+              { key: 'whistle', label: 'इमरजेंसी सीटी (Signal Whistle)', desc: 'खोज एवं बचाव टीमों को मदद का संकेत देने के लिए' },
+              { key: 'powerbank', label: 'चार्ज्ड मोबाइल पावर बैंक (Power Bank)', desc: 'आपातकालीन कॉल के लिए न्यूनतम 10,000 mAh' },
+              { key: 'medicines', label: 'डॉक्टर द्वारा दी गई आवश्यक दवाएं', desc: '7 दिनों की दैनिक स्वास्थ्य दवाओं का स्टॉक' },
+              { key: 'warmclothes', label: 'रेनप्रूफ जैकेट एवं गरम कंबल (Poncho)', desc: 'कॉम्पेक्ट थर्मल कंबल और वाटरप्रूफ पोंचो' }
             ].map((item) => {
               const isChecked = kitChecked[item.key] || false;
               return (
