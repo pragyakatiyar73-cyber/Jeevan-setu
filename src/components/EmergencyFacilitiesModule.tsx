@@ -1046,7 +1046,7 @@ export default function EmergencyFacilitiesModule({
               {isHi ? 'चयनित फिल्टर के लिए कोई सुविधा नहीं मिली।' : 'No facilities found matching selected filter criteria inside NER.'}
             </div>
           ) : (
-            <div className="space-y-3.5 flex-1 max-h-[600px] overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-3.5 flex-1 min-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
               {facilities.map(fac => {
                 const isSelected = selectedFacility && selectedFacility.id === fac.id;
                 return (
