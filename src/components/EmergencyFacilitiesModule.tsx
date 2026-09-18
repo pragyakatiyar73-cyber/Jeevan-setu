@@ -160,58 +160,76 @@ export default function EmergencyFacilitiesModule({
     loadFacilities();
   }, [selectedType, selectedState, selectedDistrict, searchQuery, activeUserLoc]);
 
-  // Leaflet Map Initialization
+  // Leaflet Map Initialization & Unmount Cleanup
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    if (!mapInstanceRef.current) {
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
-      });
-
-      const map = L.map(mapContainerRef.current, {
-        center: [25.8, 92.5],
-        zoom: 7,
-        zoomControl: true
-      });
-
-      const tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
-
-      tileLayerRef.current = L.tileLayer(tileUrl, {
-        maxZoom: 18,
-        attribution: 'Jeevan Setu GIS Telemetry'
-      }).addTo(map);
-
-      // Render Master 8-State NER Boundary Polygon
-      const polygonCoords: L.LatLngExpression[] = MASTER_NER_POLYGON.map(([lat, lon]) => [lat, lon]);
-      L.polygon(polygonCoords, {
-        color: '#0284c7',
-        weight: 2,
-        fillColor: '#38bdf8',
-        fillOpacity: 0.08,
-        dashArray: '5, 5'
-      }).addTo(map).bindPopup('<b>📍 North Eastern Region (8 States Master Boundary)</b>');
-
-      markersRef.current = L.layerGroup().addTo(map);
-      mapInstanceRef.current = map;
-
-      // Observe map container resize so Leaflet always fits container properly
-      const resizeObserver = new ResizeObserver(() => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.invalidateSize();
+    try {
+      if (!mapInstanceRef.current) {
+        if ((mapContainerRef.current as any)._leaflet_id) {
+          (mapContainerRef.current as any)._leaflet_id = null;
         }
-      });
-      resizeObserver.observe(mapContainerRef.current);
+
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
+        });
+
+        const map = L.map(mapContainerRef.current, {
+          center: [25.8, 92.5],
+          zoom: 7,
+          zoomControl: true
+        });
+
+        const tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+
+        tileLayerRef.current = L.tileLayer(tileUrl, {
+          maxZoom: 18,
+          attribution: 'Jeevan Setu GIS Telemetry'
+        }).addTo(map);
+
+        // Render Master 8-State NER Boundary Polygon
+        const polygonCoords: L.LatLngExpression[] = MASTER_NER_POLYGON.map(([lat, lon]) => [lat, lon]);
+        L.polygon(polygonCoords, {
+          color: '#0284c7',
+          weight: 2,
+          fillColor: '#38bdf8',
+          fillOpacity: 0.08,
+          dashArray: '5, 5'
+        }).addTo(map).bindPopup('<b>📍 North Eastern Region (8 States Master Boundary)</b>');
+
+        markersRef.current = L.layerGroup().addTo(map);
+        mapInstanceRef.current = map;
+
+        // Observe map container resize so Leaflet always fits container properly
+        const resizeObserver = new ResizeObserver(() => {
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.invalidateSize();
+          }
+        });
+        resizeObserver.observe(mapContainerRef.current);
+      }
+    } catch (e) {
+      console.warn("Leaflet Map init safe catch:", e);
     }
 
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.invalidateSize();
       }
     }, 200);
+
+    return () => {
+      clearTimeout(timer);
+      if (mapInstanceRef.current) {
+        try {
+          mapInstanceRef.current.remove();
+        } catch (_) {}
+        mapInstanceRef.current = null;
+      }
+    };
   }, []);
 
   // Update Tile Layer on Style Switch
