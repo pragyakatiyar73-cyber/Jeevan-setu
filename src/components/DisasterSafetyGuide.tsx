@@ -48,12 +48,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
     setKitChecked(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const emergencyContacts = [
-    { name: t('safety.ndrfHelpline', 'NDRF राष्ट्रीय हेल्पलाइन (NDRF Helpline)'), number: '1078', desc: t('safety.ndrfDesc', 'राष्ट्रीय आपदा प्रतिक्रिया बल प्रेषण कक्ष'), icon: ShieldAlert, color: 'text-rose-500 bg-rose-500/10 border-rose-500/30' },
-    { name: t('safety.nationalEmergency', 'राष्ट्रीय आपातकालीन नंबर (National Emergency Number)'), number: '112', desc: t('safety.nationalEmergencyDesc', 'ऑल-इन-वन आपातकालीन सेवाएं (पुलिस/अग्नि/एम्बुलेंस)'), icon: PhoneCall, color: 'text-sky-500 bg-sky-500/10 border-sky-500/30' },
-    { name: t('safety.sdma', 'राज्य आपदा प्रबंधन प्राधिकरण (SDMA)'), number: '1070', desc: t('safety.sdmaDesc', 'राज्य नियंत्रण कक्ष एवं बाढ़ राहत केंद्र'), icon: Info, color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' },
-    { name: t('safety.ambulance', 'चिकित्सा आपातकालीन एम्बुलेंस (Ambulance)'), number: '108', desc: t('safety.ambulanceDesc', '24/7 उन्नत जीवन सहायता एम्बुलेंस सेवा'), icon: Zap, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' }
-  ];
+
 
   const safetyDataHi = {
     flood: {
@@ -264,6 +259,13 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
   const isHindi = language === 'hi';
   const safetyData = isHindi ? safetyDataHi : safetyDataEn;
 
+  const emergencyContacts = [
+    { name: isHindi ? 'NDRF राष्ट्रीय हेल्पलाइन' : 'NDRF National Helpline', number: '1078', desc: isHindi ? 'राष्ट्रीय आपदा प्रतिक्रिया बल प्रेषण कक्ष' : 'National Disaster Response Force Dispatch Control Room', icon: ShieldAlert, color: 'text-rose-500 bg-rose-500/10 border-rose-500/30' },
+    { name: isHindi ? 'राष्ट्रीय आपातकालीन नंबर' : 'National Emergency Number', number: '112', desc: isHindi ? 'ऑल-इन-वन आपातकालीन सेवाएं (पुलिस/अग्नि/एम्बुलेंस)' : 'All-in-One Emergency Services (Police / Fire / Ambulance)', icon: PhoneCall, color: 'text-sky-500 bg-sky-500/10 border-sky-500/30' },
+    { name: isHindi ? 'राज्य आपदा प्रबंधन प्राधिकरण (SDMA)' : 'State Disaster Management Authority (SDMA)', number: '1070', desc: isHindi ? 'राज्य नियंत्रण कक्ष एवं बाढ़ राहत केंद्र' : 'State Control Room & Flood Relief Operations', icon: Info, color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' },
+    { name: isHindi ? 'चिकित्सा आपातकालीन एम्बुलेंस' : 'Medical Emergency Ambulance', number: '108', desc: isHindi ? '24/7 उन्नत जीवन सहायता एम्बुलेंस सेवा' : '24/7 Advanced Life Support Ambulance Service', icon: Zap, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' }
+  ];
+
   const checkedCount = Object.values(kitChecked).filter(Boolean).length;
   const totalCount = Object.keys(kitChecked).length;
   const kitPercentage = Math.round((checkedCount / totalCount) * 100);
@@ -450,7 +452,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-black text-sm uppercase tracking-wide">
                       <CheckCircle2 className="w-5 h-5" />
-                      <span>अनुशंसित कार्य - क्या करें (RECOMMENDED DO'S)</span>
+                      <span>{isHindi ? 'अनुशंसित कार्य (क्या करें)' : 'RECOMMENDED DO\'S'}</span>
                     </div>
 
                     <div className="space-y-2.5">
@@ -467,7 +469,7 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-black text-sm uppercase tracking-wide">
                       <XCircle className="w-5 h-5" />
-                      <span>महत्वपूर्ण निषेध - क्या न करें (CRITICAL DONT'S)</span>
+                      <span>{isHindi ? 'महत्वपूर्ण निषेध (क्या न करें)' : 'CRITICAL DONT\'S'}</span>
                     </div>
 
                     <div className="space-y-2.5">
@@ -526,15 +528,15 @@ export default function DisasterSafetyGuide({ onTriggerSOS }: DisasterSafetyGuid
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-3.5">
             {[
               { key: 'water', label: isHindi ? 'पीने का पानी (प्रति व्यक्ति 3 लीटर प्रतिदिन)' : 'Drinking Water (3 Liters per person/day)', desc: isHindi ? 'कम से कम 3 दिनों के लिए सीलबंद बोतलें' : 'Sealed bottles for at least 3 days' },
-              { key: 'firstaid', label: isHindi ? 'फर्स्ट एड किट एवं पट्टियां (First Aid)' : 'First Aid Kit & Bandages', desc: isHindi ? 'एंटीसेप्टिक, गॉज, मेडिकल टेप, चिमटी' : 'Antiseptic, gauze, medical tape, tweezers' },
-              { key: 'torch', label: isHindi ? 'एलईडी टॉर्च / इमरजेंसी लाइट (Torch)' : 'LED Torch / Emergency Light', desc: isHindi ? 'अतिरिक्त रिचार्जेबल या ड्राई सेल बैटरियों के साथ' : 'With extra rechargeable or dry cell batteries' },
+              { key: 'firstaid', label: isHindi ? 'फर्स्ट एड किट एवं पट्टियां' : 'First Aid Kit & Bandages', desc: isHindi ? 'एंटीसेप्टिक, गॉज, मेडिकल टेप, चिमटी' : 'Antiseptic, gauze, medical tape, tweezers' },
+              { key: 'torch', label: isHindi ? 'एलईडी टॉर्च / इमरजेंसी लाइट' : 'LED Torch / Emergency Light', desc: isHindi ? 'अतिरिक्त रिचार्जेबल या ड्राई सेल बैटरियों के साथ' : 'With extra rechargeable or dry cell batteries' },
               { key: 'radio', label: isHindi ? 'बैटरी से चलने वाला / हैंड-क्रैंक रेडियो' : 'Battery-Powered / Hand-Crank Radio', desc: isHindi ? 'आधिकारिक IMD/SDMA मौसम प्रसारण सुनने के लिए' : 'To listen to official IMD/SDMA weather broadcasts' },
-              { key: 'food', label: isHindi ? 'सूखा और पैक्ड गैर-खराब भोजन (Food)' : 'Non-Perishable Packaged Food', desc: isHindi ? 'एनर्जी बार, डिब्बाबंद खाना, मेवे/ड्राई फ्रूट्स' : 'Energy bars, canned food, dry fruits' },
-              { key: 'documents', label: isHindi ? 'आधार / आईडी एवं भूमि दस्तावेज (Documents)' : 'Aadhaar / ID & Land Documents', desc: isHindi ? 'वाटरप्रूफ जिपलॉक प्लास्टिक पाउच में सुरक्षित रखें' : 'Keep safe in waterproof ziplock plastic pouch' },
-              { key: 'whistle', label: isHindi ? 'इमरजेंसी सीटी (Signal Whistle)' : 'Emergency Signal Whistle', desc: isHindi ? 'खोज एवं बचाव टीमों को मदद का संकेत देने के लिए' : 'To signal rescue teams for help' },
-              { key: 'powerbank', label: isHindi ? 'चार्ज्ड मोबाइल पावर बैंक (Power Bank)' : 'Charged Mobile Power Bank', desc: isHindi ? 'आपातकालीन कॉल के लिए न्यूनतम 10,000 mAh' : 'Minimum 10,000 mAh for emergency calls' },
+              { key: 'food', label: isHindi ? 'सूखा और पैक्ड गैर-खराब भोजन' : 'Non-Perishable Packaged Food', desc: isHindi ? 'एनर्जी बार, डिब्बाबंद खाना, मेवे/ड्राई फ्रूट्स' : 'Energy bars, canned food, dry fruits' },
+              { key: 'documents', label: isHindi ? 'आधार / आईडी एवं भूमि दस्तावेज' : 'Aadhaar / ID & Land Documents', desc: isHindi ? 'वाटरप्रूफ जिपलॉक प्लास्टिक पाउच में सुरक्षित रखें' : 'Keep safe in waterproof ziplock plastic pouch' },
+              { key: 'whistle', label: isHindi ? 'इमरजेंसी सीटी' : 'Emergency Signal Whistle', desc: isHindi ? 'खोज एवं बचाव टीमों को मदद का संकेत देने के लिए' : 'To signal rescue teams for help' },
+              { key: 'powerbank', label: isHindi ? 'चार्ज्ड मोबाइल पावर बैंक' : 'Charged Mobile Power Bank', desc: isHindi ? 'आपातकालीन कॉल के लिए न्यूनतम 10,000 mAh' : 'Minimum 10,000 mAh for emergency calls' },
               { key: 'medicines', label: isHindi ? 'डॉक्टर द्वारा दी गई आवश्यक दवाएं' : 'Prescription Medicines', desc: isHindi ? '7 दिनों की दैनिक स्वास्थ्य दवाओं का स्टॉक' : 'Stock of 7 days daily health medication' },
-              { key: 'warmclothes', label: isHindi ? 'रेनप्रूफ जैकेट एवं गरम कंबल (Poncho)' : 'Rainproof Jacket & Thermal Blanket', desc: isHindi ? 'कॉम्पेक्ट थर्मल कंबल और वाटरप्रूफ पोंचो' : 'Compact thermal blanket & waterproof poncho' }
+              { key: 'warmclothes', label: isHindi ? 'रेनप्रूफ जैकेट एवं गरम कंबल' : 'Rainproof Jacket & Thermal Blanket', desc: isHindi ? 'कॉम्पेक्ट थर्मल कंबल और वाटरप्रूफ पोंचो' : 'Compact thermal blanket & waterproof poncho' }
             ].map((item) => {
               const isChecked = kitChecked[item.key] || false;
               return (
