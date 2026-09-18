@@ -108,14 +108,6 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     return "en";
   });
 
-  // Force default to English on initial mount if not explicitly toggled in session
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
-      localStorage.setItem(STORAGE_KEY, "en");
-    }
-  }, []);
-
   const setLanguage = (lang: LanguageCode) => {
     setLanguageState(lang);
     localStorage.setItem(STORAGE_KEY, lang);
