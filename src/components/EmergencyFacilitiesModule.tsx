@@ -884,8 +884,7 @@ export default function EmergencyFacilitiesModule({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Column: Interactive GIS Map */}
-        <div className="lg:col-span-7 flex flex-col h-full min-h-[680px] sm:min-h-[720px] xl:min-h-[780px]">
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col flex-1 h-full transition-colors duration-300">
+        <div className="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
               <div>
                 <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
@@ -1056,13 +1055,11 @@ export default function EmergencyFacilitiesModule({
               </div>
               <span>Showing {facilities.length} verified points</span>
             </div>
-          </div>
         </div>
 
         {/* Right Column: Facilities List Cards */}
-        <div className="lg:col-span-5 flex flex-col h-full min-h-[680px] sm:min-h-[720px] xl:min-h-[780px]">
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col flex-1 h-full transition-colors duration-300">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
+        <div className="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px]">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
             <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span>🏥</span> {isHi ? 'आपदा आपातकालीन सुविधा निर्देशिका' : 'Emergency Facilities Directory'}
             </h3>
@@ -1153,7 +1150,6 @@ export default function EmergencyFacilitiesModule({
               })}
             </div>
           )}
-          </div>
         </div>
       </div>
 

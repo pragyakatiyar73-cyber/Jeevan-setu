@@ -981,10 +981,9 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
           {/* Left Column: Interactive GIS Map */}
-          <div className="lg:col-span-7 flex flex-col h-full min-h-[680px] sm:min-h-[720px] xl:min-h-[780px]">
-            <div className={`rounded-2xl border p-5 shadow-xl flex flex-col flex-1 h-full transition-colors duration-300 ${
-              isDarkMode ? 'bg-[#070d1e] border-slate-800' : 'bg-white border-slate-200'
-            }`}>
+          <div className={`lg:col-span-7 rounded-2xl border p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px] ${
+            isDarkMode ? 'bg-[#070d1e] border-slate-800' : 'bg-white border-slate-200'
+          }`}>
               {/* Map Header & Controls */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
                 <div>
@@ -1098,14 +1097,12 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 </div>
                 <span>Status: <strong className="text-emerald-500">READY TO DISPATCH</strong></span>
               </div>
-            </div>
           </div>
 
-          {/* Right Column: Emergency Request Form Cards Panel */}
-          <div className="lg:col-span-5 flex flex-col h-full min-h-[680px] sm:min-h-[720px] xl:min-h-[780px]">
-            <div className={`rounded-2xl border p-5 shadow-xl flex flex-col flex-1 h-full transition-colors duration-300 ${
-              isDarkMode ? 'bg-[#070d1e] border-slate-800' : 'bg-white border-slate-200'
-            }`}>
+        {/* Right Column: Emergency Request Form Cards Panel */}
+        <div className={`lg:col-span-5 rounded-2xl border p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px] ${
+          isDarkMode ? 'bg-[#070d1e] border-slate-800' : 'bg-white border-slate-200'
+        }`}>
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
               <h3 className={`text-base sm:text-lg font-black flex items-center gap-2 ${
                 isDarkMode ? 'text-white' : 'text-slate-900'
@@ -1259,7 +1256,6 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
             </div>
           </div>
         </div>
-      </div>
       )}
 
       {/* TAB 2: PRIVATE LIVE TRACKING MAP (1-to-1 SECURITY RULE) */}
