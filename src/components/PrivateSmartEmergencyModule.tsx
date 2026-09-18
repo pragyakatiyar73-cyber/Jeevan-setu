@@ -976,187 +976,39 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
         </div>
       </div>
 
-      {/* TAB 1: EMERGENCY REQUEST FORM */}
+      {/* TAB 1: EMERGENCY REQUEST & LIVE DISPATCH MAP GRID */}
       {activeTab === 'request' && (
-        <div className="max-w-3xl mx-auto space-y-6">
-          <div className={`p-5 md:p-7 rounded-3xl shadow-2xl space-y-6 border transition-colors ${
-            isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-          }`}>
-            <div>
-              <h2 className={`text-lg font-extrabold flex items-center gap-2 ${
-                isDarkMode ? 'text-white' : 'text-slate-900'
-              }`}>
-                <ShieldAlert className="w-5 h-5 text-rose-500" />
-                {language === 'hi' ? 'आपातकालीन श्रेणी चुनें' : 'Select Emergency Category'}
-              </h2>
-              <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                {language === 'hi'
-                  ? 'जीवन सेतु आपात स्थिति के प्रकार के आधार पर निकटतम संबंधित प्रतिक्रिया वाहन तुरंत आवंटित करता है।'
-                  : 'Jeevan Setu automatically dispatches the nearest relevant response vehicle based on emergency type.'}
-              </p>
-            </div>
-
-            {/* Emergency Type Options Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {[
-                { type: 'Medical' as EmergencyType, label: language === 'hi' ? '🏥 चिकित्सा आपातकाल' : '🏥 Medical Emergency', vehicle: language === 'hi' ? '<ctrl42> एम्बुलेंस' : '🚑 Ambulance', reqs: ['Ambulance', 'Medical help', 'Medicine', 'Trauma Rescue'] },
-                { type: 'Fire' as EmergencyType, label: language === 'hi' ? '🔥 अग्नि आपातकाल' : '🔥 Fire Emergency', vehicle: language === 'hi' ? '🚒 अग्निशामक वाहन' : '🚒 Fire Response Vehicle', reqs: ['Fire assistance', 'Evacuation', 'Rescue'] },
-                { type: 'Police' as EmergencyType, label: language === 'hi' ? '🚓 पुलिस/सुरक्षा' : '🚓 Police/Security', vehicle: language === 'hi' ? '🚓 पुलिस गश्ती वाहन' : '🚓 Police Patrol Vehicle', reqs: ['Police/security assistance', 'Law Enforcement', 'Emergency Escort'] },
-                { type: 'Relief' as EmergencyType, label: language === 'hi' ? '📦 राहत/सामग्री' : '📦 Relief/Supply', vehicle: language === 'hi' ? '🚚 राहत सामग्री ट्रक' : '🚚 Relief Convoy Truck', reqs: ['Food', 'Drinking Water', 'Medicine', 'Shelter Kits'] },
-                { type: 'Other' as EmergencyType, label: language === 'hi' ? '⚠️ अन्य आपातकाल' : '⚠️ Other Emergency', vehicle: language === 'hi' ? '🔍 श्रेणीबद्ध वाहन' : '🔍 Categorized Dispatch', reqs: ['Rescue/Relief', 'Road Clearance', 'Other'] }
-              ].map(opt => (
-                <button
-                  key={opt.type}
-                  type="button"
-                  onClick={() => {
-                    setSelectedType(opt.type);
-                    setSelectedRequirement(opt.reqs[0]);
-                  }}
-                  className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between transition ${
-                    selectedType === opt.type
-                      ? 'bg-rose-600/20 border-rose-500 ring-2 ring-rose-500/30 text-rose-700 dark:text-white shadow-xl'
-                      : (isDarkMode ? 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100')
-                  }`}
-                >
-                  <span className="font-extrabold text-xs md:text-sm block">{opt.label}</span>
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono mt-2 block">
-                    {language === 'hi' ? 'आवंटित:' : 'Assigns:'} {opt.vehicle}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* Requirement Dropdown & State/District */}
-            <form onSubmit={handleSubmitRequest} className="space-y-5 text-xs">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          
+          {/* Left Column: Interactive GIS Map */}
+          <div className="lg:col-span-7 flex flex-col h-full min-h-[580px] max-h-[640px]">
+            <div className={`rounded-2xl border p-5 shadow-xl flex flex-col h-full transition-colors duration-300 ${
+              isDarkMode ? 'bg-[#070d1e] border-slate-800' : 'bg-white border-slate-200'
+            }`}>
+              {/* Map Header & Controls */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
                 <div>
-                  <label className={`block font-bold mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                    {language === 'hi' ? 'विशिष्ट आवश्यकता' : 'Specific Requirement'}
-                  </label>
-                  <select
-                    value={selectedRequirement}
-                    onChange={e => setSelectedRequirement(e.target.value)}
-                    className={`w-full rounded-xl px-3.5 py-2.5 font-semibold border ${
-                      isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                  >
-                    {[
-                      { val: 'Ambulance', label: language === 'hi' ? 'एम्बुलेंस' : 'Ambulance' },
-                      { val: 'Medical help', label: language === 'hi' ? 'चिकित्सा सहायता' : 'Medical help' },
-                      { val: 'Food', label: language === 'hi' ? 'खाद्य सामग्री' : 'Food' },
-                      { val: 'Drinking Water', label: language === 'hi' ? 'पेयजल' : 'Drinking Water' },
-                      { val: 'Medicine', label: language === 'hi' ? 'दवाइयां' : 'Medicine' },
-                      { val: 'Rescue/Relief', label: language === 'hi' ? 'बचाव एवं राहत' : 'Rescue/Relief' },
-                      { val: 'Fire assistance', label: language === 'hi' ? 'अग्निशमन सहायता' : 'Fire assistance' },
-                      { val: 'Police/security assistance', label: language === 'hi' ? 'पुलिस/सुरक्षा सहायता' : 'Police/security assistance' },
-                      { val: 'Road Clearance', label: language === 'hi' ? 'सड़क की सफाई' : 'Road Clearance' },
-                      { val: 'Other', label: language === 'hi' ? 'अन्य' : 'Other' }
-                    ].map(req => (
-                      <option key={req.val} value={req.val}>
-                        {req.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className={`block font-bold mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                    {language === 'hi' ? 'राज्य (केवल 8 पूर्वोत्तर राज्य)' : 'State (8 NER States Only)'}
-                  </label>
-                  <select
-                    value={userState}
-                    onChange={e => {
-                      const selectedState = e.target.value;
-                      setUserState(selectedState);
-                      const dists = NER_STATES_DISTRICTS[selectedState] || [];
-                      const firstDist = dists[0] || '';
-                      setUserDistrict(firstDist);
-                      const coords = NER_STATE_DEFAULT_COORDS[selectedState] || [26.1445, 91.7362];
-                      setUserLat(coords[0]);
-                      setUserLon(coords[1]);
-                    }}
-                    className={`w-full rounded-xl px-3.5 py-2.5 font-semibold border ${
-                      isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                  >
-                    {NER_STATES.map(s => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className={`block font-bold mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                  {language === 'hi' ? 'जिला स्थान' : 'District Location'}
-                </label>
-                <select
-                  value={userDistrict}
-                  onChange={e => {
-                    const selectedDist = e.target.value;
-                    setUserDistrict(selectedDist);
-                    const baseCoords = NER_STATE_DEFAULT_COORDS[userState] || [26.1445, 91.7362];
-                    const distIndex = (NER_STATES_DISTRICTS[userState] || []).indexOf(selectedDist);
-                    const distOffset = distIndex > 0 ? distIndex * 0.04 : 0;
-                    setUserLat(Number((baseCoords[0] + distOffset * 0.2).toFixed(4)));
-                    setUserLon(Number((baseCoords[1] + distOffset * 0.3).toFixed(4)));
-                  }}
-                  className={`w-full rounded-xl px-3.5 py-2.5 font-semibold border ${
-                    isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
-                  }`}
-                >
-                  {(NER_STATES_DISTRICTS[userState] || []).map(d => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className={`block font-bold mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                  {language === 'hi' ? 'संक्षिप्त स्थिति विवरण (वैकल्पिक)' : 'Short Situation Description (Optional)'}
-                </label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
-                  placeholder={language === 'hi' ? 'उदा. बाढ़ प्रभावित। 3 घायल व्यक्तियों को चिकित्सा सहायता की आवश्यकता है।' : 'e.g. Flood affected. 3 injured people need medical assistance.'}
-                  className={`w-full rounded-xl p-3 border ${
-                    isDarkMode ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
-                  }`}
-                ></textarea>
-              </div>
-
-              {/* LIVE MAP & LOCATION CAPTURE SECTION */}
-              <div className={`p-5 rounded-3xl space-y-4 shadow-xl border ${
-                isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
-              }`}>
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs font-extrabold uppercase flex items-center gap-2 ${
+                  <h3 className={`text-base sm:text-lg font-black flex items-center gap-2 ${
                     isDarkMode ? 'text-white' : 'text-slate-900'
                   }`}>
-                    <MapPin className="w-4 h-4 text-rose-500" />
-                    {language === 'hi' ? '🗺️ लाइव आपातकालीन स्थान एवं वाहन आवंटन' : '🗺️ Live Emergency Location & Relevant Vehicle Assignment'}
-                  </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 font-mono text-[10px] font-bold animate-pulse">
-                    ● {language === 'hi' ? 'लाइव मानचित्र सक्रिय' : 'LIVE MAP ACTIVE'}
-                  </span>
+                    <span>🗺️</span> {language === 'hi' ? 'स्मार्ट आपातकालीन रिस्पॉन्स मैप' : 'Smart Emergency Response Map'}
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    {language === 'hi' ? 'लाइव जीपीएस स्थिति, आवंटित प्रतिक्रिया वाहन एवं मार्ग देखें' : 'Live GPS location, assigned response vehicle & route preview'}
+                  </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
+                {/* Live GPS & Map Controls */}
+                <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     type="button"
                     onClick={handleUseMyLocation}
                     disabled={locationLoading || submitting}
-                    className="flex-1 min-w-[200px] py-3.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-black rounded-xl shadow-lg shadow-rose-950/80 flex items-center justify-center gap-2 active:scale-95 transition tracking-wide text-xs cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg text-xs font-black transition flex items-center gap-1.5 cursor-pointer border shadow bg-rose-600 hover:bg-rose-500 text-white border-rose-400 shadow-rose-600/30"
+                    title="Detect your device live location"
                   >
-                    <Compass className={`w-4 h-4 ${locationLoading || submitting ? 'animate-spin' : ''}`} />
-                    {locationLoading || submitting
-                      ? (language === 'hi' ? '⚡ लाइव प्रतिक्रिया से कनेक्ट हो रहा है...' : '⚡ CONNECTING TO LIVE RESPONSE...')
-                      : (language === 'hi' ? '📍 मेरा स्थान उपयोग करें और कनेक्ट करें' : '📍 USE MY LOCATION & CONNECT LIVE')}
+                    <Radio className={`h-3.5 w-3.5 ${locationLoading ? 'animate-spin' : 'animate-pulse'}`} />
+                    <span>{locationLoading ? (language === 'hi' ? 'खोज रहे हैं...' : 'Locating...') : (language === 'hi' ? '📍 लाइव लोकेशन' : '📍 Live Location')}</span>
                   </button>
 
                   <button
@@ -1170,98 +1022,240 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                         requestMapRef.current.invalidateSize();
                       }
                     }}
-                    className={`flex-1 min-w-[160px] py-3 px-4 font-extrabold rounded-xl border flex items-center justify-center gap-2 transition cursor-pointer ${
-                      isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm'
+                    className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer border ${
+                      isDarkMode ? 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
                     }`}
                   >
-                    <MapPin className="w-4 h-4 text-emerald-500" />
-                    {language === 'hi' ? '🎯 मानचित्र री-सेंटर करें' : '🎯 RE-CENTER MAP'}
+                    🎯 {language === 'hi' ? 'री-सेंटर' : 'Recenter'}
                   </button>
-                </div>
-
-                {locationError && (
-                  <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-700 dark:text-rose-200 text-xs flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
-                    <span>{locationError}</span>
-                  </div>
-                )}
-
-                {/* CONTINUOUS LIVE MAP EMBED */}
-                <div className="space-y-2 pt-1">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
-                      {language === 'hi'
-                        ? '👆 स्थान सेट करने के लिए लाल पिन 🔴 खींचें या मानचित्र पर क्लिक करें:'
-                        : '👆 Drag red pin 🔴 or click on map to set location:'}
-                    </span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">
-                      {language === 'hi'
-                        ? `${selectedType === 'Medical' ? '🚑 एम्बुलेंस' : selectedType === 'Fire' ? '🚒 अग्निशामक वाहन' : selectedType === 'Police' ? '🚓 पुलिस गश्ती' : '🚚 राहत सामग्री ट्रक'} मिल गया`
-                        : `${selectedType === 'Medical' ? '🚑 Ambulance' : selectedType === 'Fire' ? '🚒 Fire Tender' : selectedType === 'Police' ? '🚓 Police Patrol' : '🚚 Relief Convoy'} Matched`}
-                    </span>
-                  </div>
-
-                  <div
-                    ref={requestMapContainerRef}
-                    className={`w-full rounded-2xl overflow-hidden border relative shadow-2xl z-0 ${
-                      isDarkMode ? 'border-slate-800' : 'border-slate-300'
-                    }`}
-                    style={{ height: '300px', width: '100%', minHeight: '300px' }}
-                  ></div>
-
-                  <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono px-3.5 py-2.5 rounded-xl border ${
-                    isDarkMode ? 'bg-slate-900/90 text-slate-400 border-slate-800' : 'bg-white text-slate-600 border-slate-300 shadow-sm'
-                  }`}>
-                    <div className="flex items-center gap-3">
-                      <span className={`flex items-center gap-1 font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                        🔴 {language === 'hi' ? 'मेरा स्थान' : 'My Location'}
-                      </span>
-                      <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
-                        {selectedType === 'Medical' ? '🚑' : selectedType === 'Fire' ? '🚒' : selectedType === 'Police' ? '🚓' : '🚚'} {language === 'hi' ? 'वाहन आवंटित' : 'Vehicle Assigned'}
-                      </span>
-                    </div>
-                    <div className={isDarkMode ? 'text-slate-300' : 'text-slate-700'}>
-                      Lat: <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>{userLat.toFixed(4)}</strong>, Lon: <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>{userLon.toFixed(4)}</strong>
-                    </div>
-                  </div>
                 </div>
               </div>
 
-              {/* Priority Classification Preview */}
-              <div className={`p-3 rounded-xl border flex items-center justify-between ${
-                isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+              {/* Toolbar bar above map */}
+              <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-900/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 my-2 shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1 truncate max-w-[240px]">
+                    <MapPin className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+                    <span className="truncate">{userDistrict}, {userState}</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                  <span>
+                    {selectedType === 'Medical' ? '🚑 Ambulance' : selectedType === 'Fire' ? '🚒 Fire Tender' : selectedType === 'Police' ? '🚓 Police Patrol' : '🚚 Relief Convoy'} Matched
+                  </span>
+                </div>
+              </div>
+
+              {/* Interactive Leaflet Map Container */}
+              <div className="relative flex-1 min-h-[340px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner my-1">
+                <div ref={requestMapContainerRef} className="absolute inset-0 w-full h-full z-0" />
+                
+                {/* Floating Detect Live Location overlay button */}
+                <button
+                  type="button"
+                  onClick={handleUseMyLocation}
+                  disabled={locationLoading || submitting}
+                  className="absolute bottom-3 right-3 z-[400] px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-900 text-white text-xs font-black shadow-2xl border border-rose-500/50 backdrop-blur-md flex items-center gap-2 cursor-pointer transition hover:scale-105 active:scale-95"
+                >
+                  <Radio className={`h-4 w-4 ${locationLoading ? 'animate-spin text-rose-400' : 'text-rose-500 animate-pulse'}`} />
+                  <span>{locationLoading ? (language === 'hi' ? 'कनेक्ट हो रहा है...' : 'Connecting...') : (language === 'hi' ? '📍 मेरा स्थान उपयोग करें' : '📍 Detect My Live Location')}</span>
+                </button>
+              </div>
+
+              {/* Assigned Vehicle Quick Status Footer */}
+              <div className="p-3 rounded-xl border border-rose-500/30 bg-rose-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0 my-1">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black uppercase px-2 py-0.5 rounded bg-rose-600 text-white">
+                      {selectedType} Emergency
+                    </span>
+                    <h4 className={`text-sm font-black truncate max-w-[280px] ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                      {selectedType === 'Medical' ? '🚑 Emergency Trauma Ambulance' : selectedType === 'Fire' ? '🚒 High-Altitude Fire Tender' : selectedType === 'Police' ? '🚓 Rapid Response Police Patrol' : '🚚 4x4 Disaster Relief Convoy'}
+                    </h4>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                    {userDistrict}, {userState} &bull; <b className="text-rose-400">Lat: {userLat.toFixed(4)}, Lon: {userLon.toFixed(4)}</b>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleUseMyLocation}
+                    disabled={locationLoading || submitting}
+                    className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-xs font-black flex items-center gap-1.5 shadow transition cursor-pointer"
+                  >
+                    <Navigation className="h-3.5 w-3.5" />
+                    <span>{language === 'hi' ? 'लाइव कनेक्ट ➔' : 'Connect Live ➔'}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 font-mono shrink-0">
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> 🔴 My Location</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 🚑 Assigned Vehicle</span>
+                </div>
+                <span>Status: <strong className="text-emerald-500">READY TO DISPATCH</strong></span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Emergency Request Form Cards Panel */}
+          <div className={`lg:col-span-5 rounded-2xl border p-5 shadow-xl flex flex-col h-full min-h-[580px] max-h-[640px] transition-colors duration-300 ${
+            isDarkMode ? 'bg-[#070d1e] border-slate-800' : 'bg-white border-slate-200'
+          }`}>
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
+              <h3 className={`text-base sm:text-lg font-black flex items-center gap-2 ${
+                isDarkMode ? 'text-white' : 'text-slate-900'
               }`}>
-                <span className={`font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                  {language === 'hi' ? 'सिस्टम प्राथमिकता वर्गीकरण:' : 'System Priority Classification:'}
-                </span>
-                <span className={`px-3 py-1 rounded-full text-xs font-black border ${
-                  calculatedPriority === 'CRITICAL'
-                    ? 'bg-rose-500/20 text-rose-600 dark:text-rose-300 border-rose-500 animate-pulse'
-                    : calculatedPriority === 'HIGH'
-                    ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500'
-                    : 'bg-blue-500/20 text-blue-600 dark:text-blue-300 border-blue-500'
+                <ShieldAlert className="w-5 h-5 text-rose-500" />
+                {language === 'hi' ? 'आपातकालीन सहायता फॉर्म' : 'Emergency Request Details'}
+              </h3>
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-black border ${
+                calculatedPriority === 'CRITICAL'
+                  ? 'bg-rose-500/20 text-rose-600 dark:text-rose-300 border-rose-500 animate-pulse'
+                  : calculatedPriority === 'HIGH'
+                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500'
+                  : 'bg-blue-500/20 text-blue-600 dark:text-blue-300 border-blue-500'
+              }`}>
+                {calculatedPriority} PRIORITY
+              </span>
+            </div>
+
+            <div className="space-y-4 flex-1 min-h-0 overflow-y-auto pr-1.5 custom-scrollbar">
+              {/* Emergency Type Pills */}
+              <div>
+                <label className={`block font-bold text-xs uppercase tracking-wider mb-2 ${
+                  isDarkMode ? 'text-slate-400' : 'text-slate-600'
                 }`}>
-                  {language === 'hi'
-                    ? `${calculatedPriority === 'CRITICAL' ? 'गंभीर' : calculatedPriority === 'HIGH' ? 'उच्च' : 'सामान्य'} प्राथमिकता`
-                    : `${calculatedPriority} PRIORITY`}
-                </span>
+                  {language === 'hi' ? 'आपातकालीन श्रेणी' : 'Emergency Category'}
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { type: 'Medical' as EmergencyType, label: '🏥 Medical' },
+                    { type: 'Fire' as EmergencyType, label: '🔥 Fire' },
+                    { type: 'Police' as EmergencyType, label: '🚓 Police' },
+                    { type: 'Relief' as EmergencyType, label: '📦 Relief' },
+                    { type: 'Other' as EmergencyType, label: '⚠️ Other' }
+                  ].map(opt => (
+                    <button
+                      key={opt.type}
+                      type="button"
+                      onClick={() => {
+                        setSelectedType(opt.type);
+                      }}
+                      className={`p-2.5 rounded-xl border text-xs font-extrabold transition text-left ${
+                        selectedType === opt.type
+                          ? 'bg-rose-600 text-white border-rose-500 shadow-md shadow-rose-600/30'
+                          : (isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200')
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* State & District Selector */}
+              <div className="space-y-3">
+                <div>
+                  <label className={`block font-bold text-xs mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {language === 'hi' ? 'राज्य (8 पूर्वोत्तर राज्य)' : 'State (8 NER States)'}
+                  </label>
+                  <select
+                    value={userState}
+                    onChange={e => {
+                      const selectedState = e.target.value;
+                      setUserState(selectedState);
+                      const dists = NER_STATES_DISTRICTS[selectedState] || [];
+                      const firstDist = dists[0] || '';
+                      setUserDistrict(firstDist);
+                      const coords = NER_STATE_DEFAULT_COORDS[selectedState] || [26.1445, 91.7362];
+                      setUserLat(coords[0]);
+                      setUserLon(coords[1]);
+                    }}
+                    className={`w-full rounded-xl px-3 py-2 text-xs font-bold border outline-none ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
+                  >
+                    {NER_STATES.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className={`block font-bold text-xs mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {language === 'hi' ? 'ज़िला स्थान' : 'District Location'}
+                  </label>
+                  <select
+                    value={userDistrict}
+                    onChange={e => {
+                      const selectedDist = e.target.value;
+                      setUserDistrict(selectedDist);
+                      const baseCoords = NER_STATE_DEFAULT_COORDS[userState] || [26.1445, 91.7362];
+                      const distIndex = (NER_STATES_DISTRICTS[userState] || []).indexOf(selectedDist);
+                      const distOffset = distIndex > 0 ? distIndex * 0.04 : 0;
+                      setUserLat(Number((baseCoords[0] + distOffset * 0.2).toFixed(4)));
+                      setUserLon(Number((baseCoords[1] + distOffset * 0.3).toFixed(4)));
+                    }}
+                    className={`w-full rounded-xl px-3 py-2 text-xs font-bold border outline-none ${
+                      isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
+                  >
+                    {(NER_STATES_DISTRICTS[userState] || []).map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Requirement & Description */}
+              <div>
+                <label className={`block font-bold text-xs mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {language === 'hi' ? 'स्थिति का विवरण' : 'Situation Description'}
+                </label>
+                <textarea
+                  rows={2}
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder={language === 'hi' ? 'उदा. आपातकालीन चिकित्सा सहायता की आवश्यकता है।' : 'e.g. Emergency medical help needed.'}
+                  className={`w-full rounded-xl p-2.5 text-xs border outline-none ${
+                    isDarkMode ? 'bg-slate-900 border-slate-800 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
+                  }`}
+                ></textarea>
               </div>
 
               {submitError && (
-                <div className="p-3 bg-rose-500/20 border border-rose-500/40 text-rose-700 dark:text-rose-200 rounded-xl">
+                <div className="p-2.5 bg-rose-500/20 border border-rose-500/40 text-rose-700 dark:text-rose-200 rounded-xl text-xs">
                   {submitError}
                 </div>
               )}
+            </div>
+
+            {/* Action Buttons Footer */}
+            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleUseMyLocation}
+                disabled={locationLoading || submitting}
+                className="w-full py-3 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-xs rounded-xl shadow-lg shadow-rose-900/40 flex items-center justify-center gap-2 cursor-pointer transition active:scale-95"
+              >
+                <Compass className={`w-4 h-4 ${locationLoading || submitting ? 'animate-spin' : ''}`} />
+                <span>{language === 'hi' ? '📍 मेरा स्थान उपयोग करें और लाइव कनेक्ट करें' : '📍 USE MY LOCATION & CONNECT LIVE'}</span>
+              </button>
 
               <button
-                type="submit"
+                type="button"
+                onClick={handleSubmitRequest}
                 disabled={submitting}
-                className="w-full py-4 bg-rose-600 hover:bg-rose-500 text-white font-black text-sm rounded-2xl shadow-xl shadow-rose-950 transition uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs rounded-xl border border-slate-700 flex items-center justify-center gap-2 cursor-pointer transition"
               >
-                {submitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldAlert className="w-5 h-5" />}
-                <span>{language === 'hi' ? '[ आपातकालीन अनुरोध भेजें ]' : '[ SEND EMERGENCY REQUEST ]'}</span>
+                {submitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldAlert className="w-4 h-4 text-rose-400" />}
+                <span>{language === 'hi' ? '[ अनुरोध जमा करें ]' : '[ SUBMIT EMERGENCY REQUEST ]'}</span>
               </button>
-            </form>
+            </div>
           </div>
         </div>
       )}
