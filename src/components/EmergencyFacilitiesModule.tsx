@@ -31,6 +31,7 @@ import {
 import { NER_STATES_DISTRICTS } from '../services/api/disasterReportsService';
 import { isPointInNER, NER_STATES, NERStateName, MASTER_NER_POLYGON, NER_COVERAGE_LABEL } from '../utils/nerBoundary';
 import { calculateSafeNERRoute } from '../services/api/roadAccessibilityService';
+import { calculateEmergencyRoute, reverseGeocode } from '../services/api/routing';
 import { SearchSpellingCorrectionPrompt } from './SearchSpellingCorrectionPrompt';
 import { useTranslation } from '../i18n';
 
@@ -85,6 +86,63 @@ export default function EmergencyFacilitiesModule({
   const [activeUserLoc, setActiveUserLoc] = useState(PRESET_USER_LOCATIONS[0]);
   const [isLocationOutsideNER, setIsLocationOutsideNER] = useState(false);
 
+  // Live GPS & Route Geometry State
+  const [isLiveGpsActive, setIsLiveGpsActive] = useState(false);
+  const [isLocatingUser, setIsLocatingUser] = useState(false);
+  const [gpsErrorMessage, setGpsErrorMessage] = useState<string | null>(null);
+  const [gpsAccuracyMeters, setGpsAccuracyMeters] = useState<number | null>(null);
+  const [activeRoutePoints, setActiveRoutePoints] = useState<[number, number][]>([]);
+
+  // HTML5 Browser Geolocation Detector
+  const handleDetectLiveGPS = () => {
+    if (!navigator.geolocation) {
+      setGpsErrorMessage("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setIsLocatingUser(true);
+    setGpsErrorMessage(null);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const accuracy = Math.round(position.coords.accuracy);
+
+        setIsLocatingUser(false);
+        setIsLiveGpsActive(true);
+        setGpsAccuracyMeters(accuracy);
+
+        let locName = `📍 Live GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+        try {
+          const revName = await reverseGeocode(lat, lon);
+          if (revName) {
+            const shortName = revName.split(',').slice(0, 2).join(',');
+            locName = `📍 Live GPS: ${shortName}`;
+          }
+        } catch (_) {}
+
+        const userLocObj = {
+          name: locName,
+          lat,
+          lon,
+          state: 'Live GPS'
+        };
+
+        setActiveUserLoc(userLocObj);
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.setView([lat, lon], 13);
+        }
+      },
+      (err) => {
+        setIsLocatingUser(false);
+        setIsLiveGpsActive(false);
+        setGpsErrorMessage("GPS permission denied or unavailable.");
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
   // Facilities data
   const [facilities, setFacilities] = useState<EmergencyFacility[]>([]);
   const [selectedFacility, setSelectedFacility] = useState<EmergencyFacility | null>(null);
@@ -106,6 +164,45 @@ export default function EmergencyFacilitiesModule({
   const routePolylineRef = useRef<L.Polyline | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const [activeMapStyle, setActiveMapStyle] = useState<'dark' | 'satellite' | 'street'>('dark');
+
+  // Fetch Real OSRM Road Route Points whenever activeUserLoc or selectedFacility changes
+  useEffect(() => {
+    if (!selectedFacility || isLocationOutsideNER) {
+      setActiveRoutePoints([]);
+      return;
+    }
+
+    let isSubscribed = true;
+    const fetchOSRMGeometry = async () => {
+      try {
+        const osrmRes = await calculateEmergencyRoute(
+          [activeUserLoc.lat, activeUserLoc.lon],
+          [selectedFacility.lat, selectedFacility.lon]
+        );
+
+        if (isSubscribed && osrmRes && osrmRes.geometry && osrmRes.geometry.length > 0) {
+          setActiveRoutePoints(osrmRes.geometry);
+        } else if (isSubscribed) {
+          setActiveRoutePoints([
+            [activeUserLoc.lat, activeUserLoc.lon],
+            [selectedFacility.lat, selectedFacility.lon]
+          ]);
+        }
+      } catch (_) {
+        if (isSubscribed) {
+          setActiveRoutePoints([
+            [activeUserLoc.lat, activeUserLoc.lon],
+            [selectedFacility.lat, selectedFacility.lon]
+          ]);
+        }
+      }
+    };
+
+    fetchOSRMGeometry();
+    return () => {
+      isSubscribed = false;
+    };
+  }, [activeUserLoc.lat, activeUserLoc.lon, selectedFacility?.id, isLocationOutsideNER]);
 
   // Load facilities data
   const loadFacilities = async () => {
@@ -284,21 +381,70 @@ export default function EmergencyFacilitiesModule({
     markersRef.current.clearLayers();
 
     if (routePolylineRef.current) {
-      map.removeLayer(routePolylineRef.current);
+      try {
+        map.removeLayer(routePolylineRef.current);
+      } catch (_) {}
       routePolylineRef.current = null;
     }
 
-    // User Location Pin Marker
+    // User Location Pin Marker (Live Radar Pulse or Standard Pin)
     if (!isLocationOutsideNER) {
-      const userMarker = L.circleMarker([activeUserLoc.lat, activeUserLoc.lon], {
-        radius: 10,
-        fillColor: '#0284c7',
-        color: '#ffffff',
-        weight: 3,
-        fillOpacity: 0.95
+      const userRadarDivIcon = L.divIcon({
+        className: 'custom-user-live-marker',
+        html: `
+          <div style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;">
+            <div style="
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+              background: rgba(14, 165, 233, 0.45);
+              animation: userPulse 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+            "></div>
+            <div style="
+              position: relative;
+              width: 18px;
+              height: 18px;
+              border-radius: 50%;
+              background: #0284c7;
+              border: 3px solid #ffffff;
+              box-shadow: 0 0 14px #38bdf8;
+            "></div>
+          </div>
+          <style>
+            @keyframes userPulse {
+              75%, 100% {
+                transform: scale(2.2);
+                opacity: 0;
+              }
+            }
+          </style>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
       });
-      userMarker.bindPopup(`<b>📍 Active User/Search Origin</b><br/>${activeUserLoc.name}`);
+
+      const userMarker = L.marker([activeUserLoc.lat, activeUserLoc.lon], { icon: userRadarDivIcon });
+      userMarker.bindPopup(`
+        <div style="font-family: sans-serif; font-size: 12px; min-width: 160px;">
+          <b style="color: #0284c7; font-size: 13px;">📍 Active Search / User Origin</b><br/>
+          <span>${activeUserLoc.name}</span><br/>
+          ${isLiveGpsActive ? `<span style="color: #10b981; font-weight: bold;">📡 Live GPS Telemetry Connected</span>` : `<span style="color: #64748b;">Preset Reference Base</span>`}
+        </div>
+      `);
       markersRef.current.addLayer(userMarker);
+
+      // Accuracy circle for live GPS
+      if (isLiveGpsActive) {
+        const accuracyCircle = L.circle([activeUserLoc.lat, activeUserLoc.lon], {
+          radius: gpsAccuracyMeters || 120,
+          color: '#38bdf8',
+          weight: 1.5,
+          fillColor: '#0284c7',
+          fillOpacity: 0.12
+        });
+        markersRef.current.addLayer(accuracyCircle);
+      }
     }
 
     // Render Facility Markers
@@ -367,28 +513,44 @@ export default function EmergencyFacilitiesModule({
       markersRef.current.addLayer(marker);
     });
 
-    // Draw route polyline to selected facility
+    // Draw Multi-Layer Glowing OSRM Road Route Polyline to Selected Facility
     if (selectedFacility && !isLocationOutsideNER) {
-      const routeLine = L.polyline(
-        [
-          [activeUserLoc.lat, activeUserLoc.lon],
-          [selectedFacility.lat, selectedFacility.lon]
-        ],
-        {
-          color: '#38bdf8',
-          weight: 4,
-          dashArray: '8, 8',
-          opacity: 0.95
-        }
-      );
-      routeLine.addTo(map);
-      routePolylineRef.current = routeLine;
+      const pts: L.LatLngExpression[] = activeRoutePoints.length > 0
+        ? activeRoutePoints.map(p => [p[0], p[1]])
+        : [
+            [activeUserLoc.lat, activeUserLoc.lon],
+            [selectedFacility.lat, selectedFacility.lon]
+          ];
 
-      const bounds = L.latLngBounds([
-        [activeUserLoc.lat, activeUserLoc.lon],
-        [selectedFacility.lat, selectedFacility.lon]
-      ]);
-      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 13 });
+      const outerGlow = L.polyline(pts, {
+        color: '#0284c7',
+        weight: 8,
+        opacity: 0.35,
+        lineCap: 'round',
+        lineJoin: 'round'
+      });
+
+      const mainRoute = L.polyline(pts, {
+        color: '#38bdf8',
+        weight: 4,
+        opacity: 0.95,
+        lineCap: 'round',
+        lineJoin: 'round'
+      });
+
+      const pulseDash = L.polyline(pts, {
+        color: '#ffffff',
+        weight: 2,
+        dashArray: '8, 12',
+        opacity: 0.9
+      });
+
+      const routeGroup = L.layerGroup([outerGlow, mainRoute, pulseDash]);
+      routeGroup.addTo(map);
+      routePolylineRef.current = routeGroup as any;
+
+      const bounds = L.latLngBounds(pts);
+      map.fitBounds(bounds, { padding: [55, 55], maxZoom: 14 });
     } else if (facilities.length > 0) {
       const bounds = L.latLngBounds(facilities.map(f => [f.lat, f.lon]));
       if (!isLocationOutsideNER) {
@@ -399,10 +561,12 @@ export default function EmergencyFacilitiesModule({
 
     setTimeout(() => {
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize();
+        try {
+          mapInstanceRef.current.invalidateSize();
+        } catch (_) {}
       }
     }, 200);
-  }, [facilities, selectedFacility, activeUserLoc, isLocationOutsideNER]);
+  }, [facilities, selectedFacility, activeUserLoc, isLocationOutsideNER, activeRoutePoints, isLiveGpsActive, gpsAccuracyMeters]);
 
   // Handle Safe Route Click
   const handleGetSafeRoute = async (targetFac: EmergencyFacility) => {
@@ -513,20 +677,46 @@ export default function EmergencyFacilitiesModule({
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <MapPin className="h-3.5 w-3.5 text-sky-500" /> User Search Location (NER Base)
             </label>
-            <select
-              value={activeUserLoc.name}
-              onChange={(e) => {
-                const found = PRESET_USER_LOCATIONS.find(loc => loc.name === e.target.value);
-                if (found) setActiveUserLoc(found);
-              }}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 outline-none"
-            >
-              {PRESET_USER_LOCATIONS.map((loc, idx) => (
-                <option key={idx} value={loc.name}>
-                  {loc.name} {loc.state === 'Delhi' ? '⚠️ (Non-NER Test)' : ''}
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2 items-center">
+              <select
+                value={activeUserLoc.name}
+                onChange={(e) => {
+                  const found = PRESET_USER_LOCATIONS.find(loc => loc.name === e.target.value);
+                  if (found) {
+                    setIsLiveGpsActive(false);
+                    setActiveUserLoc(found);
+                  }
+                }}
+                className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 outline-none"
+              >
+                {isLiveGpsActive && (
+                  <option value={activeUserLoc.name}>{activeUserLoc.name}</option>
+                )}
+                {PRESET_USER_LOCATIONS.map((loc, idx) => (
+                  <option key={idx} value={loc.name}>
+                    {loc.name} {loc.state === 'Delhi' ? '⚠️ (Non-NER Test)' : ''}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                onClick={handleDetectLiveGPS}
+                disabled={isLocatingUser}
+                className={`px-3 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition shrink-0 cursor-pointer shadow ${
+                  isLiveGpsActive
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 shadow-emerald-600/30'
+                    : 'bg-sky-600 hover:bg-sky-500 text-white border border-sky-400 shadow-sky-600/30'
+                }`}
+                title="Detect your device's live GPS coordinates"
+              >
+                <Radio className={`h-4 w-4 ${isLocatingUser ? 'animate-spin text-sky-200' : isLiveGpsActive ? 'animate-pulse text-emerald-200' : ''}`} />
+                <span>{isLocatingUser ? 'Locating...' : isLiveGpsActive ? 'Live GPS Active' : 'Auto-Detect Live GPS'}</span>
+              </button>
+            </div>
+            {gpsErrorMessage && (
+              <p className="text-[11px] font-bold text-rose-500 pt-0.5">{gpsErrorMessage}</p>
+            )}
           </div>
 
           {/* Search Query Input */}
