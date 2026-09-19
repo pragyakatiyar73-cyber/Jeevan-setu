@@ -105,16 +105,17 @@ const NER_HUBS = [
 export default function App() {
   const { t, language } = useTranslation();
 
-  // Check if opened on Phone A from QR scan (Mobile Share Route)
+  // Check if opened on Phone A/B from QR scan or shared link (Mobile Share Route)
   const urlParams = new URLSearchParams(window.location.search);
   const shareSession = urlParams.get('shareSession') || urlParams.get('qrSession');
   const shareToken = urlParams.get('token') || '';
 
-  if (shareSession && shareToken) {
+  if (shareSession) {
+    const effectiveToken = shareToken || 'tok_live';
     return (
       <MobileLiveLocationShareView
         sessionId={shareSession}
-        token={shareToken}
+        token={effectiveToken}
         onExit={() => {
           window.location.href = window.location.origin;
         }}

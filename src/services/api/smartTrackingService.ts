@@ -141,14 +141,51 @@ async function safeFetchJson(url: string, options?: RequestInit): Promise<{ ok: 
   }
 }
 
+const LOCAL_SESSIONS_STORAGE_KEY = 'jeevan_setu_tracking_sessions_store_v2';
+const inMemorySessions: Record<string, TrackingSessionData> = {};
+
+function getLocalStoredSessions(): Record<string, TrackingSessionData> {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(LOCAL_SESSIONS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return { ...parsed, ...inMemorySessions };
+      }
+    }
+  } catch (err) {
+    console.warn('LocalStorage access warning:', err);
+  }
+  return inMemorySessions;
+}
+
+function saveLocalSession(session: TrackingSessionData) {
+  inMemorySessions[session.sessionId] = session;
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const all = getLocalStoredSessions();
+      all[session.sessionId] = session;
+      localStorage.setItem(LOCAL_SESSIONS_STORAGE_KEY, JSON.stringify(all));
+    }
+  } catch (err) {
+    console.warn('LocalStorage write warning:', err);
+  }
+}
+
 /**
  * Creates a complete client-side fallback session for offline or Vercel static deployments
  */
-export function createFallbackTrackingSession(sessionId: string): TrackingSessionData {
-  const lat = 26.1445;
-  const lon = 91.7362;
-  return {
+export function createFallbackTrackingSession(sessionId: string, defaultLat?: number, defaultLon?: number): TrackingSessionData {
+  const stored = getLocalStoredSessions()[sessionId];
+  if (stored) {
+    return stored;
+  }
+
+  const lat = defaultLat || 26.1445;
+  const lon = defaultLon || 91.7362;
+  const session: TrackingSessionData = {
     sessionId,
+    token: 'tok_live',
     emergencyRequestId: `EMG-${sessionId}`,
     active: true,
     status: 'LIVE',
@@ -165,7 +202,7 @@ export function createFallbackTrackingSession(sessionId: string): TrackingSessio
       {
         participantId: 'P-1',
         role: 'HOST',
-        label: '🔴 Phone A (Host)',
+        label: '🔴 Requester (Host)',
         color: '#ef4444',
         status: 'LIVE',
         location: { lat, lon, accuracy: 5, speed: null, heading: null, timestamp: Date.now() },
@@ -212,6 +249,9 @@ export function createFallbackTrackingSession(sessionId: string): TrackingSessio
     etaMinutes: 4,
     lastUpdated: new Date().toISOString()
   };
+
+  saveLocalSession(session);
+  return session;
 }
 
 // 1. Submit Emergency Request
@@ -224,6 +264,21 @@ export async function createSmartEmergencyRequest(payload: {
   state?: string;
   district?: string;
 }): Promise<{ success: boolean; message: string; trackingSessionId?: string; emergency?: SmartEmergencyRequest }> {
+  const fallbackSessionId = `JS-EMG-${Math.floor(100000 + Math.random() * 900000)}`;
+  const session = createFallbackTrackingSession(fallbackSessionId, payload.lat, payload.lon);
+  session.emergency.emergencyType = payload.emergencyType;
+  session.emergency.requirement = payload.requirement;
+  session.emergency.description = payload.description || 'Live Emergency Request';
+  session.emergency.state = payload.state || 'Assam';
+  session.emergency.district = payload.district || 'Kamrup Metropolitan';
+  session.emergency.lat = payload.lat;
+  session.emergency.lon = payload.lon;
+  session.realLocation = { lat: payload.lat, lon: payload.lon, accuracy: 5, speed: null, heading: null, timestamp: Date.now() };
+  if (session.participants && session.participants.length > 0) {
+    session.participants[0].location = { lat: payload.lat, lon: payload.lon, accuracy: 5, speed: null, heading: null, timestamp: Date.now() };
+  }
+  saveLocalSession(session);
+
   const res = await safeFetchJson(`${API_BASE}/request`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -237,11 +292,12 @@ export async function createSmartEmergencyRequest(payload: {
       emergency: res.data.emergency
     };
   }
-  const fallbackSessionId = `JS-EMG-${Math.floor(100000 + Math.random() * 900000)}`;
+
   return {
     success: true,
-    message: 'Emergency response request submitted locally.',
-    trackingSessionId: fallbackSessionId
+    message: 'Emergency response request submitted locally with real GPS.',
+    trackingSessionId: fallbackSessionId,
+    emergency: session.emergency
   };
 }
 
@@ -254,9 +310,11 @@ export async function getPrivateTrackingSession(
     headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
   });
   if (res.ok && res.data) {
+    saveLocalSession(res.data);
     return { success: true, data: res.data };
   }
-  return { success: true, data: createFallbackTrackingSession(sessionId) };
+  const fallback = createFallbackTrackingSession(sessionId);
+  return { success: true, data: fallback };
 }
 
 // 3. Driver Portal - Fetch Requests
@@ -442,6 +500,54 @@ export async function sendRealGPSUpdate(payload: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
+
+  // Always update local session fallback store as well
+  const session = getLocalStoredSessions()[payload.sessionId] || createFallbackTrackingSession(payload.sessionId, payload.lat, payload.lon);
+  const targetPid = payload.participantId || 'P-1';
+  const isHost = targetPid === 'P-1' || targetPid.startsWith('HOST');
+
+  if (!session.participants) session.participants = [];
+
+  const existingIndex = session.participants.findIndex(p => p.participantId === targetPid);
+  const locationData: RealLocationData = {
+    lat: payload.lat,
+    lon: payload.lon,
+    accuracy: payload.accuracy || 5,
+    speed: payload.speed || null,
+    heading: payload.heading || null,
+    timestamp: payload.timestamp || Date.now()
+  };
+
+  if (existingIndex >= 0) {
+    session.participants[existingIndex].location = locationData;
+    session.participants[existingIndex].status = 'LIVE';
+    session.participants[existingIndex].lastUpdatedAt = new Date().toISOString();
+    if (payload.label) session.participants[existingIndex].label = payload.label;
+  } else {
+    const friendIndex = session.participants.filter(p => p.role === 'PARTICIPANT').length + 1;
+    const palette = ['#3b82f6', '#10b981', '#a855f7', '#f97316', '#06b6d4', '#ec4899'];
+    const color = palette[(friendIndex - 1) % palette.length];
+
+    session.participants.push({
+      participantId: targetPid,
+      role: isHost ? 'HOST' : 'PARTICIPANT',
+      label: payload.label || (isHost ? '🔴 Requester (Host)' : `Participant (${targetPid})`),
+      color: color,
+      status: 'LIVE',
+      location: locationData,
+      lastUpdatedAt: new Date().toISOString()
+    });
+  }
+
+  if (isHost) {
+    session.emergency.lat = payload.lat;
+    session.emergency.lon = payload.lon;
+    session.realLocation = locationData;
+  }
+
+  session.lastUpdated = new Date().toISOString();
+  saveLocalSession(session);
+
   return { success: true, sessionStatus: res.data?.sessionStatus || 'LIVE' };
 }
 
@@ -456,5 +562,21 @@ export async function stopQRLiveTrackingSession(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ sessionId, token, participantId })
   });
+
+  const session = getLocalStoredSessions()[sessionId];
+  if (session && session.participants) {
+    const pid = participantId || 'P-1';
+    const target = session.participants.find(p => p.participantId === pid);
+    if (target) target.status = 'STOPPED';
+    saveLocalSession(session);
+  }
   return { success: true };
+}
+
+export function removeParticipantFromSession(sessionId: string, participantId: string): boolean {
+  const session = getLocalStoredSessions()[sessionId];
+  if (!session || !session.participants) return false;
+  session.participants = session.participants.filter(p => p.participantId !== participantId);
+  saveLocalSession(session);
+  return true;
 }

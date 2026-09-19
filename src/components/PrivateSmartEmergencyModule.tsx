@@ -53,6 +53,8 @@ import {
   updateEmergencyStatus,
   simulateVehicleStep,
   sendRealGPSUpdate,
+  stopQRLiveTrackingSession,
+  removeParticipantFromSession,
   calculateHaversineDistance,
   calculateEstimatedETA
 } from '../services/api/smartTrackingService';
@@ -79,7 +81,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const { t, language } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const isDarkMode = theme === 'dark';
-  const [activeTab, setActiveTab] = useState<'request' | 'tracking' | 'driver' | 'simulation'>('request');
+  const [activeTab, setActiveTab] = useState<'request' | 'tracking' | 'driver' | 'simulation'>(initialSessionId ? 'tracking' : 'request');
 
   // Emergency Form State
   const [selectedType, setSelectedType] = useState<EmergencyType>('Medical');
@@ -101,6 +103,101 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const [trackingLoading, setTrackingLoading] = useState<boolean>(false);
   const [trackingError, setTrackingError] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
+
+  // Auto GPS Sync for Host inside Tracking Tab
+  const [autoGpsSync, setAutoGpsSync] = useState<boolean>(true);
+  const gpsWatchIdRef = useRef<number | null>(null);
+
+  // Initial Auto-detect GPS on component mount
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setUserLat(pos.coords.latitude);
+          setUserLon(pos.coords.longitude);
+          setLocationMode('GPS');
+        },
+        (_err) => {},
+        { enableHighAccuracy: true, timeout: 6000, maximumAge: 30000 }
+      );
+    }
+  }, []);
+
+  // Continuous GPS Watcher when tracking tab is active and autoGpsSync is ON
+  useEffect(() => {
+    if (activeTab === 'tracking' && activeSessionId && autoGpsSync && navigator.geolocation) {
+      const watchId = navigator.geolocation.watchPosition(
+        async (pos) => {
+          const { latitude, longitude, accuracy } = pos.coords;
+          setUserLat(latitude);
+          setUserLon(longitude);
+          await sendRealGPSUpdate({
+            sessionId: activeSessionId,
+            token: trackingData?.token || 'tok_live',
+            participantId: 'P-1',
+            label: language === 'hi' ? '🔴 अनुरोधकर्ता (मैं)' : '🔴 Requester (Me)',
+            lat: latitude,
+            lon: longitude,
+            accuracy: accuracy || 5,
+            timestamp: Date.now()
+          });
+        },
+        (err) => console.warn('Watch GPS error:', err),
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
+      );
+      gpsWatchIdRef.current = watchId;
+
+      return () => {
+        if (gpsWatchIdRef.current !== null) {
+          navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+          gpsWatchIdRef.current = null;
+        }
+      };
+    }
+  }, [activeTab, activeSessionId, autoGpsSync, language, trackingData?.token]);
+
+  // Manual GPS update trigger in tracking tab
+  const handleManualGpsUpdateInTracking = () => {
+    if (!navigator.geolocation) {
+      alert(language === 'hi' ? 'जीपीएस आपके डिवाइस में उपलब्ध नहीं है' : 'GPS is not available on your device');
+      return;
+    }
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude, accuracy } = pos.coords;
+        setUserLat(latitude);
+        setUserLon(longitude);
+        setLocationMode('GPS');
+        setLocationLoading(false);
+        if (activeSessionId) {
+          await sendRealGPSUpdate({
+            sessionId: activeSessionId,
+            token: trackingData?.token || 'tok_live',
+            participantId: 'P-1',
+            label: language === 'hi' ? '🔴 अनुरोधकर्ता (मैं)' : '🔴 Requester (Me)',
+            lat: latitude,
+            lon: longitude,
+            accuracy: accuracy || 5,
+            timestamp: Date.now()
+          });
+          fetchTrackingSession();
+        }
+      },
+      (_err) => {
+        setLocationLoading(false);
+        alert(language === 'hi' ? 'जीपीएस स्थान प्राप्त करने में विफल। स्थान एक्सेस की अनुमति दें।' : 'Failed to retrieve GPS location. Please grant location permissions.');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  const handleRemoveFriend = async (pid: string) => {
+    if (!activeSessionId) return;
+    removeParticipantFromSession(activeSessionId, pid);
+    await stopQRLiveTrackingSession(activeSessionId, trackingData?.token || 'tok_live', pid);
+    fetchTrackingSession();
+  };
 
   // Driver Portal State
   const [driverEmergencies, setDriverEmergencies] = useState<SmartEmergencyRequest[]>([]);
@@ -1315,38 +1412,84 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
               isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
             }`}>
               {/* Private Map Header */}
-              <div className={`p-4 border-b flex items-center justify-between ${
+              <div className={`p-4 border-b space-y-3 ${
                 isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
               }`}>
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-                  <h2 className={`text-xs font-black uppercase tracking-wider flex items-center gap-2 ${
-                    isDarkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
-                    {language === 'hi' ? 'स्मार्ट आपातकालीन प्रतिक्रिया' : 'SMART EMERGENCY RESPONSE'}
-                    <span className="font-mono text-[10px] text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/30">
-                      {trackingData.sessionId}
-                    </span>
-                  </h2>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <h2 className={`text-xs font-black uppercase tracking-wider flex items-center gap-2 ${
+                      isDarkMode ? 'text-white' : 'text-slate-900'
+                    }`}>
+                      {language === 'hi' ? 'स्मार्ट आपातकालीन प्रतिक्रिया' : 'SMART EMERGENCY RESPONSE'}
+                      <span className="font-mono text-[10px] text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/30">
+                        {trackingData.sessionId}
+                      </span>
+                    </h2>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[10px] font-mono">
+                    <button
+                      onClick={() => {
+                        const shareUrl = `${window.location.origin}/?shareSession=${trackingData.sessionId}&token=${trackingData.token || 'tok_live'}`;
+                        const text = encodeURIComponent(`🚨 Live Emergency Location Tracking: ${shareUrl}`);
+                        window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+                      }}
+                      className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold flex items-center gap-1 cursor-pointer transition shadow"
+                    >
+                      <Share2 className="w-3 h-3" />
+                      <span>WhatsApp Share</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        const shareUrl = `${window.location.origin}/?shareSession=${trackingData.sessionId}&token=${trackingData.token || 'tok_live'}`;
+                        navigator.clipboard.writeText(shareUrl);
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2000);
+                      }}
+                      className={`px-2.5 py-1 rounded-lg border flex items-center gap-1 cursor-pointer transition ${
+                        isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm'
+                      }`}
+                    >
+                      {copiedLink ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                      {copiedLink ? (language === 'hi' ? 'कॉपी हो गया' : 'Copied') : (language === 'hi' ? 'लिंक कॉपी करें' : 'Copy Link')}
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                  <span className="hidden sm:inline">
-                    {language === 'hi' ? 'सुरक्षित 1-टू-1 सत्र' : 'Secured 1-to-1 Session'}
-                  </span>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href);
-                      setCopiedLink(true);
-                      setTimeout(() => setCopiedLink(false), 2000);
-                    }}
-                    className={`px-2.5 py-1 rounded-lg border flex items-center gap-1 cursor-pointer transition ${
-                      isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm'
-                    }`}
-                  >
-                    {copiedLink ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-                    {copiedLink ? (language === 'hi' ? 'कॉपी हो गया' : 'Copied') : (language === 'hi' ? 'लिंक शेयर करें' : 'Share Link')}
-                  </button>
+                {/* Live GPS Telemetry Action Bar */}
+                <div className={`p-2.5 rounded-xl border flex flex-wrap items-center justify-between gap-2 text-xs ${
+                  isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleManualGpsUpdateInTracking}
+                      disabled={locationLoading}
+                      className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-xs font-black flex items-center gap-1.5 shadow transition cursor-pointer"
+                    >
+                      <Navigation className={`w-3.5 h-3.5 ${locationLoading ? 'animate-spin' : ''}`} />
+                      <span>{language === 'hi' ? '📍 मेरा असली लाइव GPS अपडेट करें' : '📍 Update My Real Live GPS'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setAutoGpsSync(!autoGpsSync)}
+                      className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 cursor-pointer ${
+                        autoGpsSync
+                          ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/40'
+                          : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
+                      }`}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${autoGpsSync ? 'bg-emerald-500 animate-ping' : 'bg-slate-400'}`}></span>
+                      <span>{autoGpsSync ? (language === 'hi' ? 'ऑटो GPS सिंक: चालू' : 'Auto GPS Sync: ON') : (language === 'hi' ? 'ऑटो GPS सिंक: बंद' : 'Auto GPS Sync: OFF')}</span>
+                    </button>
+                  </div>
+
+                  <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    My GPS: <strong className="text-rose-500 font-extrabold">{userLat.toFixed(4)}, {userLon.toFixed(4)}</strong>
+                  </div>
                 </div>
               </div>
 
@@ -1425,7 +1568,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                 </div>
 
                 {/* Multi-Participant Live Location Status Section */}
-                <div className={`p-4 rounded-2xl space-y-3 border ${
+                <div className={`p-4 rounded-2xl space-y-3.5 border ${
                   isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
                 }`}>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -1449,6 +1592,66 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                     </button>
                   </div>
 
+                  {/* Add Friend to Map Panel */}
+                  <div className={`p-3.5 rounded-xl border space-y-2.5 ${
+                    isDarkMode ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-100 border-slate-200'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-extrabold flex items-center gap-1.5 text-indigo-500 dark:text-indigo-400">
+                        <Users className="w-3.5 h-3.5" />
+                        {language === 'hi' ? '+ मित्र / रिश्तेदार को लाइव मैप पर जोड़ें' : '+ Add Friend / Relative to Live Map'}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-medium">
+                        {language === 'hi' ? 'मैप पर मित्र की पिन देखें' : 'View friend pin on live map'}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                      <input
+                        type="text"
+                        value={customFriendName}
+                        onChange={e => setCustomFriendName(e.target.value)}
+                        placeholder={language === 'hi' ? 'मित्र का नाम दर्ज करें (उदा. राहुल, प्रिया)' : 'Enter friend name (e.g. Rahul, Priya)'}
+                        className={`w-full sm:flex-1 rounded-xl px-3 py-1.5 text-xs border outline-none font-bold ${
+                          isDarkMode ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleAddSimulatedFriend(customFriendName)}
+                        disabled={addingFriend}
+                        className="w-full sm:w-auto px-4 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs rounded-xl shadow cursor-pointer shrink-0 transition"
+                      >
+                        {addingFriend ? '...' : (language === 'hi' ? '+ जोड़ें' : '+ Add Friend Pin')}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                      <span className="text-[10px] text-slate-500 font-bold">{language === 'hi' ? 'त्वरित जोड़ें:' : 'Quick add:'}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'मित्र 1 (राहुल)' : 'Friend 1 (Rahul)')}
+                        className="px-2.5 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-300 rounded-lg text-[10px] font-bold border border-blue-500/30 cursor-pointer"
+                      >
+                        + Friend 1
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'मित्र 2 (प्रिया)' : 'Friend 2 (Priya)')}
+                        className="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 rounded-lg text-[10px] font-bold border border-emerald-500/30 cursor-pointer"
+                      >
+                        + Friend 2
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAddSimulatedFriend(language === 'hi' ? 'रिश्तेदार' : 'Relative')}
+                        className="px-2.5 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-300 rounded-lg text-[10px] font-bold border border-purple-500/30 cursor-pointer"
+                      >
+                        + Relative
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     {(trackingData.participants && trackingData.participants.length > 0) ? (
                       trackingData.participants.map((part, idx) => (
@@ -1463,15 +1666,26 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
                               <span>{part.label || part.participantId}</span>
                               <span className="text-[10px] text-slate-500 font-mono">({part.role})</span>
                             </span>
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase border ${
-                              part.status === 'LIVE'
-                                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/40 animate-pulse'
-                                : part.status === 'STALE'
-                                ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/40'
-                                : 'bg-slate-200 text-slate-600 border-slate-300'
-                            }`}>
-                              ● {part.status}
-                            </span>
+                            <div className="flex items-center gap-1">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase border ${
+                                part.status === 'LIVE'
+                                  ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/40 animate-pulse'
+                                  : part.status === 'STALE'
+                                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/40'
+                                  : 'bg-slate-200 text-slate-600 border-slate-300'
+                              }`}>
+                                ● {part.status}
+                              </span>
+                              {part.role !== 'HOST' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveFriend(part.participantId)}
+                                  className="text-[10px] text-rose-500 hover:text-rose-700 font-extrabold cursor-pointer px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/30"
+                                >
+                                  ✕
+                                </button>
+                              )}
+                            </div>
                           </div>
 
                           {part.location ? (
