@@ -7,6 +7,7 @@ import {
   sendRealGPSUpdate,
   stopQRLiveTrackingSession,
   getPrivateTrackingSession,
+  subscribeToRemoteSessionUpdates,
   RealLocationData,
   SessionParticipant
 } from '../services/api/smartTrackingService';
@@ -35,7 +36,7 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
   });
 
   const [myLabel, setMyLabel] = useState<string>(() => {
-    return localStorage.getItem(`js_plabel_${sessionId}`) || `Participant (${myParticipantId})`;
+    return localStorage.getItem(`js_plabel_${sessionId}`) || `Friend Mobile (${myParticipantId})`;
   });
 
   const [sessionParticipants, setSessionParticipants] = useState<SessionParticipant[]>([]);
@@ -59,8 +60,12 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
 
   useEffect(() => {
     fetchSessionParticipants();
+    const unsubscribe = subscribeToRemoteSessionUpdates(sessionId, fetchSessionParticipants);
     const interval = setInterval(fetchSessionParticipants, 3000);
-    return () => clearInterval(interval);
+    return () => {
+      unsubscribe();
+      clearInterval(interval);
+    };
   }, [sessionId]);
 
   // Relative timestamp ticker
@@ -323,18 +328,26 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
       }
     };
 
-    const handlePositionError = (err: GeolocationPositionError) => {
-      let msg = 'Failed to obtain GPS location.';
-      if (err.code === err.PERMISSION_DENIED) {
-        msg = 'Location permission denied by browser. Please tap the lock icon in Chrome address bar -> Site Settings -> Allow Location.';
-      } else if (err.code === err.POSITION_UNAVAILABLE) {
-        msg = 'GPS signal unavailable. Please move outdoors with a clear view of the sky.';
-      } else if (err.code === err.TIMEOUT) {
-        msg = 'GPS position request timed out. Retrying high-accuracy fix...';
-      }
-      setErrorMessage(msg);
-      if (sharingStatus !== 'LIVE') {
-        setSharingStatus('ERROR');
+    const handlePositionError = (_err: GeolocationPositionError) => {
+      if (typeof navigator !== 'undefined' && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          handlePositionSuccess,
+          (err2) => {
+            let msg = 'Failed to obtain GPS location.';
+            if (err2.code === err2.PERMISSION_DENIED) {
+              msg = 'Location permission denied by browser. Please tap the lock icon in Chrome address bar -> Site Settings -> Allow Location.';
+            } else if (err2.code === err2.POSITION_UNAVAILABLE) {
+              msg = 'GPS signal unavailable. Please move outdoors with a clear view of the sky.';
+            } else if (err2.code === err2.TIMEOUT) {
+              msg = 'GPS position request timed out.';
+            }
+            setErrorMessage(msg);
+            if (sharingStatus !== 'LIVE') {
+              setSharingStatus('ERROR');
+            }
+          },
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+        );
       }
     };
 
@@ -350,6 +363,11 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
 
     watchIdRef.current = watchId;
   };
+
+  // Auto-start sharing on mount when QR code link is opened
+  useEffect(() => {
+    handleStartSharing();
+  }, []);
 
   // Stop Sharing GPS (Only stops my participant)
   const handleStopSharing = async () => {

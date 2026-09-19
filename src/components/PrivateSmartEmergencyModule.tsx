@@ -55,6 +55,7 @@ import {
   sendRealGPSUpdate,
   stopQRLiveTrackingSession,
   removeParticipantFromSession,
+  subscribeToRemoteSessionUpdates,
   calculateHaversineDistance,
   calculateEstimatedETA
 } from '../services/api/smartTrackingService';
@@ -490,8 +491,12 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   useEffect(() => {
     if (activeTab === 'tracking' && activeSessionId) {
       fetchTrackingSession();
+      const unsubscribe = subscribeToRemoteSessionUpdates(activeSessionId, fetchTrackingSession);
       const interval = setInterval(fetchTrackingSession, 3000);
-      return () => clearInterval(interval);
+      return () => {
+        unsubscribe();
+        clearInterval(interval);
+      };
     }
   }, [activeTab, activeSessionId]);
 

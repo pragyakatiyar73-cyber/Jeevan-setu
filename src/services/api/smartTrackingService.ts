@@ -482,6 +482,86 @@ export async function createQRLiveTrackingSession(
   };
 }
 
+// Realtime Remote Cross-Device Pub/Sub Listener
+const activeSSEListeners: Record<string, EventSource> = {};
+
+export function subscribeToRemoteSessionUpdates(sessionId: string, onUpdate: () => void): () => void {
+  if (typeof window === 'undefined' || !sessionId) return () => {};
+  const topic = `jeevan_setu_sess_${sessionId.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+
+  if (activeSSEListeners[topic]) {
+    return () => {};
+  }
+
+  try {
+    const es = new EventSource(`https://ntfy.sh/${topic}/sse`);
+    activeSSEListeners[topic] = es;
+
+    es.onmessage = (event) => {
+      try {
+        const raw = JSON.parse(event.data);
+        if (raw && raw.message) {
+          const payload = JSON.parse(raw.message);
+          if (payload && payload.sessionId && payload.participantId && typeof payload.lat === 'number') {
+            const session = getLocalStoredSessions()[payload.sessionId] || createFallbackTrackingSession(payload.sessionId, payload.lat, payload.lon);
+            if (!session.participants) session.participants = [];
+
+            const targetPid = payload.participantId;
+            const isHost = payload.role === 'HOST' || targetPid === 'P-1';
+            const existingIndex = session.participants.findIndex(p => p.participantId === targetPid);
+            const locationData: RealLocationData = {
+              lat: payload.lat,
+              lon: payload.lon,
+              accuracy: payload.accuracy || 5,
+              speed: payload.speed || null,
+              heading: payload.heading || null,
+              timestamp: payload.timestamp || Date.now()
+            };
+
+            if (existingIndex >= 0) {
+              session.participants[existingIndex].location = locationData;
+              session.participants[existingIndex].status = 'LIVE';
+              session.participants[existingIndex].lastUpdatedAt = new Date().toISOString();
+              if (payload.label) session.participants[existingIndex].label = payload.label;
+            } else {
+              const friendIndex = session.participants.filter(p => p.role === 'PARTICIPANT').length + 1;
+              const palette = ['#3b82f6', '#10b981', '#a855f7', '#f97316', '#06b6d4', '#ec4899'];
+              const color = palette[(friendIndex - 1) % palette.length];
+
+              session.participants.push({
+                participantId: targetPid,
+                role: isHost ? 'HOST' : 'PARTICIPANT',
+                label: payload.label || (isHost ? '🔴 Requester (Host)' : `Friend Pin (${targetPid})`),
+                color,
+                status: 'LIVE',
+                location: locationData,
+                lastUpdatedAt: new Date().toISOString()
+              });
+            }
+
+            if (isHost) {
+              session.emergency.lat = payload.lat;
+              session.emergency.lon = payload.lon;
+              session.realLocation = locationData;
+            }
+
+            session.lastUpdated = new Date().toISOString();
+            saveLocalSession(session);
+            onUpdate();
+          }
+        }
+      } catch (err) {}
+    };
+
+    return () => {
+      es.close();
+      delete activeSSEListeners[topic];
+    };
+  } catch (err) {
+    return () => {};
+  }
+}
+
 // 9. Send Real Mobile Phone GPS Telemetry (Multi-Participant Support)
 export async function sendRealGPSUpdate(payload: {
   sessionId: string;
@@ -495,16 +575,11 @@ export async function sendRealGPSUpdate(payload: {
   heading?: number | null;
   timestamp: number;
 }): Promise<{ success: boolean; sessionStatus?: string; error?: string }> {
-  const res = await safeFetchJson(`${API_BASE}/update-location`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  const targetPid = payload.participantId || 'P-1';
+  const isHost = targetPid === 'P-1' || targetPid.startsWith('HOST');
 
   // Always update local session fallback store as well
   const session = getLocalStoredSessions()[payload.sessionId] || createFallbackTrackingSession(payload.sessionId, payload.lat, payload.lon);
-  const targetPid = payload.participantId || 'P-1';
-  const isHost = targetPid === 'P-1' || targetPid.startsWith('HOST');
 
   if (!session.participants) session.participants = [];
 
@@ -547,6 +622,31 @@ export async function sendRealGPSUpdate(payload: {
 
   session.lastUpdated = new Date().toISOString();
   saveLocalSession(session);
+
+  // Broadcast via public relay for cross-device sync
+  try {
+    const topic = `jeevan_setu_sess_${payload.sessionId.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+    fetch(`https://ntfy.sh/${topic}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: payload.sessionId,
+        participantId: targetPid,
+        role: isHost ? 'HOST' : 'PARTICIPANT',
+        label: payload.label || (isHost ? '🔴 Requester (Host)' : `Participant (${targetPid})`),
+        lat: payload.lat,
+        lon: payload.lon,
+        accuracy: payload.accuracy || 5,
+        timestamp: payload.timestamp || Date.now()
+      })
+    }).catch(() => {});
+  } catch (e) {}
+
+  const res = await safeFetchJson(`${API_BASE}/update-location`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
 
   return { success: true, sessionStatus: res.data?.sessionStatus || 'LIVE' };
 }
