@@ -877,6 +877,14 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
       });
     }
 
+    const hostPart = participants?.find(p => p.role === 'HOST' || p.participantId === 'P-1') || participants?.[0];
+    const hostLat = (userLat && userLat !== 26.1445)
+      ? userLat
+      : (hostPart?.location?.lat ?? emergency.lat);
+    const hostLon = (userLon && userLon !== 91.7362)
+      ? userLon
+      : (hostPart?.location?.lon ?? emergency.lon);
+
     // 2. Default User Emergency Marker (🔴 Host / Requester Location)
     if (!userMarkerRef.current) {
       const userIcon = L.divIcon({
@@ -891,18 +899,18 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
         iconAnchor: [20, 20]
       });
 
-      userMarkerRef.current = L.marker([emergency.lat, emergency.lon], { icon: userIcon })
+      userMarkerRef.current = L.marker([hostLat, hostLon], { icon: userIcon })
         .addTo(map)
         .bindPopup(`
           <div class="p-2 text-xs font-sans">
-            <strong class="text-rose-600 font-extrabold text-sm block">🔴 MY EMERGENCY LOCATION</strong>
-            <p class="text-slate-700 mt-1">${emergency.requirement} &bull; ${emergency.district}</p>
+            <strong class="text-rose-600 font-extrabold text-sm block">🔴 MY EXACT LIVE LOCATION</strong>
+            <p class="text-slate-700 font-mono mt-1">Lat: ${hostLat.toFixed(5)}, Lon: ${hostLon.toFixed(5)}</p>
           </div>
         `);
     } else {
-      userMarkerRef.current.setLatLng([emergency.lat, emergency.lon]);
+      userMarkerRef.current.setLatLng([hostLat, hostLon]);
     }
-    activeBoundsCoords.push([emergency.lat, emergency.lon]);
+    activeBoundsCoords.push([hostLat, hostLon]);
 
     // 3. Remove assigned vehicle marker (Live map shows ONLY Me 🔴 & Friend 🔵 connection)
     if (vehicleMarkerRef.current) {
@@ -913,10 +921,6 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     // 4. Polyline Route Connections between Me (🔴 Host) and ALL Friends (🔵 Friend 1, 🟢 Friend 2, 🟣 Friend 3...)
     participantPolylinesRef.current.forEach(p => p.remove());
     participantPolylinesRef.current = [];
-
-    const hostPart = participants?.find(p => p.role === 'HOST' || p.participantId === 'P-1') || participants?.[0];
-    const hostLat = hostPart?.location?.lat ?? emergency.lat;
-    const hostLon = hostPart?.location?.lon ?? emergency.lon;
 
     if (participants && participants.length > 0) {
       participants.forEach((part) => {
@@ -941,8 +945,12 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
 
     // Fit bounds to show all participants and vehicle
     if (activeBoundsCoords.length > 0) {
-      const bounds = L.latLngBounds(activeBoundsCoords);
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+      if (activeBoundsCoords.length === 1) {
+        map.setView(activeBoundsCoords[0], 15);
+      } else {
+        const bounds = L.latLngBounds(activeBoundsCoords);
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+      }
     }
 
     return () => {
@@ -960,7 +968,7 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
         trackingMapRef.current = null;
       }
     };
-  }, [activeTab, trackingData]);
+  }, [activeTab, trackingData, userLat, userLon]);
 
   // Simulation Loop Effect
   useEffect(() => {
