@@ -96,50 +96,78 @@ export default function EmergencyFacilitiesModule({
   // HTML5 Browser Geolocation Detector
   const handleDetectLiveGPS = () => {
     if (!navigator.geolocation) {
-      setGpsErrorMessage("Geolocation is not supported by your browser.");
+      setGpsErrorMessage(isHi ? "आपके ब्राउज़र द्वारा जियोलोकेशन (GPS) समर्थित नहीं है।" : "Geolocation is not supported by your browser.");
       return;
     }
 
     setIsLocatingUser(true);
     setGpsErrorMessage(null);
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const accuracy = Math.round(position.coords.accuracy);
+    const applyLocation = async (position: GeolocationPosition) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const accuracy = Math.round(position.coords.accuracy);
 
-        setIsLocatingUser(false);
-        setIsLiveGpsActive(true);
-        setGpsAccuracyMeters(accuracy);
+      setIsLocatingUser(false);
+      setIsLiveGpsActive(true);
+      setGpsAccuracyMeters(accuracy);
 
-        let locName = `📍 Live GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
-        try {
-          const revName = await reverseGeocode(lat, lon);
-          if (revName) {
-            const shortName = revName.split(',').slice(0, 2).join(',');
-            locName = `📍 Live GPS: ${shortName}`;
-          }
-        } catch (_) {}
-
-        const userLocObj = {
-          name: locName,
-          lat,
-          lon,
-          state: 'Live GPS'
-        };
-
-        setActiveUserLoc(userLocObj);
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.setView([lat, lon], 13);
+      let locName = `📍 Live GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+      try {
+        const revName = await reverseGeocode(lat, lon);
+        if (revName) {
+          const shortName = revName.split(',').slice(0, 2).join(',');
+          locName = `📍 Live GPS: ${shortName}`;
         }
-      },
-      (err) => {
+      } catch (_) {}
+
+      const userLocObj = {
+        name: locName,
+        lat,
+        lon,
+        state: 'Live GPS'
+      };
+
+      setActiveUserLoc(userLocObj);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.setView([lat, lon], 13);
+        try {
+          mapInstanceRef.current.invalidateSize();
+        } catch (_) {}
+      }
+    };
+
+    const handleGpsError = (err: GeolocationPositionError) => {
+      // Retry with low accuracy (WiFi/IP based) if high accuracy hardware GPS times out
+      if (err.code === err.TIMEOUT || err.code === err.POSITION_UNAVAILABLE) {
+        navigator.geolocation.getCurrentPosition(
+          applyLocation,
+          (err2) => {
+            setIsLocatingUser(false);
+            setIsLiveGpsActive(false);
+            if (err2.code === err2.PERMISSION_DENIED) {
+              setGpsErrorMessage(isHi ? "GPS अनुमति अस्वीकृत। कृपया ब्राउज़र में स्थान अनुमति (Location Access) चालू करें।" : "GPS permission denied. Please allow location access in your browser.");
+            } else {
+              setGpsErrorMessage(isHi ? "GPS संकेत अनुपलब्ध है। डिफ़ॉल्ट स्थान उपयोग किया जा रहा है।" : "GPS signal unavailable. Using default origin.");
+            }
+          },
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+        );
+      } else {
         setIsLocatingUser(false);
         setIsLiveGpsActive(false);
-        setGpsErrorMessage("GPS permission denied or unavailable.");
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        if (err.code === err.PERMISSION_DENIED) {
+          setGpsErrorMessage(isHi ? "GPS अनुमति अस्वीकृत। कृपया ब्राउज़र में स्थान अनुमति चालू करें।" : "GPS permission denied. Please allow location access in browser.");
+        } else {
+          setGpsErrorMessage(isHi ? "GPS अनुपलब्ध: " + err.message : "GPS unavailable: " + err.message);
+        }
+      }
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      applyLocation,
+      handleGpsError,
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
     );
   };
 
@@ -163,11 +191,11 @@ export default function EmergencyFacilitiesModule({
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const routePolylineRef = useRef<L.Polyline | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  const [activeMapStyle, setActiveMapStyle] = useState<'dark' | 'satellite' | 'street'>('dark');
+  const [activeMapStyle, setActiveMapStyle] = useState<'dark' | 'satellite' | 'street'>('street');
 
   // Fetch Real OSRM Road Route Points whenever activeUserLoc or selectedFacility changes
   useEffect(() => {
-    if (!selectedFacility || isLocationOutsideNER) {
+    if (!selectedFacility) {
       setActiveRoutePoints([]);
       return;
     }
@@ -202,24 +230,15 @@ export default function EmergencyFacilitiesModule({
     return () => {
       isSubscribed = false;
     };
-  }, [activeUserLoc.lat, activeUserLoc.lon, selectedFacility?.id, isLocationOutsideNER]);
+  }, [activeUserLoc.lat, activeUserLoc.lon, selectedFacility?.id]);
 
   // Load facilities data
   const loadFacilities = async () => {
     setLoading(true);
     setErrorNotice(null);
 
-    // Validate active user location
-    if (!isPointInNER(activeUserLoc.lat, activeUserLoc.lon)) {
-      setIsLocationOutsideNER(true);
-      setErrorNotice("Location is outside Jeevan Setu's NER coverage.");
-      setFacilities([]);
-      setNearestFacility(null);
-      setLoading(false);
-      return;
-    }
-
-    setIsLocationOutsideNER(false);
+    const outside = !isPointInNER(activeUserLoc.lat, activeUserLoc.lon);
+    setIsLocationOutsideNER(outside);
 
     try {
       const res = await getNEREmergencyFacilities({
@@ -287,11 +306,11 @@ export default function EmergencyFacilitiesModule({
           zoomControl: true
         });
 
-        const tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+        const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
         tileLayerRef.current = L.tileLayer(tileUrl, {
-          maxZoom: 18,
-          attribution: 'Jeevan Setu GIS Telemetry'
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
         // Render Master 8-State NER Boundary Polygon
@@ -365,18 +384,22 @@ export default function EmergencyFacilitiesModule({
       } catch (_) {}
     }
 
-    let tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+    let tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     const options: L.TileLayerOptions = {
-      maxZoom: 18,
-      attribution: 'Jeevan Setu GIS Telemetry'
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
     };
 
-    if (activeMapStyle === 'satellite') {
-      tileUrl = 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}';
-      options.subdomains = ['mt0', 'mt1', 'mt2', 'mt3'];
-    } else if (activeMapStyle === 'street') {
+    if (activeMapStyle === 'dark') {
+      tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}';
+      options.attribution = '&copy; Esri World Topo Map';
+    } else if (activeMapStyle === 'satellite') {
+      tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+      options.attribution = '&copy; Esri World Imagery';
+    } else {
       tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
       options.subdomains = ['a', 'b', 'c'];
+      options.attribution = '&copy; OpenStreetMap contributors';
     }
 
     tileLayerRef.current = L.tileLayer(tileUrl, options).addTo(mapInstanceRef.current);
@@ -397,63 +420,61 @@ export default function EmergencyFacilitiesModule({
     }
 
     // User Location Pin Marker (Live Radar Pulse or Standard Pin)
-    if (!isLocationOutsideNER) {
-      const userRadarDivIcon = L.divIcon({
-        className: 'custom-user-live-marker',
-        html: `
-          <div style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;">
-            <div style="
-              position: absolute;
-              width: 100%;
-              height: 100%;
-              border-radius: 50%;
-              background: rgba(14, 165, 233, 0.45);
-              animation: userPulse 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
-            "></div>
-            <div style="
-              position: relative;
-              width: 18px;
-              height: 18px;
-              border-radius: 50%;
-              background: #0284c7;
-              border: 3px solid #ffffff;
-              box-shadow: 0 0 14px #38bdf8;
-            "></div>
-          </div>
-          <style>
-            @keyframes userPulse {
-              75%, 100% {
-                transform: scale(2.2);
-                opacity: 0;
-              }
-            }
-          </style>
-        `,
-        iconSize: [34, 34],
-        iconAnchor: [17, 17]
-      });
-
-      const userMarker = L.marker([activeUserLoc.lat, activeUserLoc.lon], { icon: userRadarDivIcon });
-      userMarker.bindPopup(`
-        <div style="font-family: sans-serif; font-size: 12px; min-width: 160px;">
-          <b style="color: #0284c7; font-size: 13px;">📍 Active Search / User Origin</b><br/>
-          <span>${activeUserLoc.name}</span><br/>
-          ${isLiveGpsActive ? `<span style="color: #10b981; font-weight: bold;">📡 Live GPS Telemetry Connected</span>` : `<span style="color: #64748b;">Preset Reference Base</span>`}
+    const userRadarDivIcon = L.divIcon({
+      className: 'custom-user-live-marker',
+      html: `
+        <div style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;">
+          <div style="
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.45);
+            animation: userPulse 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+          "></div>
+          <div style="
+            position: relative;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #0284c7;
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 14px #38bdf8;
+          "></div>
         </div>
-      `);
-      markersRef.current.addLayer(userMarker);
+        <style>
+          @keyframes userPulse {
+            75%, 100% {
+              transform: scale(2.2);
+              opacity: 0;
+            }
+          }
+        </style>
+      `,
+      iconSize: [34, 34],
+      iconAnchor: [17, 17]
+    });
 
-      // Accuracy circle for live GPS
-      if (isLiveGpsActive) {
-        const accuracyCircle = L.circle([activeUserLoc.lat, activeUserLoc.lon], {
-          radius: gpsAccuracyMeters || 120,
-          color: '#38bdf8',
-          weight: 1.5,
-          fillColor: '#0284c7',
-          fillOpacity: 0.12
-        });
-        markersRef.current.addLayer(accuracyCircle);
-      }
+    const userMarker = L.marker([activeUserLoc.lat, activeUserLoc.lon], { icon: userRadarDivIcon });
+    userMarker.bindPopup(`
+      <div style="font-family: sans-serif; font-size: 12px; min-width: 160px;">
+        <b style="color: #0284c7; font-size: 13px;">📍 Active Search / User Origin</b><br/>
+        <span>${activeUserLoc.name}</span><br/>
+        ${isLiveGpsActive ? `<span style="color: #10b981; font-weight: bold;">📡 Live GPS Telemetry Connected</span>` : `<span style="color: #64748b;">Preset Reference Base</span>`}
+      </div>
+    `);
+    markersRef.current.addLayer(userMarker);
+
+    // Accuracy circle for live GPS
+    if (isLiveGpsActive) {
+      const accuracyCircle = L.circle([activeUserLoc.lat, activeUserLoc.lon], {
+        radius: gpsAccuracyMeters || 120,
+        color: '#38bdf8',
+        weight: 1.5,
+        fillColor: '#0284c7',
+        fillOpacity: 0.12
+      });
+      markersRef.current.addLayer(accuracyCircle);
     }
 
     // Render Facility Markers
@@ -523,7 +544,7 @@ export default function EmergencyFacilitiesModule({
     });
 
     // Draw Multi-Layer Glowing OSRM Road Route Polyline to Selected Facility
-    if (selectedFacility && !isLocationOutsideNER) {
+    if (selectedFacility) {
       const pts: L.LatLngExpression[] = activeRoutePoints.length > 0
         ? activeRoutePoints.map(p => [p[0], p[1]])
         : [
@@ -562,9 +583,7 @@ export default function EmergencyFacilitiesModule({
       map.fitBounds(bounds, { padding: [55, 55], maxZoom: 14 });
     } else if (facilities.length > 0) {
       const bounds = L.latLngBounds(facilities.map(f => [f.lat, f.lon]));
-      if (!isLocationOutsideNER) {
-        bounds.extend([activeUserLoc.lat, activeUserLoc.lon]);
-      }
+      bounds.extend([activeUserLoc.lat, activeUserLoc.lon]);
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
     }
 
@@ -884,7 +903,7 @@ export default function EmergencyFacilitiesModule({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Column: Interactive GIS Map */}
-        <div className="lg:col-span-7 h-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px]">
+        <div className="lg:col-span-7 h-[560px] sm:h-[600px] rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col transition-colors duration-300 overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
               <div>
                 <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
@@ -984,8 +1003,8 @@ export default function EmergencyFacilitiesModule({
               </div>
             </div>
 
-            {/* Interactive Leaflet Map Container - flex-1 min-h-[440px] */}
-            <div className="relative flex-1 min-h-[440px] sm:min-h-[480px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner my-1">
+            {/* Interactive Leaflet Map Container */}
+            <div className="relative flex-1 min-h-[280px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner my-1">
               <div ref={mapContainerRef} className="absolute inset-0 w-full h-full z-0" />
               
               {/* Floating Live Location Overlay Button inside map */}
@@ -1058,7 +1077,7 @@ export default function EmergencyFacilitiesModule({
         </div>
 
         {/* Right Column: Facilities List Cards */}
-        <div className="lg:col-span-5 h-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col transition-colors duration-300 min-h-[680px] sm:min-h-[720px] xl:min-h-[780px]">
+        <div className="lg:col-span-5 h-[560px] sm:h-[600px] rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 shadow-xl flex flex-col transition-colors duration-300 overflow-hidden">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 shrink-0">
             <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span>🏥</span> {isHi ? 'आपदा आपातकालीन सुविधा निर्देशिका' : 'Emergency Facilities Directory'}

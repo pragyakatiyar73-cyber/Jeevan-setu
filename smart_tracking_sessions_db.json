@@ -1,6 +1,108 @@
 {
   "requests": [
     {
+      "emergencyRequestId": "JS-QR-EMG-8543",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-662021",
+      "createdAt": "2026-09-19T05:44:22.021Z",
+      "updatedAt": "2026-09-19T05:44:22.021Z"
+    },
+    {
+      "emergencyRequestId": "JS-EMG-9857",
+      "emergencyType": "Medical",
+      "requirement": "Ambulance",
+      "description": "Live Emergency Request at Kamrup Metropolitan, Assam",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "AI-Assisted Assessment",
+      "status": "VEHICLE_ASSIGNED",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "SESS-651056",
+      "createdAt": "2026-09-19T05:44:11.056Z",
+      "updatedAt": "2026-09-19T05:44:11.056Z"
+    },
+    {
+      "emergencyRequestId": "JS-QR-EMG-9401",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-618140",
+      "createdAt": "2026-09-19T05:43:38.140Z",
+      "updatedAt": "2026-09-19T05:43:38.140Z"
+    },
+    {
+      "emergencyRequestId": "JS-QR-EMG-4483",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-608131",
+      "createdAt": "2026-09-19T05:43:28.131Z",
+      "updatedAt": "2026-09-19T05:43:28.131Z"
+    },
+    {
+      "emergencyRequestId": "JS-QR-EMG-3410",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-600424",
+      "createdAt": "2026-09-19T05:43:20.424Z",
+      "updatedAt": "2026-09-19T05:43:20.424Z"
+    },
+    {
+      "emergencyRequestId": "JS-QR-EMG-9721",
+      "emergencyType": "Medical",
+      "requirement": "Real Phone Emergency GPS Live Tracking",
+      "description": "Real-time Android Mobile Phone GPS Tracking Session",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "state": "Assam",
+      "district": "Kamrup Metropolitan",
+      "priority": "HIGH",
+      "priorityLabel": "Real Mobile Telemetry",
+      "status": "FINDING_VEHICLE",
+      "assignedVehicleId": "JS-AMB-001",
+      "trackingSessionId": "QR-015024",
+      "createdAt": "2026-09-19T05:16:55.024Z",
+      "updatedAt": "2026-09-19T05:16:55.024Z"
+    },
+    {
       "emergencyRequestId": "JS-QR-EMG-9335",
       "emergencyType": "Medical",
       "requirement": "Real Phone Emergency GPS Live Tracking",
@@ -1380,6 +1482,200 @@
   ],
   "sessions": [
     {
+      "sessionId": "QR-662021",
+      "token": "tok_bhnhy1c2gwsyb0jz",
+      "emergencyRequestId": "JS-QR-EMG-8543",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "WAITING_FOR_GPS",
+      "mode": "REAL",
+      "createdAt": "2026-09-19T05:44:22.021Z",
+      "lastUpdatedAt": "2026-09-19T05:44:22.021Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789796662021
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "LIVE",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789796662021
+          },
+          "lastUpdatedAt": "2026-09-19T05:44:22.021Z"
+        }
+      ]
+    },
+    {
+      "sessionId": "SESS-651056",
+      "emergencyRequestId": "JS-EMG-9857",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "createdAt": "2026-09-19T05:44:11.056Z",
+      "participants": [],
+      "status": "STOPPED"
+    },
+    {
+      "sessionId": "QR-618140",
+      "token": "tok_4p6db2dpt7e3ukzd",
+      "emergencyRequestId": "JS-QR-EMG-9401",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "STALE",
+      "mode": "REAL",
+      "createdAt": "2026-09-19T05:43:38.140Z",
+      "lastUpdatedAt": "2026-09-19T05:43:38.140Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789796618140
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "STALE",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789796618140
+          },
+          "lastUpdatedAt": "2026-09-19T05:43:38.140Z"
+        }
+      ]
+    },
+    {
+      "sessionId": "QR-608131",
+      "token": "tok_ek6hcfkmurkbj5nj",
+      "emergencyRequestId": "JS-QR-EMG-4483",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "WAITING_FOR_GPS",
+      "mode": "REAL",
+      "createdAt": "2026-09-19T05:43:28.131Z",
+      "lastUpdatedAt": "2026-09-19T05:43:28.131Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789796608131
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "LIVE",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789796608131
+          },
+          "lastUpdatedAt": "2026-09-19T05:43:28.131Z"
+        }
+      ]
+    },
+    {
+      "sessionId": "QR-600424",
+      "token": "tok_cmivlxgrnxhh015i",
+      "emergencyRequestId": "JS-QR-EMG-3410",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "WAITING_FOR_GPS",
+      "mode": "REAL",
+      "createdAt": "2026-09-19T05:43:20.424Z",
+      "lastUpdatedAt": "2026-09-19T05:43:20.424Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789796600425
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "LIVE",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789796600425
+          },
+          "lastUpdatedAt": "2026-09-19T05:43:20.424Z"
+        }
+      ]
+    },
+    {
+      "sessionId": "QR-015024",
+      "token": "tok_4clmav2q1newtzc1",
+      "emergencyRequestId": "JS-QR-EMG-9721",
+      "vehicleId": "JS-AMB-001",
+      "active": true,
+      "status": "WAITING_FOR_GPS",
+      "mode": "REAL",
+      "createdAt": "2026-09-19T05:16:55.024Z",
+      "lastUpdatedAt": "2026-09-19T05:16:55.024Z",
+      "realLocation": {
+        "lat": 26.1445,
+        "lon": 91.7362,
+        "accuracy": 5,
+        "speed": null,
+        "heading": null,
+        "timestamp": 1789795015024
+      },
+      "participants": [
+        {
+          "participantId": "P-1",
+          "role": "HOST",
+          "label": "🔴 Phone A (Host)",
+          "color": "#ef4444",
+          "status": "LIVE",
+          "location": {
+            "lat": 26.1445,
+            "lon": 91.7362,
+            "accuracy": 5,
+            "speed": null,
+            "heading": null,
+            "timestamp": 1789795015024
+          },
+          "lastUpdatedAt": "2026-09-19T05:16:55.024Z"
+        }
+      ]
+    },
+    {
       "sessionId": "QR-817151",
       "token": "tok_yw4mprkk9ezcyvf5",
       "emergencyRequestId": "JS-QR-EMG-9335",
@@ -2636,14 +2932,14 @@
       "typeCategory": "Medical",
       "driverName": "Bhaben Kalita",
       "contact": "+91 98640 12345",
-      "currentLat": 26.519275,
-      "currentLon": 83.03672499999999,
-      "status": "On the Way",
+      "currentLat": 26.1725,
+      "currentLon": 91.7582,
+      "status": "Assigned",
       "state": "Assam",
       "district": "Kamrup Metropolitan",
       "verified": true,
       "demoMode": true,
-      "lastUpdatedAt": "2026-09-17T01:05:14.528Z"
+      "lastUpdatedAt": "2026-09-19T05:44:11.056Z"
     },
     {
       "vehicleId": "JS-FIRE-001",

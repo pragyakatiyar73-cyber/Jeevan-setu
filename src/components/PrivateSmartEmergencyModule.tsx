@@ -163,13 +163,36 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
   const handleOpenQrModal = async () => {
     setShowQrModal(true);
     setQrLoading(true);
-    const res = await createQRLiveTrackingSession(qrAppUrl);
-    setQrLoading(false);
-    if (res.success && res.sessionId && res.token && res.trackingUrl) {
+    try {
+      const res = await createQRLiveTrackingSession(qrAppUrl);
+      setQrLoading(false);
+      if (res.success && res.sessionId && res.token && res.trackingUrl) {
+        setQrSessionData({
+          sessionId: res.sessionId,
+          token: res.token,
+          trackingUrl: res.trackingUrl
+        });
+      } else {
+        const fallbackSessionId = `QR-${Math.floor(100000 + Math.random() * 900000)}`;
+        const fallbackToken = `tok_${Math.random().toString(36).slice(2, 10)}`;
+        const baseUrl = qrAppUrl || window.location.origin;
+        const fallbackTrackingUrl = `${baseUrl.replace(/\/$/, '')}/?shareSession=${fallbackSessionId}&token=${fallbackToken}`;
+        setQrSessionData({
+          sessionId: fallbackSessionId,
+          token: fallbackToken,
+          trackingUrl: fallbackTrackingUrl
+        });
+      }
+    } catch (_) {
+      setQrLoading(false);
+      const fallbackSessionId = `QR-${Math.floor(100000 + Math.random() * 900000)}`;
+      const fallbackToken = `tok_${Math.random().toString(36).slice(2, 10)}`;
+      const baseUrl = qrAppUrl || window.location.origin;
+      const fallbackTrackingUrl = `${baseUrl.replace(/\/$/, '')}/?shareSession=${fallbackSessionId}&token=${fallbackToken}`;
       setQrSessionData({
-        sessionId: res.sessionId,
-        token: res.token,
-        trackingUrl: res.trackingUrl
+        sessionId: fallbackSessionId,
+        token: fallbackToken,
+        trackingUrl: fallbackTrackingUrl
       });
     }
   };
@@ -219,13 +242,23 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     if (qrSessionData) {
       const baseUrl = qrAppUrl || window.location.origin;
       const targetUrl = `${baseUrl.replace(/\/$/, '')}/?shareSession=${qrSessionData.sessionId}&token=${qrSessionData.token}`;
-      QRCode.toDataURL(targetUrl, {
-        width: 280,
-        margin: 2,
-        color: { dark: '#000000', light: '#ffffff' }
-      })
-        .then(url => setQrImageSrc(url))
-        .catch(err => console.error('QR rendering error:', err));
+      const fallbackQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(targetUrl)}`;
+
+      try {
+        if (typeof QRCode !== 'undefined' && typeof QRCode.toDataURL === 'function') {
+          QRCode.toDataURL(targetUrl, {
+            width: 280,
+            margin: 2,
+            color: { dark: '#000000', light: '#ffffff' }
+          })
+            .then(url => setQrImageSrc(url || fallbackQrUrl))
+            .catch(() => setQrImageSrc(fallbackQrUrl));
+        } else {
+          setQrImageSrc(fallbackQrUrl);
+        }
+      } catch (_) {
+        setQrImageSrc(fallbackQrUrl);
+      }
     }
   }, [qrSessionData, qrAppUrl]);
 
@@ -301,24 +334,22 @@ export const PrivateSmartEmergencyModule: React.FC<Props> = ({ onNavigateHome, i
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        let finalLat = latitude;
-        let finalLon = longitude;
-        let finalState = userState;
-        let finalDist = userDistrict;
-
-        if (!isPointInNER(latitude, longitude)) {
-          const baseCoords = NER_STATE_DEFAULT_COORDS[userState] || [26.1445, 91.7362];
-          finalLat = baseCoords[0];
-          finalLon = baseCoords[1];
-        }
-
-        await dispatchWithCoords(finalLat, finalLon, finalState, finalDist);
+        await dispatchWithCoords(latitude, longitude, userState, userDistrict);
       },
       async (_err) => {
-        const baseCoords = NER_STATE_DEFAULT_COORDS[userState] || [26.1445, 91.7362];
-        await dispatchWithCoords(baseCoords[0], baseCoords[1], userState, userDistrict);
+        navigator.geolocation.getCurrentPosition(
+          async (pos2) => {
+            const { latitude, longitude } = pos2.coords;
+            await dispatchWithCoords(latitude, longitude, userState, userDistrict);
+          },
+          async () => {
+            const baseCoords = NER_STATE_DEFAULT_COORDS[userState] || [26.1445, 91.7362];
+            await dispatchWithCoords(baseCoords[0], baseCoords[1], userState, userDistrict);
+          },
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+        );
       },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
     );
   };
 
