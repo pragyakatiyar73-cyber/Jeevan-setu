@@ -1487,6 +1487,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
   const [showDopplerRadar, setShowDopplerRadar] = useState(true);
   const [showHazardCircles, setShowHazardCircles] = useState(true);
   const [selectedMapCategory, setSelectedMapCategory] = useState<string>('All');
+  const [isMobileMapFilterOpen, setIsMobileMapFilterOpen] = useState(false);
   const [liveTimeStr, setLiveTimeStr] = useState<string>('');
   const [cursorCoords, setCursorCoords] = useState<{ lat: string; lon: string } | null>(null);
 
@@ -2152,14 +2153,14 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           2. STICKY NAVBAR (Dark Navy matching reference image)
          ================================================== */}
       <header className="sticky top-0 z-[100] w-full max-w-full bg-[#0B132B] dark:bg-[#070d1e] text-white shadow-lg border-b border-slate-800 transition-colors duration-300">
-        <div className="w-full max-w-full px-3 sm:px-5 lg:px-6 h-16 flex items-center justify-between gap-2 sm:gap-4">
+        <div className="w-full max-w-full px-2 sm:px-5 lg:px-6 h-14 sm:h-16 flex items-center justify-between gap-1 sm:gap-4">
           
           {/* LEFT: Logo & Brand */}
           <div
             onClick={() => { setActiveTab('Home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group shrink-0 min-w-0"
+            className="flex items-center gap-1.5 sm:gap-3 cursor-pointer group shrink-0 min-w-0"
           >
-            <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-sky-400/60 group-hover:scale-105 transition shadow-md shadow-sky-500/25 bg-slate-900 flex items-center justify-center shrink-0">
+            <div className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full overflow-hidden ring-2 ring-sky-400/60 group-hover:scale-105 transition shadow-md shadow-sky-500/25 bg-slate-900 flex items-center justify-center shrink-0">
               <img
                 src="/jeevan-setu-logo.jpg"
                 alt="Jeevan Setu Logo"
@@ -2168,11 +2169,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                   (e.target as HTMLElement).style.display = 'none';
                 }}
               />
-              <span className="text-sky-400 font-bold text-base">JS</span>
+              <span className="text-sky-400 font-bold text-xs sm:text-base">JS</span>
             </div>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1">
-                <span className="text-lg sm:text-xl font-black tracking-tight text-white leading-none font-sans group-hover:text-sky-300 transition whitespace-nowrap">
+                <span className="text-sm sm:text-xl font-black tracking-tight text-white leading-none font-sans group-hover:text-sky-300 transition whitespace-nowrap">
                   {language === "hi" ? <>जीवन <span className="text-sky-400">सेतु</span></> : <>Jeevan <span className="text-sky-400">Setu</span></>}
                 </span>
               </div>
@@ -2204,19 +2205,20 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           </nav>
 
           {/* RIGHT: Action Tools & Mobile Menu */}
-          <div className="flex items-center gap-1.5 sm:gap-2 2xl:gap-2.5 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 2xl:gap-2.5 shrink-0">
             {/* 🎥 RISH (CITIZEN VIDEO GUIDE) BUTTON */}
             <button
               onClick={handleOpenVideoGuide}
-              className={`bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-amber-500/20 hover:shadow-amber-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border whitespace-nowrap shrink-0 group ${
+              className={`bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-black shadow-md shadow-amber-500/20 hover:shadow-amber-500/40 hover:scale-105 transition flex items-center gap-1 sm:gap-1.5 cursor-pointer border whitespace-nowrap shrink-0 group ${
                 isVideoGuideOpen ? 'ring-2 ring-emerald-400 border-emerald-300 animate-pulse' : 'border-amber-300/40'
               }`}
               title={isVideoGuideOpen ? "ऋष (आवाज़ बंद करने के लिए क्लिक करें)" : "Rish 10-Minute Video Guide (Click to Start Instruction)"}
             >
-              <span className="text-sm">🎥</span>
-              <span>{language === 'hi' ? 'ऋष (गाइड)' : 'Rish (Guide)'}</span>
+              <span className="text-xs sm:text-sm">🎥</span>
+              <span>{language === 'hi' ? 'ऋष' : 'Rish'}</span>
+              <span className="hidden sm:inline">{language === 'hi' ? ' (गाइड)' : ' (Guide)'}</span>
               {isVideoGuideOpen && (
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping ml-0.5" />
+                <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-400 animate-ping ml-0.5" />
               )}
             </button>
 
@@ -2226,21 +2228,21 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 setIsAiAgentOpen((prev) => !prev);
                 if (onOpenAiChatbot) onOpenAiChatbot();
               }}
-              className="bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-md shadow-sky-500/20 hover:shadow-sky-500/40 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer border border-sky-400/40 whitespace-nowrap shrink-0 group"
+              className="bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-black shadow-md shadow-sky-500/20 hover:shadow-sky-500/40 hover:scale-105 transition flex items-center gap-1 sm:gap-1.5 cursor-pointer border border-sky-400/40 whitespace-nowrap shrink-0 group"
               title="Jeeva AI Agent and Voice Search"
             >
-              <Sparkles className="h-3.5 w-3.5 text-amber-300 group-hover:rotate-12 transition transform" />
+              <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-300 group-hover:rotate-12 transition transform" />
               <span>Jeeva</span>
-              <span className="flex items-center gap-0.5 bg-white/20 px-1.5 py-0.5 rounded-full text-[10px]">
+              <span className="hidden sm:flex items-center gap-0.5 bg-white/20 px-1.5 py-0.5 rounded-full text-[10px]">
                 <Mic className="h-2.5 w-2.5 text-white animate-pulse" />
-                <span className="hidden sm:inline">Voice</span>
+                <span>Voice</span>
               </span>
             </button>
 
             {/* Search Icon (Moved to right side of AI Agent) */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-1.5 sm:p-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
+              className="p-1 sm:p-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
               title="Search"
             >
               <Search className="h-4 sm:h-5 w-4 sm:w-5" />
@@ -2353,16 +2355,16 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </button>
 
             {/* Theme Toggle Switch */}
-            <div className="shrink-0 flex items-center">
+            <div className="shrink-0 flex items-center scale-90 sm:scale-100 origin-center">
               <ThemeToggle />
             </div>
 
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="xl:hidden p-2 rounded-lg text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
+              className="xl:hidden p-1 sm:p-2 rounded-lg text-slate-200 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMobileMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
             </button>
           </div>
 
@@ -2434,7 +2436,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {/* ==================================================
           3. HERO SECTION (Clean High-Res Landscape + Balanced Proportioned Typography)
           ================================================== */}
-      <section className="relative w-full min-h-[500px] lg:min-h-[560px] bg-[#040814] text-white overflow-hidden flex items-center border-b border-slate-800">
+      <section className="relative w-full min-h-0 sm:min-h-[500px] lg:min-h-[560px] bg-[#040814] text-white overflow-hidden flex items-center border-b border-slate-800">
         {/* 100% Clean Photographic Background with Rich Dark Gradient Overlay for Maximum Readability */}
         <div className="absolute inset-0 z-0">
           <img
@@ -2442,15 +2444,15 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             alt="Jeevan Setu Disaster Response & Rescue Operations"
             className="w-full h-full object-cover object-center"
           />
-          {/* Subtle soft gradient on left for crisp text contrast without darkening the landscape */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#070E20]/75 via-[#070E20]/30 to-transparent pointer-events-none" />
+          {/* Subtle soft gradient on left for crisp text contrast without darkening the landscape on desktop, with enhanced readability on mobile */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070E20]/90 via-[#070E20]/80 to-[#070E20]/90 sm:bg-gradient-to-r sm:from-[#070E20]/75 sm:via-[#070E20]/30 sm:to-transparent pointer-events-none" />
         </div>
 
-        <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 py-10 sm:py-14 lg:py-16 flex flex-col justify-between">
+        <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 py-7 sm:py-14 lg:py-16 flex flex-col justify-between">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             
             {/* Hero Left Content with Balanced Typography & Buttons */}
-            <div className="max-w-2xl space-y-4">
+            <div className="max-w-2xl space-y-3 sm:space-y-4">
               
               {/* Upper Label */}
               <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#38BDF8] font-sans drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
@@ -2458,7 +2460,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               </div>
 
               {/* Title with "Jeevan" in White and "Setu" in Cyan */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-sans leading-tight drop-shadow-[0_3px_12px_rgba(0,0,0,0.8)]">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-sans leading-tight drop-shadow-[0_3px_12px_rgba(0,0,0,0.8)]">
                 {(() => {
                   const parts = t('nav.brandTitle', 'Jeevan Setu').split(' ');
                   return (
@@ -2467,20 +2469,20 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 })()}
               </h1>
 
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+              <p className="text-sm sm:text-lg lg:text-xl font-bold text-slate-100 tracking-tight leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
                 {t('home.heroSub', 'AI Powered Disaster Response & GIS Intelligence Platform')}
               </p>
 
-              <p className="text-xs sm:text-xs text-slate-200 leading-relaxed font-normal max-w-lg drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+              <p className="text-xs text-slate-200 leading-relaxed font-normal max-w-lg drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
                 {t('home.heroDesc', 'Jeevan Setu combines AI, GIS, satellite data, weather intelligence and real-time disaster information to help people understand risks, find emergency resources and respond faster.')}
               </p>
 
               {/* TWO REAL WORKING CALL TO ACTION BUTTONS */}
-              <div className="pt-1.5 flex flex-wrap items-center gap-2.5 z-30">
+              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 z-30">
                 <button
                   type="button"
                   onClick={() => onNavigateModule('customdashboard')}
-                  className="bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369a1] hover:from-[#7dd3fc] hover:to-[#38BDF8] text-slate-950 font-bold px-4 py-2 rounded-full shadow-lg shadow-sky-500/25 flex items-center gap-1.5 text-xs sm:text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] cursor-pointer border border-sky-200/60 group"
+                  className="bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369a1] hover:from-[#7dd3fc] hover:to-[#38BDF8] text-slate-950 font-bold px-4 py-2.5 sm:py-2 rounded-full shadow-lg shadow-sky-500/25 flex items-center justify-center sm:justify-start gap-1.5 text-xs sm:text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] cursor-pointer border border-sky-200/60 group"
                 >
                   <LayoutDashboard className="h-4 w-4 text-slate-950 group-hover:scale-105 transition duration-300" />
                   <span>{t('home.exploreDashboard', 'Explore Dashboard')}</span>
@@ -2490,7 +2492,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <button
                   type="button"
                   onClick={() => setActiveSidePanel('livemap')}
-                  className="bg-slate-950/85 hover:bg-slate-900 text-white font-bold px-4 py-2 rounded-full border border-[#38BDF8]/70 hover:border-[#38BDF8] backdrop-blur-xl flex items-center gap-1.5 text-xs sm:text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] cursor-pointer shadow-md group"
+                  className="bg-slate-950/85 hover:bg-slate-900 text-white font-bold px-4 py-2.5 sm:py-2 rounded-full border border-[#38BDF8]/70 hover:border-[#38BDF8] backdrop-blur-xl flex items-center justify-center sm:justify-start gap-1.5 text-xs sm:text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] cursor-pointer shadow-md group"
                 >
                   <MapPin className="h-4 w-4 text-[#38BDF8] group-hover:scale-105 transition duration-300" />
                   <span>{t('home.exploreLiveMap', 'Explore Live Map')}</span>
@@ -2501,7 +2503,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               {/* 4 Feature Indicator Pills (Opens Compact Centered Modal in Middle of Screen) */}
               <div className="pt-1.5 flex flex-wrap items-center gap-1.5 sm:gap-2">
                 {[
-                  { label: language === 'hi' ? '🎥 ऋष (गाइड)' : '🎥 Rish (Guide)', icon: Sparkles, action: handleOpenVideoGuide },
+                  { label: language === 'hi' ? '🎥 ऋष (गाइड)' : '🎥 Rish (Guide)', icon: Sparkles, action: handleOpenVideoGuide, isDesktopOnly: true },
                   { label: 'AI Analysis', icon: Cpu, action: () => setActiveFeatureModal('ai') },
                   { label: 'Live Data', icon: CloudRain, action: () => setActiveFeatureModal('livedata') },
                   { label: 'GIS Mapping', icon: MapPin, action: () => setActiveFeatureModal('gis') },
@@ -2515,7 +2517,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                       onClick={item.action}
                       title={`Click to preview ${item.label}`}
                       aria-label={`Preview ${item.label}`}
-                      className="bg-slate-950/85 backdrop-blur-xl border border-[#38BDF8]/50 hover:border-[#38BDF8] px-2.5 py-1 rounded-full text-[11px] font-semibold text-white flex items-center gap-1 shadow-sm transition-all duration-200 hover:scale-[1.03] cursor-pointer group"
+                      className={`${item.isDesktopOnly ? 'hidden sm:flex' : 'flex'} bg-slate-950/85 backdrop-blur-xl border border-[#38BDF8]/50 hover:border-[#38BDF8] px-2.5 py-1 rounded-full text-[11px] font-semibold text-white items-center gap-1 shadow-sm transition-all duration-200 hover:scale-[1.03] cursor-pointer group`}
                     >
                       <Icon className="h-3 w-3 text-[#38BDF8] group-hover:scale-115 transition duration-300 drop-shadow-[0_0_6px_rgba(56,189,248,0.5)]" />
                       <span>{item.label}</span>
@@ -2547,7 +2549,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
           </div>
 
           {/* FEATURE CARDS GRID (Included Real-Time Relief Supply & Vehicle Tracking + Smart Emergency Response) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             {[
               {
                 title: language === 'hi' ? 'वास्तविक समय राहत सामग्री एवं वाहन ट्रैकिंग' : 'Real-Time Relief Supply & Vehicle Tracking',
@@ -2649,27 +2651,27 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 <div
                   key={i}
                   onClick={card.action}
-                  className={`${card.bgColor} ${card.hoverBg} border ${card.borderColor} rounded-2xl p-4 sm:p-4.5 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.02] hover:border-sky-400/80 flex flex-col justify-between cursor-pointer group min-h-[140px] relative overflow-hidden`}
+                  className={`${card.bgColor} ${card.hoverBg} border ${card.borderColor} rounded-xl sm:rounded-2xl p-3 sm:p-4.5 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.02] hover:border-sky-400/80 flex flex-col justify-between cursor-pointer group min-h-[105px] sm:min-h-[140px] relative overflow-hidden`}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-2.5">
-                      <div className={`h-9 w-9 rounded-xl ${card.iconBg} flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300`}>
-                        <Icon className="h-4.5 w-4.5" />
+                    <div className="flex items-center justify-between mb-2 sm:mb-2.5">
+                      <div className={`h-7 w-7 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl ${card.iconBg} flex items-center justify-center shadow-md group-hover:scale-110 transition duration-300`}>
+                        <Icon className="h-3.5 w-3.5 sm:h-4.5 sm:w-4.5" />
                       </div>
                       {card.badge && (
-                        <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border tracking-wider uppercase ${card.badgeColor || 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/40'}`}>
+                        <span className={`text-[8px] sm:text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-full border tracking-wider uppercase truncate max-w-[85px] sm:max-w-none ${card.badgeColor || 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/40'}`}>
                           {card.badge}
                         </span>
                       )}
                     </div>
-                    <h3 className={`text-xs sm:text-sm font-bold text-slate-900 dark:text-white ${card.hoverText} transition leading-snug`}>
+                    <h3 className={`text-xs sm:text-sm font-bold text-slate-900 dark:text-white ${card.hoverText} transition leading-tight sm:leading-snug line-clamp-2`}>
                       {card.title}
                     </h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 font-normal leading-snug">
+                    <p className="hidden sm:block text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 font-normal leading-snug">
                       {card.desc}
                     </p>
                   </div>
-                  <div className="flex items-center justify-end mt-3">
+                  <div className="hidden sm:flex items-center justify-end mt-3">
                     <div className={`h-6 w-6 rounded-full ${card.iconBg} flex items-center justify-center shadow-sm group-hover:translate-x-1 group-hover:scale-110 transition duration-300`}>
                       <ArrowRight className="h-3 w-3" />
                     </div>
@@ -2788,153 +2790,201 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </div>
 
             {/* CENTER COLUMN: Real Interactive Command Live GIS India Map (6 Cols) */}
-            <div className="lg:col-span-6 relative min-h-[420px] lg:min-h-[460px] rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.01] hover:border-sky-400/80 bg-slate-950 group">
+            <div className="lg:col-span-6 relative min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5 hover:scale-[1.01] hover:border-sky-400/80 bg-slate-950 group">
               
               {/* Tactical HUD Radar Sweep overlay */}
               <div className="radar-sweep-line" />
 
               {/* Leaflet Map Container */}
-              <div ref={mapContainerRef} className="w-full h-full min-h-[420px] lg:min-h-[460px] z-0" />
+              <div ref={mapContainerRef} className="w-full h-full min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] z-0" />
 
               {/* Top Left: LIVE HUD STATS BADGE */}
-              <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 pointer-events-none">
-                <div className="bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/80 shadow-lg flex items-center gap-2 pointer-events-auto">
-                  <span className="relative flex h-2.5 w-2.5">
+              <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-10 flex flex-col gap-1 sm:gap-1.5 pointer-events-none">
+                <div className="bg-slate-900/90 backdrop-blur-md px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border border-slate-700/80 shadow-lg flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+                  <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-500"></span>
                   </span>
-                  <span className="text-[11px] font-black tracking-wider uppercase text-emerald-400 font-mono">
-                    LIVE GIS TELEMETRY
+                  <span className="text-[10px] sm:text-[11px] font-black tracking-wider uppercase text-emerald-400 font-mono">
+                    <span className="hidden sm:inline">LIVE </span>GIS TELEMETRY
                   </span>
-                  <span className="text-[10px] text-slate-300 font-mono pl-1.5 border-l border-slate-700">
+                  <span className="text-[9px] sm:text-[10px] text-slate-300 font-mono pl-1 sm:pl-1.5 border-l border-slate-700">
                     {liveTimeStr || 'LIVE'}
                   </span>
                 </div>
 
-                {/* Live Coordinates Readout */}
-                <div className="bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800 text-[10px] font-mono text-slate-300 flex items-center gap-2 pointer-events-auto w-max shadow-md">
+                {/* Live Coordinates Readout (Desktop Only) */}
+                <div className="hidden sm:flex bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800 text-[10px] font-mono text-slate-300 items-center gap-2 pointer-events-auto w-max shadow-md">
                   <span className="text-sky-400 font-bold">COORD:</span>
                   <span>{cursorCoords ? `${cursorCoords.lat}° N, ${cursorCoords.lon}° E` : '23.50° N, 83.50° E'}</span>
                 </div>
               </div>
 
-              {/* Top Right: CATEGORY FILTERABLE LEGEND */}
-              <div className="absolute top-3 right-3 z-10 bg-slate-900/90 backdrop-blur-md p-2.5 rounded-xl shadow-xl border border-slate-700/80 text-[11px] font-bold text-slate-200 space-y-1 max-w-[170px]">
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 pb-1 border-b border-slate-800 flex items-center justify-between">
-                  <span>Incident Filter</span>
-                  <span className="text-sky-400 text-[9px] font-mono">{liveDisasterMarkers.length} Active</span>
-                </div>
-                
-                {[
-                  { label: 'All', color: '#38BDF8', count: liveDisasterMarkers.length },
-                  { label: 'Flood', color: '#2563EB', count: liveDisasterMarkers.filter(m => m.type === 'Flood').length },
-                  { label: 'Landslide', color: '#F97316', count: liveDisasterMarkers.filter(m => m.type === 'Landslide').length },
-                  { label: 'Earthquake', color: '#EAB308', count: liveDisasterMarkers.filter(m => m.type === 'Earthquake').length },
-                  { label: 'Fire', color: '#EF4444', count: liveDisasterMarkers.filter(m => m.type === 'Fire').length },
-                  { label: 'Heavy Rainfall', color: '#10B981', count: liveDisasterMarkers.filter(m => m.type === 'Heavy Rainfall').length },
-                ].map((cat) => (
+              {/* Top Right: CATEGORY FILTERABLE LEGEND (Collapsible on mobile, Permanent Expanded on desktop) */}
+              <div className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 z-10">
+                {/* Mobile Collapsible Filter Trigger */}
+                <div className="sm:hidden">
                   <button
-                    key={cat.label}
-                    onClick={() => setSelectedMapCategory(cat.label)}
-                    className={`w-full flex items-center justify-between px-2 py-1 rounded-md text-[10px] font-bold transition cursor-pointer ${
-                      selectedMapCategory === cat.label
-                        ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
-                        : 'hover:bg-slate-800/60 text-slate-300'
-                    }`}
+                    onClick={() => setIsMobileMapFilterOpen(!isMobileMapFilterOpen)}
+                    className="bg-slate-900/95 backdrop-blur-md px-2.5 py-1 rounded-lg shadow-xl border border-slate-700/80 text-[10px] font-bold text-sky-400 flex items-center gap-1.5 cursor-pointer"
                   >
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                      <span className="truncate">{cat.label}</span>
-                    </div>
-                    <span className="text-[9px] px-1.5 rounded bg-slate-800 text-slate-400 font-mono">{cat.count}</span>
+                    <span>⚡ {selectedMapCategory}</span>
+                    <span className="text-[9px] text-slate-400">▾</span>
                   </button>
-                ))}
+                  {isMobileMapFilterOpen && (
+                    <div className="absolute right-0 mt-1 bg-slate-900/95 backdrop-blur-xl p-2 rounded-xl shadow-2xl border border-slate-700 text-[10px] font-bold text-slate-200 space-y-1 w-36 z-20 animate-in fade-in">
+                      {[
+                        { label: 'All', color: '#38BDF8', count: liveDisasterMarkers.length },
+                        { label: 'Flood', color: '#2563EB', count: liveDisasterMarkers.filter(m => m.type === 'Flood').length },
+                        { label: 'Landslide', color: '#F97316', count: liveDisasterMarkers.filter(m => m.type === 'Landslide').length },
+                        { label: 'Earthquake', color: '#EAB308', count: liveDisasterMarkers.filter(m => m.type === 'Earthquake').length },
+                        { label: 'Fire', color: '#EF4444', count: liveDisasterMarkers.filter(m => m.type === 'Fire').length },
+                        { label: 'Heavy Rainfall', color: '#10B981', count: liveDisasterMarkers.filter(m => m.type === 'Heavy Rainfall').length },
+                      ].map((cat) => (
+                        <button
+                          key={cat.label}
+                          onClick={() => {
+                            setSelectedMapCategory(cat.label);
+                            setIsMobileMapFilterOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-2 py-1 rounded-md text-[10px] font-bold transition cursor-pointer ${
+                            selectedMapCategory === cat.label
+                              ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
+                              : 'hover:bg-slate-800/60 text-slate-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1">
+                            <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                            <span className="truncate">{cat.label}</span>
+                          </div>
+                          <span className="text-[9px] px-1 rounded bg-slate-800 text-slate-400 font-mono">{cat.count}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Desktop Permanent Expanded Legend */}
+                <div className="hidden sm:block bg-slate-900/90 backdrop-blur-md p-2.5 rounded-xl shadow-xl border border-slate-700/80 text-[11px] font-bold text-slate-200 space-y-1 max-w-[170px]">
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 pb-1 border-b border-slate-800 flex items-center justify-between">
+                    <span>Incident Filter</span>
+                    <span className="text-sky-400 text-[9px] font-mono">{liveDisasterMarkers.length} Active</span>
+                  </div>
+                  
+                  {[
+                    { label: 'All', color: '#38BDF8', count: liveDisasterMarkers.length },
+                    { label: 'Flood', color: '#2563EB', count: liveDisasterMarkers.filter(m => m.type === 'Flood').length },
+                    { label: 'Landslide', color: '#F97316', count: liveDisasterMarkers.filter(m => m.type === 'Landslide').length },
+                    { label: 'Earthquake', color: '#EAB308', count: liveDisasterMarkers.filter(m => m.type === 'Earthquake').length },
+                    { label: 'Fire', color: '#EF4444', count: liveDisasterMarkers.filter(m => m.type === 'Fire').length },
+                    { label: 'Heavy Rainfall', color: '#10B981', count: liveDisasterMarkers.filter(m => m.type === 'Heavy Rainfall').length },
+                  ].map((cat) => (
+                    <button
+                      key={cat.label}
+                      onClick={() => setSelectedMapCategory(cat.label)}
+                      className={`w-full flex items-center justify-between px-2 py-1 rounded-md text-[10px] font-bold transition cursor-pointer ${
+                        selectedMapCategory === cat.label
+                          ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
+                          : 'hover:bg-slate-800/60 text-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                        <span className="truncate">{cat.label}</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 rounded bg-slate-800 text-slate-400 font-mono">{cat.count}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Bottom Left: BASEMAP SWITCHER & OVERLAY TOGGLES */}
-              <div className="absolute bottom-3 left-3 z-10 flex flex-wrap items-center gap-1.5">
+              <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 z-10 flex flex-wrap items-center gap-1 sm:gap-1.5">
                 {/* Map Layer Switcher Pills */}
-                <div className="bg-slate-900/90 backdrop-blur-md p-1 rounded-xl shadow-lg border border-slate-700/80 flex items-center gap-1">
+                <div className="bg-slate-900/90 backdrop-blur-md p-0.5 sm:p-1 rounded-lg sm:rounded-xl shadow-lg border border-slate-700/80 flex items-center gap-0.5 sm:gap-1">
                   <button
                     onClick={() => changeMapTile('satellite')}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-md flex items-center gap-1 cursor-pointer ${
+                    className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-md flex items-center gap-1 cursor-pointer ${
                       mapTileType === 'satellite'
                         ? 'bg-sky-600 text-white shadow'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800'
                     }`}
                   >
-                    <span>🛰️ Satellite</span>
+                    <span>🛰️</span>
+                    <span className="hidden sm:inline"> Satellite</span>
                   </button>
                   <button
                     onClick={() => changeMapTile('dark')}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-md flex items-center gap-1 cursor-pointer ${
+                    className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-md flex items-center gap-1 cursor-pointer ${
                       mapTileType === 'dark'
                         ? 'bg-sky-600 text-white shadow'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800'
                     }`}
                   >
-                    <span>🌑 Dark GIS</span>
+                    <span>🌑</span>
+                    <span className="hidden sm:inline"> Dark GIS</span>
                   </button>
                   <button
                     onClick={() => changeMapTile('topo')}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-md flex items-center gap-1 cursor-pointer ${
+                    className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-md flex items-center gap-1 cursor-pointer ${
                       mapTileType === 'topo'
                         ? 'bg-sky-600 text-white shadow'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800'
                     }`}
                   >
-                    <span>⛰️ Terrain</span>
+                    <span>⛰️</span>
+                    <span className="hidden sm:inline"> Terrain</span>
                   </button>
                 </div>
 
                 {/* Doppler Radar Toggle Button */}
                 <button
                   onClick={toggleDopplerRadar}
-                  className={`px-2.5 py-1.5 rounded-xl text-[10px] font-bold shadow-lg border transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-xl flex items-center gap-1.5 cursor-pointer ${
+                  className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-bold shadow-lg border transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.08] hover:shadow-xl flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
                     showDopplerRadar
                       ? 'bg-emerald-600/90 text-white border-emerald-400 shadow-emerald-900/40'
                       : 'bg-slate-900/90 text-slate-400 border-slate-700 hover:bg-slate-800 hover:text-white'
                   }`}
                   title="Toggle Live Precipitation Radar Overlay"
                 >
-                  <span className={`h-2 w-2 rounded-full ${showDopplerRadar ? 'bg-white animate-pulse' : 'bg-slate-500'}`} />
-                  <span>📡 Doppler Radar</span>
+                  <span className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full ${showDopplerRadar ? 'bg-white animate-pulse' : 'bg-slate-500'}`} />
+                  <span>📡<span className="hidden sm:inline"> Doppler</span> Radar</span>
                 </button>
               </div>
 
               {/* Bottom Right: CONTROL BUTTONS (Zoom, Recenter, Buffer Rings) */}
-              <div className="absolute bottom-3 right-3 z-10 flex flex-col gap-1">
+              <div className="absolute bottom-2.5 sm:bottom-3 right-2.5 sm:right-3 z-10 flex flex-col gap-1">
                 <button
                   onClick={handleZoomIn}
-                  className="h-8 w-8 bg-slate-900/90 hover:bg-slate-800 text-slate-200 rounded-lg shadow-lg flex items-center justify-center font-bold text-sm border border-slate-700 transition cursor-pointer"
+                  className="h-7 w-7 sm:h-8 sm:w-8 bg-slate-900/90 hover:bg-slate-800 text-slate-200 rounded-lg shadow-lg flex items-center justify-center font-bold text-xs sm:text-sm border border-slate-700 transition cursor-pointer"
                   title="Zoom In"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </button>
                 <button
                   onClick={handleZoomOut}
-                  className="h-8 w-8 bg-slate-900/90 hover:bg-slate-800 text-slate-200 rounded-lg shadow-lg flex items-center justify-center font-bold text-sm border border-slate-700 transition cursor-pointer"
+                  className="h-7 w-7 sm:h-8 sm:w-8 bg-slate-900/90 hover:bg-slate-800 text-slate-200 rounded-lg shadow-lg flex items-center justify-center font-bold text-xs sm:text-sm border border-slate-700 transition cursor-pointer"
                   title="Zoom Out"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </button>
                 <button
                   onClick={handleRecenter}
-                  className="h-8 w-8 bg-slate-900/90 hover:bg-slate-800 text-sky-400 rounded-lg shadow-lg flex items-center justify-center border border-slate-700 transition cursor-pointer"
+                  className="h-7 w-7 sm:h-8 sm:w-8 bg-slate-900/90 hover:bg-slate-800 text-sky-400 rounded-lg shadow-lg flex items-center justify-center border border-slate-700 transition cursor-pointer"
                   title="Recenter India Map"
                 >
-                  <Crosshair className="h-4 w-4" />
+                  <Crosshair className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </button>
                 <button
                   onClick={() => setShowHazardCircles(!showHazardCircles)}
-                  className={`h-8 w-8 rounded-lg shadow-lg flex items-center justify-center border transition cursor-pointer ${
+                  className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg shadow-lg flex items-center justify-center border transition cursor-pointer ${
                     showHazardCircles
                       ? 'bg-amber-500/20 text-amber-400 border-amber-500/50'
                       : 'bg-slate-900/90 text-slate-500 border-slate-700 hover:text-slate-300'
                   }`}
                   title="Toggle Hazard Buffer Zones"
                 >
-                  <Radio className="h-4 w-4" />
+                  <Radio className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </button>
               </div>
             </div>
