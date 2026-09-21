@@ -71,7 +71,7 @@ export default function LanguageSelector() {
         {/* Compact/Unified Language Menu Trigger */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`rounded-full px-2.5 py-1 text-xs font-black transition-all flex items-center gap-1 cursor-pointer border ${
+          className={`rounded-full px-1.5 sm:px-2.5 py-1 text-xs font-black transition-all flex items-center gap-1 cursor-pointer border ${
             isNerActive
               ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-400/40 shadow-md shadow-purple-600/30"
               : "border-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white"
