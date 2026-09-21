@@ -35,7 +35,6 @@ import {
   ShieldCheck,
   Youtube,
   Twitter,
-  Instagram,
   Linkedin,
   Sun,
   Wind,
@@ -3361,15 +3360,6 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <div className="flex items-center gap-3 text-xs font-semibold text-slate-300">
               <span>{t('footer.followUs', 'Follow Us')}</span>
               <div className="flex items-center gap-2">
-                <a
-                  href="https://www.instagram.com/reel/DderFRmT7on/?stkn=MTJpZ3Z6ZTh4Ym96cw=="
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 bg-slate-800 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 rounded-xl text-slate-300 hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-125 hover:shadow-lg hover:shadow-rose-500/40 cursor-pointer"
-                  title="Follow Jeevan Setu on Instagram"
-                >
-                  <Instagram className="h-4 w-4 text-pink-500 hover:text-white" />
-                </a>
                 <a
                   href="https://youtu.be/skLTZjde6Z4?si=6_XX7IuhH9GP8ViE"
                   target="_blank"
