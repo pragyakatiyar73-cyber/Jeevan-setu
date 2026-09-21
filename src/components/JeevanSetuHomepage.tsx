@@ -3361,7 +3361,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               <span>{t('footer.followUs', 'Follow Us')}</span>
               <div className="flex items-center gap-2">
                 <a
-                  href="https://youtu.be/skLTZjde6Z4?si=6_XX7IuhH9GP8ViE"
+                  href="https://youtu.be/GgdRdG9aYNU?si=sEfC1wOGUn3QIwyp"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 bg-slate-800 hover:bg-red-600 rounded-xl text-slate-300 hover:text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-125 hover:shadow-lg hover:shadow-red-600/40 cursor-pointer"
