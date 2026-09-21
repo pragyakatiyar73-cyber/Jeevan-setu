@@ -675,7 +675,12 @@ export default function NERLiveMapModule({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [baseStyle, setBaseStyle] = useState<string>("satellite");
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
-  const [isLegendOpen, setIsLegendOpen] = useState<boolean>(true);
+  const [isLegendOpen, setIsLegendOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 768;
+    }
+    return true;
+  });
   const [isTickerOpen, setIsTickerOpen] = useState<boolean>(true);
   const [liveQuakes, setLiveQuakes] = useState<any[]>([]);
   const [weatherTelemetry, setWeatherTelemetry] = useState<Record<string, { temp: number; rain: number; wind: number }>>({});
@@ -1372,55 +1377,58 @@ export default function NERLiveMapModule({
       
       {/* 🟢 TOP HEADER BAR SCOPED EXCLUSIVELY TO 8 NER STATES */}
       {!hideHeader && (
-        <div className="min-h-[58px] py-2 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-4 lg:px-6 flex flex-wrap items-center justify-between gap-3 z-20 backdrop-blur transition-colors duration-300">
-          <div className="flex items-center gap-3">
-            {onBackToDashboard && (
-              <button
-                type="button"
-                onClick={onBackToDashboard}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition shadow-md cursor-pointer shrink-0"
-                title="Back to Home (Esc)"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back to Home</span>
-              </button>
-            )}
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shrink-0">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
-                  North Eastern Region (NER 8 States) Dedicated GIS
-                </span>
-                <span className="hidden sm:inline text-xs italic text-slate-500 dark:text-slate-400">
-                  Live Multihazard Tactical Intelligence
-                </span>
+        <div className="shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#040814] px-2.5 sm:px-4 lg:px-6 py-1.5 sm:py-2 flex flex-col md:flex-row md:items-center justify-between gap-1.5 md:gap-3 z-20 backdrop-blur transition-colors duration-300">
+          <div className="flex items-center justify-between md:justify-start gap-2 min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              {onBackToDashboard && (
+                <button
+                  type="button"
+                  onClick={onBackToDashboard}
+                  className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition shadow-md cursor-pointer shrink-0"
+                  title="Back to Home (Esc)"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Back to </span>
+                  <span>Home</span>
+                </button>
+              )}
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="rounded-full bg-emerald-500/20 px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1 sm:gap-1.5 shrink-0">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+                    NER 8 States<span className="hidden sm:inline"> Dedicated GIS</span>
+                  </span>
+                  <span className="hidden md:inline text-xs italic text-slate-500 dark:text-slate-400">
+                    Live Multihazard Tactical Intelligence
+                  </span>
+                </div>
+                <h1 className="text-xs sm:text-base font-black text-slate-900 dark:text-white tracking-tight mt-0.5 leading-snug truncate max-w-[200px] xs:max-w-[280px] sm:max-w-none">
+                  North Eastern Region (NER) Accessibility &amp; Disaster Intelligence Overview
+                </h1>
               </div>
-              <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight mt-0.5 leading-snug">
-                North Eastern Region (NER) Accessibility &amp; Disaster Intelligence Overview
-              </h1>
             </div>
           </div>
 
           {/* TOP RIGHT STATE & MAP CONTROLS */}
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="flex items-center justify-between md:justify-end gap-1.5 sm:gap-2 shrink-0 overflow-x-auto no-scrollbar">
             
             {/* Live Telemetry Refresh Button */}
             <button
               onClick={fetchLiveTelemetry}
               disabled={isRefreshing}
-              className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-sky-500 transition cursor-pointer"
+              className="p-1 sm:p-1.5 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-sky-500 transition cursor-pointer shrink-0"
               title="Refresh Real-Time Feeds (USGS + Open-Meteo)"
             >
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-sky-500' : ''}`} />
+              <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isRefreshing ? 'animate-spin text-sky-500' : ''}`} />
             </button>
 
             {/* State Selector Dropdown */}
-            <div className="flex items-center gap-1.5 text-xs bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-300 dark:border-slate-800">
-              <span className="pl-2 font-extrabold text-slate-700 dark:text-slate-300">State:</span>
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs bg-slate-100 dark:bg-slate-900 p-0.5 sm:p-1 rounded-lg sm:rounded-xl border border-slate-300 dark:border-slate-800 shrink-0">
+              <span className="pl-1.5 sm:pl-2 font-extrabold text-slate-700 dark:text-slate-300 text-[11px] sm:text-xs">State:</span>
               <select
                 value={selectedStateId}
                 onChange={(e) => handleStateSelect(e.target.value)}
-                className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold px-2 py-1 rounded-lg text-xs border border-slate-300 dark:border-slate-700 focus:outline-none"
+                className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs border border-slate-300 dark:border-slate-700 focus:outline-none max-w-[125px] sm:max-w-none"
               >
                 <option value="all">Fit All 8 NER States</option>
                 {NER_STATES_DATA.map(st => (
@@ -1433,20 +1441,20 @@ export default function NERLiveMapModule({
             <div className="flex items-center gap-1 text-xs shrink-0">
               <button
                 onClick={() => setBaseStyle("satellite")}
-                className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs ${
+                className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-[11px] sm:text-xs ${
                   baseStyle === "satellite" ? "bg-sky-600 text-white shadow" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400"
                 }`}
               >
-                🛰️ Satellite
+                🛰️ <span className="hidden xs:inline">Satellite</span>
               </button>
 
               <button
                 onClick={() => setBaseStyle("topo")}
-                className={`px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs ${
+                className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-[11px] sm:text-xs ${
                   baseStyle === "topo" ? "bg-sky-600 text-white shadow" : "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400"
                 }`}
               >
-                ⛰️ Topo
+                ⛰️ <span className="hidden xs:inline">Topo</span>
               </button>
             </div>
 
@@ -1454,7 +1462,7 @@ export default function NERLiveMapModule({
             <button
               type="button"
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-xs bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg font-bold transition flex items-center gap-1 cursor-pointer text-[11px] sm:text-xs bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white shrink-0"
               title={isFullscreen ? "Exit Fullscreen" : "Expand to Fullscreen"}
             >
               {isFullscreen ? <Minimize2 className="h-3.5 w-3.5 text-sky-400" /> : <Maximize2 className="h-3.5 w-3.5" />}
@@ -1464,148 +1472,150 @@ export default function NERLiveMapModule({
         </div>
       )}
 
-      {/* 🔴 INTERACTIVE HAZARD CATEGORY FILTER BAR OVERLAY */}
-      <div className="absolute top-[68px] left-4 right-4 z-[1000] pointer-events-none flex flex-wrap items-center justify-between gap-2">
-        <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-white/90 dark:bg-slate-950/85 backdrop-blur-md border border-slate-200/90 dark:border-slate-700/60 shadow-xl dark:shadow-2xl">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'all'
-                ? 'bg-sky-600 text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-            }`}
-          >
-            <span>All Hazards</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-black/40 text-slate-800 dark:text-slate-200 text-[10px] font-bold">{NER_DISASTER_HOTSPOTS.length}</span>
-          </button>
-
-          <button
-            onClick={() => setSelectedCategory('FLOOD')}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'FLOOD'
-                ? 'bg-cyan-600 text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-            }`}
-          >
-            <span>🌊 Floods</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 text-[10px] font-bold">{floodCount}</span>
-          </button>
-
-          <button
-            onClick={() => setSelectedCategory('LANDSLIDE')}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'LANDSLIDE'
-                ? 'bg-rose-600 text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-            }`}
-          >
-            <span>⛰️ Landslides</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 text-[10px] font-bold">{landslideCount}</span>
-          </button>
-
-          <button
-            onClick={() => setSelectedCategory('STORM')}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'STORM'
-                ? 'bg-purple-600 text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-            }`}
-          >
-            <span>🌧️ Severe Storms</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 text-[10px] font-bold">{stormCount}</span>
-          </button>
-
-          <button
-            onClick={() => setSelectedCategory('SEISMIC')}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'SEISMIC'
-                ? 'bg-amber-600 text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-            }`}
-          >
-            <span>⚡ Seismic &amp; Faults</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">{seismicCount}</span>
-          </button>
-
-          <button
-            onClick={() => setSelectedCategory('HIGHWAY')}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'HIGHWAY'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-            }`}
-          >
-            <span>🛣️ Lifelines</span>
-          </button>
-
-          <button
-            onClick={() => setSelectedCategory('DEPOT')}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-              selectedCategory === 'DEPOT'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-            }`}
-          >
-            <span>🚁 Helipads</span>
-          </button>
-        </div>
-
-        {/* Live Telemetry & USGS Tremor Badges */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Live Sync Status Pill */}
-          <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-xl bg-white/90 dark:bg-slate-950/85 border border-emerald-500/40 text-emerald-700 dark:text-emerald-400 text-xs font-bold backdrop-blur shadow-md">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="hidden sm:inline">Live Radar &amp; USGS:</span>
-            <span className="text-slate-700 dark:text-slate-300 font-mono text-[11px]">
-              {lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-            </span>
-            <span className="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-normal">(60s cycle)</span>
-          </div>
-
-          {/* Live USGS Tremor Badge */}
-          {liveQuakes.length > 0 && (
-            <button
-              onClick={() => {
-                const q = liveQuakes[0];
-                if (q && q.geometry && mapInstanceRef.current) {
-                  mapInstanceRef.current.flyTo([q.geometry.coordinates[1], q.geometry.coordinates[0]], 9, { duration: 1.2 });
-                }
-              }}
-              title="Click to zoom to live USGS quake location"
-              className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-xl bg-white/90 dark:bg-slate-950/85 hover:bg-amber-50 dark:hover:bg-slate-900 border border-amber-500/40 text-xs font-bold backdrop-blur shadow-md cursor-pointer transition"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-              </span>
-              <span className="text-amber-600 dark:text-amber-400 font-extrabold">Live USGS:</span>
-              <span className="text-slate-800 dark:text-slate-200 font-medium font-mono text-[11px] truncate max-w-[260px] sm:max-w-none">
-                {liveQuakes[0].properties.title}
-              </span>
-            </button>
-          )}
-        </div>
-      </div>
-
       {/* MAP CANVAS CONTAINER */}
       <div className="flex-1 relative w-full h-full overflow-hidden">
         <div ref={mapRef} className="w-full h-full z-10" />
 
+        {/* 🔴 INTERACTIVE HAZARD CATEGORY FILTER BAR OVERLAY */}
+        <div className="absolute top-2 sm:top-3 left-2 sm:left-4 right-2 sm:right-4 z-[1000] pointer-events-none flex items-center justify-between gap-2">
+          {/* Mobile: Sleek single horizontal scrolling row with swipe; Desktop: neat bar */}
+          <div className="pointer-events-auto flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl bg-white/95 dark:bg-slate-950/90 backdrop-blur-md border border-slate-200/90 dark:border-slate-700/60 shadow-lg md:shadow-2xl overflow-x-auto no-scrollbar scrollbar-none max-w-full">
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className={`px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                selectedCategory === 'all'
+                  ? 'bg-sky-600 text-white shadow-md'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+              }`}
+            >
+              <span>All Hazards</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-black/40 text-slate-800 dark:text-slate-200 text-[10px] font-bold">{NER_DISASTER_HOTSPOTS.length}</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('FLOOD')}
+              className={`px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                selectedCategory === 'FLOOD'
+                  ? 'bg-cyan-600 text-white shadow-md'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+              }`}
+            >
+              <span>🌊 Floods</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 text-[10px] font-bold">{floodCount}</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('LANDSLIDE')}
+              className={`px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                selectedCategory === 'LANDSLIDE'
+                  ? 'bg-rose-600 text-white shadow-md'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+              }`}
+            >
+              <span>⛰️ Landslides</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 text-[10px] font-bold">{landslideCount}</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('STORM')}
+              className={`px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                selectedCategory === 'STORM'
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+              }`}
+            >
+              <span>🌧️ Severe Storms</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 text-[10px] font-bold">{stormCount}</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('SEISMIC')}
+              className={`px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                selectedCategory === 'SEISMIC'
+                  ? 'bg-amber-600 text-white shadow-md'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+              }`}
+            >
+              <span>⚡ Seismic &amp; Faults</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">{seismicCount}</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('HIGHWAY')}
+              className={`px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                selectedCategory === 'HIGHWAY'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+              }`}
+            >
+              <span>🛣️ Lifelines</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedCategory('DEPOT')}
+              className={`px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                selectedCategory === 'DEPOT'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+              }`}
+            >
+              <span>🚁 Helipads</span>
+            </button>
+          </div>
+
+          {/* Live Telemetry & USGS Tremor Badges (hidden on mobile, visible on desktop) */}
+          <div className="hidden md:flex flex-wrap items-center gap-2">
+            {/* Live Sync Status Pill */}
+            <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-xl bg-white/90 dark:bg-slate-950/85 border border-emerald-500/40 text-emerald-700 dark:text-emerald-400 text-xs font-bold backdrop-blur shadow-md">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="hidden sm:inline">Live Radar &amp; USGS:</span>
+              <span className="text-slate-700 dark:text-slate-300 font-mono text-[11px]">
+                {lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-normal">(60s cycle)</span>
+            </div>
+
+            {/* Live USGS Tremor Badge */}
+            {liveQuakes.length > 0 && (
+              <button
+                onClick={() => {
+                  const q = liveQuakes[0];
+                  if (q && q.geometry && mapInstanceRef.current) {
+                    mapInstanceRef.current.flyTo([q.geometry.coordinates[1], q.geometry.coordinates[0]], 9, { duration: 1.2 });
+                  }
+                }}
+                title="Click to zoom to live USGS quake location"
+                className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-xl bg-white/90 dark:bg-slate-950/85 hover:bg-amber-50 dark:hover:bg-slate-900 border border-amber-500/40 text-xs font-bold backdrop-blur shadow-md cursor-pointer transition"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                <span className="text-amber-600 dark:text-amber-400 font-extrabold">Live USGS:</span>
+                <span className="text-slate-800 dark:text-slate-200 font-medium font-mono text-[11px] truncate max-w-[260px] sm:max-w-none">
+                  {liveQuakes[0].properties.title}
+                </span>
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* 📋 FLOATING TACTICAL LEGEND (Collapsible on left) */}
-        <div className="absolute top-[125px] left-4 z-[1000] pointer-events-auto">
+        <div className="absolute top-12 sm:top-14 md:top-16 left-2 sm:left-4 z-[1000] pointer-events-auto">
           {isLegendOpen ? (
-            <div className="w-56 p-3.5 rounded-2xl bg-white/95 dark:bg-slate-950/85 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md shadow-2xl space-y-2.5 text-xs text-slate-700 dark:text-slate-300 animate-fadeIn">
-              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+            <div className="w-[calc(100vw-24px)] max-w-xs md:w-56 p-3 sm:p-3.5 rounded-2xl bg-white/98 dark:bg-slate-950/95 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md shadow-2xl space-y-2 sm:space-y-2.5 text-xs text-slate-700 dark:text-slate-300 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-1.5 sm:pb-2">
                 <span className="font-extrabold text-slate-900 dark:text-white text-[11px] uppercase tracking-wider flex items-center gap-1.5">
                   <Compass className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
                   Tactical Hazard Legend
                 </span>
                 <button
                   onClick={() => setIsLegendOpen(false)}
-                  className="text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold p-0.5"
+                  className="text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  title="Close Legend"
                 >
                   ✕
                 </button>
@@ -1645,7 +1655,7 @@ export default function NERLiveMapModule({
           ) : (
             <button
               onClick={() => setIsLegendOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-950/80 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-lg flex items-center gap-1.5"
+              className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-950/85 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-lg flex items-center gap-1.5 cursor-pointer"
             >
               <Compass className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
               <span>Legend</span>
@@ -1654,19 +1664,19 @@ export default function NERLiveMapModule({
         </div>
 
         {/* 🛠️ TACTICAL MAP HUD CONTROLS (Right side) */}
-        <div className="absolute top-[125px] right-4 z-[1000] pointer-events-auto flex items-center gap-2">
+        <div className="absolute top-12 sm:top-14 md:top-16 right-2 sm:right-4 z-[1000] pointer-events-auto flex items-center gap-1.5 sm:gap-2">
           {/* Risk Zones Toggle */}
           <button
             type="button"
             onClick={() => setShowRiskZones(!showRiskZones)}
-            className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 shadow-xl backdrop-blur-md cursor-pointer ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1 sm:gap-1.5 shadow-xl backdrop-blur-md cursor-pointer ${
               showRiskZones
                 ? 'bg-sky-600 border-sky-400 text-white shadow-sky-500/20'
                 : 'bg-white/95 dark:bg-slate-950/85 border-slate-200/90 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
             }`}
             title="Toggle 15-30km Risk Buffer Zone Overlays"
           >
-            <span>{showRiskZones ? '⭕ Impact Zones: ON' : '⭕ Impact Zones: OFF'}</span>
+            <span>{showRiskZones ? '⭕ Zones: ON' : '⭕ Zones: OFF'}</span>
           </button>
 
           {/* Fit All NER States */}
@@ -1677,7 +1687,7 @@ export default function NERLiveMapModule({
               setSelectedHotspot(null);
               mapInstanceRef.current?.flyToBounds([[21.9000, 88.0000], [29.5000, 97.4000]], { duration: 1.2 });
             }}
-            className="px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-950/85 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-xl flex items-center gap-1.5 transition cursor-pointer"
+            className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-950/85 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-xl flex items-center gap-1 sm:gap-1.5 transition cursor-pointer"
             title="Reset Map to Full 8 NER States Overview"
           >
             <Maximize2 className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
@@ -1688,43 +1698,43 @@ export default function NERLiveMapModule({
         {/* ⚡ BOTTOM ACTIVE RISK HOTSPOTS SLIDESHOW REEL & INSPECTOR */}
         {isTickerOpen ? (
           <div 
-            className="absolute bottom-4 left-4 right-4 z-[1000] pointer-events-auto"
+            className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 z-[1000] pointer-events-auto"
             onMouseEnter={() => setIsTickerHovered(true)}
             onMouseLeave={() => setIsTickerHovered(false)}
           >
-            <div className="p-3 rounded-2xl bg-white/95 dark:bg-slate-950/90 border border-slate-200/90 dark:border-slate-700/70 backdrop-blur-xl shadow-2xl space-y-2">
+            <div className="p-2 sm:p-3 rounded-2xl bg-white/95 dark:bg-slate-950/90 border border-slate-200/90 dark:border-slate-700/70 backdrop-blur-xl shadow-2xl space-y-1.5 sm:space-y-2">
               
               {/* Slideshow Top Navigation Header */}
               <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
-                  <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1 truncate">
                     <span>🎞️</span>
-                    <span>Risk Hotspots Slideshow</span>
+                    <span className="hidden xs:inline">Risk </span>Hotspots
                   </span>
                   <span className="text-slate-400 dark:text-slate-600 font-bold">•</span>
-                  <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[10px] font-black text-sky-600 dark:text-sky-400">
-                    Slide {activeTickerIndex + 1} of {NER_DISASTER_HOTSPOTS.length}
+                  <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[10px] font-black text-sky-600 dark:text-sky-400 shrink-0">
+                    {activeTickerIndex + 1}/{NER_DISASTER_HOTSPOTS.length}
                   </span>
-                  <span className="hidden sm:inline-flex rounded-full bg-rose-500/15 dark:bg-rose-500/20 px-2 py-0.5 text-[10px] font-extrabold text-rose-700 dark:text-rose-400 border border-rose-500/30">
+                  <span className="hidden md:inline-flex rounded-full bg-rose-500/15 dark:bg-rose-500/20 px-2 py-0.5 text-[10px] font-extrabold text-rose-700 dark:text-rose-400 border border-rose-500/30">
                     {NER_DISASTER_HOTSPOTS.filter(h => h.severity === 'CRITICAL').length} Critical Alerts
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                   {/* Auto-Play Toggle Button */}
                   <button
                     type="button"
                     onClick={() => setIsTickerAutoPlaying(!isTickerAutoPlaying)}
                     title={isTickerAutoPlaying ? "Pause Auto-Cycle (6s)" : "Resume Auto-Cycle"}
-                    className={`px-2 py-1 rounded-lg text-[10px] font-extrabold border transition flex items-center gap-1 cursor-pointer ${
+                    className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg text-[10px] font-extrabold border transition flex items-center gap-1 cursor-pointer ${
                       isTickerAutoPlaying
                         ? 'bg-emerald-500/15 dark:bg-emerald-950/70 border-emerald-500/40 text-emerald-800 dark:text-emerald-300'
                         : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     {isTickerAutoPlaying ? <Pause className="h-3 w-3 text-emerald-600 dark:text-emerald-400" /> : <Play className="h-3 w-3 text-sky-600 dark:text-sky-400" />}
-                    <span>{isTickerAutoPlaying ? 'Auto 6s' : 'Paused'}</span>
+                    <span className="hidden xs:inline">{isTickerAutoPlaying ? '6s' : 'Paused'}</span>
                   </button>
 
                   {/* Prev / Next Step Buttons */}
@@ -1748,7 +1758,7 @@ export default function NERLiveMapModule({
                   <button
                     type="button"
                     onClick={() => setIsTickerOpen(false)}
-                    className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-[11px] font-extrabold px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition cursor-pointer"
+                    className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-[10px] sm:text-[11px] font-extrabold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition cursor-pointer"
                   >
                     Hide
                   </button>
@@ -1757,12 +1767,12 @@ export default function NERLiveMapModule({
 
               {/* Horizontal Slideshow Reel with Vignette Fades & Zero Scrollbars */}
               <div className="relative group">
-                <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white/95 dark:from-slate-950/95 to-transparent z-10 rounded-l-xl" />
-                <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white/95 dark:from-slate-950/95 to-transparent z-10 rounded-r-xl" />
+                <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-r from-white/95 dark:from-slate-950/95 to-transparent z-10 rounded-l-xl" />
+                <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-4 sm:w-6 bg-gradient-to-l from-white/95 dark:from-slate-950/95 to-transparent z-10 rounded-r-xl" />
 
                 <div
                   ref={tickerContainerRef}
-                  className="flex items-center gap-2.5 overflow-x-auto py-1 px-1 scroll-smooth scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                  className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto py-1 px-1 scroll-smooth scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
                   {NER_DISASTER_HOTSPOTS.map((h, idx) => {
                     const isCrit = h.severity === 'CRITICAL';
@@ -1780,7 +1790,7 @@ export default function NERLiveMapModule({
                         key={h.id}
                         ref={(el) => { tickerCardRefs.current[idx] = el; }}
                         onClick={() => handleSelectTickerSlide(idx, h)}
-                        className={`relative shrink-0 w-64 p-3 rounded-2xl border cursor-pointer transition-all duration-200 overflow-hidden select-none ${
+                        className={`relative shrink-0 w-56 sm:w-64 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border cursor-pointer transition-all duration-200 overflow-hidden select-none ${
                           isSelected
                             ? 'bg-sky-50 dark:bg-sky-950/90 border-sky-500 dark:border-sky-400 ring-2 ring-sky-400/40 shadow-xl shadow-sky-500/20 scale-[1.02] text-slate-900 dark:text-white'
                             : isCrit
@@ -1842,13 +1852,14 @@ export default function NERLiveMapModule({
             </div>
           </div>
         ) : (
-          <div className="absolute bottom-4 left-4 z-[1000] pointer-events-auto">
+          <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 z-[1000] pointer-events-auto">
             <button
               onClick={() => setIsTickerOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-white/95 dark:bg-slate-950/85 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-800 dark:text-white shadow-xl flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-900 transition"
+              className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-white/95 dark:bg-slate-950/85 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md text-xs font-bold text-slate-800 dark:text-white shadow-xl flex items-center gap-1.5 sm:gap-2 hover:bg-slate-100 dark:hover:bg-slate-900 transition cursor-pointer"
             >
-              <AlertTriangle className="h-4 w-4 text-rose-500 dark:text-rose-400" />
-              <span>Show Critical Risk Hotspots Ticker</span>
+              <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-rose-500 dark:text-rose-400" />
+              <span className="hidden sm:inline">Show Critical Risk Hotspots Ticker</span>
+              <span className="sm:hidden">Show Hotspots</span>
             </button>
           </div>
         )}
