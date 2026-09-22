@@ -79,6 +79,7 @@ import LanguageSelector from './components/LanguageSelector';
 import ThemeToggle from './components/ThemeToggle';
 import JeevanSetuHomepage from './components/JeevanSetuHomepage';
 import DisasterSafetyGuide from './components/DisasterSafetyGuide';
+import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 
 import DisasterReportsModule from './components/DisasterReportsModule';
 import { ReliefSupplyTrackingModule } from './components/ReliefSupplyTrackingModule';
@@ -2159,6 +2160,9 @@ export default function App() {
         onNavigateModule={(mod) => setActiveModule(mod as any)}
         onTriggerSOS={() => setIsSosModalOpen(true)}
       />
+
+      {/* 📱 Progressive Web App (PWA) Install Banner */}
+      <PWAInstallPrompt />
     </>
   );
 }

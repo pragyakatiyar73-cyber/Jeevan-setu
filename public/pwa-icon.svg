@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#040814" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+  <!-- Background Card -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <!-- Glowing Outer Ring -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#38bdf8" stroke-width="4" stroke-opacity="0.4" />
+  
+  <!-- Outer Shield Icon -->
+  <path d="M256 70 L390 120 V250 C390 340 330 410 256 442 C182 410 122 340 122 250 V120 Z" fill="url(#shieldGrad)" />
+  
+  <!-- Inner Dark Shield -->
+  <path d="M256 94 L368 136 V245 C368 322 318 382 256 410 C194 382 144 322 144 245 V136 Z" fill="#0b132b" />
+
+  <!-- Life-saving Medical Cross / Bridge -->
+  <rect x="236" y="160" width="40" height="140" rx="8" fill="#ffffff" />
+  <rect x="186" y="210" width="140" height="40" rx="8" fill="#ffffff" />
+  
+  <!-- Red Center Accent -->
+  <circle cx="256" cy="230" r="14" fill="#ef4444" />
+
+  <!-- Pulse / ECG Line Overlay -->
+  <path d="M150 330 L200 330 L220 290 L246 360 L270 310 L290 330 L360 330" fill="none" stroke="#38bdf8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

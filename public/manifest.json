@@ -1,0 +1,61 @@
+{
+  "name": "Jeevan Setu - AI Disaster Response & GIS Platform",
+  "short_name": "Jeevan Setu",
+  "description": "Smart Disaster Management, Emergency SOS, Live GPS Location Sharing & GIS Grid",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#040814",
+  "theme_color": "#0284c7",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/jeevan-setu-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["medical", "utilities", "navigation", "emergency"],
+  "shortcuts": [
+    {
+      "name": "Emergency SOS",
+      "short_name": "SOS",
+      "description": "Trigger Instant Emergency Alert & Live GPS Location",
+      "url": "/?action=sos",
+      "icons": [{ "src": "/pwa-icon.svg", "sizes": "512x512" }]
+    },
+    {
+      "name": "NER Live GIS Map",
+      "short_name": "Live Map",
+      "description": "View Live GIS Disaster Overlay & detours",
+      "url": "/?tab=map",
+      "icons": [{ "src": "/pwa-icon.svg", "sizes": "512x512" }]
+    }
+  ]
+}
