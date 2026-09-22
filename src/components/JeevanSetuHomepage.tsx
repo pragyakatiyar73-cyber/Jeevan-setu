@@ -2214,8 +2214,8 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               title={isVideoGuideOpen ? "ऋष (आवाज़ बंद करने के लिए क्लिक करें)" : "Rish 10-Minute Video Guide (Click to Start Instruction)"}
             >
               <span className="text-xs sm:text-sm">🎥</span>
-              <span>{language === 'hi' ? 'ऋष' : 'Rish'}</span>
-              <span className="hidden sm:inline">{language === 'hi' ? ' (गाइड)' : ' (Guide)'}</span>
+              <span className="sm:hidden">{language === 'hi' ? 'ऋष गाइड' : 'Rish Guide'}</span>
+              <span className="hidden sm:inline">{language === 'hi' ? 'ऋष (गाइड)' : 'Rish (Guide)'}</span>
               {isVideoGuideOpen && (
                 <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-400 animate-ping ml-0.5" />
               )}
@@ -2231,7 +2231,7 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
               title="Jeeva AI Agent and Voice Search"
             >
               <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-300 group-hover:rotate-12 transition transform" />
-              <span>Jeeva</span>
+              <span>Jeeva AI</span>
               <span className="hidden sm:flex items-center gap-0.5 bg-white/20 px-1.5 py-0.5 rounded-full text-[10px]">
                 <Mic className="h-2.5 w-2.5 text-white animate-pulse" />
                 <span>Voice</span>

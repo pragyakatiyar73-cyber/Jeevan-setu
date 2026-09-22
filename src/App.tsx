@@ -1221,20 +1221,30 @@ export default function App() {
         )}
 
         {/* Top Header Command Bar — Clean, Aesthetic & Perfectly Responsive */}
-        <header className="relative z-[9999] h-14 sm:h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-2.5 sm:px-4 lg:px-5 flex items-center justify-between sm:justify-end gap-1.5 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
+        <header className="relative z-[9999] h-14 sm:h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-1.5 sm:px-4 lg:px-5 flex items-center justify-between sm:justify-end gap-1 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
           {/* Quick Action Controls — Balanced full-width distribution on mobile, right-aligned on desktop */}
-          <div className="w-full sm:w-auto flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 shrink-0 z-50">
+          <div className="w-full sm:w-auto flex items-center justify-between sm:justify-end gap-1 sm:gap-2 shrink-0 z-50">
             {/* 🎥 10-Minute Official Citizen Video Walkthrough Button */}
             <button
               onClick={() => setIsVideoGuideOpen(prev => !prev)}
-              className={`rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 px-2 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-amber-500/25 flex items-center justify-center gap-1 sm:gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border ${
+              className={`rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 px-1.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-black text-white shadow-md shadow-amber-500/25 flex items-center justify-center gap-1 sm:gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border ${
                 isVideoGuideOpen ? 'ring-2 ring-emerald-400 border-emerald-300 animate-pulse' : 'border-amber-300/40'
               }`}
               title={isVideoGuideOpen ? "ऋष (गाइड आवाज़ रोकने के लिए क्लिक करें)" : "ऋष — 10-मिनट संपूर्ण नागरिक वीडियो गाइड (गाइड आवाज़ शुरू करने के लिए क्लिक करें)"}
             >
               <span className="text-xs sm:text-sm">🎥</span>
               <span className="whitespace-nowrap font-black">
-                {language === 'hi' ? <>ऋष<span className="hidden sm:inline"> (गाइड)</span></> : <>Rish<span className="hidden sm:inline"> (Guide)</span></>}
+                {language === 'hi' ? (
+                  <>
+                    <span className="sm:hidden">ऋष गाइड</span>
+                    <span className="hidden sm:inline">ऋष (गाइड)</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="sm:hidden">Rish Guide</span>
+                    <span className="hidden sm:inline">Rish (Guide)</span>
+                  </>
+                )}
               </span>
               {isVideoGuideOpen && (
                 <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-400 animate-ping ml-0.5" />
@@ -1244,14 +1254,14 @@ export default function App() {
             {/* 🤖 Executive Jeeva AI Agent Button with Extra Detail Feature */}
             <button
               onClick={() => setIsAiAgentOpen(prev => !prev)}
-              className="rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 px-2 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-indigo-600/25 flex items-center justify-center gap-1 sm:gap-2 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border border-sky-400/30 group"
+              className="rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 px-1.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-black text-white shadow-md shadow-indigo-600/25 flex items-center justify-center gap-1 sm:gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border border-sky-400/30 group"
               title="Open Jeeva AI Agent with Deep Telemetry & Voice Search"
             >
               <div className="relative flex items-center justify-center">
                 <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-amber-300 animate-pulse shrink-0" />
                 <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping"></span>
               </div>
-              <span className="whitespace-nowrap font-bold tracking-tight">Jeeva</span>
+              <span className="whitespace-nowrap font-bold tracking-tight">Jeeva AI</span>
               <span className="hidden md:inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider bg-white/20 px-1.5 py-0.5 rounded-md border border-white/20 text-sky-100">
                 <Mic className="h-2.5 w-2.5 text-sky-200 animate-pulse" />
                 <span>VOICE &bull; TELEMETRY</span>
@@ -1261,11 +1271,11 @@ export default function App() {
             {/* 🚨 Emergency SOS Refined Pill */}
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-rose-400 px-2 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-rose-600/25 flex items-center justify-center gap-1 sm:gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+              className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-rose-400 px-1.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-black text-white shadow-md shadow-rose-600/25 flex items-center justify-center gap-1 sm:gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0"
               title="Trigger Emergency SOS"
             >
               <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-white animate-ping shrink-0"></span>
-              <span className="whitespace-nowrap"><span className="hidden sm:inline">Emergency </span>SOS</span>
+              <span className="whitespace-nowrap">Emergency SOS</span>
             </button>
 
             {/* Live IST Clock */}
