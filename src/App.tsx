@@ -1221,13 +1221,13 @@ export default function App() {
         )}
 
         {/* Top Header Command Bar — Clean, Aesthetic & Perfectly Responsive */}
-        <header className="relative z-[9999] h-14 sm:h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-1.5 sm:px-4 lg:px-5 flex items-center justify-end gap-1 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
-          {/* Quick Action Controls */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0 z-50 ml-auto">
+        <header className="relative z-[9999] h-14 sm:h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-2.5 sm:px-4 lg:px-5 flex items-center justify-between sm:justify-end gap-1.5 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
+          {/* Quick Action Controls — Balanced full-width distribution on mobile, right-aligned on desktop */}
+          <div className="w-full sm:w-auto flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 shrink-0 z-50">
             {/* 🎥 10-Minute Official Citizen Video Walkthrough Button */}
             <button
               onClick={() => setIsVideoGuideOpen(prev => !prev)}
-              className={`rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 px-1.5 sm:px-3.5 py-1 sm:py-2 text-xs font-black text-white shadow-md shadow-amber-500/25 flex items-center gap-1 sm:gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border ${
+              className={`rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 px-2 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-amber-500/25 flex items-center justify-center gap-1 sm:gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border ${
                 isVideoGuideOpen ? 'ring-2 ring-emerald-400 border-emerald-300 animate-pulse' : 'border-amber-300/40'
               }`}
               title={isVideoGuideOpen ? "ऋष (गाइड आवाज़ रोकने के लिए क्लिक करें)" : "ऋष — 10-मिनट संपूर्ण नागरिक वीडियो गाइड (गाइड आवाज़ शुरू करने के लिए क्लिक करें)"}
@@ -1244,7 +1244,7 @@ export default function App() {
             {/* 🤖 Executive Jeeva AI Agent Button with Extra Detail Feature */}
             <button
               onClick={() => setIsAiAgentOpen(prev => !prev)}
-              className="rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 px-1.5 sm:px-3.5 py-1 sm:py-2 text-xs font-black text-white shadow-md shadow-indigo-600/25 flex items-center gap-1 sm:gap-2 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border border-sky-400/30 group"
+              className="rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 px-2 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-indigo-600/25 flex items-center justify-center gap-1 sm:gap-2 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0 border border-sky-400/30 group"
               title="Open Jeeva AI Agent with Deep Telemetry & Voice Search"
             >
               <div className="relative flex items-center justify-center">
@@ -1261,7 +1261,7 @@ export default function App() {
             {/* 🚨 Emergency SOS Refined Pill */}
             <button
               onClick={() => setIsSosModalOpen(true)}
-              className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-rose-400 px-1.5 sm:px-3.5 py-1 sm:py-2 text-xs font-black text-white shadow-md shadow-rose-600/25 flex items-center gap-1 sm:gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+              className="rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-rose-400 px-2 sm:px-3.5 py-1.5 sm:py-2 text-xs font-black text-white shadow-md shadow-rose-600/25 flex items-center justify-center gap-1 sm:gap-1.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer shrink-0"
               title="Trigger Emergency SOS"
             >
               <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-white animate-ping shrink-0"></span>
