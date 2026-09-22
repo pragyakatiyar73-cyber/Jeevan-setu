@@ -1221,7 +1221,7 @@ export default function App() {
         )}
 
         {/* Top Header Command Bar — Clean, Aesthetic & Perfectly Responsive */}
-        <header className="relative z-[9999] h-14 sm:h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-2 sm:px-4 lg:px-5 flex items-center justify-end gap-1 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
+        <header className="relative z-[9999] h-14 sm:h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-1.5 sm:px-4 lg:px-5 flex items-center justify-end gap-1 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
           {/* Quick Action Controls */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0 z-50 ml-auto">
             {/* 🎥 10-Minute Official Citizen Video Walkthrough Button */}
