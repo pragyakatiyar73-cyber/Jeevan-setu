@@ -1606,48 +1606,50 @@ export default function NERLiveMapModule({
         {/* 📋 FLOATING TACTICAL LEGEND (Collapsible on left) */}
         <div className="absolute top-12 sm:top-14 md:top-16 left-2 sm:left-4 z-[1000] pointer-events-auto">
           {isLegendOpen ? (
-            <div className="w-[calc(100vw-24px)] max-w-xs md:w-56 p-3 sm:p-3.5 rounded-2xl bg-white/98 dark:bg-slate-950/95 border border-slate-200/90 dark:border-slate-700/60 backdrop-blur-md shadow-2xl space-y-2 sm:space-y-2.5 text-xs text-slate-700 dark:text-slate-300 animate-fadeIn">
-              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-1.5 sm:pb-2">
-                <span className="font-extrabold text-slate-900 dark:text-white text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-                  <Compass className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
-                  Tactical Hazard Legend
+            <div className="w-[calc(100vw-24px)] max-w-xs md:w-60 p-3 sm:p-3.5 rounded-2xl bg-white/95 dark:bg-slate-950/95 border border-slate-200/90 dark:border-slate-700/80 backdrop-blur-xl shadow-2xl space-y-2 sm:space-y-2.5 text-xs text-slate-800 dark:text-slate-100 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="font-black text-slate-900 dark:text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <div className="h-5 w-5 rounded-md bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center border border-sky-500/30">
+                    <Compass className="h-3.5 w-3.5" />
+                  </div>
+                  <span>Tactical Hazard Legend</span>
                 </span>
                 <button
                   onClick={() => setIsLegendOpen(false)}
-                  className="text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  className="h-6 w-6 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-xs font-bold transition cursor-pointer"
                   title="Close Legend"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="space-y-1.5 text-[11px]">
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-cyan-500 border border-white shadow-sm flex items-center justify-center text-[8px]">🌊</span>
-                  <span>Flood / Inundation Zone</span>
+              <div className="space-y-1 text-xs">
+                <div className="flex items-center gap-2.5 px-2 py-1 rounded-lg hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition">
+                  <span className="h-4 w-4 rounded-full bg-cyan-500 border border-white shadow-sm flex items-center justify-center text-[9px] shrink-0">🌊</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs">Flood / Inundation Zone</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-rose-500 border border-white shadow-sm flex items-center justify-center text-[8px]">⛰️</span>
-                  <span>Landslide / Sinking Slope</span>
+                <div className="flex items-center gap-2.5 px-2 py-1 rounded-lg hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition">
+                  <span className="h-4 w-4 rounded-full bg-rose-500 border border-white shadow-sm flex items-center justify-center text-[9px] shrink-0">⛰️</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs">Landslide / Sinking Slope</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-purple-500 border border-white shadow-sm flex items-center justify-center text-[8px]">🌧️</span>
-                  <span>Cloudburst &amp; Severe Storm</span>
+                <div className="flex items-center gap-2.5 px-2 py-1 rounded-lg hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition">
+                  <span className="h-4 w-4 rounded-full bg-purple-500 border border-white shadow-sm flex items-center justify-center text-[9px] shrink-0">🌧️</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs">Cloudburst &amp; Severe Storm</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-amber-500 border border-white shadow-sm flex items-center justify-center text-[8px]">⚡</span>
-                  <span>Active Fault &amp; Live Quake</span>
+                <div className="flex items-center gap-2.5 px-2 py-1 rounded-lg hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition">
+                  <span className="h-4 w-4 rounded-full bg-amber-500 border border-white shadow-sm flex items-center justify-center text-[9px] shrink-0">⚡</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs">Active Fault &amp; Live Quake</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-4 rounded bg-emerald-500"></span>
-                  <span>Highway Lifeline</span>
+                <div className="flex items-center gap-2.5 px-2 py-1 rounded-lg hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition">
+                  <span className="h-1.5 w-4 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50 shrink-0"></span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs">Highway Lifeline</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded bg-blue-600 border border-white flex items-center justify-center text-[8px]">🚁</span>
-                  <span>Emergency Helipad / LZ</span>
+                <div className="flex items-center gap-2.5 px-2 py-1 rounded-lg hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition">
+                  <span className="h-4 w-4 rounded bg-blue-600 border border-white shadow-sm flex items-center justify-center text-[9px] shrink-0">🚁</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs">Emergency Helipad / LZ</span>
                 </div>
-                <div className="flex items-center gap-2 border-t border-slate-200 dark:border-slate-800 pt-1.5 text-[10px] text-sky-600 dark:text-sky-400 font-mono">
-                  <span className="h-0.5 w-4 border-b-2 border-dashed border-sky-400"></span>
+                <div className="flex items-center gap-2.5 border-t border-slate-200 dark:border-slate-800 pt-2 px-2 text-[11px] text-sky-600 dark:text-sky-400 font-mono font-bold">
+                  <span className="h-0.5 w-4 border-b-2 border-dashed border-sky-400 shrink-0"></span>
                   <span>8 NER Sovereign Boundary</span>
                 </div>
               </div>
