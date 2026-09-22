@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShieldAlert, Compass, AlertTriangle, CheckCircle2, Shield, Radio, RefreshCw, XCircle, Share2, Copy, Check, Users, LogOut } from 'lucide-react';
+import { ShieldAlert, Compass, AlertTriangle, CheckCircle2, Shield, Radio, RefreshCw, XCircle, Share2, Copy, Check, Users, LogOut, Lock } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import QRCode from 'qrcode';
@@ -461,20 +461,18 @@ export const MobileLiveLocationShareView: React.FC<Props> = ({ sessionId, token,
             </div>
           </div>
 
-          {/* Device Participant Tag / Label */}
+          {/* Device Participant Tag / Label (Fixed & Non-editable) */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-extrabold text-slate-400 uppercase">My Device Label:</label>
-            <input
-              type="text"
-              value={myLabel}
-              onChange={e => {
-                const val = e.target.value;
-                setMyLabel(val);
-                localStorage.setItem(`js_plabel_${sessionId}`, val);
-              }}
-              placeholder="e.g. Phone A (Host) or Friend B"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white font-mono"
-            />
+            <div className="flex items-center justify-between">
+              <label className="block text-[10px] font-extrabold text-slate-400 uppercase">My Device Label:</label>
+              <span className="text-[10px] font-bold text-amber-400/90 bg-amber-950/60 border border-amber-800/50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Lock className="w-2.5 h-2.5" /> FIXED
+              </span>
+            </div>
+            <div className="w-full bg-slate-950/90 border border-slate-800/80 rounded-xl px-3 py-2 text-xs text-white font-mono flex items-center justify-between shadow-inner select-none cursor-not-allowed">
+              <span className="font-semibold text-slate-200">{myLabel}</span>
+              <Lock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            </div>
           </div>
 
           {/* Android Location Permission Notice */}
