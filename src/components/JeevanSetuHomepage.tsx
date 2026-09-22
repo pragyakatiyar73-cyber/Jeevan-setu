@@ -3241,11 +3241,11 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
       {/* ==================================================
           8. TRUSTED DATA SOURCES
           ================================================== */}
-      <section className="w-full border-t border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/20 py-6 sm:py-7 my-4 transition-colors duration-300">
-        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col xl:flex-row xl:items-center justify-between gap-5 xl:gap-8">
+      <section className="w-full border-t border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/20 py-5 sm:py-7 my-3 sm:my-4 transition-colors duration-300">
+        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col xl:flex-row xl:items-center justify-between gap-4 sm:gap-5 xl:gap-8">
           
           <div className="space-y-1 shrink-0 text-left">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight font-sans">
+            <h2 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight font-sans">
               {t('home.trustedSourcesTitle', 'Trusted Data Sources')}
             </h2>
             <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
@@ -3253,24 +3253,24 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-start xl:justify-end gap-2 sm:gap-2.5 text-xs sm:text-[13px] font-medium text-slate-700 dark:text-slate-200">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-start xl:justify-end gap-2 sm:gap-2.5 text-xs sm:text-[13px] font-medium text-slate-700 dark:text-slate-200 w-full xl:w-auto">
             <button
               type="button"
               onClick={() => { setTrustedSourceTab('isro'); setTrustedSourceModalOpen(true); }}
-              className="inline-flex items-center gap-2 bg-white dark:bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-sky-500/60 hover:text-sky-600 dark:hover:text-sky-300 hover:bg-sky-50/50 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-left whitespace-nowrap"
+              className="col-span-1 flex sm:inline-flex items-center justify-start gap-2 bg-white dark:bg-slate-900/90 px-3 sm:px-3.5 py-2.5 sm:py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-sky-500/60 hover:text-sky-600 dark:hover:text-sky-300 hover:bg-sky-50/50 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-left min-w-0"
             >
               <Radio className="h-4 w-4 text-sky-500 dark:text-sky-400 group-hover:scale-110 transition duration-200 shrink-0" />
-              <span>{t('home.isroSatelliteData', 'ISRO / Satellite Data')}</span>
+              <span className="truncate sm:whitespace-nowrap text-[11px] xs:text-xs sm:text-[13px]">{t('home.isroSatelliteData', 'ISRO / Satellite Data')}</span>
             </button>
 
             <button
               type="button"
               onClick={() => { setTrustedSourceTab('imd'); setTrustedSourceModalOpen(true); }}
-              className="inline-flex items-center gap-2 bg-white dark:bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-blue-500/60 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-blue-50/50 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-left whitespace-nowrap"
+              className="col-span-1 flex sm:inline-flex items-center justify-start gap-2 bg-white dark:bg-slate-900/90 px-3 sm:px-3.5 py-2.5 sm:py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-blue-500/60 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-blue-50/50 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-left min-w-0"
             >
               <CloudRain className="h-4 w-4 text-blue-500 dark:text-blue-400 group-hover:scale-110 transition duration-200 shrink-0" />
-              <span>{t('home.imdWeatherData', 'IMD Weather Data')}</span>
-              <span className="relative flex h-2 w-2 ml-0.5 shrink-0" title="Live Open-Meteo Integration Active">
+              <span className="truncate sm:whitespace-nowrap text-[11px] xs:text-xs sm:text-[13px]">{t('home.imdWeatherData', 'IMD Weather Data')}</span>
+              <span className="relative flex h-2 w-2 ml-auto sm:ml-0.5 shrink-0" title="Live Open-Meteo Integration Active">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
@@ -3279,28 +3279,28 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
             <button
               type="button"
               onClick={() => { setTrustedSourceTab('gov'); setTrustedSourceModalOpen(true); }}
-              className="inline-flex items-center gap-2 bg-white dark:bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-slate-400 dark:hover:border-slate-600 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-left whitespace-nowrap"
+              className="col-span-1 flex sm:inline-flex items-center justify-start gap-2 bg-white dark:bg-slate-900/90 px-3 sm:px-3.5 py-2.5 sm:py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-slate-400 dark:hover:border-slate-600 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-left min-w-0"
             >
               <Building2 className="h-4 w-4 text-slate-500 dark:text-slate-400 group-hover:scale-110 transition duration-200 shrink-0" />
-              <span>{t('home.govReports', 'Government Reports')}</span>
+              <span className="truncate sm:whitespace-nowrap text-[11px] xs:text-xs sm:text-[13px]">{t('home.govReports', 'Government Reports')}</span>
             </button>
 
             <button
               type="button"
               onClick={() => { setTrustedSourceTab('ground'); setTrustedSourceModalOpen(true); }}
-              className="inline-flex items-center gap-2 bg-white dark:bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-emerald-500/60 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-emerald-50/50 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-left whitespace-nowrap"
+              className="col-span-1 flex sm:inline-flex items-center justify-start gap-2 bg-white dark:bg-slate-900/90 px-3 sm:px-3.5 py-2.5 sm:py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-emerald-500/60 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-emerald-50/50 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-left min-w-0"
             >
               <Users className="h-4 w-4 text-emerald-500 dark:text-emerald-400 group-hover:scale-110 transition duration-200 shrink-0" />
-              <span>{t('home.groundReports', 'Ground Reports')}</span>
+              <span className="truncate sm:whitespace-nowrap text-[11px] xs:text-xs sm:text-[13px]">{t('home.groundReports', 'Ground Reports')}</span>
             </button>
 
             <button
               type="button"
               onClick={() => { setTrustedSourceTab('gis'); setTrustedSourceModalOpen(true); }}
-              className="inline-flex items-center gap-2 bg-white dark:bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-purple-500/60 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50/50 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-left whitespace-nowrap"
+              className="col-span-2 sm:col-span-1 flex sm:inline-flex items-center justify-center sm:justify-start gap-2 bg-white dark:bg-slate-900/90 px-3.5 py-2.5 sm:py-2 rounded-xl border border-slate-200 dark:border-slate-800/90 hover:border-purple-500/60 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50/50 dark:hover:bg-slate-800/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow cursor-pointer group text-center sm:text-left min-w-0"
             >
               <MapPin className="h-4 w-4 text-purple-500 dark:text-purple-400 group-hover:scale-110 transition duration-200 shrink-0" />
-              <span>{t('home.gisRemoteSensing', 'GIS & Remote Sensing')}</span>
+              <span className="text-[11px] xs:text-xs sm:text-[13px]">{t('home.gisRemoteSensing', 'GIS & Remote Sensing')}</span>
             </button>
           </div>
 
