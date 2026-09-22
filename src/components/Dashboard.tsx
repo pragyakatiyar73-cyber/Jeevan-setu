@@ -212,11 +212,12 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
       shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png"
     });
 
+    const isMobileViewport = typeof window !== 'undefined' && window.innerWidth < 768;
     const map = L.map(mapContainerRef.current, {
       zoomControl: true,
       minZoom: 5,
       maxZoom: 18
-    }).setView([25.8, 92.5], 7);
+    }).setView([26.0, 93.0], isMobileViewport ? 6 : 7);
 
     // Ultra-reliable Google Maps Satellite/Roads Hybrid tiles
     L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
@@ -814,14 +815,18 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
       {/* 🗺️ PILLAR 3: LIVE GIS MAP SECTION */}
       {/* ---------------------------------------------------------------------- */}
       {(activeTab === 'all' || activeTab === 'livemap') && (
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-5 sm:p-6 shadow-xl space-y-4 transition-colors duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 gap-3">
-            <div>
-              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-                <MapPin className="h-5 w-5 text-emerald-500" />
-                3. Live North Eastern Region GIS Map Telemetry
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1e] p-3.5 sm:p-6 shadow-xl space-y-3.5 sm:space-y-4 transition-colors duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 gap-2.5 sm:gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="h-7 w-7 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                  <MapPin className="h-4 w-4 text-emerald-500" />
+                </span>
+                <h2 className="text-sm sm:text-lg lg:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
+                  3. Live North Eastern Region GIS Map Telemetry
+                </h2>
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium leading-relaxed pl-9 sm:pl-0">
                 Interactive Leaflet map showing 8-state NER boundary and real-time hazard markers.
               </p>
             </div>
@@ -829,22 +834,35 @@ export default function Dashboard({ onNavigateModule }: DashboardProps) {
             {onNavigateModule && (
               <button
                 onClick={() => onNavigateModule('map')}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black shadow-md shadow-indigo-600/30 flex items-center gap-2 cursor-pointer shrink-0 border border-indigo-400/30"
+                className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-black shadow-md shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer shrink-0 border border-indigo-400/30 transition-all duration-200"
               >
-                Open Full 2D Tactical GIS Map 🗺️
+                <span>Open Full 2D Tactical GIS Map 🗺️</span>
               </button>
             )}
           </div>
 
-          <div ref={mapContainerRef} className="h-96 min-h-[384px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner relative z-0" />
+          <div ref={mapContainerRef} className="h-80 sm:h-96 min-h-[320px] sm:min-h-[384px] w-full rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-inner relative z-0" />
 
-          <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 font-mono">
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span> ⛰️ Landslide Sectors</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> 🌊 Flood Basins</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> 📍 8 States Boundary</span>
+          {/* Map Tactical Legend & Single Source of Truth Banner */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1.5 border-t border-slate-100 dark:border-slate-800/80 text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-sans">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
+              <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 font-bold whitespace-nowrap text-orange-600 dark:text-orange-400 text-[10.5px] sm:text-xs">
+                <span>⛰️</span>
+                <span>Landslide Sectors</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 font-bold whitespace-nowrap text-blue-600 dark:text-blue-400 text-[10.5px] sm:text-xs">
+                <span>🌊</span>
+                <span>Flood Basins</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 font-bold whitespace-nowrap text-sky-600 dark:text-sky-400 text-[10.5px] sm:text-xs">
+                <span>📍</span>
+                <span>8 States Boundary</span>
+              </span>
             </div>
-            <span>Single Source of Truth: 8 NER States Only</span>
+            <div className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+              <span>Single Source of Truth: 8 NER States Only</span>
+            </div>
           </div>
         </div>
       )}

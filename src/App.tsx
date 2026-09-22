@@ -1221,26 +1221,8 @@ export default function App() {
         )}
 
         {/* Top Header Command Bar — Clean, Aesthetic & Perfectly Responsive */}
-        <header className="relative z-[9999] h-14 sm:h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-1.5 sm:px-4 lg:px-5 flex items-center justify-between gap-1 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
-          {/* Mobile Left: 3-Dot Feature Launcher Menu Button */}
-          <div className={`${isMobileSimulated ? 'flex' : 'md:hidden flex'} items-center gap-1 sm:gap-2 mr-auto`}>
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white font-extrabold text-xs shadow-md shadow-sky-600/30 active:scale-95 transition cursor-pointer"
-              title="Open All 18 Features Menu"
-            >
-              <div className="flex items-center gap-0.5 sm:gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-pulse"></span>
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse delay-75"></span>
-                <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse delay-150"></span>
-              </div>
-              <span className="whitespace-nowrap font-black">
-                {language === 'hi' ? <>18 <span className="hidden sm:inline">फीचर्स </span>🎛️</> : <>18 <span className="hidden sm:inline">Features </span>🎛️</>}
-              </span>
-            </button>
-          </div>
-
-          {/* Right: Quick Action Controls */}
+        <header className="relative z-[9999] h-14 sm:h-16 shrink-0 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#070b14]/90 px-2 sm:px-4 lg:px-5 flex items-center justify-end gap-1 sm:gap-3 backdrop-blur-xl shadow-sm transition-colors duration-300 min-w-0 max-w-full">
+          {/* Quick Action Controls */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0 z-50 ml-auto">
             {/* 🎥 10-Minute Official Citizen Video Walkthrough Button */}
             <button
