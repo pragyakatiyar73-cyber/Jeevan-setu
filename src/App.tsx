@@ -1100,10 +1100,8 @@ export default function App() {
                   { id: 'customdashboard', label: t('navigation.customdashboard', 'Command Center Dashboard'), icon: Gauge, iconColor: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' },
                   { 
                     id: 'map', 
-                    label: language === 'hi' ? 'NER लाइव GPS मानचित्र' : 'NER LIVE GPS MAP', 
+                    label: language === 'hi' ? 'NER लाइव GPS मानचित्र' : 'NER Live GPS Map', 
                     icon: MapPin, 
-                    badge: 'LIVE GPS', 
-                    isSpecial: true,
                     iconColor: 'text-rose-500 dark:text-rose-400 bg-rose-500/10' 
                   }
                 ]
@@ -1145,74 +1143,50 @@ export default function App() {
                   {section.items.map(tab => {
                     const Icon = tab.icon;
                     const active = activeModule === tab.id;
-                    const isSpecial = (tab as any).isSpecial;
                     return (
                       <button
                         key={tab.id}
                         onClick={() => setActiveModule(tab.id as any)}
                         title={tab.label}
                         aria-label={tab.label}
-                        className={`w-full flex items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-all duration-200 group relative min-h-[44px] cursor-pointer ${
-                          isSpecial
-                            ? active
-                              ? 'bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 text-white font-black shadow-lg shadow-rose-500/30 border-2 border-rose-300 ring-2 ring-rose-400/40'
-                              : 'bg-gradient-to-r from-rose-500/15 via-amber-500/10 to-rose-500/10 hover:from-rose-500/25 hover:via-amber-500/20 hover:to-rose-500/15 text-slate-900 dark:text-white font-extrabold border-2 border-rose-500/60 dark:border-rose-400/60 shadow-md shadow-rose-500/20 hover:shadow-rose-500/30 hover:border-rose-500 hover:scale-[1.02]'
-                            : active
+                        className={`w-full flex items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-all duration-200 group relative min-h-[42px] cursor-pointer ${
+                          active
                             ? 'bg-sky-500/15 dark:bg-sky-500/20 text-sky-900 dark:text-sky-300 font-bold border border-sky-500/30 dark:border-sky-500/40 shadow-sm shadow-sky-500/10'
                             : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white border border-transparent'
                         }`}
                       >
                         {/* Active Indicator Bar */}
                         {active && (
-                          <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full shadow-sm ${
-                            isSpecial ? 'bg-amber-300 shadow-amber-300' : 'bg-sky-500 shadow-sky-400'
-                          }`} />
+                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-sky-500 rounded-r-full shadow-sm shadow-sky-400" />
                         )}
 
                         {/* Icon Container */}
                         <div
-                          className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
-                            isSpecial
-                              ? active
-                                ? 'bg-white/25 text-white border border-white/40 shadow-inner'
-                                : 'bg-gradient-to-tr from-rose-500 via-rose-600 to-amber-500 text-white shadow-md shadow-rose-500/40 border border-rose-300 ring-2 ring-rose-400/30 group-hover:scale-110 group-hover:rotate-3'
-                              : active
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
+                            active
                               ? 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30'
                               : `border border-slate-200/80 dark:border-slate-700/50 ${tab.iconColor} group-hover:border-sky-500/40 group-hover:scale-105`
                           }`}
                         >
-                          <Icon className={`h-4 w-4 shrink-0 transition-transform duration-200 ${isSpecial ? 'animate-pulse' : 'group-hover:scale-110'}`} />
-                          {isSpecial && (
-                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600 border border-white"></span>
-                            </span>
-                          )}
+                          <Icon className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
                         </div>
 
                         {/* Feature Label */}
-                        <span className={`hidden md:block flex-1 text-left text-xs leading-snug whitespace-normal ${
-                          isSpecial ? 'font-black tracking-tight text-rose-950 dark:text-rose-100' : 'font-semibold tracking-tight'
-                        }`}>
+                        <span className="hidden md:block flex-1 text-left text-xs font-semibold leading-snug whitespace-normal tracking-tight">
                           {tab.label}
                         </span>
 
                         {/* Aligned Status Badge (Only for live conditions) */}
                         {tab.badge && (
                           <span
-                            className={`hidden md:inline-flex shrink-0 items-center gap-1 justify-center rounded-md px-1.5 py-0.5 text-[9px] font-black leading-none ml-auto border transition-colors ${
-                              isSpecial
-                                ? active
-                                  ? 'bg-white/25 text-white border-white/40'
-                                  : 'bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-400 shadow-sm shadow-rose-600/40 animate-pulse'
-                                : tab.badge === 'LIVE'
+                            className={`hidden md:inline-flex shrink-0 items-center justify-center rounded-md px-1.5 py-0.5 text-[9px] font-black leading-none ml-auto border transition-colors ${
+                              tab.badge === 'LIVE'
                                 ? 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/40 animate-pulse'
                                 : active
                                 ? 'bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-500/30'
                                 : 'bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
                             }`}
                           >
-                            {isSpecial && <span className="h-1.5 w-1.5 rounded-full bg-white animate-ping"></span>}
                             {tab.badge}
                           </span>
                         )}
@@ -2103,7 +2077,6 @@ export default function App() {
                         {filteredItems.map(item => {
                           const Icon = item.icon;
                           const active = activeModule === item.id;
-                          const isSpecial = item.id === 'map';
                           return (
                             <button
                               key={item.id}
@@ -2112,50 +2085,27 @@ export default function App() {
                                 setIsMobileMenuOpen(false);
                               }}
                               className={`w-full flex items-start gap-3 p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                                isSpecial
-                                  ? active
-                                    ? 'bg-gradient-to-r from-rose-600 to-amber-600 text-white border-rose-400 ring-2 ring-rose-400/50 shadow-xl'
-                                    : 'bg-gradient-to-r from-rose-500/15 via-amber-500/10 to-rose-500/5 border-2 border-rose-500/60 dark:border-rose-400/60 shadow-md shadow-rose-500/20 hover:border-rose-500 ring-1 ring-rose-400/30'
-                                  : active
+                                active
                                   ? 'bg-gradient-to-r from-sky-600/20 to-indigo-600/20 border-sky-500/60 ring-2 ring-sky-500/40 shadow-lg'
                                   : 'bg-slate-50 dark:bg-[#0c142b] border-slate-200 dark:border-slate-800/80 hover:border-sky-500/40 hover:bg-sky-500/10'
                               }`}
                             >
-                              <div className={`relative h-10 w-10 shrink-0 rounded-xl flex items-center justify-center border shadow-sm ${
-                                isSpecial
-                                  ? 'bg-gradient-to-tr from-rose-600 via-rose-500 to-amber-500 text-white border-rose-300 ring-2 ring-rose-400/30 shadow-md shadow-rose-500/40'
-                                  : item.iconColor
-                              }`}>
-                                <Icon className={`h-5 w-5 ${isSpecial ? 'animate-pulse' : ''}`} />
-                                {isSpecial && (
-                                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600 border border-white"></span>
-                                  </span>
-                                )}
+                              <div className={`h-10 w-10 shrink-0 rounded-xl flex items-center justify-center border shadow-sm ${item.iconColor}`}>
+                                <Icon className="h-5 w-5" />
                               </div>
 
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between gap-1">
-                                  <h3 className={`text-xs font-black truncate ${
-                                    isSpecial ? 'text-rose-950 dark:text-rose-100' : 'text-slate-900 dark:text-white'
-                                  }`}>
+                                  <h3 className="text-xs font-black text-slate-900 dark:text-white truncate">
                                     {language === 'hi' ? item.nameHi : item.nameEn}
                                   </h3>
                                   {item.badge && (
-                                    <span className={`shrink-0 px-1.5 py-0.5 rounded text-[9px] font-black uppercase flex items-center gap-1 border ${
-                                      isSpecial
-                                        ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-400 shadow-sm shadow-rose-600/40 animate-pulse'
-                                        : 'bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-500/30'
-                                    }`}>
-                                      {isSpecial && <span className="h-1 w-1 rounded-full bg-white animate-ping" />}
+                                    <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-black bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 uppercase">
                                       {item.badge}
                                     </span>
                                   )}
                                 </div>
-                                <p className={`text-[11px] font-medium line-clamp-1 mt-0.5 ${
-                                  isSpecial ? 'text-rose-700 dark:text-rose-300 font-semibold' : 'text-slate-500 dark:text-slate-400'
-                                }`}>
+                                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
                                   {language === 'hi' ? item.descHi : item.descEn}
                                 </p>
                               </div>

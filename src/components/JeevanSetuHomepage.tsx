@@ -2599,17 +2599,15 @@ export default function JeevanSetuHomepage({ onNavigateModule, onOpenSos, onOpen
                 hoverText: 'group-hover:text-blue-700 dark:group-hover:text-blue-300'
               },
               {
-                title: language === 'hi' ? 'NER लाइव GPS मानचित्र' : 'NER LIVE GPS MAP',
+                title: language === 'hi' ? 'NER लाइव GPS मानचित्र' : 'NER Live GPS Map',
                 desc: language === 'hi' ? '8 उत्तर-पूर्वी राज्यों का 3D सैटेलाइट नक्शा, रियल-टाइम खतरा क्षेत्र और लाइव GPS ट्रैकिंग।' : '8-State 3D satellite GIS mapping, real-time hazard zones, and interactive live GPS tracking.',
                 icon: MapPin,
-                badge: language === 'hi' ? '🔴 लाइव GPS' : '🔴 LIVE GPS',
-                badgeColor: 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border-rose-500/40 animate-pulse font-black',
                 action: () => onNavigateModule('map'),
-                bgColor: 'bg-gradient-to-br from-rose-50 to-amber-50/50 dark:from-rose-950/30 dark:to-amber-950/20',
-                hoverBg: 'hover:from-rose-100 hover:to-amber-100 dark:hover:from-rose-900/40 dark:hover:to-amber-900/30',
-                borderColor: 'border-rose-300 dark:border-rose-500/40 shadow-sm shadow-rose-500/10 ring-1 ring-rose-400/30',
-                iconBg: 'bg-gradient-to-tr from-rose-600 to-amber-500 text-white shadow-md shadow-rose-500/30',
-                hoverText: 'group-hover:text-rose-700 dark:group-hover:text-rose-300'
+                bgColor: 'bg-[#F0FAF5] dark:bg-emerald-950/25',
+                hoverBg: 'hover:bg-[#E0F7EB] dark:hover:bg-emerald-900/40',
+                borderColor: 'border-emerald-200/80 dark:border-emerald-900/40',
+                iconBg: 'bg-emerald-600 text-white',
+                hoverText: 'group-hover:text-emerald-700 dark:group-hover:text-emerald-300'
               },
               {
                 title: t('home.exploreSituation', 'Explore Live Situation'),
